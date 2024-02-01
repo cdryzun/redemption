@@ -31,23 +31,29 @@ WidgetPasswordFont::WidgetPasswordFont(Font const& font)
 {}
 
 WidgetPassword::WidgetPassword(
-    gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-    chars_view text, WidgetEventNotifier onsubmit,
-    Color fgcolor, Color bgcolor, Color focus_color,
-    Font const & font, int xtext, int ytext
+    gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+    Colors colors, WidgetEventNotifier onsubmit
 )
     : WidgetPasswordFont(font)
-    , WidgetEdit(drawable, copy_paste, text, onsubmit,
-                 fgcolor, bgcolor, focus_color, this->shadow_font, xtext, ytext)
+    , WidgetEdit(gd, this->shadow_font, copy_paste, colors, onsubmit)
     , font(font)
-{
-}
+{}
 
-void WidgetPassword::toggle_password_visibility()
+WidgetPassword::WidgetPassword(
+    gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+    chars_view text, uint16_t max_width,
+    Colors colors, WidgetEventNotifier onsubmit
+)
+    : WidgetPasswordFont(font)
+    , WidgetEdit(gd, this->shadow_font, copy_paste, text, max_width, colors, onsubmit)
+    , font(font)
+{}
+
+void WidgetPassword::toggle_password_visibility(Rect rect)
 {
     is_password_visible = !is_password_visible;
     this->set_font(is_password_visible ? this->font : this->shadow_font);
-    this->rdp_input_invalidate(this->get_rect());
+    this->rdp_input_invalidate(rect);
 }
 
 void WidgetPassword::rdp_input_scancode(
@@ -56,18 +62,42 @@ void WidgetPassword::rdp_input_scancode(
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
     switch (keymap.last_kevent()) {
-        case Keymap::KEvent::Paste:
-            this->copy_paste.paste(*this);
-            break;
-        case Keymap::KEvent::Copy:
-            break;
-        case Keymap::KEvent::Cut:
-            this->set_text(""_av);
-            this->label.rdp_input_invalidate(this->label.get_rect());
-            this->draw_cursor(this->get_cursor_rect());
-            break;
-        default:
-            WidgetEdit::rdp_input_scancode(flags, scancode, event_time, keymap);
+
+    case Keymap::KEvent::LeftArrow:
+    case Keymap::KEvent::UpArrow:
+        if (keymap.is_ctrl_pressed()) {
+            action_move_cursor_to_begin_of_line(Redraw::Yes);
+        }
+        else {
+            action_move_cursor_left(false, Redraw::Yes);
+        }
+        break;
+
+    case Keymap::KEvent::RightArrow:
+    case Keymap::KEvent::DownArrow:
+        if (keymap.is_ctrl_pressed()) {
+            action_move_cursor_to_end_of_line(Redraw::Yes);
+        }
+        else {
+            action_move_cursor_right(false, Redraw::Yes);
+        }
+        break;
+
+    case Keymap::KEvent::Paste:
+        copy_paste.paste(*this);
+        break;
+
+    case Keymap::KEvent::Copy:
+        break;
+
+    case Keymap::KEvent::Cut:
+        if (has_text()) {
+            set_text(""_av, {Redraw::Yes});
+        }
+        break;
+
+    default:
+        WidgetEdit::rdp_input_scancode(flags, scancode, event_time, keymap);
     }
     REDEMPTION_DIAGNOSTIC_POP()
 }

@@ -24,6 +24,7 @@
 #include "mod/internal/widget/composite.hpp"
 #include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/edit.hpp"
+#include "mod/internal/widget/label.hpp"
 #include "configs/autogen/enums.hpp" // Language
 #include "translation/translation.hpp"
 

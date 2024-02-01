@@ -36,22 +36,26 @@
 
 RED_AUTO_TEST_CASE(WidgetNumberEditEventPushChar)
 {
-    TestGraphic drawable(800, 600);
+    TestGraphic drawable(100, 30);
     CopyPaste copy_paste(false);
-
-    int16_t x = 0;
-    int16_t y = 0;
-    uint16_t cx = 100;
 
     NotifyTrace onsubmit;
 
+    WidgetEdit::Colors colors{
+        .fg = NamedBGRColor::GREEN,
+        .bg = NamedBGRColor::RED,
+        .border = NamedBGRColor::BLUE,
+        .focus_border = NamedBGRColor::BLUE,
+        .cursor = NamedBGRColor::GREY,
+    };
+
     WidgetNumberEdit wnumber_edit(
-        drawable, copy_paste, "123456"_av, onsubmit,
-        NamedBGRColor::GREEN, NamedBGRColor::RED, NamedBGRColor::RED, global_font_deja_vu_14());
+        drawable, global_font_deja_vu_14(), copy_paste, colors, onsubmit
+    );
     Dimension dim = wnumber_edit.get_optimal_dim();
-    wnumber_edit.set_wh(cx, dim.h);
-    wnumber_edit.set_xy(x, y);
-    wnumber_edit.focus(Widget::focus_reason_tabkey);
+    wnumber_edit.set_wh(100, dim.h);
+    wnumber_edit.set_text("123456"_av, WidgetEdit::Redraw::No);
+    wnumber_edit.init_focus();
 
     wnumber_edit.rdp_input_invalidate(wnumber_edit.get_rect());
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "number_edit_1.png");

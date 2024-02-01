@@ -26,10 +26,48 @@
 
 
 class Font;
+class FontCharView;
 namespace gdi
 {
     class ColorCtx;
 }
+
+class WidgetText
+{
+public:
+    struct Colors
+    {
+        Widget::Color fg;
+        Widget::Color bg;
+    };
+
+    WidgetText(Font const & font, Colors colors, chars_view text);
+
+    void set_xy(int16_t x, int16_t y) noexcept
+    {
+        rect.x = x;
+        rect.y = y;
+    }
+
+    Dimension get_optimal_dim() const noexcept { return {rect.cx, rect.cy}; }
+    Rect get_rect() const noexcept { return rect; }
+
+    int16_t x() const noexcept { return rect.x; }
+    int16_t y() const noexcept { return rect.y; }
+    uint16_t cx() const noexcept { return rect.cx; }
+    uint16_t cy() const noexcept { return rect.cy; }
+
+    void draw(gdi::GraphicApi & drawable, Rect clip);
+
+private:
+    using FontCharPtr = FontCharView const *;
+    static const size_t buffer_size = 255;
+
+    Rect rect;
+    Colors colors;
+    size_t fc_buffer_len = 0;
+    FontCharPtr fc_buffer[buffer_size];
+};
 
 class WidgetLabel : public Widget
 {
@@ -52,13 +90,7 @@ public:
 
     static Dimension get_optimal_dim(Font const & font, chars_view text, int xtext, int ytext);
 
-    bool shift_text(int pos_x);
-
     void set_color(Color bg_color, Color fg_color) override;
-
-    void auto_resize();
-
-    void set_font(Font const & font);
 
 public:
     static const size_t buffer_size = 256;
@@ -71,7 +103,5 @@ public:
     Color fg_color;
 
 private:
-    int w_border;
-
     Font const * font;
 };

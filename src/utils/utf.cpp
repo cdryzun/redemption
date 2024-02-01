@@ -135,7 +135,7 @@ namespace
 size_t UTF8CharNbBytes(const uint8_t * source) noexcept
 {
     uint8_t c = *source;
-    return utf8_byte_size_table[(c >> 3)];
+    return utf8_byte_size_table[c >> 3];
     // return (c<=0x7F)?1:(c<=0xDF)?2:(c<=0xEF)?3:4;
 }
 
@@ -354,13 +354,15 @@ size_t UTF8toUTF16_CrLf(bytes_view source, uint8_t * target, size_t t_len) noexc
 
 UTF8toUnicodeIterator::UTF8toUnicodeIterator(byte_ptr str) noexcept
 : source(str.as_u8p())
-{ ++*this; }
+{
+    ++*this;
+}
 
 UTF8toUnicodeIterator & UTF8toUnicodeIterator::operator++() noexcept
 {
     this->ucode = *source;
     ++source;
-    switch (this->ucode >> 4 ){
+    switch (this->ucode >> 4) {
         case 0:
         case 1: case 2: case 3:
         case 4: case 5: case 6: case 7:

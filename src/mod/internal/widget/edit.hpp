@@ -22,90 +22,197 @@
 #pragma once
 
 #include "mod/internal/widget/widget.hpp"
-#include "mod/internal/widget/label.hpp"
 #include "mod/internal/widget/event_notifier.hpp"
-#include "utils/sugar/zstring_view.hpp"
+#include "utils/sugar/bytes_view.hpp"
+#include "utils/static_string.hpp"
+#include "utils/utf.hpp"
 
-
+class Font;
 class CopyPaste;
+class FontCharView;
+class Theme;
 
 class WidgetEdit : public Widget
 {
+    static constexpr int max_capacity = 255;
+
 public:
-    WidgetEdit(gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-               chars_view text, WidgetEventNotifier onsubmit,
-               Color fgcolor, Color bgcolor, Color focus_color,
-               Font const & font, int xtext, int ytext);
+    struct Colors
+    {
+        // TODO remove default constructor of Color
+        Color fg;
+        Color bg;
+        Color border = bg; // TODO remove default
+        Color focus_border;
+        Color cursor = Widget::Color(0x888888); // TODO remove default
+
+        static Colors from_theme(Theme const& theme);
+    };
+
+    enum class Redraw : bool { No, Yes, };
+
+    enum class CusorPosition : uint8_t
+    {
+        CursorToEnd,
+        CursorToBegin,
+        KeepCursorPosition,
+    };
+
+    struct SetSize
+    {
+        bool should_be_optimal;
+        uint16_t min_width = 0;  /// ignored when 0
+        uint16_t max_width = 0;  /// ignored when 0
+
+        static SetSize optimal(uint16_t min_width, uint16_t max_width)
+        {
+            return {true, min_width, max_width};
+        }
+
+        static SetSize optimal(uint16_t width)
+        {
+            return {true, width, width};
+        }
+    };
+
+    struct TextOptions
+    {
+        Redraw redraw;
+        SetSize set_size {};
+        CusorPosition cursor_position = CusorPosition::CursorToEnd;
+
+        static TextOptions initial_text(uint16_t max_width)
+        {
+            return TextOptions{
+              .redraw = Redraw::No,
+              .set_size = SetSize::optimal(max_width),
+              .cursor_position = CusorPosition::CursorToEnd,
+            };
+        }
+    };
+
+    using Text = static_string<max_capacity * 4>;
+
+    WidgetEdit(
+        gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+        Colors colors, WidgetEventNotifier onsubmit
+    );
+
+    WidgetEdit(
+        gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+        chars_view text, uint16_t max_width,
+        Colors colors, WidgetEventNotifier onsubmit
+    );
 
     ~WidgetEdit();
 
-    Dimension get_optimal_dim() const override;
+    bool has_text() const noexcept;
+    Text get_text() const noexcept;
 
-    virtual void set_text(chars_view text);
+    Font const& get_font() const noexcept { return *font; }
+    Colors get_colors() const noexcept { return colors; }
 
-    virtual void insert_text(chars_view text);
+    void set_text(bytes_view text, TextOptions opts);
 
-    zstring_view get_text() const;
-
-    void set_xy(int16_t x, int16_t y) override;
-
-    void set_wh(uint16_t w, uint16_t h) override;
-
-    using Widget::set_wh;
+    void insert_chars(array_view<uint32_t> ucs, Redraw redraw);
 
     void rdp_input_invalidate(Rect clip) override;
 
-    void draw_border(Rect clip, Color color);
-
-    Rect get_cursor_rect() const;
-
-    void draw_current_cursor();
-    void draw_cursor(const Rect clip);
-
-    void increment_edit_pos();
-
-    size_t utf8len_current_char();
-
-    void decrement_edit_pos();
-
-    virtual void update_draw_cursor(Rect old_cursor);
-
-    void move_to_last_character();
-
-    void move_to_first_character();
-
-    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
-
-    void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
+    void rdp_input_scancode(
+        KbdFlags flags, Scancode scancode,
+        uint32_t event_time, Keymap const& keymap) override;
 
     void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
 
+    void rdp_input_mouse(uint16_t device_flags, uint16_t x_, uint16_t y) override;
+
     void clipboard_insert_utf8(zstring_view text) override;
+
+    void focus(int reason) override;
+
+    void blur() override;
+
+    Dimension get_optimal_dim() const override;
 
     void set_font(Font const & font);
 
-private:
-    void insert_unicode_char(uint16_t unicode_char);
+    bool action_move_cursor_right(bool ctrl_is_pressed, Redraw redraw);
+    bool action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw);
+    bool action_move_cursor_to_begin_of_line(Redraw redraw);
+    bool action_move_cursor_to_end_of_line(Redraw redraw);
+    bool action_backspace(bool ctrl_is_pressed, Redraw redraw);
+    bool action_delete(bool ctrl_is_pressed, Redraw redraw);
 
+    void draw_current_cursor(Rect clip)
+    {
+        draw_cursor(clip, colors.cursor);
+    }
+
+private:
+    using FontCharPtr = FontCharView const *;
+
+    struct BufferData
+    {
+        // first char is a reserved empty char used as sentinel
+        // (see action_move_cursor_right and get_previous_char)
+        static constexpr std::ptrdiff_t reserved_index = 1;
+
+        using Unicode32 = uint32_t;
+
+        FontCharPtr * current_fc_it;
+        FontCharPtr * end_fc_it;
+        Unicode32 * current_unicode_it;
+        FontCharPtr fc_buffer[max_capacity + reserved_index];
+        Unicode32 unicode_buffer[max_capacity + reserved_index];
+
+        BufferData() noexcept {}
+        BufferData(BufferData const&) = delete;
+        BufferData& operator=(BufferData const&) = delete;
+    };
+
+    struct Buffer;
+
+    Buffer & buffer() noexcept;
+    Buffer const & buffer() const noexcept;
+
+    int get_end_pos() const;
+
+    Rect cursor_rect(int x_cursor) noexcept;
+    void draw_cursor(Rect clip, Color color);
+    void draw_border(Rect clip, Color color);
+    void draw_text(Rect clip);
+
+    struct RedrawInfo
+    {
+        bool partial_update;
+        FontCharPtr const * it;  // no null when partial_update is true
+        int x_cursor;
+    };
+
+    int redraw_text(RedrawInfo redraw_info);
+
+    void redraw_cursor(int old_x_cursor);
+    void redraw_removed_right_text(bool partial_update, int shift);
+    void redraw_right_empty_padding();
+
+    void maybe_redraw_left_empty_padding(int old_x_text);
+
+    bool move_cursor_to_right(int shift);
+    void move_cursor_to_right_and_redraw(int shift, Redraw redraw);
+    bool move_cursor_to_left(int shift);
+    void move_cursor_to_left_and_redraw(int shift, Redraw redraw);
+
+
+    int x_cursor;
+    int x_text;
+    Colors colors;
+    Font const * font;
+
+    uint16_t h_text;
+    Utf16ToUnicodeConverter unicode32_decoder;
     WidgetEventNotifier onsubmit;
 
-protected:
-    WidgetLabel label;
-private:
-    size_t buffer_size;
-public:
-    size_t num_chars;
-private:
-    size_t edit_buffer_pos;
-    size_t edit_pos;
-    size_t cursor_px_pos;
-    int w_text;
-    int h_text;
-    Color cursor_color;
-    Color focus_color;
-    bool drawall;
-
-    Font const * font;
+    BufferData editable_buffer;
 
 protected:
     CopyPaste & copy_paste;

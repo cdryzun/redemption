@@ -28,27 +28,327 @@
 #include "mod/internal/copy_paste.hpp"
 #include "utils/colors.hpp"
 #include "utils/sugar/cast.hpp"
-#include "utils/utf.hpp"
+#include "utils/theme.hpp" // TODO
 
+namespace
+{
+
+static constexpr FontCharView empty_ch {};
+
+static int fc_width(FontCharView const * fc) noexcept
+{
+    return fc->boxed_width();
+}
+
+template<class T>
+void mem_move(T* to, array_view<T> from)
+{
+    std::memmove(to, from.data(), sizeof(T) * from.size());
+}
+
+void draw_rect(gdi::GraphicApi& drawable, Rect rect, Widget::Color color)
+{
+    if (!rect.isempty()) {
+        drawable.draw(RDPOpaqueRect(rect, color), rect, gdi::ColorCtx::depth24());
+    }
+}
+
+void draw_rect(gdi::GraphicApi& drawable, Rect rect, Widget::Color color, Rect clip)
+{
+    draw_rect(drawable, clip.intersect(rect), color);
+}
+
+template<class F>
+auto sanitized_char(F&& f)
+{
+    return [f](uint32_t uc) {
+        if (uc >= ' ') {
+            // ok
+        }
+        else if (uc == '\n' || uc == '\t') {
+            uc = ' ';
+        }
+        else {
+            // char is ignored
+            return ;
+        }
+        f(uc);
+    };
+}
+
+constexpr uint16_t w_cursor = 1;
+constexpr uint16_t h_padding = 1;
+constexpr uint16_t w_padding = 1;
+constexpr uint16_t border_len = 1;
+constexpr uint16_t w_cursor_padding = 1;
+constexpr uint16_t start_x_cursor = w_padding + border_len + w_cursor_padding;
+
+Dimension compute_optimal_dim(int w_text, int h_text)
+{
+    return Dimension{
+        checked_int(start_x_cursor * 2 + w_cursor + w_text),
+        checked_int((h_padding + border_len) * 2 + h_text),
+    };
+}
+
+} // anonymous namespace
+
+
+/*
+        ~                                              ~ - border_len
+         ~~~~~                                    ~~~~~  - w_padding
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       - edit zone
+        +----+------------------------------------+----+ < y_padding
+        |    |               ~~ w_cursor          |    | <
+        |    +-+----------+-+##----------+-+-+----------+-+-+----------+-+
+        |    |      aa      |##    aa      |      aa      |      aa      |
+        |    |     aaaa     |##   aaaa     |     aaaa     |     aaaa     |
+        |    |    aa  aa    |##  aa  aa    |    aa  aa    |    aa  aa    |
+        |    |   aaaaaaaa   |## aaaaaaaa   |   aaaaaaaa   |   aaaaaaaa   |
+        |    |  aa      aa  |##aa      aa  |  aa      aa  |  aa      aa  |
+        |    +-+----------+-+##----------+-+-+----------+-+-+----------+-+
+        |    ^ x_text = 0    ^ x_cursor (after previous char)
+        +----+------------------------------------+----+
+
+x_cursor = border_len + w_padding + w_cursor_padding + shift
+
+
+cursor 2 times to the right:                    ~~~~~~~~~~~ x_text increment
+        +----+------------------------------------+----+
+        |    |                                    |    |   ## <-- cursor before
+  +-+----------+-+-+----------+-+-+----------+-+##----------+-+   repositioning
+  |      aa      |      aa      |      aa      |##    aa      |
+  |     aaaa     |     aaaa     |     aaaa     |##   aaaa     |
+  |    aa  aa    |    aa  aa    |    aa  aa    |##  aa  aa    |
+  |   aaaaaaaa   |   aaaaaaaa   |   aaaaaaaa   |## aaaaaaaa   |
+  |  aa      aa  |  aa      aa  |  aa      aa  |##aa      aa  |
+  +-+----------+-+-+----------+-+-+----------+-+##----------+-+
+        |    |                                    |    |
+        +----+------------------------------------+----+
+  ~~~~~~~~~~~~ x_text
+*/
+
+class WidgetEdit::Buffer : private WidgetEdit::BufferData
+{
+    FontCharPtr * begin_fc_buffer() noexcept
+    {
+        return fc_buffer + reserved_index;
+    }
+
+    FontCharPtr const * begin_fc_buffer() const noexcept
+    {
+        return fc_buffer + reserved_index;
+    }
+
+    Unicode32 * begin_unicode_buffer() noexcept
+    {
+        return unicode_buffer + reserved_index;
+    }
+
+    Unicode32 const * begin_unicode_buffer() const noexcept
+    {
+        return unicode_buffer + reserved_index;
+    }
+
+public:
+    void init() noexcept
+    {
+        current_fc_it = begin_fc_buffer();
+        end_fc_it = current_fc_it;
+        current_unicode_it = begin_unicode_buffer();
+        fc_buffer[0] = &empty_ch;
+        unicode_buffer[0] = 0;
+    }
+
+    static Buffer & from_data(BufferData & data) noexcept
+    {
+        return static_cast<Buffer &>(data);
+    }
+
+    static Buffer const & from_data(BufferData const & data) noexcept
+    {
+        return static_cast<Buffer const &>(data);
+    }
+
+    bool is_full() const noexcept
+    {
+        return end_fc_it == std::end(fc_buffer);
+    }
+
+    std::size_t remaining() const noexcept
+    {
+        return checked_int(std::end(fc_buffer) - end_fc_it);
+    }
+
+    bool is_movable_to_left() const noexcept
+    {
+        return current_fc_it > begin_fc_buffer();
+    }
+
+    /// \return width of char
+    int move_to_left() noexcept
+    {
+        assert(is_movable_to_left());
+        --current_fc_it;
+        --current_unicode_it;
+        return fc_width(*current_fc_it);
+    }
+
+    bool is_movable_to_right() const noexcept
+    {
+        return current_fc_it < end_fc_it;
+    }
+
+    /// \return width of char
+    int move_to_right() noexcept
+    {
+        assert(is_movable_to_right());
+        int w = fc_width(*current_fc_it);
+        ++current_fc_it;
+        ++current_unicode_it;
+        return w;
+    }
+
+    void move_to_start() noexcept
+    {
+        current_fc_it = begin_fc_buffer();
+        current_unicode_it = begin_unicode_buffer();
+    }
+
+    Unicode32 get_current_unicode() const noexcept
+    {
+        assert(current_fc_it != end_fc_it);
+        return *current_unicode_it;
+    }
+
+    FontCharView const& get_current_fc() const noexcept
+    {
+        assert(current_fc_it != end_fc_it);
+        return **current_fc_it;
+    }
+
+    Unicode32 get_previous_unicode() const noexcept
+    {
+        assert(current_fc_it != std::begin(fc_buffer));
+        return *(current_unicode_it - 1);
+    }
+
+    FontCharView const& get_previous_fc() const noexcept
+    {
+        assert(current_fc_it != std::begin(fc_buffer));
+        return **(current_fc_it - 1);
+    }
+
+    array_view<Unicode32> text() const noexcept
+    {
+        return {begin_unicode_buffer(), font_chars().size()};
+    }
+
+    array_view<FontCharPtr> font_chars() const noexcept
+    {
+        return {begin_fc_buffer(), end_fc_it};
+    }
+
+    writable_array_view<FontCharPtr> writable_font_chars() noexcept
+    {
+        return writable_array_view{begin_fc_buffer(), end_fc_it};
+    }
+
+    FontCharPtr const * current() const noexcept
+    {
+        return current_fc_it;
+    }
+
+    std::size_t current_pos() const noexcept
+    {
+        return checked_int(current_fc_it - begin_fc_buffer());
+    }
+
+    void set_current_pos(std::size_t pos) noexcept
+    {
+        assert(pos <= font_chars().size());
+        current_fc_it = begin_fc_buffer() + pos;
+        current_unicode_it = begin_unicode_buffer() + pos;
+    }
+
+    [[nodiscard]]
+    array_view<uint32_t> reserve_space_for(array_view<uint32_t> ucs) noexcept
+    {
+        std::size_t n = std::min(ucs.size(), remaining());
+        std::size_t right_size = checked_int(end_fc_it - current_fc_it);
+        mem_move(current_fc_it + n, {current_fc_it, right_size});
+        mem_move(current_unicode_it + n, {current_unicode_it, right_size});
+        return ucs;
+    }
+
+    /// \return width of char
+    int replace_and_advance(uint32_t uc, Font const& font) noexcept
+    {
+        assert(!is_full());
+        *current_unicode_it = uc;
+        *current_fc_it = &font.item(uc).view;
+        int w = fc_width(*current_fc_it);
+        ++current_unicode_it;
+        ++current_fc_it;
+        ++end_fc_it;
+        return w;
+    }
+
+    void remove_right(FontCharPtr const * to) noexcept
+    {
+        assert(current_fc_it <= to);
+        std::size_t n_cp = checked_int(end_fc_it - to);
+        std::size_t n_jump = checked_int(to - current_fc_it);
+        mem_move(current_fc_it, {to, n_cp});
+        mem_move(current_unicode_it, {current_unicode_it + n_jump, n_cp});
+        end_fc_it -= to - current_fc_it;
+    }
+
+    void remove_left(FontCharPtr const * to) noexcept
+    {
+        assert(current_fc_it >= to);
+        assert(begin_fc_buffer() <= to);
+        auto old = current_fc_it;
+        auto n = current_fc_it - to;
+        current_fc_it -= n;
+        current_unicode_it -= n;
+        remove_right(old);
+    }
+
+    void remove_all() noexcept
+    {
+        end_fc_it = begin_fc_buffer();
+        current_fc_it = begin_fc_buffer();
+        current_unicode_it = begin_unicode_buffer();
+    }
+};
 
 WidgetEdit::WidgetEdit(
-    gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-    chars_view text, WidgetEventNotifier onsubmit,
-    Color fgcolor, Color bgcolor, Color focus_color,
-    Font const & font, int xtext, int ytext)
-: Widget(drawable, Focusable::Yes)
-, onsubmit(onsubmit)
-, label(drawable, text, fgcolor, bgcolor, font, xtext, ytext)
-, w_text(0)
-, h_text(font.max_height())
-, cursor_color(0x888888)
-, focus_color(focus_color)
-, drawall(false)
-, font(&font)
-, copy_paste(copy_paste)
+    gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+    Colors colors, WidgetEventNotifier onsubmit
+)
+    : Widget(gd, Focusable::Yes)
+    , x_cursor(start_x_cursor)
+    , colors(colors)
+    , font(&font)
+    , h_text(font.max_height())
+    , onsubmit(onsubmit)
+    , copy_paste(copy_paste)
 {
-    this->set_text(text);
-    this->pointer_flag = PointerType::Edit;
+    buffer().init();
+    pointer_flag = PointerType::Edit;
+}
+
+WidgetEdit::WidgetEdit(
+    gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+    chars_view text, uint16_t max_width,
+    Colors colors, WidgetEventNotifier onsubmit
+)
+    : WidgetEdit(gd, font, copy_paste, colors, onsubmit)
+{
+    if (!text.empty()) {
+        set_text(text, TextOptions::initial_text(max_width));
+    }
 }
 
 WidgetEdit::~WidgetEdit()
@@ -58,452 +358,193 @@ WidgetEdit::~WidgetEdit()
 
 Dimension WidgetEdit::get_optimal_dim() const
 {
-    Dimension dim = this->label.get_optimal_dim();
-
-    dim.w += 2;
-    dim.h += 2;
-
-    return dim;
-}
-
-void WidgetEdit::set_text(chars_view text)
-{
-    this->label.buffer[0] = 0;
-    this->buffer_size = 0;
-    this->num_chars = 0;
-    this->w_text = 0;
-    if (!text.empty()) {
-        const size_t n = text.size();
-        const size_t remain_n = WidgetLabel::buffer_size - 1;
-
-        this->buffer_size = ((remain_n >= n) ? n : UTF8StringAdjustedNbBytes(text, remain_n));
-
-        memcpy(this->label.buffer, text.data(), this->buffer_size);
-        this->label.buffer[this->buffer_size] = 0;
-        gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer));
-        this->w_text = tm.width;
-        this->num_chars = UTF8Len(byte_ptr_cast(this->label.buffer));
+    int w = 0;
+    for (FontCharView const* fc : buffer().font_chars()) {
+        w += fc_width(fc);
     }
-    this->edit_pos = this->num_chars;
-    this->edit_buffer_pos = this->buffer_size;
-    this->cursor_px_pos = this->w_text;
+
+    return compute_optimal_dim(w, h_text);
 }
 
-void WidgetEdit::insert_text(chars_view text)
+bool WidgetEdit::has_text() const noexcept
 {
-    if (!text.empty()) {
-        const size_t n = text.size();
-        const size_t tmp_buffer_size = this->buffer_size;
+    return !buffer().font_chars().empty();
+}
 
-        const size_t remain_n = WidgetLabel::buffer_size - 1 - this->buffer_size;
-        const size_t max_n = ((remain_n >= n) ? n : UTF8StringAdjustedNbBytes(text, remain_n));
-        const size_t total_n = max_n + this->buffer_size;
+WidgetEdit::Text WidgetEdit::get_text() const noexcept
+{
+    return Text::from_builder([this](delayed_build_string_buffer uninit_str) {
+        writable_bytes_view av = uninit_str.chars_without_null_terminated();
+        for (auto uc : buffer().text()) {
+            auto cbuf = writable_sized_bytes_view<4>::assumed(av.first(4));
+            av = av.from_offset(utf32_to_utf8(uc, cbuf).end());
+        }
+        return uninit_str.set_end_string_ptr(av.as_charp());
+    });
+}
 
-        if (this->edit_pos == this->buffer_size || total_n == WidgetLabel::buffer_size - 1) {
-            memcpy(this->label.buffer + this->buffer_size, text.data(), max_n);
+void WidgetEdit::set_text(bytes_view text, TextOptions opts)
+{
+    auto const old_pos = buffer().current_pos();
+
+    buffer().remove_all();
+
+    x_cursor = start_x_cursor;
+    x_text = 0;
+
+    int shift = 0;
+
+    utf8_for_each(
+        text,
+        [&](uint32_t uc) {
+            shift += buffer().replace_and_advance(uc, *font);
+        },
+        [](utf8_char_invalid) {},
+        [](utf8_char_truncated) {},
+        [&]{ return !buffer().is_full(); }
+    );
+
+    if (opts.set_size.should_be_optimal) {
+        auto dim = compute_optimal_dim(shift, h_text);
+        if (opts.set_size.max_width) {
+            dim.w = std::min(dim.w, opts.set_size.max_width);
         }
-        else {
-            memmove(this->label.buffer + this->edit_buffer_pos + n, this->label.buffer + this->edit_buffer_pos,
-                    std::min(WidgetLabel::buffer_size - 1 - (this->edit_buffer_pos + n),
-                                this->buffer_size - this->edit_buffer_pos));
-            memcpy(this->label.buffer + this->edit_buffer_pos, text.data(), max_n);
+        if (opts.set_size.min_width) {
+            dim.w = std::max(dim.w, opts.set_size.min_width);
         }
-        this->buffer_size = total_n;
-        this->label.buffer[this->buffer_size] = 0;
-        gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer));
-        this->w_text = tm.width;
-        const size_t tmp_num_chars = this->num_chars;
-        this->num_chars = UTF8Len(byte_ptr_cast(this->label.buffer));
-        Rect rect = this->get_cursor_rect();
-        rect.cx = this->w_text - this->cursor_px_pos;
-        if (this->edit_pos == tmp_buffer_size || total_n == WidgetLabel::buffer_size - 1) {
-            this->cursor_px_pos = this->w_text;
-            this->edit_buffer_pos = this->buffer_size;
+        Widget::set_wh(dim);
+    }
+
+    switch (opts.cursor_position) {
+        case CusorPosition::KeepCursorPosition: {
+            auto const fcs = buffer().font_chars();
+            if (fcs.size() > old_pos) {
+                buffer().set_current_pos(old_pos);
+                auto right_part_is_lower = (fcs.size() - old_pos) < old_pos;
+                auto partial_fcs = right_part_is_lower
+                    ? fcs.from_offset(old_pos)
+                    : fcs.first(old_pos);
+                int partial_shift = 0;
+                for (auto const & fc : partial_fcs) {
+                    partial_shift += fc_width(fc);
+                }
+                shift = right_part_is_lower ? shift - partial_shift : partial_shift;
+            }
+            [[fallthrough]];
         }
-        else {
-            const size_t pos = this->edit_buffer_pos + max_n;
-            const char c = this->label.buffer[pos];
-            this->label.buffer[pos] = 0;
-            // TODO: tm.height unused ?
-            gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer + this->edit_buffer_pos));
-            this->label.buffer[pos] = c;
-            this->cursor_px_pos += tm.width;
-            this->edit_buffer_pos += max_n;
-        }
-        this->edit_pos += this->num_chars - tmp_num_chars;
-        this->update_draw_cursor(rect);
+
+        case CusorPosition::CursorToEnd:
+            move_cursor_to_right(shift);
+            break;
+
+        case CusorPosition::CursorToBegin:
+            buffer().set_current_pos(0);
+            break;
+
+    }
+
+    if (opts.redraw == Redraw::Yes) {
+        rdp_input_invalidate(get_rect());
     }
 }
 
-zstring_view WidgetEdit::get_text() const
+void WidgetEdit::insert_chars(array_view<uint32_t> ucs, Redraw redraw)
 {
-    return zstring_view::from_null_terminated(this->label.get_text());
-}
+    ucs = buffer().reserve_space_for(ucs);
+    auto old_x_cursor = x_cursor;
+    auto old_it_ch = buffer().current();
 
-void WidgetEdit::set_xy(int16_t x, int16_t y)
-{
-    Widget::set_xy(x, y);
-    this->label.set_xy(x + 1, y + 1);
-}
+    int shift = 0;
+    for (auto uc : ucs) {
+        shift += buffer().replace_and_advance(uc, *font);
+    }
 
-void WidgetEdit::set_wh(uint16_t w, uint16_t h)
-{
-    Widget::set_wh(w, h);
-    this->label.set_wh(w - 2, h - 2);
+    bool partial_update = move_cursor_to_right(shift);
+    if (redraw == Redraw::Yes) {
+        redraw_text({partial_update, old_it_ch, old_x_cursor});
+    }
 }
 
 void WidgetEdit::rdp_input_invalidate(Rect clip)
 {
-    Rect rect_intersect = clip.intersect(this->get_rect());
+    auto rect = get_rect().shrink(border_len).intersect(clip);
+    draw_rect(drawable, rect, colors.bg);
 
-    if (!rect_intersect.isempty()) {
-        this->label.rdp_input_invalidate(rect_intersect);
-        if (this->has_focus) {
-            this->draw_cursor(this->get_cursor_rect());
-            this->draw_border(rect_intersect, this->focus_color);
-        }
-        else {
-            this->draw_border(rect_intersect, this->label.bg_color);
-        }
-    }
-}
-
-void WidgetEdit::draw_border(Rect clip, Color color)
-{
-    gdi_draw_border(drawable, color, get_rect(), 1, clip, gdi::ColorCtx::depth24());
-}
-
-Rect WidgetEdit::get_cursor_rect() const
-{
-    return Rect(this->label.x_text + this->cursor_px_pos + this->label.x() + 1,
-                this->label.y_text + this->label.y(),
-                1,
-                this->h_text);
-}
-
-void WidgetEdit::draw_current_cursor()
-{
-    if (this->has_focus) {
-        this->draw_cursor(this->get_cursor_rect());
-    }
-}
-
-void WidgetEdit::draw_cursor(const Rect clip)
-{
-    if (!clip.isempty()) {
-        this->drawable.draw(RDPOpaqueRect(clip, this->cursor_color), clip, gdi::ColorCtx::depth24());
-    }
-}
-
-void WidgetEdit::increment_edit_pos()
-{
-    this->edit_pos++;
-    size_t n = UTF8GetPos(byte_ptr_cast(this->label.buffer + this->edit_buffer_pos), 1);
-    char c = this->label.buffer[this->edit_buffer_pos + n];
-    this->label.buffer[this->edit_buffer_pos + n] = 0;
-    gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer + this->edit_buffer_pos));
-    this->cursor_px_pos += tm.width;
-    this->label.buffer[this->edit_buffer_pos + n] = c;
-    this->edit_buffer_pos += n;
-
-    if (this->label.shift_text(this->cursor_px_pos)) {
-        this->drawall = true;
-    }
-}
-
-size_t WidgetEdit::utf8len_current_char()
-{
-    size_t len = 1;
-    while ((this->label.buffer[this->edit_buffer_pos + len] & 0xC0) == 0x80){
-        ++len;
-    }
-    return len;
-}
-
-void WidgetEdit::decrement_edit_pos()
-{
-    size_t len = 1;
-    while (/*this->edit_buffer_pos - len >= 0 &&
-            (*/(this->label.buffer[this->edit_buffer_pos - len] & 0xC0) == 0x80/*)*/){
-        ++len;
-    }
-
-    this->edit_pos--;
-    char c = this->label.buffer[this->edit_buffer_pos];
-    this->label.buffer[this->edit_buffer_pos] = 0;
-    gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer + this->edit_buffer_pos - len));
-    this->cursor_px_pos -= tm.width;
-    this->label.buffer[this->edit_buffer_pos] = c;
-    this->edit_buffer_pos -= len;
-
-    if (this->label.shift_text(this->cursor_px_pos)) {
-        this->drawall = true;
-    }
-}
-
-void WidgetEdit::update_draw_cursor(Rect old_cursor)
-{
-    if (this->drawall) {
-        this->drawall = false;
-        this->rdp_input_invalidate(this->get_rect());
+    draw_text(rect);
+    if (has_focus) {
+        draw_border(clip, colors.focus_border);
+        draw_cursor(clip, colors.cursor);
     }
     else {
-        this->label.rdp_input_invalidate(old_cursor);
-        this->draw_cursor(this->get_cursor_rect());
+        draw_border(clip, colors.border);
     }
 }
 
-void WidgetEdit::move_to_last_character()
-{
-    Rect old_cursor_rect = this->get_cursor_rect();
-    this->edit_pos = this->num_chars;
-    this->edit_buffer_pos = this->buffer_size;
-    this->cursor_px_pos = this->w_text;
-
-    if (this->label.shift_text(this->cursor_px_pos)) {
-        this->drawall = true;
-    }
-
-    this->update_draw_cursor(old_cursor_rect);
-}
-
-void WidgetEdit::move_to_first_character()
-{
-    Rect old_cursor_rect = this->get_cursor_rect();
-    this->edit_pos = 0;
-    this->edit_buffer_pos = 0;
-    this->cursor_px_pos = 0;
-
-    if (this->label.shift_text(this->cursor_px_pos)) {
-        this->drawall = true;
-    }
-
-    this->update_draw_cursor(old_cursor_rect);
-}
-
-void WidgetEdit::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
-{
-    (void)y;
-
-    if (device_flags != (MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN)) {
-        return;
-    }
-
-    if (x <= this->x() + this->label.x_text) {
-        if (this->edit_pos) {
-            this->move_to_first_character();
-        }
-    }
-    else if (x >= this->w_text + this->x() + this->label.x_text) {
-        if (this->edit_pos < this->num_chars) {
-            this->move_to_last_character();
-        }
-    }
-    else {
-        Rect old_cursor_rect = this->get_cursor_rect();
-        int xx = this->x() + this->label.x_text;
-        size_t e = this->edit_pos;
-        this->edit_pos = 0;
-        this->edit_buffer_pos = 0;
-        size_t len = this->utf8len_current_char();
-        while (this->edit_buffer_pos < this->buffer_size) {
-            char c = this->label.buffer[this->edit_buffer_pos + len];
-            this->label.buffer[this->edit_buffer_pos + len] = 0;
-            gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer + this->edit_buffer_pos));
-            this->label.buffer[this->edit_buffer_pos + len] = c;
-            xx += tm.width;
-            if (xx >= x) {
-                xx -= tm.width;
-                break;
-            }
-            len = this->utf8len_current_char();
-            this->edit_buffer_pos += len;
-            ++this->edit_pos;
-        }
-        this->cursor_px_pos = xx - (this->x() + this->label.x_text);
-        if (e != this->edit_pos) {
-            this->update_draw_cursor(old_cursor_rect);
-        }
-    }
-}
-
-void WidgetEdit::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
+void WidgetEdit::rdp_input_scancode(
+    KbdFlags /*flags*/, Scancode /*scancode*/,
+    uint32_t /*event_time*/, Keymap const& keymap)
 {
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
     switch (keymap.last_kevent()) {
-        case Keymap::KEvent::None:
-            break;
+    case Keymap::KEvent::None:
+        break;
 
-        case Keymap::KEvent::LeftArrow:
-        case Keymap::KEvent::UpArrow:
-            if (this->edit_pos > 0) {
-                Rect old_cursor_rect = this->get_cursor_rect();
-                this->decrement_edit_pos();
-                this->update_draw_cursor(old_cursor_rect);
+    case Keymap::KEvent::KeyDown:
+        insert_chars(keymap.last_decoded_keys().uchars_av(), Redraw::Yes);
+        break;
 
-                if (keymap.is_ctrl_pressed()) {
-                    while (this->edit_pos > 0 && (
-                        this->label.buffer[this->edit_buffer_pos-1] != ' '
-                     || this->label.buffer[this->edit_buffer_pos] == ' '
-                    )) {
-                        Rect old_cursor_rect = this->get_cursor_rect();
-                        this->decrement_edit_pos();
-                        this->update_draw_cursor(old_cursor_rect);
-                    }
-                }
-            }
-            break;
+    case Keymap::KEvent::Enter:
+        this->onsubmit();
+        break;
 
-        case Keymap::KEvent::RightArrow:
-        case Keymap::KEvent::DownArrow:
-            if (this->edit_pos < this->num_chars) {
-                Rect old_cursor_rect = this->get_cursor_rect();
-                this->increment_edit_pos();
-                this->update_draw_cursor(old_cursor_rect);
+    case Keymap::KEvent::LeftArrow:
+    case Keymap::KEvent::UpArrow:
+        action_move_cursor_left(keymap.is_ctrl_pressed(), Redraw::Yes);
+        break;
 
-                if (keymap.is_ctrl_pressed()) {
-                    while (this->edit_pos < this->num_chars && (
-                        this->label.buffer[this->edit_buffer_pos-1] == ' '
-                     || this->label.buffer[this->edit_buffer_pos] != ' '
-                    )) {
-                        Rect old_cursor_rect = this->get_cursor_rect();
-                        this->increment_edit_pos();
-                        this->update_draw_cursor(old_cursor_rect);
-                    }
-                }
-            }
-            break;
+    case Keymap::KEvent::RightArrow:
+    case Keymap::KEvent::DownArrow:
+        action_move_cursor_right(keymap.is_ctrl_pressed(), Redraw::Yes);
+        break;
 
-        case Keymap::KEvent::Backspace:
-            if (this->edit_pos > 0) {
-                auto remove_one_char = [this]{
-                    this->num_chars--;
-                    size_t pxtmp = this->cursor_px_pos;
-                    size_t ebpos = this->edit_buffer_pos;
-                    this->decrement_edit_pos();
-                    UTF8RemoveOne(make_writable_array_view(this->label.buffer).drop_front(this->edit_buffer_pos));
-                    this->buffer_size += this->edit_buffer_pos - ebpos;
-                    Rect const rect(
-                        this->x() + this->cursor_px_pos + this->label.x_text,
-                        this->y() + this->label.y_text + 1,
-                        this->w_text - this->cursor_px_pos + 3,
-                        this->h_text
-                    );
-                    this->w_text -= pxtmp - this->cursor_px_pos;
-                    return rect;
-                };
+    case Keymap::KEvent::Backspace:
+        action_backspace(keymap.is_ctrl_pressed(), Redraw::Yes);
+        break;
 
-                if (keymap.is_ctrl_pressed()) {
-                    // TODO remove_n_char
-                    Rect rect = this->get_cursor_rect();
-                    while (this->edit_pos > 0 && this->label.buffer[this->edit_buffer_pos-1] == ' ') {
-                        rect = rect.disjunct(remove_one_char());
-                    }
-                    while (this->edit_pos > 0 && this->label.buffer[this->edit_buffer_pos-1] != ' ') {
-                        rect = rect.disjunct(remove_one_char());
-                    }
-                    this->rdp_input_invalidate(rect);
-                }
-                else {
-                    this->rdp_input_invalidate(remove_one_char());
-                }
-            }
-            break;
+    case Keymap::KEvent::Delete:
+        action_delete(keymap.is_ctrl_pressed(), Redraw::Yes);
+        break;
 
-        case Keymap::KEvent::Delete:
-            if (this->edit_pos < this->num_chars) {
-                auto remove_one_char = [this]{
-                    size_t len = this->utf8len_current_char();
-                    char c = this->label.buffer[this->edit_buffer_pos + len];
-                    this->label.buffer[this->edit_buffer_pos + len] = 0;
-                    gdi::TextMetrics tm(*this->font, std::string_view(this->label.buffer + this->edit_buffer_pos));
-                    this->label.buffer[this->edit_buffer_pos + len] = c;
-                    UTF8RemoveOne(make_writable_array_view(this->label.buffer).drop_front(this->edit_buffer_pos));
-                    this->buffer_size -= len;
-                    this->num_chars--;
-                    Rect const rect(
-                        this->x() + this->cursor_px_pos + this->label.x_text,
-                        this->y() + this->label.y_text + 1,
-                        this->w_text - this->cursor_px_pos + 3,
-                        this->h_text
-                    );
-                    this->w_text -= tm.width;
-                    return rect;
-                };
+    case Keymap::KEvent::End:
+        action_move_cursor_to_end_of_line(Redraw::Yes);
+        break;
 
-                if (keymap.is_ctrl_pressed()) {
-                    // TODO remove_n_char
-                    Rect rect = this->get_cursor_rect();
-                    if (this->label.buffer[this->edit_buffer_pos] == ' ') {
-                        rect = rect.disjunct(remove_one_char());
-                        while (this->edit_pos < this->num_chars && this->label.buffer[this->edit_buffer_pos] == ' ') {
-                            rect = rect.disjunct(remove_one_char());
-                        }
-                    }
-                    else {
-                        while (this->edit_pos < this->num_chars && this->label.buffer[this->edit_buffer_pos] != ' ') {
-                            rect = rect.disjunct(remove_one_char());
-                        }
-                        while (this->edit_pos < this->num_chars && this->label.buffer[this->edit_buffer_pos] == ' ') {
-                            rect = rect.disjunct(remove_one_char());
-                        }
-                    }
-                    this->rdp_input_invalidate(this->get_cursor_rect().disjunct(rect));
-                }
-                else {
-                    this->rdp_input_invalidate(this->get_cursor_rect().disjunct(remove_one_char()));
-                }
-            }
-            break;
+    case Keymap::KEvent::Home:
+        action_move_cursor_to_begin_of_line(Redraw::Yes);
+        break;
 
-        case Keymap::KEvent::End:
-            if (this->edit_pos < this->num_chars) {
-                this->move_to_last_character();
-            }
-            break;
+    case Keymap::KEvent::Paste:
+        copy_paste.paste(*this);
+        break;
 
-        case Keymap::KEvent::Home:
-            if (this->edit_pos) {
-                this->move_to_first_character();
-            }
-            break;
+    case Keymap::KEvent::Copy:
+        if (copy_paste) {
+            copy_paste.copy(get_text());
+        }
+        break;
 
-        case Keymap::KEvent::KeyDown:
-            for (auto uchars : keymap.last_decoded_keys().uchars) {
-                if (uchars && this->num_chars < WidgetLabel::buffer_size - 5) {
-                    this->insert_unicode_char(uchars);
-                }
-            }
-            break;
+    case Keymap::KEvent::Cut:
+        if (copy_paste) {
+            copy_paste.copy(get_text());
+        }
+        if (has_text()) {
+            set_text(""_av, {Redraw::Yes});
+        }
+        break;
 
-        case Keymap::KEvent::Enter:
-            this->onsubmit();
-            break;
-
-        case Keymap::KEvent::Paste:
-            this->copy_paste.paste(*this);
-            break;
-
-        case Keymap::KEvent::Copy:
-            if (this->copy_paste) {
-                this->copy_paste.copy(this->get_text());
-            }
-            break;
-
-        case Keymap::KEvent::Cut:
-            if (this->copy_paste) {
-                this->copy_paste.copy(this->get_text());
-            }
-
-            this->set_text(""_av);
-            this->label.rdp_input_invalidate(this->label.get_rect());
-            this->draw_cursor(this->get_cursor_rect());
-            break;
-
-        default:
-            Widget::rdp_input_scancode(flags, scancode, event_time, keymap);
-            break;
+    default:
+        return;
     }
     REDEMPTION_DIAGNOSTIC_POP()
 }
@@ -514,77 +555,490 @@ void WidgetEdit::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
         return;
     }
 
-    this->insert_unicode_char(unicode);
+    auto insert_char = sanitized_char([&](uint32_t uc){
+        insert_chars({&uc, 1}, Redraw::Yes);
+    });
+    insert_char(unicode32_decoder.convert(unicode));
 }
 
-void WidgetEdit::insert_unicode_char(uint16_t unicode_char)
+void WidgetEdit::rdp_input_mouse(uint16_t device_flags, uint16_t x_, uint16_t y)
 {
-    auto buf = make_writable_array_view(this->label.buffer).drop_front(this->edit_buffer_pos);
-    if (!UTF8InsertUtf16(buf, this->buffer_size - this->edit_buffer_pos + 1, unicode_char)) {
-        return ;
+    (void)y;
+
+    if (device_flags != (MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN)) {
+        return;
     }
 
-    size_t tmp = this->edit_buffer_pos;
-    size_t pxtmp = this->cursor_px_pos;
-    this->increment_edit_pos();
-    this->buffer_size += this->edit_buffer_pos - tmp;
-    this->num_chars++;
-    this->w_text += this->cursor_px_pos - pxtmp;
-    this->update_draw_cursor(Rect(
-        this->x() + pxtmp + this->label.x_text,
-        this->y() + this->label.y_text + 1,
-        this->w_text - pxtmp + 2,
-        this->h_text
-    ));
+    if (buffer().font_chars().empty()) {
+        return;
+    }
+
+    int x = x_ - this->x();
+
+    LOG(LOG_DEBUG, "cur pos = %d %d", x, x_cursor);
+
+    auto fc_mid = [](FontCharView const& fc){
+        return fc.offsetx + (fc.width + 1) / 2 - 1;
+    };
+
+    // move to left
+    if (x < x_cursor) {
+        int shift = 0;
+
+        while (buffer().is_movable_to_left()) {
+            auto const & fc = buffer().get_previous_fc();
+
+            if (x >= x_cursor - shift - fc.incby + fc_mid(fc)) {
+                break;
+            }
+
+            shift += buffer().move_to_left();
+
+            if (x_cursor - shift < start_x_cursor) {
+                break;
+            }
+        }
+
+        if (shift) {
+            move_cursor_to_left_and_redraw(shift, Redraw::Yes);
+        }
+    }
+    // move to right
+    else if (x > x_cursor) {
+        int shift = 0;
+        int end_pos = get_end_pos();
+
+        while (buffer().is_movable_to_right()) {
+            auto const & fc = buffer().get_current_fc();
+
+            if (x <= x_cursor + shift + fc_mid(fc)) {
+                break;
+            }
+
+            shift += buffer().move_to_right();
+
+            if (x_cursor + shift >= end_pos) {
+                break;
+            }
+        }
+
+        if (shift) {
+            move_cursor_to_right_and_redraw(shift, Redraw::Yes);
+        }
+    }
 }
 
 void WidgetEdit::clipboard_insert_utf8(zstring_view text)
 {
-    auto is_special_space = [](char c){
-        return c == '\r'
-            || c == '\t'
-            || c == '\n';
-    };
-    // replace \t with space and ignore multi-line
-    for (auto* s = text.c_str(); *s; ++s) {
-        if (is_special_space(*s)) {
-            constexpr std::size_t buf_size = 255;
-            char buf[buf_size + 1];
-            auto* p = buf;
-            auto* end = text.data() + std::min(buf_size, text.size());
-            auto n = std::min(buf_size, std::size_t(s - text.data()));
-            memcpy(p, text.data(), n);
-            p += n;
-            for (; s < end; ++s) {
-                if (!is_special_space(*s)) {
-                    *p++ = *s;
-                }
-                else if (*s == '\r' || *s == '\n') {
-                    break;
-                }
-                else {
-                    *p++ = ' ';
-                }
+    uint32_t ucs[max_capacity];
+    auto remaining = buffer().remaining();
+    auto * p = ucs;
+    utf8_for_each(
+        text,
+        sanitized_char([&](uint32_t uc) {
+            --remaining;
+            *p++ = uc;
+        }),
+        [](utf8_char_invalid) {},
+        [](utf8_char_truncated) {},
+        [&]{ return remaining; }
+    );
+    insert_chars({ucs, p}, Redraw::Yes);
+}
+
+void WidgetEdit::focus(int /*reason*/)
+{
+    if (!this->has_focus) {
+        this->has_focus = true;
+        draw_border(get_rect(), colors.focus_border);
+        draw_cursor(get_rect(), colors.cursor);
+    }
+}
+
+void WidgetEdit::blur()
+{
+    if (this->has_focus) {
+        this->has_focus = false;
+        draw_border(get_rect(), colors.border);
+        draw_cursor(get_rect(), colors.bg);
+    }
+}
+
+int WidgetEdit::get_end_pos() const
+{
+    return this->cx() - (w_padding + border_len + w_cursor);
+}
+
+bool WidgetEdit::action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw)
+{
+    if (buffer().is_movable_to_left()) {
+        int shift = buffer().move_to_left();
+
+        if (ctrl_is_pressed) {
+            while (buffer().is_movable_to_left() && (
+                buffer().get_current_unicode() == ' '
+                || buffer().get_previous_unicode() != ' '
+            )) {
+                shift += buffer().move_to_left();
             }
-            this->insert_text({buf, p});
-            return ;
         }
+
+        move_cursor_to_left_and_redraw(shift, redraw);
+
+        return true;
     }
 
-    this->insert_text(text);
+    return false;
+}
+
+bool WidgetEdit::action_move_cursor_right(bool ctrl_is_pressed, Redraw redraw)
+{
+    if (buffer().is_movable_to_right()) {
+        int shift = buffer().move_to_right();
+
+        if (ctrl_is_pressed) {
+            while (buffer().is_movable_to_right() && (
+                buffer().get_previous_unicode() == ' '
+                || buffer().get_current_unicode() != ' '
+            )) {
+                shift += buffer().move_to_right();
+            }
+        }
+
+        move_cursor_to_right_and_redraw(shift, redraw);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool WidgetEdit::action_move_cursor_to_begin_of_line(Redraw redraw)
+{
+    if (buffer().is_movable_to_left()) {
+        buffer().move_to_start();
+        int shift = x_text + x_cursor - start_x_cursor;
+        move_cursor_to_left_and_redraw(shift, redraw);
+        return true;
+    }
+    return false;
+}
+
+bool WidgetEdit::action_move_cursor_to_end_of_line(Redraw redraw)
+{
+    if (buffer().is_movable_to_right()) {
+        int shift = 0;
+        while (buffer().is_movable_to_right()) {
+            shift += buffer().move_to_right();
+        }
+
+        move_cursor_to_right_and_redraw(shift, redraw);
+
+        return true;
+    }
+    return false;
+}
+
+bool WidgetEdit::action_backspace(bool ctrl_is_pressed, Redraw redraw)
+{
+    if (buffer().is_movable_to_left()) {
+        auto const old_position = buffer().current();
+
+        int shift = 0;
+        if (ctrl_is_pressed) {
+            while (buffer().is_movable_to_left()
+                && buffer().get_previous_unicode() == ' '
+            ) {
+                shift += buffer().move_to_left();
+            }
+
+            while (buffer().is_movable_to_left()
+                && buffer().get_previous_unicode() != ' '
+            ) {
+                shift += buffer().move_to_left();
+            }
+        }
+        else {
+            shift += buffer().move_to_left();
+        }
+
+        buffer().remove_right(old_position);
+
+        auto old_x_text = x_text;
+        auto partial_update = move_cursor_to_left(shift);
+
+        // TODO redraw left when x_text updated
+
+        if (redraw == Redraw::Yes) {
+            maybe_redraw_left_empty_padding(old_x_text);
+            redraw_removed_right_text(partial_update, shift);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool WidgetEdit::action_delete(bool ctrl_is_pressed, Redraw redraw)
+{
+    if (buffer().is_movable_to_right()) {
+        auto const old_position = buffer().current();
+        int shift = 0;
+
+        if (ctrl_is_pressed) {
+            while (buffer().is_movable_to_right()
+                && buffer().get_current_unicode() != ' '
+            ) {
+                shift += buffer().move_to_right();
+            }
+
+            while (buffer().is_movable_to_right()
+                && buffer().get_current_unicode() == ' '
+            ) {
+                shift += buffer().move_to_right();
+            }
+        }
+        else {
+            shift += buffer().move_to_right();
+        }
+
+        buffer().remove_left(old_position);
+
+        // TODO redraw left when x_text updated
+
+        if (redraw == Redraw::Yes) {
+            redraw_removed_right_text(true, shift);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+Rect WidgetEdit::cursor_rect(int x_cursor) noexcept
+{
+    return Rect(
+        checked_int(x() + x_cursor),
+        checked_int(y() + h_padding + border_len),
+        w_cursor,
+        h_text
+    );
+}
+
+void WidgetEdit::draw_cursor(Rect clip, Color color)
+{
+    LOG(LOG_DEBUG, "cur = %d", x_cursor);
+    draw_rect(drawable, cursor_rect(x_cursor), color, clip);
+}
+
+void WidgetEdit::draw_border(Rect clip, Color color)
+{
+    gdi_draw_border(drawable, color, this->get_rect(), border_len, clip, gdi::ColorCtx::depth24());
+}
+
+void WidgetEdit::draw_text(Rect clip)
+{
+    int x = this->x() - x_text + w_padding + border_len;
+
+    gdi::draw_text(
+        drawable,
+        x,
+        y() + h_padding + border_len,
+        font->max_height(),
+        buffer().font_chars(),
+        colors.fg,
+        colors.bg,
+        clip
+    );
+}
+
+/// \return last pixel drawn
+int WidgetEdit::redraw_text(RedrawInfo redraw_info)
+{
+    Rect clip = get_rect().shrink(border_len);
+    int x = this->x();
+    auto fcs = buffer().font_chars();
+
+    if (redraw_info.partial_update) {
+        int shift = redraw_info.x_cursor - w_cursor_padding;
+        clip.cx -= shift;
+        clip.x += shift;
+        x += shift;
+        fcs = fcs.from_offset(redraw_info.it);
+    }
+    else {
+        x += -x_text + w_padding + border_len;
+    }
+
+    int last_x = gdi::draw_text(
+        drawable,
+        x,
+        y() + h_padding + border_len,
+        font->max_height(),
+        fcs,
+        colors.fg,
+        colors.bg,
+        clip
+    );
+    draw_cursor(clip, colors.cursor); // TODO
+
+    return last_x;
+}
+
+void WidgetEdit::redraw_cursor(int old_x_cursor)
+{
+    auto rect = cursor_rect(old_x_cursor);
+    draw_rect(drawable, rect, colors.bg);
+    rect.x = checked_int(x() + x_cursor);
+    draw_rect(drawable, rect, colors.cursor);
+}
+
+void WidgetEdit::redraw_removed_right_text(bool partial_update, int shift)
+{
+    int last_x = redraw_text({partial_update, buffer().current(), x_cursor});
+    auto clip = get_rect().shrink(border_len);
+    // redraws over removed chars
+    if (last_x < clip.eright()) {
+        int eright = buffer().is_movable_to_right()
+            ? last_x
+            : x() + x_cursor + w_cursor;
+        int w = std::min(clip.eright() - eright, shift);
+        clip.x = checked_int(eright);
+        clip.cx = checked_int(w);
+        draw_rect(drawable, clip, colors.bg);
+    }
+}
+
+void WidgetEdit::redraw_right_empty_padding()
+{
+    Rect clip = get_rect().shrink(border_len);
+    clip.x = this->eright() - w_padding - w_cursor_padding;
+    clip.cx = w_padding;
+    draw_rect(drawable, clip, colors.bg);
+}
+
+void WidgetEdit::maybe_redraw_left_empty_padding(int old_x_text)
+{
+    if (old_x_text && !x_text) {
+        Rect clip = get_rect().shrink(border_len);
+        clip.cx = w_padding;
+        draw_rect(drawable, clip, colors.bg);
+    }
+}
+
+bool WidgetEdit::move_cursor_to_right(int shift)
+{
+    int end_pos = get_end_pos();
+    if (x_cursor + shift <= end_pos) {
+        x_cursor += shift;
+        return true;
+    }
+    else {
+        x_text += x_cursor + shift - end_pos;
+        x_cursor = end_pos;
+        return false;
+    }
+}
+
+void WidgetEdit::move_cursor_to_right_and_redraw(int shift, Redraw redraw)
+{
+    auto old_x_cursor = x_cursor;
+    auto partial_update = move_cursor_to_right(shift);
+
+    if (redraw == Redraw::Yes) {
+        if (partial_update) {
+            redraw_cursor(old_x_cursor);
+        }
+        else {
+            redraw_text({});
+            if (!buffer().is_movable_to_right()) {
+                redraw_right_empty_padding();
+            }
+        }
+    }
+}
+
+bool WidgetEdit::move_cursor_to_left(int shift)
+{
+    LOG(LOG_DEBUG, "shift = %d | %d", shift, x_cursor - shift >= start_x_cursor);
+    if (x_cursor - shift >= start_x_cursor) {
+        x_cursor -= shift;
+        return true;
+    }
+    else {
+        x_text -= start_x_cursor - (x_cursor - shift);
+        x_cursor = start_x_cursor;
+        return false;
+    }
+}
+
+void WidgetEdit::move_cursor_to_left_and_redraw(int shift, Redraw redraw)
+{
+    auto old_x_text = x_text;
+    auto old_x_cursor = x_cursor;
+    auto partial_update = move_cursor_to_left(shift);
+
+    if (redraw == Redraw::Yes) {
+        if (partial_update) {
+            redraw_cursor(old_x_cursor);
+        }
+        else {
+            redraw_text({});
+            maybe_redraw_left_empty_padding(old_x_text);
+        }
+    }
+}
+
+WidgetEdit::Buffer & WidgetEdit::buffer() noexcept
+{
+    return Buffer::from_data(editable_buffer);
+}
+
+WidgetEdit::Buffer const & WidgetEdit::buffer() const noexcept
+{
+    return Buffer::from_data(editable_buffer);
 }
 
 void WidgetEdit::set_font(Font const & font)
 {
-    this->label.set_font(font);
-    this->font = &font;
+    auto uc_it = buffer().text().begin();
 
-    this->w_text = gdi::TextMetrics(font, std::string_view(this->label.buffer)).width;
+    auto fcs = buffer().writable_font_chars();
+    auto mid = buffer().current();
 
-    auto& ch_ref = this->label.buffer[this->edit_buffer_pos];
-    const auto c = std::exchange(ch_ref, '\0');
+    auto left = fcs.before(mid);
+    auto right = fcs.from_offset(mid);
 
-    this->cursor_px_pos = gdi::TextMetrics(font, std::string_view(this->label.buffer)).width;
+    int shift = 0;
+    for (auto & fc : left) {
+        shift -= fc_width(fc);
+        fc = &font.item(*uc_it).view;
+        shift += fc_width(fc);
+        ++uc_it;
+    }
+    for (auto & fc : right) {
+        fc = &font.item(*uc_it).view;
+        ++uc_it;
+    }
 
-    ch_ref = c;
+    if (shift < 0) {
+        move_cursor_to_left(-shift);
+    }
+    else {
+        move_cursor_to_right(shift);
+    }
 }
+
+WidgetEdit::Colors WidgetEdit::Colors::from_theme(const Theme& theme)
+{
+    return {
+        .fg = theme.edit.fgcolor,
+        .bg = theme.edit.bgcolor,
+        .border = theme.global.bgcolor, // TODO
+        .focus_border = theme.edit.focus_color,
+        // .cursor = // TODO
+    };
+}
+

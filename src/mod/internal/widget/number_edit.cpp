@@ -22,29 +22,6 @@
 #include "mod/internal/widget/number_edit.hpp"
 #include "keyboard/keymap.hpp"
 
-WidgetNumberEdit::WidgetNumberEdit(
-    gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-    chars_view text, WidgetEventNotifier onsubmit,
-    Color fgcolor, Color bgcolor, Color focus_color,
-    Font const & font, int xtext, int ytext)
-: WidgetEdit(drawable, copy_paste, text, onsubmit,
-             fgcolor, bgcolor, focus_color, font, xtext, ytext)
-{}
-
-void WidgetNumberEdit::set_text(chars_view text)
-{
-    this->WidgetEdit::set_text(text);
-}
-
-void WidgetNumberEdit::insert_text(chars_view text)
-{
-    for (char c : text) {
-        if (c < '0' || '9' < c) {
-            return ;
-        }
-    }
-    WidgetEdit::insert_text(text);
-}
 
 void WidgetNumberEdit::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
 {

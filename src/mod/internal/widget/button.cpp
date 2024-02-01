@@ -35,7 +35,6 @@ WidgetButton::WidgetButton(
     unsigned border_width, Font const & font, int xtext, int ytext,
     bool logo)
 : Widget(drawable, Focusable::Yes)
-, auto_resize_(false)
 , x_text(xtext)
 , y_text(ytext)
 , border_width(border_width)
@@ -75,15 +74,6 @@ void WidgetButton::set_text(chars_view text)
         const size_t max = ((remain_n >= n) ? n : UTF8StringAdjustedNbBytes(text, remain_n));
         memcpy(this->buffer, text.data(), max);
         this->buffer[max] = 0;
-        if (this->auto_resize_) {
-            Dimension dm = WidgetLabel::get_optimal_dim(this->font, std::string_view(this->buffer), this->x_text, this->y_text);
-
-            this->label_rect.cx = dm.w;
-            this->label_rect.cy = dm.h;
-
-            this->set_wh(this->label_rect.cx + (this->border_width * 2 - 1),
-                         this->label_rect.cy + (this->border_width * 2 - 1));
-        }
     }
 }
 
@@ -150,10 +140,10 @@ void WidgetButton::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y
     }
     else if (device_flags == MOUSE_FLAG_BUTTON1 && this->state == State::Pressed) {
         this->state = State::Normal;
-        this->rdp_input_invalidate(this->get_rect());
         if (this->get_rect().contains_pt(x, y)) {
             this->onsubmit();
         }
+        this->rdp_input_invalidate(this->get_rect());
     }
     else {
         this->Widget::rdp_input_mouse(device_flags, x, y);

@@ -22,6 +22,7 @@
 #include "configs/config.hpp"
 #include "mod/internal/wait_mod.hpp"
 #include "mod/internal/copy_paste.hpp"
+#include "utils/sugar/to_sv.hpp"
 
 
 using namespace std::chrono_literals;
@@ -65,9 +66,9 @@ WaitMod::WaitMod(
 void WaitMod::confirm()
 {
     this->vars.set_acl<cfg::context::waitinforeturn>("confirm");
-    this->vars.set_acl<cfg::context::comment>(this->wait_widget.form.comment_edit.get_text());
-    this->vars.set_acl<cfg::context::ticket>(this->wait_widget.form.ticket_edit.get_text());
-    this->vars.set_acl<cfg::context::duration>(this->wait_widget.form.duration_edit.get_text());
+    this->vars.set_acl<cfg::context::comment>(to_sv(this->wait_widget.form.comment_edit.get_text()));
+    this->vars.set_acl<cfg::context::ticket>(to_sv(this->wait_widget.form.ticket_edit.get_text()));
+    this->vars.set_acl<cfg::context::duration>(to_sv(this->wait_widget.form.duration_edit.get_text()));
     this->set_mod_signal(BACK_EVENT_NEXT);
 }
 

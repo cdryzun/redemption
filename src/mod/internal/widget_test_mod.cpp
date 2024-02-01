@@ -1,30 +1,11 @@
 /*
-    This program is free software; you can redistribute it and/or modify it
-     under the terms of the GNU General Public License as published by the
-     Free Software Foundation; either version 2 of the License, or (at your
-     option) any later version.
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
 
-    This program is distributed in the hope that it will be useful, but
-     WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-     Public License for more details.
-
-    You should have received a copy of the GNU General Public License along
-     with this program; if not, write to the Free Software Foundation, Inc.,
-     675 Mass Ave, Cambridge, MA 02139, USA.
-
-    Product name: redemption, a FLOSS RDP proxy
-    Copyright (C) Wallix 2013
-    Author(s): Christophe Grosjean, Meng Tan, Jonathan Poelen, Raphael Zhou
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "core/front_api.hpp"
-#include "gdi/graphic_api.hpp"
-#include "mod/internal/copy_paste.hpp"
 #include "mod/internal/widget_test_mod.hpp"
-#include "mod/internal/widget/label.hpp"
-#include "mod/internal/widget/delegated_copy.hpp"
-#include "mod/internal/widget/screen.hpp"
 #include "utils/theme.hpp"
 
 
@@ -34,37 +15,27 @@ struct WidgetTestMod::WidgetTestModPrivate
     WidgetTestModPrivate(
         uint16_t width, uint16_t height, gdi::GraphicApi & gd, EventContainer & /*events*/,
         FrontAPI & front, Font const& font, Theme const & theme)
-    : gd(gd)
-    , front(front)
+    // : gd(gd)
+    // , front(front)
     // , events_guard(events)
-    , screen(gd, width, height, font, theme)
-    , copy_paste(true)
-    , label(gd, "bla bla"_av, theme.global.fgcolor, theme.global.bgcolor, font)
-    , delegated_copy(
-        gd, WidgetEventNotifier(), theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, font)
+    // , screen(gd, width, height, font, theme)
+    // , copy_paste(true)
     {
-        this->screen.add_widget(this->label);
-        this->screen.add_widget(this->delegated_copy);
-
-        auto dim1 = this->label.get_optimal_dim();
-        auto dim2 = this->delegated_copy.get_optimal_dim();
-        this->label.set_xy(40, 10);
-        this->label.set_wh(dim1);
-        this->delegated_copy.set_xy(10, 10);
-        this->delegated_copy.set_wh(dim2);
-
-        this->screen.rdp_input_invalidate(this->screen.get_rect());
+        (void)width;
+        (void)height;
+        (void)gd;
+        (void)front;
+        (void)font;
+        (void)theme;
+        // this->screen.add_widget(this->label);
     }
 
-    gdi::GraphicApi & gd;
-    FrontAPI & front;
-    // EventRef timer;
-    // EventsGuard events_guard;
-    WidgetScreen screen;
-    CopyPaste copy_paste;
-    WidgetLabel label;
-    WidgetDelegatedCopy delegated_copy;
+    // gdi::GraphicApi & gd;
+    // FrontAPI & front;
+    // // EventRef timer;
+    // // EventsGuard events_guard;
+    // WidgetScreen screen;
+    // CopyPaste copy_paste;
 };
 
 WidgetTestMod::WidgetTestMod(

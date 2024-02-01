@@ -79,6 +79,14 @@ struct Keymap
         {
             return uchars[0];
         }
+
+        using uchars_view = bounded_array_view<uint32_t, 0, 2>;
+
+        uchars_view uchars_av() const&
+        {
+            auto len = uchars[0] ? (uchars[1] ? 2u : 1u) : 0u;
+            return uchars_view::assumed(uchars.data(), len);
+        }
     };
 
 
@@ -92,7 +100,7 @@ struct Keymap
         _decoded_key = {};
     }
 
-    DecodedKeys last_decoded_keys() const noexcept
+    DecodedKeys const & last_decoded_keys() const noexcept
     {
         return _decoded_key;
     }

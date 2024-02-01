@@ -78,8 +78,6 @@ private:
 
     char buffer[buffer_size];
 
-    bool auto_resize_;
-
     int x_text;
     int y_text;
 

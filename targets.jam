@@ -2590,7 +2590,6 @@ test-run tests/mod/internal/test_copy_paste :
   png
   app_path_test.o
   src/core/RDP/RDPDrawable.o
-  src/core/RDP/rdp_pointer.o
   src/core/error.o
   src/core/font.o
   src/gdi/clip_from_cmd.o
@@ -2599,12 +2598,7 @@ test-run tests/mod/internal/test_copy_paste :
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
-  src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
-  src/mod/internal/widget/label.o
-  src/mod/internal/widget/multiline.o
-  src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -3059,7 +3053,6 @@ test-run tests/mod/internal/widget/test_edit :
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
-  src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/tooltip.o
@@ -3086,25 +3079,21 @@ test-run tests/mod/internal/widget/test_edit_valid :
   png
   app_path_test.o
   src/core/RDP/RDPDrawable.o
-  src/core/RDP/rdp_pointer.o
   src/core/error.o
   src/core/font.o
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
+  src/gdi/screen_functions.o
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
-  src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/label.o
-  src/mod/internal/widget/multiline.o
   src/mod/internal/widget/password.o
-  src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -3456,7 +3445,6 @@ test-run tests/mod/internal/widget/test_number_edit :
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/edit.o
-  src/mod/internal/widget/label.o
   src/mod/internal/widget/number_edit.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o

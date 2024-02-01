@@ -35,12 +35,18 @@ struct WidgetPasswordFont
 class WidgetPassword : WidgetPasswordFont, public WidgetEdit
 {
 public:
-    WidgetPassword(gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-                   chars_view text, WidgetEventNotifier onsubmit,
-                   Color fgcolor, Color bgcolor, Color focus_color,
-                   Font const & font, int xtext = 0, int ytext = 0); /*NOLINT*/
+    WidgetPassword(
+        gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+        Colors colors, WidgetEventNotifier onsubmit
+    );
 
-    void toggle_password_visibility();
+    WidgetPassword(
+        gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+        chars_view text, uint16_t max_width,
+        Colors colors, WidgetEventNotifier onsubmit
+    );
+
+    void toggle_password_visibility(Rect rect);
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
 

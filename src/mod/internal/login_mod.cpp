@@ -25,6 +25,7 @@
 #include "main/version.hpp"
 #include "utils/strutils.hpp"
 #include "translation/trkeys.hpp"
+#include "utils/sugar/to_sv.hpp"
 
 #include <string>
 #include <utility>
@@ -87,18 +88,18 @@ LoginMod::LoginMod(
                     auto login = this->login.login_edit.get_text();
                     auto target = this->login.target_edit.get_text();
                     if (target.empty()) {
-                        this->vars.set_acl<cfg::globals::auth_user>(login);
+                        this->vars.set_acl<cfg::globals::auth_user>(to_sv(login));
                     }
                     else {
                         this->vars.update_acl<cfg::globals::auth_user>([&](std::string& auth_user) {
-                            update_target_login(auth_user, login, target.to_sv());
+                            update_target_login(auth_user, login, to_sv(target));
                         });
                     }
                     this->vars.ask<cfg::context::selector>();
                     this->vars.ask<cfg::globals::target_user>();
                     this->vars.ask<cfg::globals::target_device>();
                     this->vars.ask<cfg::context::target_protocol>();
-                    this->vars.set_acl<cfg::context::password>(this->login.password_edit.get_text());
+                    this->vars.set_acl<cfg::context::password>(to_sv(this->login.password_edit.get_text()));
                     this->set_mod_signal(BACK_EVENT_NEXT);
                 },
                 .oncancel = [this]{ this->set_mod_signal(BACK_EVENT_STOP); },

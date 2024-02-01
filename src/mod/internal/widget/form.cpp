@@ -240,9 +240,12 @@ void WidgetForm::check_confirmation()
         this->warning_msg.set_text(Translator::FmtMsg<512>(tr, k, tr(field).c_str(), args...));
     };
 
-    if (((this->flags & DURATION_DISPLAY) == DURATION_DISPLAY) &&
-        ((this->flags & DURATION_MANDATORY) == DURATION_MANDATORY) &&
-        (this->duration_edit.num_chars == 0)
+    auto has_flags = [this](unsigned m){
+        return (this->flags & m) == m;
+    };
+
+    if (has_flags(DURATION_DISPLAY | DURATION_MANDATORY)
+     && !this->duration_edit.has_text()
     ) {
         set_warning_buffer(trkeys::fmt_field_required, trkeys::duration);
         this->set_widget_focus(this->duration_edit, focus_reason_mousebutton1);
@@ -250,13 +253,13 @@ void WidgetForm::check_confirmation()
         return;
     }
 
-    if (((this->flags & DURATION_DISPLAY) == DURATION_DISPLAY) &&
-        (this->duration_edit.num_chars != 0)) {
-        std::chrono::minutes res = check_duration(this->duration_edit.get_text());
+    if (has_flags(DURATION_DISPLAY)
+     && this->duration_edit.has_text()
+    ) {
+        std::chrono::minutes res = check_duration(this->duration_edit.get_text().c_str());
         // res is duration in minutes.
         if (res <= 0min || res > this->duration_max) {
             if (res <= 0min) {
-                this->duration_edit.set_text(""_av);
                 set_warning_buffer(trkeys::fmt_invalid_format, trkeys::duration);
             }
             else {
@@ -269,9 +272,8 @@ void WidgetForm::check_confirmation()
         }
     }
 
-    if (((this->flags & TICKET_DISPLAY) == TICKET_DISPLAY) &&
-        ((this->flags & TICKET_MANDATORY) == TICKET_MANDATORY) &&
-        (this->ticket_edit.num_chars == 0)
+    if (has_flags(TICKET_DISPLAY | TICKET_MANDATORY)
+     && !this->ticket_edit.has_text()
     ) {
         set_warning_buffer(trkeys::fmt_field_required, trkeys::ticket);
         this->set_widget_focus(this->ticket_edit, focus_reason_mousebutton1);
@@ -279,9 +281,8 @@ void WidgetForm::check_confirmation()
         return;
     }
 
-    if (((this->flags & COMMENT_DISPLAY) == COMMENT_DISPLAY) &&
-        ((this->flags & COMMENT_MANDATORY) == COMMENT_MANDATORY) &&
-        (this->comment_edit.num_chars == 0)
+    if (has_flags(COMMENT_DISPLAY | COMMENT_MANDATORY)
+     && !this->comment_edit.has_text()
     ) {
         set_warning_buffer(trkeys::fmt_field_required, trkeys::comment);
         this->set_widget_focus(this->comment_edit, focus_reason_mousebutton1);

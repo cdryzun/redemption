@@ -34,362 +34,297 @@
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/edit/"
 
+namespace
+{
+
 struct TestWidgetEditCtx
 {
-    TestGraphic drawable{800, 600};
+    TestGraphic drawable;
     CopyPaste copy_paste{false};
-    WidgetEdit wedit;
-
-    struct Colors
-    {
-        BGRColor fg_color = NamedBGRColor::RED;
-        BGRColor bg_color = NamedBGRColor::YELLOW;
-        BGRColor focus_color = bg_color;
+    Font const& font = global_font_deja_vu_14();
+    NotifyTrace onsubmit {};
+    WidgetEdit::Colors colors {
+        .fg = NamedBGRColor::RED,
+        .bg = NamedBGRColor::YELLOW,
+        .border = NamedBGRColor::BLUE,
+        .focus_border = NamedBGRColor::GREEN,
+        .cursor = NamedBGRColor::GREY,
     };
 
-    TestWidgetEditCtx(
-        chars_view text, Colors colors, uint16_t edit_width = 50,
-        WidgetEventNotifier onsubmit = WidgetEventNotifier(),
-        int xtext = 0, int ytext = 0)
-    : wedit(
-        drawable, copy_paste, text, onsubmit,
-        colors.fg_color, colors.bg_color, colors.bg_color,
-        global_font_deja_vu_14(), xtext, ytext)
+    WidgetEdit edit()
     {
-        Dimension dim = wedit.get_optimal_dim();
-        wedit.set_wh(edit_width, dim.h);
+        return WidgetEdit(drawable, font, copy_paste, colors, onsubmit);
     }
 
     struct Keyboard
     {
-        TestWidgetEditCtx& ctx;
-        Keymap keymap{*find_layout_by_id(KeyLayout::KbdId(0x040C))};
+        WidgetEdit& edit;
+        Keymap keymap{*find_layout_by_id(KeyLayout::KbdId(0x409))}; // US
 
-        void rdp_input_scancode(uint16_t scancode_and_flags)
+        enum class Ctrl { On, Off, };
+
+        void scancode(kbdtypes::KeyCode keycode, Ctrl ctrl)
         {
-            auto ukeycode = underlying_cast(Keymap::KeyCode(scancode_and_flags));
-            auto scancode = Keymap::Scancode(ukeycode & 0x7F);
-            auto flags = (ukeycode & 0x80) ? Keymap::KbdFlags::Extended : Keymap::KbdFlags();
+            if (ctrl == Ctrl::On) {
+                keymap.event(kbdtypes::KbdFlags::NoFlags, kbdtypes::Scancode::LCtrl);
+            }
+
+            auto scancode = kbdtypes::keycode_to_scancode(keycode);
+            auto flags = kbdtypes::keycode_to_kbdflags(keycode);
             keymap.event(flags, scancode);
-            ctx.wedit.rdp_input_scancode(flags, scancode, 0, keymap);
-            ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+            edit.rdp_input_scancode(flags, scancode, 0, keymap);
+
+            if (ctrl == Ctrl::On) {
+                keymap.event(kbdtypes::KbdFlags::Release, kbdtypes::Scancode::LCtrl);
+            }
         }
     };
 
-    Keyboard keyboard()
+    Keyboard keyboard(WidgetEdit& edit)
     {
-        return {*this};
+        return {edit};
     }
 };
 
+} // anonymous namespace
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit)
+
+RED_AUTO_TEST_CASE(WidgetEditGd)
 {
-    TestWidgetEditCtx ctx("test1"_av, {}, 50, WidgetEventNotifier(), 4, 1);
+    TestWidgetEditCtx ctx{
+      .drawable = TestGraphic{200, 100},
+    };
 
-    ctx.wedit.set_xy(0, 0);
+    struct D
+    {
+        WidgetEdit edit;
+        chars_view text;
+        int16_t x;
+        int16_t y;
+        Rect clip;
+    };
 
-    // ask to widget to redraw at it's current position
-    ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+    auto make_data = [&](chars_view text, int16_t x, int16_t y, Rect clip = {}) {
+        return D{ctx.edit(), text, x, y, clip};
+    };
+
+    D datas[]{
+        make_data("test1"_av, -20, -7),
+        make_data("test2"_av, 40, 0),
+        make_data("test3"_av, 100, -7),
+        make_data("test4"_av, 160, -7),
+        make_data("test5"_av, -10, 40),
+        make_data("test6"_av, 100, 30),
+        make_data("test7"_av, 100, 55, Rect(107, 63, 38, 7)),
+        make_data("test8"_av, -10, 88),
+        make_data("test9"_av, 60, 82),
+        make_data("test10"_av, 160, 86),
+    };
+
+    for (auto & d : datas) {
+        Dimension dim = d.edit.get_optimal_dim();
+        d.edit.set_xy(d.x, d.y);
+        d.edit.set_wh(50, dim.h);
+        d.edit.set_text(d.text, {WidgetEdit::Redraw::No});
+        d.edit.rdp_input_invalidate(d.clip.isempty() ? d.edit.get_rect() : d.clip);
+    }
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_1.png");
-}
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit2)
-{
-    TestWidgetEditCtx ctx("test2"_av, {.focus_color = NamedBGRColor::BLACK});
-
-    ctx.wedit.set_xy(10, 100);
-
-    // ask to widget to redraw at it's current position
-    ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+    for (auto & d : datas) {
+        d.edit.focus(Widget::focus_reason_tabkey);
+    }
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_2.png");
 }
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit3)
+RED_AUTO_TEST_CASE(WidgetEditKbd)
 {
-    TestWidgetEditCtx ctx("test3"_av, {.focus_color = NamedBGRColor::BLACK});
+    using Ctrl = TestWidgetEditCtx::Keyboard::Ctrl;
+    using KC = kbdtypes::KeyCode;
 
-    ctx.wedit.set_xy(-10, 500);
+    TestWidgetEditCtx ctx{
+      .drawable = TestGraphic{65, 30},
+    };
 
-    // ask to widget to redraw at it's current position
-    ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+    auto edit = ctx.edit();
+    auto keyboard = ctx.keyboard(edit);
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_3.png");
+    edit.set_wh(60, edit.get_optimal_dim().h);
+    edit.init_focus();
+    edit.rdp_input_invalidate(edit.get_rect());
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_empty.png");
+    RED_CHECK(edit.get_text() == ""_av);
+
+    edit.set_text("trb"_av, {WidgetEdit::Redraw::Yes});
+    RED_CHECK(edit.get_text() == "trb"_av);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_trb.png");
+
+    //
+    // Scancode
+    //
+
+    #define TEST_SCANCODE(keycode, ctrl, text, img_path) \
+        keyboard.scancode(keycode, ctrl);                \
+        RED_CHECK(edit.get_text() == text);              \
+        RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH img_path)
+
+    TEST_SCANCODE(KC::Key_A, Ctrl::Off, "trba"_av, "kbd_trb_insert_a.png");
+    TEST_SCANCODE(KC::Key_T, Ctrl::Off, "trbat"_av, "kbd_trba_insert_t.png");
+    TEST_SCANCODE(KC::Key_R, Ctrl::Off, "trbatr"_av, "kbd_trbat_insert_r.png");
+
+    TEST_SCANCODE(KC::UpArrow, Ctrl::Off, "trbatr"_av, "kbd_trbatr_left.png");
+    TEST_SCANCODE(KC::RightArrow, Ctrl::Off, "trbatr"_av, "kbd_trbat_r_right.png");
+
+    TEST_SCANCODE(KC::Backspace, Ctrl::Off, "trbat"_av, "kbd_trbatr_backspace.png");
+
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::Off, "trbat"_av, "kbd_trbat_left.png");
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::Off, "trbat"_av, "kbd_trba_t_left.png");
+
+    TEST_SCANCODE(KC::Delete, Ctrl::Off, "trbt"_av, "kbd_trb_at_delete.png");
+
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::Off, "trbt"_av, "kbd_trb_t_left.png");
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::Off, "trbt"_av, "kbd_tr_bt_left.png");
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::Off, "trbt"_av, "kbd_t_brt_left.png");
+    TEST_SCANCODE(KC::End, Ctrl::Off, "trbt"_av, "kbd_trbt_end.png");
+    TEST_SCANCODE(KC::RightArrow, Ctrl::Off, "trbt"_av, "kbd_trbt_end.png");
+    TEST_SCANCODE(KC::Home, Ctrl::Off, "trbt"_av, "kbd_trbt_home.png");
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::Off, "trbt"_av, "kbd_trbt_home.png");
+
+    TEST_SCANCODE(KC::Key_A, Ctrl::Off, "atrbt"_av, "kbd__trbt_insert_a.png");
+    TEST_SCANCODE(KC::Key_B, Ctrl::Off, "abtrbt"_av, "kbd_a_trbt_insert_b.png");
+    TEST_SCANCODE(KC::Key_C, Ctrl::Off, "abctrbt"_av, "kbd_ab_trbt_insert_c.png");
+    TEST_SCANCODE(KC::Key_D, Ctrl::Off, "abcdtrbt"_av, "kbd_abc_trbt_insert_d.png");
+
+    TEST_SCANCODE(KC::End, Ctrl::Off, "abcdtrbt"_av, "kbd_abcd_trbt_end.png");
+
+    TEST_SCANCODE(KC::Space, Ctrl::Off, "abcdtrbt "_av, "kbd_abcdtrbt_insert_space.png");
+    TEST_SCANCODE(KC::Key_A, Ctrl::Off, "abcdtrbt a"_av, "kbd_abcdtrbt._insert_a.png");
+    TEST_SCANCODE(KC::Key_B, Ctrl::Off, "abcdtrbt ab"_av, "kbd_abcdtrbt.a_insert_b.png");
+
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::On, "abcdtrbt ab"_av, "kbd_abcdtrbt.ab_ctrl_left.png");
+    TEST_SCANCODE(KC::LeftArrow, Ctrl::On, "abcdtrbt ab"_av, "kbd_abcdtrbt._ab_ctrl_left.png");
+    TEST_SCANCODE(KC::RightArrow, Ctrl::On, "abcdtrbt ab"_av, "kbd__abcdtrbt.ab_ctrl_right.png");
+    TEST_SCANCODE(KC::RightArrow, Ctrl::On, "abcdtrbt ab"_av, "kbd_abcdtrbt._ab_ctrl_right.png");
+    TEST_SCANCODE(KC::Home, Ctrl::Off, "abcdtrbt ab"_av, "kbd_abcdtrbt.ab_home.png");
+
+    TEST_SCANCODE(KC::Delete, Ctrl::Off, "bcdtrbt ab"_av, "kbd__abcdtrbt.ab_delete.png");
+    TEST_SCANCODE(KC::Delete, Ctrl::On, "ab"_av, "kbd__bcdtrbt.ab_ctrl_delete.png");
+
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    TEST_SCANCODE(KC::Enter, Ctrl::Off, "ab"_av, "kbd__bcdtrbt.ab_ctrl_delete.png");
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
+
+    #undef TEST_SCANCODE
 }
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit4)
+RED_AUTO_TEST_CASE(WidgetEditMouse)
 {
-    TestWidgetEditCtx ctx("test4"_av, {.focus_color = NamedBGRColor::BLACK});
+    TestWidgetEditCtx ctx{
+      .drawable = TestGraphic{55, 30},
+    };
 
-    ctx.wedit.set_xy(770, 500);
+    auto edit = ctx.edit();
 
-    // ask to widget to redraw at it's current position
-    ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+    edit.set_wh(50, edit.get_optimal_dim().h);
+    edit.init_focus();
+    edit.rdp_input_invalidate(edit.get_rect());
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_5.png");
+    edit.set_text("abcdtrbi"_av, {WidgetEdit::Redraw::Yes});
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_abcdtrbi.png");
+
+    #define TEST_MOUSE(x, img_path)                                     \
+        edit.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, 5); \
+        RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH img_path)
+
+    TEST_MOUSE(3, "mouse_abcdtrbi_3.png");
+    TEST_MOUSE(2, "mouse_abcdtrbi_2.png");
+    TEST_MOUSE(47, "mouse_abcdtrbi_47.png");
+    TEST_MOUSE(49, "mouse_abcdtrbi_48.png");
+    TEST_MOUSE(10, "mouse_abcdtrbi_10.png");
+    TEST_MOUSE(25, "mouse_abcdtrbi_25.png");
+
+    #undef TEST_MOUSE
 }
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit5)
+RED_AUTO_TEST_CASE(WidgetEditSetText)
 {
-    TestWidgetEditCtx ctx("test5"_av, {.focus_color = NamedBGRColor::BLACK});
+    TestWidgetEditCtx ctx{
+      .drawable = TestGraphic{1, 1},
+    };
 
-    ctx.wedit.set_xy(-20, -7);
+    using SetSize = WidgetEdit::SetSize;
+    using CusorPosition = WidgetEdit::CusorPosition;
 
-    // ask to widget to redraw at it's current position
-    ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+    struct D
+    {
+        WidgetEdit edit;
+        CusorPosition cursor_pos;
+    };
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_6.png");
-}
+    auto text = "abcdefg"_av;
+    auto text2 = "abcd"_av;
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit6)
-{
-    TestWidgetEditCtx ctx("test6"_av, {.focus_color = NamedBGRColor::BLACK});
+    auto make_edit = [&](uint16_t max_width){
+        return WidgetEdit(ctx.drawable, ctx.font, ctx.copy_paste, text, max_width, ctx.colors, ctx.onsubmit);
+    };
 
-    ctx.wedit.set_xy(760, -7);
+    auto redraw = WidgetEdit::Redraw::Yes;
 
-    // ask to widget to redraw at it's current position
-    ctx.wedit.rdp_input_invalidate(ctx.wedit.get_rect());
+    WidgetEdit edits[]{
+        make_edit(0),
+        make_edit(0),
+        make_edit(0),
+        make_edit(40),
+        make_edit(40),
+        make_edit(40),
+    };
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_7.png");
-}
+    ctx.drawable.resize(edits[0].cx(), std::size(edits) * 30);
 
-RED_AUTO_TEST_CASE(TraceWidgetEditClip)
-{
-    TestWidgetEditCtx ctx("test6"_av, {.focus_color = NamedBGRColor::BLACK});
+    int16_t y = 0;
 
-    ctx.wedit.set_xy(760, -7);
-
-    // ask to widget to redraw at position 780,-7 and of size 120x20. After clip the size is of 20x13
-    ctx.wedit.rdp_input_invalidate(Rect(
-        20 + ctx.wedit.x(),
-        ctx.wedit.y(),
-        ctx.wedit.cx(),
-        ctx.wedit.cy()
-    ));
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_8.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetEditClip2)
-{
-    TestWidgetEditCtx ctx("test6"_av, {.focus_color = NamedBGRColor::BLACK});
-
-    ctx.wedit.set_xy(0, 0);
-
-    // ask to widget to redraw at position 30,12 and of size 30x10.
-    ctx.wedit.rdp_input_invalidate(Rect(
-        20 + ctx.wedit.x(),
-        5 + ctx.wedit.y(),
-        30,
-        10
-    ));
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_9.png");
-}
-
-RED_AUTO_TEST_CASE(EventWidgetEdit)
-{
-    NotifyTrace onsubmit;
-    TestWidgetEditCtx ctx("abcdef"_av, {NamedBGRColor::GREEN, NamedBGRColor::RED, NamedBGRColor::RED}, 100, onsubmit);
-
-    ctx.wedit.set_xy(0, 0);
-
-    ctx.wedit.focus(Widget::focus_reason_tabkey);
-
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_10.png");
-
-    auto keyboard = ctx.keyboard();
-
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_11.png");
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-
-    keyboard.rdp_input_scancode(0x11); // 'z'
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_12.png");
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-
-    keyboard.rdp_input_scancode(0x148); // up
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_13.png");
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-
-    keyboard.rdp_input_scancode(0x14d); // right
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_12.png");
-
-    keyboard.rdp_input_scancode(0x0e); // backspace
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_11.png");
-
-    keyboard.rdp_input_scancode(0x14b); // left
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_16.png");
-
-    keyboard.rdp_input_scancode(0x14b); // left
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_17.png");
-
-    keyboard.rdp_input_scancode(0x153); // delete
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_18.png");
-
-    keyboard.rdp_input_scancode(0x14f); // end
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_19.png");
-
-    keyboard.rdp_input_scancode(0x147); // home
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_20.png");
-
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-    keyboard.rdp_input_scancode(0x1c); // enter
-    RED_CHECK(onsubmit.get_and_reset() == 1);
-
-    ctx.wedit.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, 10, 3);
-    RED_CHECK(onsubmit.get_and_reset() == 0);
-
-    ctx.wedit.rdp_input_invalidate(Rect(0, 0, ctx.wedit.cx(), ctx.wedit.cx()));
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_21.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetEditAndComposite)
-{
-    TestGraphic drawable(800, 600);
-    CopyPaste copy_paste(false);
-
-    // WidgetEdit is a edit widget of size 256x125 at position 0,0 in it's parent context
-    WidgetScreen parent(drawable, 800, 600, global_font_deja_vu_14(), Theme{});
-
-    WidgetComposite wcomposite(drawable, Widget::Focusable::No);
-    wcomposite.set_wh(800, 600);
-    wcomposite.set_xy(0, 0);
-
-    WidgetEdit wedit1(drawable, copy_paste, "abababab"_av, {WidgetEventNotifier()},
-                      NamedBGRColor::YELLOW, NamedBGRColor::BLACK, NamedBGRColor::BLACK,
-                      global_font_deja_vu_14(), 0, 0);
-    Dimension dim = wedit1.get_optimal_dim();
-    wedit1.set_wh(50, dim.h);
-    wedit1.set_xy(0, 0);
-
-    WidgetEdit wedit2(drawable, copy_paste, "ggghdgh"_av, {WidgetEventNotifier()},
-                      NamedBGRColor::WHITE, NamedBGRColor::RED, NamedBGRColor::RED,
-                      global_font_deja_vu_14(), 0, 0);
-    dim = wedit2.get_optimal_dim();
-    wedit2.set_wh(50, dim.h);
-    wedit2.set_xy(0, 100);
-
-    WidgetEdit wedit3(drawable, copy_paste, "lldlslql"_av, {WidgetEventNotifier()},
-                      NamedBGRColor::BLUE, NamedBGRColor::RED, NamedBGRColor::RED,
-                      global_font_deja_vu_14(), 0, 0);
-    dim = wedit3.get_optimal_dim();
-    wedit3.set_wh(50, dim.h);
-    wedit3.set_xy(100, 100);
-
-    WidgetEdit wedit4(drawable, copy_paste, "LLLLMLLM"_av, {WidgetEventNotifier()},
-                      NamedBGRColor::PINK, NamedBGRColor::DARK_GREEN, NamedBGRColor::DARK_GREEN,
-                      global_font_deja_vu_14(), 0, 0);
-    dim = wedit4.get_optimal_dim();
-    wedit4.set_wh(50, dim.h);
-    wedit4.set_xy(300, 300);
-
-    WidgetEdit wedit5(drawable, copy_paste, "dsdsdjdjs"_av, {WidgetEventNotifier()},
-                      NamedBGRColor::LIGHT_GREEN, NamedBGRColor::DARK_BLUE,
-                      NamedBGRColor::DARK_BLUE, global_font_deja_vu_14(), 0, 0);
-    dim = wedit5.get_optimal_dim();
-    wedit5.set_wh(50, dim.h);
-    wedit5.set_xy(700, -10);
-
-    WidgetEdit wedit6(drawable, copy_paste, "xxwwp"_av, {WidgetEventNotifier()},
-                      NamedBGRColor::ANTHRACITE, NamedBGRColor::PALE_GREEN,
-                      NamedBGRColor::PALE_GREEN, global_font_deja_vu_14(), 0, 0);
-    dim = wedit6.get_optimal_dim();
-    wedit6.set_wh(50, dim.h);
-    wedit6.set_xy(-10, 550);
-
-    wcomposite.add_widget(wedit1);
-    wcomposite.add_widget(wedit2);
-    wcomposite.add_widget(wedit3);
-    wcomposite.add_widget(wedit4);
-    wcomposite.add_widget(wedit5);
-    wcomposite.add_widget(wedit6);
-
-    // ask to widget to redraw at position 100,25 and of size 100x100.
-    wcomposite.rdp_input_invalidate(Rect(100, 25, 100, 100));
-
-    RED_CHECK_IMG(drawable, IMG_TEST_PATH "edit_22.png");
-
-    // ask to widget to redraw at it's current position
-    wcomposite.rdp_input_invalidate(Rect(0, 0, wcomposite.cx(), wcomposite.cy()));
-
-    RED_CHECK_IMG(drawable, IMG_TEST_PATH "edit_23.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetEditScrolling)
-{
-    TestWidgetEditCtx ctx("abcde"_av, {NamedBGRColor::BLACK, NamedBGRColor::WHITE, NamedBGRColor::WHITE}, 100, {WidgetEventNotifier()}, 1, 1);
-    WidgetScreen parent{ctx.drawable, 800, 600, global_font_deja_vu_14(), Theme{}};
-
-    ctx.wedit.set_xy(0, 0);
-
-    ctx.wedit.focus(Widget::focus_reason_tabkey);
-    parent.add_widget(ctx.wedit);
-    parent.current_focus = &ctx.wedit;
-
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-
-    auto keyboard = ctx.keyboard();
-
-    keyboard.rdp_input_scancode(0x10); // 'a'
-
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_24.png");
-
-    keyboard.rdp_input_scancode(0x11); // 'z'
-    keyboard.rdp_input_scancode(0x12); // 'e'
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_25.png");
-
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_26.png");
-
-    keyboard.rdp_input_scancode(0x10); // 'a'
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_27.png");
-
-    keyboard.rdp_input_scancode(0x19); // 'p'
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_28.png");
-
-    keyboard.rdp_input_scancode(0x147); // home
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_29.png");
-
-    keyboard.rdp_input_scancode(0x14f); // end
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_28.png");
-
-    keyboard.rdp_input_scancode(0x0e); // backspace
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_31.png");
-
-    for (int i = 0; i < 10; i++) {
-        keyboard.rdp_input_scancode(0x14b); // left
+    for (auto & edit : edits) {
+        edit.init_focus();
+        edit.set_xy(0, y);
+        edit.rdp_input_invalidate(edit.get_rect());
+        y += 30;
     }
-    parent.rdp_input_invalidate(Rect(0, 0, parent.cx(), parent.cy()));
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_32.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_init.png");
+
+    edits[2].action_move_cursor_left(false, redraw);
+    edits[5].action_move_cursor_left(false, redraw);
+
+    // right part is not redrawing
+    edits[0].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToEnd});
+    edits[1].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToBegin});
+    edits[2].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::KeepCursorPosition});
+    edits[3].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToEnd});
+    edits[4].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToBegin});
+    edits[5].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::KeepCursorPosition});
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_optimal_size.png");
+
+    edits[0].action_move_cursor_left(false, redraw);
+    edits[1].action_move_cursor_right(false, redraw);
+    edits[2].action_move_cursor_left(false, redraw);
+    edits[2].action_move_cursor_left(false, redraw);
+
+    edits[3].action_move_cursor_left(false, redraw);
+    edits[4].action_move_cursor_right(false, redraw);
+    edits[5].action_move_cursor_left(false, redraw);
+    edits[5].action_move_cursor_left(false, redraw);
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_update_pos.png");
+
+    edits[0].set_text(text, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+    edits[1].set_text(text, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+    edits[2].set_text(text, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+    edits[3].set_text(text2, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+    edits[4].set_text(text2, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+    edits[5].set_text(text2, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_keep_pos.png");
 }

@@ -327,15 +327,29 @@ public:
 
 
     [[nodiscard]]
-    constexpr size_type size() const noexcept
+    constexpr size_type size() const noexcept requires(AtLeast != AtMost)
     {
         return _array.size();
     }
 
     [[nodiscard]]
+    static constexpr size_type size() noexcept requires(AtLeast == AtMost)
+    {
+        return AtLeast;
+    }
+
+    [[nodiscard]]
     constexpr detail::select_minimal_size_t<AtMost> msize() const noexcept
+        requires(AtLeast != AtMost)
     {
         return detail::select_minimal_size_t<AtMost>(_array.size());
+    }
+
+    [[nodiscard]]
+    static constexpr detail::select_minimal_size_t<AtMost> msize() noexcept
+        requires(AtLeast == AtMost)
+    {
+        return AtMost;
     }
 
     [[nodiscard]]
@@ -706,21 +720,41 @@ public:
 
 
     [[nodiscard]]
-    constexpr size_type size() const noexcept
+    constexpr size_type size() const noexcept requires(AtLeast != AtMost)
     {
         return _array.size();
     }
 
     [[nodiscard]]
-    static constexpr size_type capacity() noexcept requires(AtLeast == AtMost)
+    static constexpr size_type size() noexcept requires(AtLeast == AtMost)
     {
         return AtLeast;
     }
 
     [[nodiscard]]
     constexpr detail::select_minimal_size_t<AtMost> msize() const noexcept
+        requires(AtLeast != AtMost)
     {
         return detail::select_minimal_size_t<AtMost>(_array.size());
+    }
+
+    [[nodiscard]]
+    static constexpr detail::select_minimal_size_t<AtMost> msize() noexcept
+        requires(AtLeast == AtMost)
+    {
+        return AtLeast;
+    }
+
+    [[nodiscard]]
+    static constexpr size_type fized_size() noexcept requires(AtLeast == AtMost)
+    {
+        return AtLeast;
+    }
+
+    [[nodiscard]]
+    static constexpr size_type capacity() noexcept requires(AtLeast == AtMost)
+    {
+        return AtLeast;
     }
 
     [[nodiscard]]

@@ -26,15 +26,7 @@
 class WidgetNumberEdit : public WidgetEdit
 {
 public:
-    WidgetNumberEdit(
-        gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-        chars_view text, WidgetEventNotifier onsubmit,
-        Color fgcolor, Color bgcolor, Color focus_color,
-        Font const & font, int xtext = 0, int ytext = 0); /*NOLINT*/
-
-    void set_text(chars_view text) override;
-
-    void insert_text(chars_view text) override;
+    using WidgetEdit::WidgetEdit;
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
 };

@@ -13,14 +13,32 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "utils/bitfu.hpp"
 
+/*
+
++-+----------+-+
+|      aa      |
+|     aaaa     |
+|    aa  aa    |
+|   aaaaaaaa   |
+|  aa      aa  |
++-+----------+-+
+~~~              fc.offsetx
+   ~~~~~~~~~~    fc.width
+   ~~~~~~~~~~~~~ fc.incby
+~~~~~~~~~~~~~~~~ fc.boxed_width()
+
+*/
+
 struct FontCharView
 {
+    static constexpr uint8_t _null_buffer = 0;
+
     int8_t offsetx = 0;
     int8_t offsety = 0;
     uint8_t incby = 0;
     uint8_t width = 0;
     uint8_t height = 0;
-    uint8_t const* data = reinterpret_cast<uint8_t const*>("");
+    uint8_t const* data = &_null_buffer;
 
     [[nodiscard]] uint16_t datasize() const noexcept
     {
@@ -30,6 +48,11 @@ struct FontCharView
     [[nodiscard]] uint8_t const* data_ptr() const noexcept
     {
         return this->data;
+    }
+
+    int boxed_width() const noexcept
+    {
+        return offsetx + incby;
     }
 };
 

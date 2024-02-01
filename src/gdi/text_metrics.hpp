@@ -26,6 +26,7 @@
 #include <memory>
 
 class Font;
+class FontCharView;
 
 namespace gdi
 {
@@ -91,6 +92,18 @@ void server_draw_text(
     int16_t x, int16_t y, bytes_view utf8_text,
     RDPColor fgcolor, RDPColor bgcolor,
     ColorCtx color_ctx,
+    Rect clip
+);
+
+/// \return last pixel drawn
+int draw_text(
+    GraphicApi & drawable,
+    int x,
+    int y,
+    uint16_t height,
+    array_view<FontCharView const *> fcs,
+    RDPColor fgcolor,
+    RDPColor bgcolor,
     Rect clip
 );
 

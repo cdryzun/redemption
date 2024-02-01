@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include "utils/sugar/bounded_bytes_view.hpp"
 #include "utils/sugar/bytes_view.hpp"
 #include "utils/only_type.hpp"
 #include "cxx/cxx.hpp"
@@ -193,6 +194,36 @@ std::size_t Latin1toUTF8(
     uint8_t * utf8_target, std::size_t utf8_len) noexcept;
 
 
+inline writable_bounded_bytes_view<0, 4> utf32_to_utf8(uint32_t uc, writable_sized_bytes_view<4> buffer)
+{
+    auto * p = buffer.data();
+
+    // 1 byte (0bbb·bbbb)
+    if (uc <= 0x7F) {
+        *p++ = checked_int(uc);
+    }
+    // 2 bytes (110b·bbbb 10bb·bbbb)
+    else if (uc <= 0x7FF) {
+        *p++ = checked_int(((uc >> 6 )       ) | 0b1100'0000);
+        *p++ = checked_int(( uc        & 0x3F) | 0b1000'0000);
+    }
+    // 3 bytes (1110·bbbb 10bb·bbbb 10bb·bbbb)
+    else if (uc <= 0xFFFF) {
+        *p++ = checked_int( (uc >> 12)         | 0b1110'0000);
+        *p++ = checked_int(((uc >> 6 ) & 0x3F) | 0b1000'0000);
+        *p++ = checked_int( (uc        & 0x3F) | 0b1000'0000);
+    }
+    // 4 bytes (1111·0bbb 10bb·bbbb 10bb·bbbb 10bb·bbbb)
+    else if (uc <= 0x10FFFF) {
+        *p++ = checked_int(((uc >> 18)       ) | 0b1111'0000);
+        *p++ = checked_int(((uc >> 12) & 0x3F) | 0b1000'0000);
+        *p++ = checked_int(((uc >> 6 ) & 0x3F) | 0b1000'0000);
+        *p++ = checked_int( (uc        & 0x3F) | 0b1000'0000);
+    }
+
+    return writable_bounded_bytes_view<0, 4>::assumed(buffer.data(), p);
+}
+
 constexpr uint32_t utf8_2_bytes_to_ucs(uint8_t a, uint8_t b) noexcept
 {
     return ((a & 0x1Fu) << 6u) |  (b & 0x3Fu);
@@ -304,25 +335,37 @@ struct utf8_decode_new_offset
     uint8_t const* p;
 };
 
+namespace detail
+{
+    struct AlwaysTrue
+    {
+        constexpr bool operator()() const noexcept
+        {
+            return true;
+        }
+    };
+}
+
 
 /// Read a utf8 sequence is call function for each unicode point.
-/// ChFn is function with as parameter
+/// ChFn is a function with as parameter
 ///     - utf8_char_1byte or
 ///     - utf8_char_2bytes or
 ///     - utf8_char_3bytes or
 ///     - utf8_char_4bytes
-/// ChErrorFn is function with as parameter
+/// ChErrorFn is a function used with continuation char and with as parameter
 ///     - utf8_char_invalid
-/// TruncatedFn is function with as parameter
+/// TruncatedFn is a function with as parameter
 ///     - utf8_char_truncated
+/// PredicateFn is a function without a parameter that returns a bool
 /// ChFn, ChErrorFn and TruncatedFn result type are possibly
 ///     - void
 ///     - bool with false for stop the function
 ///     - utf8_decode_new_offset
 /// TruncatedFn stop always the function with
 /// \return unread bytes
-template<class ChFn, class ChErrorFn, class TruncatedFn>
-bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, TruncatedFn&& truncated_fn)
+template<class ChFn, class ChErrorFn, class TruncatedFn, class PredicateFn = detail::AlwaysTrue>
+bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, TruncatedFn&& truncated_fn, PredicateFn&& pred = PredicateFn())
 {
     auto source = utf8.begin();
     const auto last = utf8.end();
@@ -345,13 +388,17 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, Trun
         fn(__VA_ARGS__);                                                 \
     }
 
-    while (source < last) {
+    while (source < last && pred()) {
+        // handle U+0000..U+007F : 1 bytes sequences
+        //  0bbb.bbbb (7 bits)
         if (*source <= 0x7f) {
             UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_1byte{source})
             source += 1;
             continue;
         }
-        /* handle U+0080..U+07FF inline : 2 bytes sequences */
+        // handle U+0080..U+07FF : 2 bytes sequences
+        // 10b.bbbb <- invalid (continuation)
+        // 110b.bbbb 10bb.bbbb (11 bits)
         else if (*source <= 0xDF) {
             if (*source <= 0xBF) [[unlikely]] {
                 UTF8_FOR_EACH_PROCESS(err_fn, utf8_char_invalid{{source, last}})
@@ -364,7 +411,8 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, Trun
                 continue;
             }
         }
-        /* handle U+8FFF..U+FFFF inline : 3 bytes sequences */
+        // handle U+8FFF..U+FFFF : 3 bytes sequences
+        // 1110.bbbb 10bb.bbbb 10bb.bbbb (16 bits)
         else if (*source <= 0xEF) {
             if (last - source >= 3) [[likely]] {
                 UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_3bytes{source})
@@ -372,6 +420,9 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, Trun
                 continue;
             }
         }
+        // handle U+10000 à U+10FFFF : 4 bytes sequences
+        // 1111.00bb 10bb.bbbb 10bb.bbbb 10bb.bbbb (21 bits)
+        // 1111.0100 1000.bbbb 10bb.bbbb 10bb.bbbb (21 bits)
         else /*if (*source <= 0xFF)*/ {
             if (last - source >= 4) [[likely]] {
                 UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_4bytes{source})

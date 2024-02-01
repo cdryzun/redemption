@@ -378,6 +378,15 @@ struct writable_array_view
     }
 
     [[nodiscard]]
+    constexpr writable_array_view from_offset(const_pointer p) noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return writable_array_view{begin() + (p - begin()), end()};
+    }
+
+    [[nodiscard]]
     constexpr writable_array_view before(pointer p) noexcept
     {
         assert(begin() <= p);
@@ -386,11 +395,29 @@ struct writable_array_view
     }
 
     [[nodiscard]]
+    constexpr writable_array_view before(const_pointer p) noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return writable_array_view{begin(), checked_int(p - begin())};
+    }
+
+    [[nodiscard]]
     constexpr writable_array_view after(pointer p) noexcept
     {
         assert(begin() <= p);
         assert(p < end());
         return writable_array_view{p + 1, end()};
+    }
+
+    [[nodiscard]]
+    constexpr writable_array_view after(const_pointer p) noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return writable_array_view{begin() + (p - begin()) + 1, end()};
     }
 
     [[nodiscard]]

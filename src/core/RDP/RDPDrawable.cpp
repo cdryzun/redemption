@@ -392,7 +392,6 @@ void RDPDrawable::draw(RDPGlyphIndex const & cmd, Rect clip, gdi::ColorCtx color
     {
         Rect ajusted = cmd.f_op_redundant ? cmd.bk : cmd.op;
         if ((ajusted.cx > 1) && (ajusted.cy > 1)) {
-            ajusted.cy--;
             this->drawable.opaquerect(ajusted.intersect(screen_rect), u32rgb_to_color(this->drawable, color_ctx, cmd.fore_color));
         }
     }

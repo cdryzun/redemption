@@ -23,6 +23,8 @@
 #include "mod/internal/interactive_target_mod.hpp"
 #include "translation/translation.hpp"
 #include "translation/trkeys.hpp"
+#include "utils/sugar/to_sv.hpp"
+
 
 InteractiveTargetMod::InteractiveTargetMod(
     InteractiveTargetModVariables vars,
@@ -62,13 +64,13 @@ InteractiveTargetMod::InteractiveTargetMod(
 void InteractiveTargetMod::accepted()
 {
     if (this->ask_device) {
-        this->vars.set_acl<cfg::context::target_host>(this->challenge.device_edit.get_text());
+        this->vars.set_acl<cfg::context::target_host>(to_sv(this->challenge.device_edit.get_text()));
     }
     if (this->ask_login) {
-        this->vars.set_acl<cfg::globals::target_user>(this->challenge.login_edit.get_text());
+        this->vars.set_acl<cfg::globals::target_user>(to_sv(this->challenge.login_edit.get_text()));
     }
     if (this->ask_password) {
-        this->vars.set_acl<cfg::context::target_password>(this->challenge.password_edit.get_text());
+        this->vars.set_acl<cfg::context::target_password>(to_sv(this->challenge.password_edit.get_text()));
     }
     this->vars.set_acl<cfg::context::display_message>(true);
     this->set_mod_signal(BACK_EVENT_NEXT);

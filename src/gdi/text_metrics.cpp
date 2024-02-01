@@ -237,6 +237,9 @@ MultiLineTextMetrics::~MultiLineTextMetrics()
     free(d.lines);
 }
 
+// BUG TODO static not const is a bad idea
+static GlyphCache mod_glyph_cache;
+
 
 // TODO implementation of the server_draw_text function below is a small subset of possibilities text can be packed (detecting duplicated strings). See MS-RDPEGDI 2.2.2.2.1.1.2.13 GlyphIndex (GLYPHINDEX_ORDER)
 // TODO: is it still used ? If yes move it somewhere else. Method from internal mods ?
@@ -247,9 +250,6 @@ void server_draw_text(
     ColorCtx color_ctx,
     Rect clip
 ) {
-    // BUG TODO static not const is a bad idea
-    static GlyphCache mod_glyph_cache;
-
     UTF8TextReader reader(text);
 
     int16_t endx = clip.eright();
@@ -328,6 +328,98 @@ void server_draw_text(
         }
         x += total_width;
     }
+}
+
+/// \return last pixel drawn
+int draw_text(
+    GraphicApi & drawable,
+    int x,
+    int y,
+    uint16_t height,
+    array_view<FontCharView const *> fcs,
+    RDPColor fgcolor,
+    RDPColor bgcolor,
+    Rect clip)
+{
+    auto it = fcs.begin();
+    auto end = fcs.end();
+
+    int x_start = clip.x;
+
+    // skip invisible chars
+    if (it < end && x <= x_start) {
+        do {
+            auto nextx = x + (*it)->offsetx + (*it)->incby;
+            if (nextx > x_start) {
+                break;
+            }
+
+            x = nextx;
+            ++it;
+        } while (it < end);
+    }
+
+    if (!(it < end)) {
+        return x;
+    }
+
+    int x_end = clip.eright();
+    LOG(LOG_DEBUG, " -> %d / %d", x, x_end);
+
+    while (it < end) {
+        int total_width = 0;
+        uint8_t data[256];
+        data[1] = 0;
+        auto data_it = std::begin(data);
+        const auto data_end = std::end(data)-2;
+        auto partial_end = it + std::min((end - it), (data_end - data_it));
+
+        const int cacheId = 7;
+        for (; it < partial_end && x + total_width <= x_end; ++it) {
+            int cacheIndex = 0;
+
+            const GlyphCache::t_glyph_cache_result cache_result =
+                mod_glyph_cache.add_glyph(**it, cacheId, cacheIndex);
+            (void)cache_result; // supress warning
+
+            *data_it++ = cacheIndex;
+            *data_it++ += (*it)->offsetx;
+            data_it[1] = (*it)->incby;
+            total_width += (*it)->offsetx + (*it)->incby;
+        }
+
+        int16_t glyph_x = checked_int(x);
+        int16_t glyph_y = checked_int(y);
+
+        // TODO glyph_x => + min(x)
+        // TODO height => max_height - min(y) - max(cy)
+        Rect bk(glyph_x, glyph_y, checked_int(total_width + 1), height);
+
+        RDPGlyphIndex glyphindex(
+            cacheId,  // cache_id
+            0x03,     // fl_accel
+            0x0,      // ui_charinc
+            1,        // f_op_redundant,
+            fgcolor,  // BackColor (text color)
+            bgcolor,  // ForeColor (color of the opaque rectangle)
+            bk,       // bk
+            bk,       // op
+            RDPBrush(0, 0, 3, 0xaa, byte_ptr_cast("\xaa\x55\xaa\x55\xaa\x55\xaa\x55")),
+            glyph_x,
+            glyph_y,
+            checked_int(data_it - data),
+            data
+        );
+
+        drawable.draw(glyphindex, clip, gdi::ColorCtx::depth24(), mod_glyph_cache);
+
+        x += total_width;
+        if (x > x_end) {
+            break;
+        }
+    }
+
+    return x + 1;
 }
 
 } // namespace gdi

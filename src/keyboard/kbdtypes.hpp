@@ -47,6 +47,7 @@ namespace kbdtypes
     enum class Scancode : uint8_t
     {
         Esc = 0x01,
+        Backspace = 0x0E,
         Tab = 0x0F,
         Enter = 0x1C,
         LCtrl = 0x1D,
@@ -417,7 +418,22 @@ namespace kbdtypes
 
     constexpr std::size_t keycode_to_byte_index(KeyCode keycode) noexcept
     {
-        return (std::size_t(keycode) & 0x7f)
-             | ((std::size_t(keycode) & 0x100) >> 1);
+        return static_cast<std::size_t>(
+            (underlying_cast(keycode) & 0x7f)
+          | ((underlying_cast(keycode) & 0x100) >> 1)
+        );
+    }
+
+    constexpr Scancode keycode_to_scancode(KeyCode keycode) noexcept
+    {
+        return Scancode(underlying_cast(keycode) & 0x7f);
+    }
+
+    constexpr KbdFlags keycode_to_kbdflags(KeyCode keycode) noexcept
+    {
+        return KbdFlags(
+            underlying_cast(keycode)
+          & underlying_cast(KbdFlags::Extended | KbdFlags::Extended1)
+        );
     }
 } // namespace kbdtypes

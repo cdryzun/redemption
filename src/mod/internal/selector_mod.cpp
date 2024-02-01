@@ -18,6 +18,7 @@
  *   Author(s): Christophe Grosjean, Xiaopeng Zhou, Jonathan Poelen, Meng Tan, Jennifer Inthavong
  */
 
+#include "acl/acl_field_mask.hpp"
 #include "mod/internal/selector_mod.hpp"
 #include "mod/internal/copy_paste.hpp"
 #include "configs/config.hpp"
@@ -26,6 +27,7 @@
 #include "keyboard/keymap.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 #include "utils/sugar/chars_to_int.hpp"
+#include "utils/sugar/to_sv.hpp"
 #include "utils/log.hpp"
 #include "translation/trkeys.hpp"
 
@@ -198,14 +200,18 @@ SelectorMod::SelectorMod(
     this->ask_page();
 }
 
-void SelectorMod::acl_update(AclFieldMask const& /*acl_fields*/)
+void SelectorMod::acl_update(AclFieldMask const& acl_fields)
 {
-    this->current_page = this->ini.get<cfg::context::selector_current_page>();
-    this->selector.current_page.set_text(int_to_decimal_chars(this->current_page));
+    if (acl_fields.has<cfg::context::selector_current_page>()) {
+        this->current_page = this->ini.get<cfg::context::selector_current_page>();
+        this->selector.current_page.set_text(int_to_decimal_chars(this->current_page), {WidgetEdit::Redraw::No});
+    }
 
-    this->number_page = this->ini.get<cfg::context::selector_number_of_pages>();
-    this->selector.number_page.set_text(WidgetSelector::temporary_number_of_page(
-        int_to_decimal_chars(this->number_page)));
+    if (acl_fields.has<cfg::context::selector_number_of_pages>()) {
+        this->number_page = this->ini.get<cfg::context::selector_number_of_pages>();
+        this->selector.number_page.set_text(WidgetSelector::temporary_number_of_page(
+            int_to_decimal_chars(this->number_page)));
+    }
 
     this->selector.selector_lines.clear();
 
@@ -220,9 +226,9 @@ void SelectorMod::ask_page()
 {
     this->ini.set_acl<cfg::context::selector_current_page>(this->current_page);
 
-    this->ini.set_acl<cfg::context::selector_group_filter>(this->selector.edit_filters[0].get_text());
-    this->ini.set_acl<cfg::context::selector_device_filter>(this->selector.edit_filters[1].get_text());
-    this->ini.set_acl<cfg::context::selector_proto_filter>(this->selector.edit_filters[2].get_text());
+    this->ini.set_acl<cfg::context::selector_group_filter>(to_sv(this->selector.edit_filters[0].get_text()));
+    this->ini.set_acl<cfg::context::selector_device_filter>(to_sv(this->selector.edit_filters[1].get_text()));
+    this->ini.set_acl<cfg::context::selector_proto_filter>(to_sv(this->selector.edit_filters[2].get_text()));
 
     this->ini.ask<cfg::globals::target_user>();
     this->ini.ask<cfg::globals::target_device>();

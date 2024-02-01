@@ -23,6 +23,8 @@
 
 #include "mod/internal/widget/widget.hpp"
 #include "mod/internal/widget/button.hpp"
+#include "mod/internal/widget/edit.hpp"
+#include "mod/internal/widget/label.hpp"
 #include "utils/colors.hpp"
 
 class WidgetEdit;
@@ -33,21 +35,40 @@ class WidgetPassword;
 class WidgetEditValid : public Widget
 {
 public:
-    WidgetEditValid(gdi::GraphicApi & drawable, CopyPaste & copy_paste,
-                    chars_view text, WidgetEventNotifier onsubmit,
-                    Color fgcolor, Color bgcolor, Color focus_color, Color border_none_color,
-                    Font const & font, chars_view title, bool use_title,
-                    int xtext = 0, int ytext = 0, bool pass = false); /*NOLINT*/
+    using Colors = WidgetEdit::Colors;
+    using CusorPosition = WidgetEdit::CusorPosition;
+
+    struct Options
+    {
+        bool is_password;
+        chars_view label;
+    };
+
+    struct Data
+    {
+        int16_t x;
+        int16_t y;
+        uint16_t edit_offset;
+        chars_view edit_text;
+        bool label_as_placeholder;
+        uint16_t max_width;
+        CusorPosition cursor_position = CusorPosition::CursorToEnd;
+    };
+
+    WidgetEditValid(
+        gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+        Options opts, Colors colors, WidgetEventNotifier onsubmit
+    );
 
     Dimension get_optimal_dim() const override;
 
     ~WidgetEditValid() override;
 
-    void use_title(bool use);
+    uint16_t label_width() const noexcept;
 
-    virtual void set_text(chars_view text);
+    void update_layout(Data data);
 
-    [[nodiscard]] zstring_view get_text() const;
+    [[nodiscard]] WidgetEdit::Text get_text() const;
 
     void set_xy(int16_t x, int16_t y) override;
 
@@ -56,8 +77,6 @@ public:
     using Widget::set_wh;
 
     void rdp_input_invalidate(Rect clip) override;
-
-    void draw_border(const Rect clip, Color color);
 
     void focus(int reason) override;
 
@@ -71,23 +90,18 @@ public:
 
     void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
 
-    [[nodiscard]] static unsigned int get_border_height()
-    {
-        return 1;
-    }
-
     bool is_password_widget() noexcept;
 
     void init_focus() override;
 
 private:
     WidgetButton button_next;
+    WidgetText label;
     WidgetPassword * widget_password;
     WidgetEdit * editbox;
-    WidgetLabel * label;
     WidgetButton * button_toggle_visibility;
 
-    bool use_label_;
+    bool label_as_placeholder;
 
     Color border_none_color;
 };

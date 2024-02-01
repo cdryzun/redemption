@@ -25,6 +25,7 @@
 #include "mod/internal/widget/edit.hpp"
 #include "translation/translation.hpp"
 #include "translation/trkeys.hpp"
+#include "utils/sugar/to_sv.hpp"
 
 namespace
 {
@@ -97,7 +98,7 @@ DialogWithChallengeMod::DialogWithChallengeMod(
         drawable, widget_rect,
         WidgetDialogWithChallenge::Events{
             .onsubmit = [this]{
-                this->vars.set_acl<cfg::context::password>(this->dialog_widget.challenge->get_text());
+                this->vars.set_acl<cfg::context::password>(to_sv(this->dialog_widget.challenge->get_text()));
                 this->set_mod_signal(BACK_EVENT_NEXT);
             },
             .oncancel = [this]{

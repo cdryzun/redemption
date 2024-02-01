@@ -28,6 +28,46 @@
 #include "utils/sugar/cast.hpp"
 #include "utils/utf.hpp"
 
+
+WidgetText::WidgetText(const Font& font, Colors colors, chars_view text)
+    : colors(colors)
+{
+    int w = 1;
+    auto out = std::begin(fc_buffer);
+    auto end_out = std::end(fc_buffer);
+    utf8_for_each(
+        text,
+        [&](uint32_t uc) {
+            auto const * fc = &font.item(uc).view;
+            w += fc->boxed_width();
+            *out++ = fc;
+        },
+        [](utf8_char_invalid) {},
+        [](utf8_char_truncated) {},
+        [&]{ return out < end_out; }
+    );
+
+    fc_buffer_len = checked_int(out - fc_buffer);
+
+    rect.cx = checked_int(w);
+    rect.cy = font.max_height();
+}
+
+void WidgetText::draw(gdi::GraphicApi & drawable, Rect clip)
+{
+    gdi::draw_text(
+        drawable,
+        rect.x,
+        rect.y,
+        rect.cy,
+        {fc_buffer, fc_buffer_len},
+        colors.fg,
+        colors.bg,
+        clip.intersect(rect)
+    );
+}
+
+
 WidgetLabel::WidgetLabel(
     gdi::GraphicApi & drawable, chars_view text,
     Color fgcolor, Color bgcolor, Font const & font,
@@ -38,7 +78,6 @@ WidgetLabel::WidgetLabel(
     , y_text(ytext)
     , bg_color(bgcolor)
     , fg_color(fgcolor)
-    , w_border(x_text)
     , font(&font)
 {
     this->set_text(text);
@@ -109,34 +148,8 @@ Dimension WidgetLabel::get_optimal_dim(Font const & font, chars_view text, int x
     return Dimension(width + xtext * 2, font.max_height() + ytext * 2);
 }
 
-bool WidgetLabel::shift_text(int pos_x)
-{
-    bool res = true;
-    if (pos_x + this->x_text > this->cx() - 4) {
-        this->x_text = this->cx() - pos_x - 4;
-    }
-    else if (pos_x + this->x_text < this->w_border) {
-        this->x_text = this->w_border - pos_x;
-    }
-    else {
-        res = false;
-    }
-    return res;
-}
-
 void WidgetLabel::set_color(Color bg_color, Color fg_color)
 {
     this->bg_color = bg_color;
     this->fg_color = fg_color;
-}
-
-void WidgetLabel::auto_resize()
-{
-    Dimension dim = this->get_optimal_dim();
-    this->set_wh(dim);
-}
-
-void WidgetLabel::set_font(Font const & font)
-{
-    this->font = &font;
 }

@@ -23,297 +23,269 @@
 #include "test_only/test_framework/check_img.hpp"
 
 #include "mod/internal/widget/edit_valid.hpp"
-#include "mod/internal/widget/screen.hpp"
 #include "mod/internal/copy_paste.hpp"
+#include "gdi/screen_functions.hpp"
 #include "keyboard/keymap.hpp"
 #include "keyboard/keylayouts.hpp"
 #include "test_only/gdi/test_graphic.hpp"
 #include "test_only/core/font.hpp"
 #include "test_only/mod/internal/widget/notify_trace.hpp"
 
-#include <string_view>
-
-using namespace std::string_view_literals;
-
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/edit_valid/"
 
 struct TestWidgetEditValid
 {
-    struct Colors
-    {
-        BGRColor fg = NamedBGRColor::BLACK;
-        BGRColor bg = NamedBGRColor::WHITE;
-        BGRColor focus = NamedBGRColor::ANTHRACITE;
+    TestGraphic drawable;
+    WidgetEditValid::Options opts;
+    WidgetEditValid::Colors colors {
+        .fg = NamedBGRColor::RED,
+        .bg = NamedBGRColor::YELLOW,
+        .border = NamedBGRColor::BLUE,
+        .focus_border = NamedBGRColor::GREEN,
+        .cursor = NamedBGRColor::GREY,
     };
+    CopyPaste copy_paste {false};
+    Font const& font = global_font_deja_vu_14();
+    NotifyTrace onsubmit {};
 
-    TestGraphic drawable{800, 600};
-    CopyPaste copy_paste{false};
-    WidgetScreen parent{drawable, 800, 600, global_font_deja_vu_14(), Theme{}};
-    NotifyTrace onsubmit;
-    WidgetEditValid wedit;
-
-    TestWidgetEditValid(
-        Colors colors, chars_view text, chars_view title = ""_av, bool pass = false)
-    : wedit(drawable, copy_paste, text, onsubmit,
-            colors.fg, colors.bg, colors.focus, colors.bg,
-            global_font_deja_vu_14(), title, false, 0, 0, pass)
+    WidgetEditValid edit()
     {
+        return WidgetEditValid(drawable, font, copy_paste, opts, colors, onsubmit);
     }
 
-    void click_down(int x, int y)
+    void click_down(WidgetEditValid& edit, uint16_t x, uint16_t y)
     {
-        parent.rdp_input_mouse(MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN,
-                               wedit.x() + x, wedit.y() + y);
+        edit.rdp_input_mouse(MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN, x, y);
     }
 
-    void click_up(int x, int y)
+    void click_up(WidgetEditValid& edit, uint16_t x, uint16_t y)
     {
-        parent.rdp_input_mouse(MOUSE_FLAG_BUTTON1,
-                               wedit.x() + x, wedit.y() + y);
+        edit.rdp_input_mouse(MOUSE_FLAG_BUTTON1, x, y);
     }
 
-    void click(int x, int y)
+    void click(WidgetEditValid& edit, uint16_t x, uint16_t y)
     {
-        click_down(x, y);
-        click_up(x, y);
+        click_down(edit, x, y);
+        click_up(edit, x, y);
     }
 
     struct KeyBoard
     {
-        TestWidgetEditValid& ctx;
-        Keymap keymap;
+        WidgetEditValid& edit;
+        Keymap keymap{*find_layout_by_id(KeyLayout::KbdId(0x409))}; // US
 
-        void send_scancode(uint16_t scancode_and_flags)
+        void send_scancode(kbdtypes::KeyCode keycode)
         {
-            using KFlags = Keymap::KbdFlags;
-            using Scancode = Keymap::Scancode;
-            auto scancode = Scancode(scancode_and_flags);
-            auto flags = KFlags(scancode_and_flags & 0xff00u);
+            auto scancode = kbdtypes::keycode_to_scancode(keycode);
+            auto flags = kbdtypes::keycode_to_kbdflags(keycode);
             keymap.event(flags, scancode);
-            ctx.parent.rdp_input_scancode(flags, scancode, 0, keymap);
-            keymap.event(flags | KFlags::Release, scancode);
-            ctx.parent.rdp_input_scancode(flags | KFlags::Release, scancode, 0, keymap);
+            edit.rdp_input_scancode(flags, scancode, 0, keymap);
         }
     };
 
-    KeyBoard keyboard()
+    KeyBoard keyboard(WidgetEditValid& edit)
     {
-        return KeyBoard{*this, Keymap{*find_layout_by_id(KeyLayout::KbdId(0x040C))}};
+        return KeyBoard{edit};
     }
 };
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit2)
+RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
 {
-    TestWidgetEditValid ctx({}, ""_av);
+    TestWidgetEditValid ctx{
+        .drawable {150, 50},
+        .opts {
+            .is_password = false,
+            .label = "text"_av,
+        }
+    };
 
-    Dimension dim = ctx.wedit.get_optimal_dim();
-    ctx.wedit.set_wh(100, dim.h);
-    ctx.wedit.set_xy(50, 100);
+    auto edit = ctx.edit();
+    edit.init_focus();
 
-    ctx.parent.add_widget(ctx.wedit);
+    edit.update_layout(WidgetEditValid::Data{
+        .x = 10,
+        .y = 10,
+        .edit_offset = checked_int(edit.label_width() + 20),
+        .edit_text = ""_av,
+        .label_as_placeholder = false,
+        .max_width = 120,
+    });
 
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_1.png");
 
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Key_A);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_2.png");
 
-    ctx.click(2, 2);
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Backspace);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_1.png");
 
+    gdi_clear_screen(ctx.drawable, {ctx.drawable.width(), ctx.drawable.height()});
+    edit.update_layout(WidgetEditValid::Data{
+        .x = 10,
+        .y = 10,
+        .edit_offset = checked_int(edit.label_width() + 30),
+        .edit_text = "Ylajali"_av,
+        .label_as_placeholder = false,
+        .max_width = 120,
+    });
+
+    edit.rdp_input_invalidate(edit.get_rect());
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_3.png");
 
-    ctx.wedit.set_text("Ylajali"_av);
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
-
+    ctx.click(edit, 71, 15);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_4.png");
 
-    RED_CHECK_EQUAL("Ylajali"sv, ctx.wedit.get_text().to_sv());
-
-    ctx.wedit.set_xy(192, 242);
-
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
-
+    edit.blur();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_5.png");
-}
 
-RED_AUTO_TEST_CASE(TraceWidgetEdit3)
-{
-    TestWidgetEditValid ctx({NamedBGRColor::RED, NamedBGRColor::YELLOW, NamedBGRColor::GREEN}, "dLorz"_av);
+    edit.focus(0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_4.png");
 
-    Dimension dim = ctx.wedit.get_optimal_dim();
-    ctx.wedit.set_wh(150, dim.h);
-    ctx.wedit.set_xy(54, 105);
-
-    WidgetEditValid wedit2(ctx.drawable, ctx.copy_paste, ""_av, WidgetEventNotifier(),
-                           NamedBGRColor::WHITE, NamedBGRColor::DARK_BLUE, NamedBGRColor::RED,
-                           NamedBGRColor::DARK_BLUE, global_font_deja_vu_14(),
-                           nullptr, false, 0);
-    dim = wedit2.get_optimal_dim();
-    wedit2.set_wh(200, dim.h);
-    wedit2.set_xy(400, 354);
-
-    ctx.parent.add_widget(ctx.wedit);
-    ctx.parent.add_widget(wedit2);
-    // ask to widget to redraw at it's current position
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
-
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    ctx.click_down(edit, 110, 15);
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_6.png");
 
-    ctx.click(50, 3);
+    ctx.click_up(edit, 110, 15);
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_4.png");
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_7.png");
-
-    auto keyboard = ctx.keyboard();
-
-    keyboard.send_scancode(0x0F); // tab
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_8.png");
-
-    keyboard.send_scancode(0x10); // 'a'
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_9.png");
 }
 
-RED_AUTO_TEST_CASE(TraceWidgetEditLabels)
+RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
 {
-    TestWidgetEditValid ctx({NamedBGRColor::RED, NamedBGRColor::YELLOW, NamedBGRColor::GREEN}, "dLorz"_av, "edition1"_av);
+    TestWidgetEditValid ctx{
+        .drawable {150, 50},
+        .opts {
+            .is_password = false,
+            .label = "text"_av,
+        }
+    };
 
-    Dimension dim = ctx.wedit.get_optimal_dim();
-    ctx.wedit.set_wh(150, dim.h);
-    ctx.wedit.set_xy(54, 105);
+    auto edit = ctx.edit();
+    edit.init_focus();
 
-    WidgetEditValid wedit2(ctx.drawable, ctx.copy_paste, ""_av, WidgetEventNotifier(),
-                           NamedBGRColor::WHITE, NamedBGRColor::DARK_BLUE, NamedBGRColor::RED,
-                           NamedBGRColor::DARK_BLUE, global_font_deja_vu_14(),
-                           "edition2"_av, true, 0, 0, false);
-    dim = wedit2.get_optimal_dim();
-    wedit2.set_wh(200, dim.h);
-    wedit2.set_xy(400, 354);
+    edit.update_layout(WidgetEditValid::Data{
+        .x = 10,
+        .y = 10,
+        .edit_offset = checked_int(edit.label_width() + 30),
+        .edit_text = ""_av,
+        .label_as_placeholder = true,
+        .max_width = 120,
+    });
 
-    ctx.parent.add_widget(ctx.wedit);
-    ctx.parent.add_widget(wedit2);
-    // ask to widget to redraw at it's current position
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_1.png");
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_10.png");
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Key_A);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_2.png");
 
-    ctx.click(50, 2);
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Backspace);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_1.png");
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_11.png");
+    edit.update_layout(WidgetEditValid::Data{
+        .x = 10,
+        .y = 10,
+        .edit_offset = checked_int(edit.label_width() + 30),
+        .edit_text = "Ylajali"_av,
+        .label_as_placeholder = true,
+        .max_width = 120,
+    });
 
-    auto keyboard = ctx.keyboard();
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_3.png");
 
-    keyboard.send_scancode(0x0F); // tab
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_12.png");
+    ctx.click(edit, 20, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_4.png");
 
-    keyboard.send_scancode(0x10); // 'a'
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_9.png");
+    edit.blur();
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_5.png");
 
-    keyboard.send_scancode(0x0F); // tab
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_14.png");
+    edit.focus(0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_4.png");
 
-    keyboard.send_scancode(0x0F); // tab
-    keyboard.send_scancode(0x0E); // backspace
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_8.png");
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    ctx.click_down(edit, 110, 15);
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_6.png");
 
-    keyboard.send_scancode(0x0F); // tab
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_11.png");
+    ctx.click_up(edit, 110, 15);
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_4.png");
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
 {
-    TestWidgetEditValid ctx({NamedBGRColor::RED, NamedBGRColor::YELLOW, NamedBGRColor::GREEN}, "dLorz"_av, "edition1"_av, true);
+    TestWidgetEditValid ctx{
+        .drawable {150, 50},
+        .opts {
+            .is_password = true,
+            .label = "Password"_av,
+        }
+    };
 
-    Dimension dim = ctx.wedit.get_optimal_dim();
-    ctx.wedit.set_wh(150, dim.h);
-    ctx.wedit.set_xy(54, 105);
+    auto edit = ctx.edit();
+    edit.init_focus();
 
-    WidgetEditValid wedit2(ctx.drawable, ctx.copy_paste, ""_av, WidgetEventNotifier(),
-                           NamedBGRColor::WHITE, NamedBGRColor::DARK_BLUE, NamedBGRColor::RED,
-                           NamedBGRColor::DARK_BLUE, global_font_deja_vu_14(),
-                           "edition2"_av, true, 0, 0, true);
-    dim = wedit2.get_optimal_dim();
-    wedit2.set_wh(200, dim.h);
-    wedit2.set_xy(400, 354);
+    edit.update_layout(WidgetEditValid::Data{
+        .x = 10,
+        .y = 10,
+        .edit_offset = checked_int(edit.label_width() + 30),
+        .edit_text = ""_av,
+        .label_as_placeholder = true,
+        .max_width = 120,
+    });
 
-    ctx.parent.add_widget(ctx.wedit);
-    ctx.parent.add_widget(wedit2);
-    // ask to widget to redraw at it's current position
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_1.png");
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_17.png");
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Key_A);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_2.png");
 
-    ctx.click(50, 2);
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Backspace);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_1.png");
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_18.png");
+    edit.update_layout(WidgetEditValid::Data{
+        .x = 10,
+        .y = 10,
+        .edit_offset = checked_int(edit.label_width() + 30),
+        .edit_text = "Ylajaiiiii"_av,
+        .label_as_placeholder = true,
+        .max_width = 120,
+    });
 
-    auto keyboard = ctx.keyboard();
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_3.png");
 
-    keyboard.send_scancode(0x0F); // tab
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_19.png");
+    ctx.click(edit, 50, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
 
-    keyboard.send_scancode(0x10); // 'a'
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_20.png");
+    edit.blur();
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_5.png");
 
-    keyboard.send_scancode(0x0F); // tab
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_21.png");
-
-    keyboard.send_scancode(0x0F); // tab
-    keyboard.send_scancode(0x0E); // backspace
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_22.png");
-
-    keyboard.send_scancode(0x0F); // tab
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_18.png");
-}
-
-RED_AUTO_TEST_CASE(EventWidgetEditEvents)
-{
-    TestWidgetEditValid ctx({NamedBGRColor::BLACK, NamedBGRColor::WHITE, NamedBGRColor::DARK_BLUE}, "abcdef"_av);
-
-    Dimension dim = ctx.wedit.get_optimal_dim();
-    ctx.wedit.set_wh(100, dim.h);
-    ctx.wedit.set_xy(0, 0);
-
-    ctx.parent.add_widget(ctx.wedit);
-    ctx.parent.set_widget_focus(ctx.wedit, Widget::focus_reason_tabkey);
-
-    ctx.parent.rdp_input_invalidate(ctx.parent.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_25.png");
-
-    ctx.click_down(95, 2);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_24.png");
-
-    ctx.click_up(95, 2);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_25.png");
-
-    RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
-
-    ctx.click_down(95, 2);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_24.png");
-
-    ctx.click_up(2, 2);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_25.png");
+    edit.focus(0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
-
-    ctx.click_down(95, 2);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_24.png");
-
-    ctx.parent.rdp_input_mouse(MOUSE_FLAG_BUTTON1, 0, 0);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_25.png");
-
+    ctx.click_down(edit, 110, 15);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_6.png");
 
-    auto keyboard = ctx.keyboard();
-
-    keyboard.send_scancode(0x1C); // enter
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_25.png");
-
+    ctx.click_up(edit, 110, 15);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
+
+    ctx.click_down(edit, 90, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_7.png");
+
+    ctx.click_up(edit, 90, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_8.png");
+
+    ctx.click_down(edit, 90, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_9.png");
+
+    ctx.click_up(edit, 90, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
 }

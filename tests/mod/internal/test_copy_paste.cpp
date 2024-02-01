@@ -29,7 +29,6 @@
 #include "core/RDP/clipboard/format_list_serialize.hpp"
 #include "mod/internal/copy_paste.hpp"
 #include "mod/internal/widget/edit.hpp"
-#include "mod/internal/widget/screen.hpp"
 
 #include <string>
 
@@ -68,16 +67,18 @@ struct CopyPasteFront : FakeFront
                 InStream in_s(out_s.get_produced_bytes());
                 this->copy_paste.send_to_mod_channel(in_s, CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST);
             }
+
             break;
             //case RDPECLIP::CB_FORMAT_LIST:
             //    break;
             //case RDPECLIP::CB_FORMAT_LIST_RESPONSE:
             //    break;
+
             case RDPECLIP::CB_FORMAT_DATA_REQUEST:
             {
                 RDPECLIP::FormatDataRequestPDU().recv(stream);
-                StaticOutStream<256> out_s;
 
+                StaticOutStream<256> out_s;
                 OutStream out_header = out_s.stream_at(0);
 
                 RDPECLIP::CliprdrHeader().emit(out_s); // skip header
@@ -95,6 +96,7 @@ struct CopyPasteFront : FakeFront
                 this->copy_paste.send_to_mod_channel(in_s, CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST);
             }
             break;
+
             default:
             break;
         }
@@ -133,37 +135,42 @@ RED_AUTO_TEST_CASE(TestPaste)
     CopyPasteFront front(screen_info, copy_paste);
     TestGraphic gd(screen_info.width, screen_info.height);
 
-    WidgetScreen parent(gd, screen_info.width, screen_info.height, global_font_deja_vu_14(), Theme{});
-
-    WidgetEdit edit(gd, copy_paste, ""_av, {WidgetEventNotifier()},
-                    NamedBGRColor::PINK, NamedBGRColor::ORANGE, NamedBGRColor::RED,
-                    global_font_deja_vu_14(), 0, 0);
+    WidgetEdit edit(
+        gd, global_font_deja_vu_14(), copy_paste,
+        {
+            .fg = NamedBGRColor::PINK,
+            .bg = NamedBGRColor::ORANGE,
+            .border = NamedBGRColor::ORANGE,
+            .focus_border = NamedBGRColor::RED,
+            .cursor = Widget::Color(0x888888),
+        },
+        WidgetEventNotifier()
+    );
     Dimension dim = edit.get_optimal_dim();
     edit.set_wh(120, dim.h);
-    edit.set_xy(0, 0);
+    edit.rdp_input_invalidate(edit.get_rect());
 
     RED_REQUIRE(copy_paste.ready(front));
 
-    #define edit_paste(s, imgref) do {              \
-        copy_paste.paste(edit);                     \
-        RED_CHECK_EQUAL(s ""_av, edit.get_text());  \
-        edit.rdp_input_invalidate(edit.get_rect()); \
-        RED_CHECK_IMG(gd, imgref);                  \
+    #define edit_paste(s, imgref) do {             \
+        copy_paste.paste(edit);                    \
+        RED_CHECK_EQUAL(s ""_av, edit.get_text()); \
+        RED_CHECK_IMG(gd, imgref);                 \
     } while (0)
     edit_paste("", IMG_TEST_PATH "empty.png");
     edit_paste("", IMG_TEST_PATH "empty.png");
     front.copy("plop");
     edit_paste("plop", IMG_TEST_PATH "plop.png");
-    edit.decrement_edit_pos();
+    edit.action_move_cursor_left(false, WidgetEdit::Redraw::Yes);
     edit_paste("ploplopp", IMG_TEST_PATH "plopplop.png");
     front.copy("xxx");
     edit_paste("ploplopxxxp", IMG_TEST_PATH "ploplopxxxp.png");
     edit_paste("ploplopxxxxxxp", IMG_TEST_PATH "ploplopxxxxxxp.png");
-    edit.set_text(""_av);
+    edit.set_text(""_av, {WidgetEdit::Redraw::Yes});
     front.copy("abc\tde");
     edit_paste("abc de", IMG_TEST_PATH "abcde.png");
     front.copy("fg\nhi");
-    edit_paste("abc defg", IMG_TEST_PATH "abcdefg.png");
+    edit_paste("abc defg hi", IMG_TEST_PATH "abcdefg.png");
     front.copy("jk\tl\nmn");
-    edit_paste("abc defgjk l", IMG_TEST_PATH "abcdefgjkl.png");
+    edit_paste("abc defg hijk l mn", IMG_TEST_PATH "abcdefgjkl.png");
 }
