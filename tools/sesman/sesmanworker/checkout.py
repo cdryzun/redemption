@@ -52,6 +52,7 @@ AccountType = str
 class AccountInfos(NamedTuple):
     passwords: List[str]
     login: Optional[str]
+    domain: Optional[str] = None
 
 
 @contextmanager
@@ -148,7 +149,8 @@ class CheckoutEngine:
             return None
         return AccountInfos(
             creds.get(CRED_TYPE_PASSWORD, []),
-            creds.get(CRED_DATA_LOGIN, None)
+            creds.get(CRED_DATA_LOGIN, None),
+            creds.get(CRED_DATA_DOMAIN) or _right.get(CRED_DATA_DOMAIN, None),
         )
 
     def check_target(self, right: RightType, request_ticket: Optional[Dict[str, Any]] = None
@@ -257,6 +259,8 @@ class CheckoutEngine:
 
         passwords = creds.get(CRED_TYPE_PASSWORD)
         ssh_keys = creds.get(CRED_TYPE_SSH_KEY)
+        domain = creds.get(CRED_DATA_DOMAIN) or _right.get(CRED_DATA_DOMAIN)
+
 
         if not passwords:
             if not with_ssh_key:
@@ -277,7 +281,8 @@ class CheckoutEngine:
         return {
             'password': passwords[0] if passwords else None,
             'login': creds.get(CRED_DATA_LOGIN, None),
-            'ssh_key': ssh_key
+            'ssh_key': ssh_key,
+            'domain': domain,
         }
 
     def _update_creds_with_account_by_type(self, account_name: str, domain_name: str,
