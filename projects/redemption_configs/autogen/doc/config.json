@@ -1573,7 +1573,6 @@
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
-      "advanced": true,
       "external": true
     },
     {
@@ -1581,7 +1580,7 @@
       "name": "krb_armoring_realm",
       "type": "str",
       "value": "",
-      "description": "Realm to be used for armoring Kerberos tickets.",
+      "description": "Force Realm to be used for armoring Kerberos tickets with service account <code>\"Krb armoring account\" option</code>",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,

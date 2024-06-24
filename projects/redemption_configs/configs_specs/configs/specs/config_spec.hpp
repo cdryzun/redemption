@@ -1520,7 +1520,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     _.member(MemberInfo{
         .name = "krb_armoring_account",
         .value = value<std::string>(),
-        .spec = acl_connpolicy(rdp, spec::advanced),
+        .spec = acl_connpolicy(rdp),
         .desc =
             "Account to be used for armoring Kerberos tickets. "
             "Must be in the form 'account_name@domain_name[@device_name]'. "
@@ -1532,7 +1532,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "krb_armoring_realm",
         .value = value<std::string>(),
         .spec = acl_connpolicy(rdp, spec::advanced),
-        .desc = "Realm to be used for armoring Kerberos tickets.",
+        .desc = "Force Realm to be used for armoring Kerberos tickets with service account :REF::krb_armoring_account",
     });
 
     _.member(MemberInfo{
