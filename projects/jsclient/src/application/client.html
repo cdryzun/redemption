@@ -244,7 +244,7 @@ for (const input of [kbdmethod_input, kbdlayout_input, kbdAltGrIsCtrlAndAlt_inpu
 
 let _Module;
 WallixModule({
-    // INITIAL_MEMORY: 16777216, // 16**6
+    INITIAL_MEMORY: 16777216, // 16**6
     // INITIAL_MEMORY: 268435456, // 16**7
 }).then((Module) => {
 
@@ -761,7 +761,7 @@ function openClient()
     const newGdImpl = gdimpl_input.selectedIndex;
     if (currentGdImpl != newGdImpl) {
         currentGdImpl = newGdImpl;
-        newCanvas = document.createElement('canvas');
+        let newCanvas = document.createElement('canvas');
         newCanvas.width = Number(width_input.value) || 800;
         newCanvas.height = Number(height_input.value) || 600;
         ecanvas.replaceWith(newCanvas);

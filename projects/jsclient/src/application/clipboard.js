@@ -125,7 +125,7 @@ class CliprdrBuffer
 {
     constructor(Module, clipboard) {
         this.n = bufferSize;
-        this.ptr = Module._malloc(this.n);
+        this.ptr = Module.allocateBuffer(this.n);
         this.stream = new OutStream(this.ptr, Module);
         this.clipboard = clipboard;
         this.Module = Module;
@@ -135,7 +135,7 @@ class CliprdrBuffer
     }
 
     delete() {
-        this.Module._free(this.ptr);
+        this.Module.deallocateBuffer(this.ptr);
     }
 
     beginFormatDescriptorList(count) {
@@ -209,7 +209,7 @@ class Cliprdr
         this.streamIdGenerator = new IdGenerator();
 
         const buflen = 1600;
-        const bufp = emccModule._malloc(buflen);
+        const bufp = emccModule.allocateBuffer(buflen);
         this.buffer = {
             capacity: buflen,
             i: bufp,
@@ -266,7 +266,7 @@ class Cliprdr
     }
 
     free() {
-        this.emccModule._free(this.buffer.i);
+        this.emccModule.deallocateBuffer(this.buffer.i);
         this.DOMBox.removeChild(this.DOMFormats);
         this.DOMBox.removeChild(this.DOMFiles);
         this.cliprdrBuffer.delete();
@@ -275,13 +275,13 @@ class Cliprdr
     _processWithBuffer(bufLen, f) {
         const reallocBuf = (this.buffer.capacity < bufLen);
         if (this.buffer.capacity < bufLen) {
-            const ibuf = this.emccModule._malloc(bufLen);
+            const ibuf = this.emccModule.allocateBuffer(bufLen);
             if (!ibuf) {
                 return false;
             }
             // TODO first parameter not used
             f(this.emccModule.HEAPU8.subarray(ibuf, ibuf + bufLen), ibuf);
-            this.emccModule._free(ibuf);
+            this.emccModule.deallocateBuffer(ibuf);
         }
         else {
             // TODO first parameter not used

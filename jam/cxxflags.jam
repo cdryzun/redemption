@@ -726,7 +726,7 @@ rule flags ( properties * )
     }
     if $(x_unsafe_buffer_usage_warnings) != "default"
     {
-      if ( $(JLN_NORMALIZED_CXX_COMP) = "clang" && ! [ numbers.less $(JLN_NORMALIZED_CXX_COMP_VERSION) 1600000 ] )
+      if ( ( $(JLN_NORMALIZED_CXX_COMP) = "clang" || $(JLN_NORMALIZED_CXX_COMP) = "clang-emcc" ) && ! [ numbers.less $(JLN_NORMALIZED_CXX_COMP_VERSION) 1600000 ] )
       {
         if $(x_unsafe_buffer_usage_warnings) = "off"
         {
@@ -1240,7 +1240,7 @@ rule flags ( properties * )
         flags +=
           <cxxflags>"-Wno-shadow"
         ;
-        if ( $(JLN_NORMALIZED_CXX_COMP) = "clang" && ! [ numbers.less $(JLN_NORMALIZED_CXX_COMP_VERSION) 800000 ] )
+        if ( ( $(JLN_NORMALIZED_CXX_COMP) = "clang" || $(JLN_NORMALIZED_CXX_COMP) = "clang-emcc" ) && ! [ numbers.less $(JLN_NORMALIZED_CXX_COMP_VERSION) 800000 ] )
         {
           flags +=
             <cxxflags>"-Wno-shadow-field"

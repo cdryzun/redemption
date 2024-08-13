@@ -767,8 +767,8 @@ inline parse_error parse_from_cfg(
     ) {
         uint32_t color;
         auto d = sv[0] == '#' ? 1u : 2u;
-        auto [p, ec] = std::from_chars(sv.begin() + d, sv.end(), color, 16);
-        if (ec == std::errc() && p == sv.end() && color <= 0xffffffu) {
+        auto [p, ec] = std::from_chars(sv.data() + d, sv.data() + sv.size(), color, 16);
+        if (ec == std::errc() && p == sv.data() + sv.size() && color <= 0xffffffu) {
             // rgb -> rrggbb
             if (sv.size() == 4 && sv[0] == '#') {
                 uint32_t r = (color >> 8) & 0xf;

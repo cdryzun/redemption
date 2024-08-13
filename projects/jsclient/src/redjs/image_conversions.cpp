@@ -116,6 +116,14 @@ void transform_bitmap15_to_bitmap16(uint8_t* bmp_data, uint16_t cy, std::size_t 
 
 EMSCRIPTEN_BINDINGS(image_data_func)
 {
+    redjs::function("allocateBuffer", +[](uint32_t n) {
+        return redjs::to_memory_offset(malloc(n));
+    });
+
+    redjs::function("deallocateBuffer", +[](intptr_t p) {
+        free(redjs::from_memory_offset<uint8_t*>(p));
+    });
+
     redjs::function("convertBmpToImageData", +[](
         intptr_t idest, intptr_t idata, uint8_t bits_per_pixel,
         uint16_t w, uint16_t h, uint32_t line_size

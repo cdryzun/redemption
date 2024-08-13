@@ -843,7 +843,7 @@ public:
 
         auto cb_data = stream.out_skip_bytes(10);
         std::array<uint16_t, 5> unicodeFieldSizes{};
-        auto* unicodeFieldSizesPos = unicodeFieldSizes.begin();
+        auto unicodeFieldSizesPos = unicodeFieldSizes.begin();
 
         *unicodeFieldSizesPos++ = out_unistr(stream, this->Domain, this->cbDomain);
         *unicodeFieldSizesPos++ = out_unistr(stream, this->UserName, this->cbUserName);

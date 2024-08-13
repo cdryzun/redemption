@@ -55,16 +55,16 @@ const newRdpPointer = function(canvasElement, module) {
 };
 
 const createBuffer = function(bufferLength, module) {
-    let bufferPtr = module._malloc(bufferLength);
+    let bufferPtr = module.allocateBuffer(bufferLength);
 
     return {
-        delete: function() { module._free(bufferPtr); },
+        delete: function() { module.deallocateBuffer(bufferPtr); },
         getBufferPtr: function() { return bufferPtr; },
         reserve: function(n) {
             if (n > bufferLength) {
-                module._free(bufferPtr);
+                module.deallocateBuffer(bufferPtr);
                 bufferLength = n;
-                bufferPtr = module._malloc(n);
+                bufferPtr = module.allocateBuffer(n);
             }
             return bufferPtr;
         },
@@ -315,6 +315,7 @@ const newRdpCanvas = function(canvasElement, module, ropError) {
             let destOffset;
             if (bitsPerPixel != 32) {
                 destOffset = _imgBuffer.reserve(w*h*4);
+                _imgBufferIndex = _imgBuffer.getBufferPtr();
                 module.convertBmpToImageData(destOffset, byteOffset,
                                              bitsPerPixel, w, h, lineSize);
             }

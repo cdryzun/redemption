@@ -72,6 +72,9 @@ RED_AUTO_TEST_CASE(TestPattern)
     RED_CHECK(parse_capture_pattern("$ocr-kbd:cmd"_av)
         == "CapturePattern{.type='kbd|ocr,reg', .patt='cmd'}"_av);
 
+    RED_CHECK(parse_capture_pattern("$exact:cmd"_av)
+        == "CapturePattern{.type='ocr,exact_str', .patt='cmd'}"_av);
+
     // invalid "ocm" rule
     RED_CHECK(parse_capture_pattern("$ocm:10.10.46.0/24:3389"_av)
         == "CapturePattern{.type='?,reg', .patt=''}"_av);

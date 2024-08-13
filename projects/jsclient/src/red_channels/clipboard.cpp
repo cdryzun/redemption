@@ -151,7 +151,7 @@ void ClipboardChannel::send_file_contents_request(
 void ClipboardChannel::send_request_format(uint32_t format_id, CustomFormat custom_format_id)
 {
     LOG_IF(this->verbose, LOG_INFO,
-        "Clipboard: Send Request Format id=%d custom=%d", format_id, custom_format_id);
+        "Clipboard: Send Request Format id=%u custom=%u", format_id, custom_format_id);
 
     RDPECLIP::CliprdrHeader formatListRequestPDUHeader(RDPECLIP::CB_FORMAT_DATA_REQUEST, RDPECLIP::CB_RESPONSE_NONE, 4);
     RDPECLIP::FormatDataRequestPDU formatDataRequestPDU(format_id);
@@ -547,8 +547,8 @@ void ClipboardChannel::process_format_list(InStream& chunk, uint32_t /*channel_f
     emval_call(this->callbacks, "formatListStart");
 
     auto is_utf8 = overload{
-        [](Cliprdr::AsciiName const&) { return true; },
-        [](Cliprdr::UnicodeName const&) { return false; },
+        [](Cliprdr::AsciiName) { return true; },
+        [](Cliprdr::UnicodeName) { return false; },
     };
 
     Cliprdr::format_list_extract(

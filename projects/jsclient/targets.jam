@@ -6,77 +6,75 @@
 #
 
 exe-js _dummy :
-  src/main/_dummy.bc
+  src/main/_dummy.o
 :
 :
   $(EXE_DEPENDENCIES)
 ;
 exe-js js_client :
-  src/main/js_client.bc
-  crypto.bc
-  app_path_exe.bc
-  src/red_channels/clipboard.bc
-  src/red_channels/js_channel.bc
-  src/redjs/front.bc
-  src/redjs/graphics.bc
-  src/redjs/image_conversions.bc
-  src/redjs/transport.bc
-  src/system/ssl_mod_exp.bc
-  projects/redemption_configs/redemption_src/configs/config.bc
-  src/client/common/new_mod_rdp.bc
-  src/client/common/rdp_pointer_to_rgba8888.bc
-  src/core/RDP/dwt.bc
-  src/core/RDP/mppc.bc
-  src/core/RDP/nego.bc
-  src/core/RDP/orders/remoteFx.bc
-  src/core/RDP/rdp_pointer.bc
-  src/core/RDP/rlgr.bc
-  src/core/channels_authorizations.bc
-  src/core/error.bc
-  src/core/font.bc
-  src/core/log_certificate_status.bc
-  src/gdi/clip_from_cmd.bc
-  src/gdi/graphic_api.bc
-  src/gdi/screen_functions.bc
-  src/keyboard/keymap.bc
-  src/mod/rdp/rdp_negociation.bc
-  src/mod/rdp/rdp_negociation_data.bc
-  src/translation/gettext.bc
-  src/translation/translation.bc
-  src/utils/bitmap.bc
-  src/utils/bitmap_data_allocator.bc
-  src/utils/hexadecimal_string_to_buffer.bc
-  src/utils/hexdump.bc
-  src/utils/parse_primary_drawing_orders.bc
-  src/utils/primitives/primitives.bc
-  src/utils/rle.bc
-  src/utils/stacktrace.bc
-  src/utils/strutils.bc
-  src/utils/sugar/multisz.bc
-  src/utils/utf.bc
+  src/main/js_client.o
+  crypto
+  app_path_exe.o
+  src/red_channels/clipboard.o
+  src/red_channels/js_channel.o
+  src/redjs/front.o
+  src/redjs/graphics.o
+  src/redjs/image_conversions.o
+  src/redjs/transport.o
+  src/system/ssl_mod_exp.o
+  projects/redemption_configs/redemption_src/configs/config.o
+  src/client/common/new_mod_rdp.o
+  src/client/common/rdp_pointer_to_rgba8888.o
+  src/core/RDP/dwt.o
+  src/core/RDP/mppc.o
+  src/core/RDP/nego.o
+  src/core/RDP/orders/remoteFx.o
+  src/core/RDP/rdp_pointer.o
+  src/core/RDP/rlgr.o
+  src/core/channels_authorizations.o
+  src/core/error.o
+  src/core/font.o
+  src/core/log_certificate_status.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/graphic_api.o
+  src/gdi/screen_functions.o
+  src/keyboard/keymap.o
+  src/mod/rdp/rdp_negociation.o
+  src/mod/rdp/rdp_negociation_data.o
+  src/translation/gettext.o
+  src/translation/translation.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/hexdump.o
+  src/utils/parse_primary_drawing_orders.o
+  src/utils/primitives/primitives.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/sugar/multisz.o
+  src/utils/utf.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 :
   $(EXE_DEPENDENCIES)
 ;
 exe-js js_player :
-  src/main/js_player.bc
-  src/redjs/graphics.bc
-  src/redjs/image_conversions.bc
-  src/client/common/rdp_pointer_to_rgba8888.bc
-  src/core/RDP/rdp_pointer.bc
-  src/core/error.bc
-  src/core/font.bc
-  src/gdi/clip_from_cmd.bc
-  src/gdi/graphic_api.bc
-  src/transport/mwrm_reader.bc
-  src/utils/bitmap.bc
-  src/utils/bitmap_data_allocator.bc
-  src/utils/hexadecimal_string_to_buffer.bc
-  src/utils/rle.bc
-  src/utils/stacktrace.bc
+  src/main/js_player.o
+  src/redjs/graphics.o
+  src/redjs/image_conversions.o
+  src/client/common/rdp_pointer_to_rgba8888.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/graphic_api.o
+  src/transport/mwrm_reader.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 :
   $(EXE_DEPENDENCIES)
 ;
@@ -89,77 +87,72 @@ test-run-js tests/application/test_scancodes :
 test-run-js tests/red_channels/test_clipboard :
   tests/red_channels/test_clipboard.cpp
 :
-  src/red_channels/clipboard.bc
-  src/core/error.bc
-  src/utils/stacktrace.bc
-  src/utils/strutils.bc
-  src/utils/utf.bc
+  src/red_channels/clipboard.o
+  src/core/error.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/red_channels/test_js_channel :
   tests/red_channels/test_js_channel.cpp
 :
-  src/red_channels/js_channel.bc
+  src/red_channels/js_channel.o
 :
 ;
 test-run-js tests/redjs/test_front :
   tests/redjs/test_front.cpp
 :
-  src/redjs/front.bc
-  src/redjs/graphics.bc
-  src/redjs/image_conversions.bc
-  src/client/common/rdp_pointer_to_rgba8888.bc
-  src/core/RDP/rdp_pointer.bc
-  src/core/error.bc
-  src/core/font.bc
-  src/gdi/clip_from_cmd.bc
-  src/gdi/graphic_api.bc
-  src/utils/bitmap.bc
-  src/utils/bitmap_data_allocator.bc
-  src/utils/rle.bc
-  src/utils/stacktrace.bc
+  src/redjs/front.o
+  src/redjs/graphics.o
+  src/redjs/image_conversions.o
+  src/client/common/rdp_pointer_to_rgba8888.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/graphic_api.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/redjs/test_graphics :
   tests/redjs/test_graphics.cpp src/application/rdp_graphics.js
 :
-  src/redjs/graphics.bc
-  src/redjs/image_conversions.bc
-  src/client/common/rdp_pointer_to_rgba8888.bc
-  src/core/RDP/rdp_pointer.bc
-  src/core/error.bc
-  src/core/font.bc
-  src/gdi/clip_from_cmd.bc
-  src/gdi/graphic_api.bc
-  src/utils/bitmap.bc
-  src/utils/bitmap_data_allocator.bc
-  src/utils/rle.bc
-  src/utils/stacktrace.bc
+  src/redjs/graphics.o
+  src/redjs/image_conversions.o
+  src/client/common/rdp_pointer_to_rgba8888.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/graphic_api.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/redjs/test_image_conversions :
   tests/redjs/test_image_conversions.cpp
 :
-  src/redjs/image_conversions.bc
-  src/core/error.bc
-  src/utils/bitmap.bc
-  src/utils/bitmap_data_allocator.bc
-  src/utils/rle.bc
-  src/utils/stacktrace.bc
+  src/redjs/image_conversions.o
+  src/core/error.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/redjs/test_transport :
   tests/redjs/test_transport.cpp
 :
-  src/redjs/transport.bc
-  src/core/error.bc
-  src/utils/stacktrace.bc
+  src/redjs/transport.o
+  src/core/error.o
+  src/utils/stacktrace.o
 :
-  $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/system/test_ssl_md4 :
   tests/system/test_ssl_md4.cpp
@@ -172,7 +165,7 @@ test-run-js tests/system/test_ssl_md5 :
 test-run-js tests/system/test_ssl_mod_exp :
   tests/system/test_ssl_mod_exp.cpp
 :
-  src/system/ssl_mod_exp.bc
+  src/system/ssl_mod_exp.o
 :
 ;
 test-run-js tests/system/test_ssl_rc4 :
@@ -188,49 +181,49 @@ test-run-js tests/system/test_ssl_sha256 :
 :
 ;
 
-objjs src/main/_dummy.bc : src/main/_dummy.cpp ;
-objjs src/main/js_client.bc : src/main/js_client.cpp ;
-objjs src/main/js_player.bc : src/main/js_player.cpp ;
-objjs src/red_channels/clipboard.bc : src/red_channels/clipboard.cpp ;
-objjs src/red_channels/js_channel.bc : src/red_channels/js_channel.cpp ;
-objjs src/redjs/front.bc : src/redjs/front.cpp ;
-objjs src/redjs/graphics.bc : src/redjs/graphics.cpp ;
-objjs src/redjs/image_conversions.bc : src/redjs/image_conversions.cpp ;
-objjs src/redjs/transport.bc : src/redjs/transport.cpp ;
-objjs src/system/ssl_mod_exp.bc : src/system/ssl_mod_exp.cpp ;
-objjs projects/redemption_configs/redemption_src/configs/config.bc : $(REDEMPTION_CONFIG_PATH)/redemption_src/configs/config.cpp ;
-objjs src/client/common/new_mod_rdp.bc : $(REDEMPTION_SRC_PATH)/client/common/new_mod_rdp.cpp ;
-objjs src/client/common/rdp_pointer_to_rgba8888.bc : $(REDEMPTION_SRC_PATH)/client/common/rdp_pointer_to_rgba8888.cpp ;
-objjs src/core/RDP/dwt.bc : $(REDEMPTION_SRC_PATH)/core/RDP/dwt.cpp ;
-objjs src/core/RDP/mppc.bc : $(REDEMPTION_SRC_PATH)/core/RDP/mppc.cpp ;
-objjs src/core/RDP/nego.bc : $(REDEMPTION_SRC_PATH)/core/RDP/nego.cpp ;
-objjs src/core/RDP/orders/remoteFx.bc : $(REDEMPTION_SRC_PATH)/core/RDP/orders/remoteFx.cpp ;
-objjs src/core/RDP/rdp_pointer.bc : $(REDEMPTION_SRC_PATH)/core/RDP/rdp_pointer.cpp ;
-objjs src/core/RDP/rlgr.bc : $(REDEMPTION_SRC_PATH)/core/RDP/rlgr.cpp ;
-objjs src/core/channels_authorizations.bc : $(REDEMPTION_SRC_PATH)/core/channels_authorizations.cpp ;
-objjs src/core/error.bc : $(REDEMPTION_SRC_PATH)/core/error.cpp : $(BOOST_STACKTRACE_CXXFLAGS) ;
-objjs src/core/font.bc : $(REDEMPTION_SRC_PATH)/core/font.cpp ;
-objjs src/core/log_certificate_status.bc : $(REDEMPTION_SRC_PATH)/core/log_certificate_status.cpp ;
-objjs src/gdi/clip_from_cmd.bc : $(REDEMPTION_SRC_PATH)/gdi/clip_from_cmd.cpp ;
-objjs src/gdi/graphic_api.bc : $(REDEMPTION_SRC_PATH)/gdi/graphic_api.cpp ;
-objjs src/gdi/screen_functions.bc : $(REDEMPTION_SRC_PATH)/gdi/screen_functions.cpp ;
-objjs src/keyboard/keymap.bc : $(REDEMPTION_SRC_PATH)/keyboard/keymap.cpp ;
-objjs src/mod/rdp/rdp_negociation.bc : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation.cpp ;
-objjs src/mod/rdp/rdp_negociation_data.bc : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation_data.cpp ;
-objjs src/translation/gettext.bc : $(REDEMPTION_SRC_PATH)/translation/gettext.cpp ;
-objjs src/translation/translation.bc : $(REDEMPTION_SRC_PATH)/translation/translation.cpp ;
-objjs src/transport/mwrm_reader.bc : $(REDEMPTION_SRC_PATH)/transport/mwrm_reader.cpp ;
-objjs src/utils/bitmap.bc : $(REDEMPTION_SRC_PATH)/utils/bitmap.cpp ;
-objjs src/utils/bitmap_data_allocator.bc : $(REDEMPTION_SRC_PATH)/utils/bitmap_data_allocator.cpp ;
-objjs src/utils/hexadecimal_string_to_buffer.bc : $(REDEMPTION_SRC_PATH)/utils/hexadecimal_string_to_buffer.cpp ;
-objjs src/utils/hexdump.bc : $(REDEMPTION_SRC_PATH)/utils/hexdump.cpp ;
-objjs src/utils/parse_primary_drawing_orders.bc : $(REDEMPTION_SRC_PATH)/utils/parse_primary_drawing_orders.cpp ;
-objjs src/utils/primitives/primitives.bc : $(REDEMPTION_SRC_PATH)/utils/primitives/primitives.cpp ;
-objjs src/utils/rle.bc : $(REDEMPTION_SRC_PATH)/utils/rle.cpp ;
-objjs src/utils/stacktrace.bc : $(REDEMPTION_SRC_PATH)/utils/stacktrace.cpp : $(BOOST_STACKTRACE_CXXFLAGS) ;
-objjs src/utils/strutils.bc : $(REDEMPTION_SRC_PATH)/utils/strutils.cpp ;
-objjs src/utils/sugar/multisz.bc : $(REDEMPTION_SRC_PATH)/utils/sugar/multisz.cpp ;
-objjs src/utils/utf.bc : $(REDEMPTION_SRC_PATH)/utils/utf.cpp ;
+obj src/main/_dummy.o : src/main/_dummy.cpp ;
+obj src/main/js_client.o : src/main/js_client.cpp ;
+obj src/main/js_player.o : src/main/js_player.cpp ;
+obj src/red_channels/clipboard.o : src/red_channels/clipboard.cpp ;
+obj src/red_channels/js_channel.o : src/red_channels/js_channel.cpp ;
+obj src/redjs/front.o : src/redjs/front.cpp ;
+obj src/redjs/graphics.o : src/redjs/graphics.cpp ;
+obj src/redjs/image_conversions.o : src/redjs/image_conversions.cpp ;
+obj src/redjs/transport.o : src/redjs/transport.cpp ;
+obj src/system/ssl_mod_exp.o : src/system/ssl_mod_exp.cpp ;
+obj projects/redemption_configs/redemption_src/configs/config.o : $(REDEMPTION_CONFIG_PATH)/redemption_src/configs/config.cpp ;
+obj src/client/common/new_mod_rdp.o : $(REDEMPTION_SRC_PATH)/client/common/new_mod_rdp.cpp ;
+obj src/client/common/rdp_pointer_to_rgba8888.o : $(REDEMPTION_SRC_PATH)/client/common/rdp_pointer_to_rgba8888.cpp ;
+obj src/core/RDP/dwt.o : $(REDEMPTION_SRC_PATH)/core/RDP/dwt.cpp ;
+obj src/core/RDP/mppc.o : $(REDEMPTION_SRC_PATH)/core/RDP/mppc.cpp ;
+obj src/core/RDP/nego.o : $(REDEMPTION_SRC_PATH)/core/RDP/nego.cpp ;
+obj src/core/RDP/orders/remoteFx.o : $(REDEMPTION_SRC_PATH)/core/RDP/orders/remoteFx.cpp ;
+obj src/core/RDP/rdp_pointer.o : $(REDEMPTION_SRC_PATH)/core/RDP/rdp_pointer.cpp ;
+obj src/core/RDP/rlgr.o : $(REDEMPTION_SRC_PATH)/core/RDP/rlgr.cpp ;
+obj src/core/channels_authorizations.o : $(REDEMPTION_SRC_PATH)/core/channels_authorizations.cpp ;
+obj src/core/error.o : $(REDEMPTION_SRC_PATH)/core/error.cpp :  ;
+obj src/core/font.o : $(REDEMPTION_SRC_PATH)/core/font.cpp ;
+obj src/core/log_certificate_status.o : $(REDEMPTION_SRC_PATH)/core/log_certificate_status.cpp ;
+obj src/gdi/clip_from_cmd.o : $(REDEMPTION_SRC_PATH)/gdi/clip_from_cmd.cpp ;
+obj src/gdi/graphic_api.o : $(REDEMPTION_SRC_PATH)/gdi/graphic_api.cpp ;
+obj src/gdi/screen_functions.o : $(REDEMPTION_SRC_PATH)/gdi/screen_functions.cpp ;
+obj src/keyboard/keymap.o : $(REDEMPTION_SRC_PATH)/keyboard/keymap.cpp ;
+obj src/mod/rdp/rdp_negociation.o : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation.cpp ;
+obj src/mod/rdp/rdp_negociation_data.o : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation_data.cpp ;
+obj src/translation/gettext.o : $(REDEMPTION_SRC_PATH)/translation/gettext.cpp ;
+obj src/translation/translation.o : $(REDEMPTION_SRC_PATH)/translation/translation.cpp ;
+obj src/transport/mwrm_reader.o : $(REDEMPTION_SRC_PATH)/transport/mwrm_reader.cpp ;
+obj src/utils/bitmap.o : $(REDEMPTION_SRC_PATH)/utils/bitmap.cpp ;
+obj src/utils/bitmap_data_allocator.o : $(REDEMPTION_SRC_PATH)/utils/bitmap_data_allocator.cpp ;
+obj src/utils/hexadecimal_string_to_buffer.o : $(REDEMPTION_SRC_PATH)/utils/hexadecimal_string_to_buffer.cpp ;
+obj src/utils/hexdump.o : $(REDEMPTION_SRC_PATH)/utils/hexdump.cpp ;
+obj src/utils/parse_primary_drawing_orders.o : $(REDEMPTION_SRC_PATH)/utils/parse_primary_drawing_orders.cpp ;
+obj src/utils/primitives/primitives.o : $(REDEMPTION_SRC_PATH)/utils/primitives/primitives.cpp ;
+obj src/utils/rle.o : $(REDEMPTION_SRC_PATH)/utils/rle.cpp ;
+obj src/utils/stacktrace.o : $(REDEMPTION_SRC_PATH)/utils/stacktrace.cpp :  ;
+obj src/utils/strutils.o : $(REDEMPTION_SRC_PATH)/utils/strutils.cpp ;
+obj src/utils/sugar/multisz.o : $(REDEMPTION_SRC_PATH)/utils/sugar/multisz.cpp ;
+obj src/utils/utf.o : $(REDEMPTION_SRC_PATH)/utils/utf.cpp ;
 
 alias test_scancodes : tests/application/test_scancodes ;
 alias test_clipboard : tests/red_channels/test_clipboard ;
@@ -286,49 +279,49 @@ alias tests/system :
 ;
 
 explicit
-  src/main/_dummy.bc
-  src/main/js_client.bc
-  src/main/js_player.bc
-  src/red_channels/clipboard.bc
-  src/red_channels/js_channel.bc
-  src/redjs/front.bc
-  src/redjs/graphics.bc
-  src/redjs/image_conversions.bc
-  src/redjs/transport.bc
-  src/system/ssl_mod_exp.bc
-  projects/redemption_configs/redemption_src/configs/config.bc
-  src/client/common/new_mod_rdp.bc
-  src/client/common/rdp_pointer_to_rgba8888.bc
-  src/core/RDP/dwt.bc
-  src/core/RDP/mppc.bc
-  src/core/RDP/nego.bc
-  src/core/RDP/orders/remoteFx.bc
-  src/core/RDP/rdp_pointer.bc
-  src/core/RDP/rlgr.bc
-  src/core/channels_authorizations.bc
-  src/core/error.bc
-  src/core/font.bc
-  src/core/log_certificate_status.bc
-  src/gdi/clip_from_cmd.bc
-  src/gdi/graphic_api.bc
-  src/gdi/screen_functions.bc
-  src/keyboard/keymap.bc
-  src/mod/rdp/rdp_negociation.bc
-  src/mod/rdp/rdp_negociation_data.bc
-  src/translation/gettext.bc
-  src/translation/translation.bc
-  src/transport/mwrm_reader.bc
-  src/utils/bitmap.bc
-  src/utils/bitmap_data_allocator.bc
-  src/utils/hexadecimal_string_to_buffer.bc
-  src/utils/hexdump.bc
-  src/utils/parse_primary_drawing_orders.bc
-  src/utils/primitives/primitives.bc
-  src/utils/rle.bc
-  src/utils/stacktrace.bc
-  src/utils/strutils.bc
-  src/utils/sugar/multisz.bc
-  src/utils/utf.bc
+  src/main/_dummy.o
+  src/main/js_client.o
+  src/main/js_player.o
+  src/red_channels/clipboard.o
+  src/red_channels/js_channel.o
+  src/redjs/front.o
+  src/redjs/graphics.o
+  src/redjs/image_conversions.o
+  src/redjs/transport.o
+  src/system/ssl_mod_exp.o
+  projects/redemption_configs/redemption_src/configs/config.o
+  src/client/common/new_mod_rdp.o
+  src/client/common/rdp_pointer_to_rgba8888.o
+  src/core/RDP/dwt.o
+  src/core/RDP/mppc.o
+  src/core/RDP/nego.o
+  src/core/RDP/orders/remoteFx.o
+  src/core/RDP/rdp_pointer.o
+  src/core/RDP/rlgr.o
+  src/core/channels_authorizations.o
+  src/core/error.o
+  src/core/font.o
+  src/core/log_certificate_status.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/graphic_api.o
+  src/gdi/screen_functions.o
+  src/keyboard/keymap.o
+  src/mod/rdp/rdp_negociation.o
+  src/mod/rdp/rdp_negociation_data.o
+  src/translation/gettext.o
+  src/translation/translation.o
+  src/transport/mwrm_reader.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/hexdump.o
+  src/utils/parse_primary_drawing_orders.o
+  src/utils/primitives/primitives.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/sugar/multisz.o
+  src/utils/utf.o
 ;
 
 explicit

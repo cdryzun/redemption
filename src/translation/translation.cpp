@@ -71,7 +71,7 @@ unsigned find_msgid_index(std::string_view msgid)
 {
     for (auto& s : msgid_catalog.msgstrs) {
         if (s.plurals[0].to_sv() == msgid) {
-            return checked_int(&s - msgid_catalog.msgstrs.begin());
+            return checked_int(&s - msgid_catalog.msgstrs.data());
         }
     }
     return -1u;
@@ -113,8 +113,8 @@ void push_msg(
      */
 
     auto& av = catalog.msgstrs[idx].plurals;
-    auto* p = std::begin(av);
-    auto* pend = std::end(av);
+    auto p = std::begin(av);
+    auto pend = std::end(av);
     while (msgs_it.has_value()) {
         if (p == pend) [[unlikely]] {
             LOG(LOG_WARNING, "i18n: %s: too many msgstr for '%.*s'",

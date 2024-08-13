@@ -418,7 +418,7 @@ private:
 
         [[nodiscard]] authid_t const * cbegin() const noexcept
         {
-            return this->list.cbegin();
+            return this->list.data();
         }
 
         [[nodiscard]] authid_t const * cend() const noexcept

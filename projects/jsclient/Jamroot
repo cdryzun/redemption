@@ -1,3 +1,5 @@
+using emscripten ;
+
 REDEMPTION_PUBLIC_PATH ?= [ SHELL "readlink -n -f ../.." ] ;
 
 ECHO "redemption-src: $(REDEMPTION_PUBLIC_PATH)" ;
@@ -21,24 +23,48 @@ include $(JAM_INCLUDE_PATH)/cxxflags.jam ;
 include $(JAM_INCLUDE_PATH)/includes.jam ;
 include $(JAM_INCLUDE_PATH)/sanitizer.jam ;
 
-constant NO_FFMPEG : 1 ;
-constant BOOST_STACKTRACE : 0 ;
-include $(JAM_INCLUDE_PATH)/libs.jam ;
+# reimplementation of "include $(JAM_INCLUDE_PATH)/lib.jam ;"
+## @{
+alias bz2 ;
+alias crypto ;
+alias dl ;
+alias gssapi_krb5 ;
+alias krb5 ;
+alias openssl ;
+alias snappy ;
+alias z ;
+alias png ;
+alias ffmpeg ;
+alias ppocr ;
+REDEMPTION_CXXFLAGS +=
+    #REDEMPTION_FFMPEG_FLAGS =
+    # <define>REDEMPTION_NO_FFMPEG=1
+    #REDEMPTION_HYPERSCAN_FLAGS =
+    # <define>REDEMPTION_NO_HYPERSCAN=1
+    #BOOST_STACKTRACE_CXXFLAGS =
+    <define>REDEMPTION_NO_STACKTRACE  # only for utils/stacktrace.hpp (error.cpp dependency)
+;
+## }
 
 EXE_DEPENDENCIES +=
-    <cxxflags>"-s ABORTING_MALLOC=0"
-    <cxxflags>"-s EXPORTED_RUNTIME_METHODS=['stringToUTF16']"
     <cxxflags>"--no-entry"
+    # <linkflags>"-s ABORTING_MALLOC=0"
+    <linkflags>"-s EXPORTED_RUNTIME_METHODS=['stringToUTF16']"
+
+    <linkflags>"-s STACK_SIZE=1MB"
+    <linkflags>"-s INITIAL_MEMORY=2MB"
+    # <linkflags>"-s MAXIMUM_MEMORY=4GB"  # default is 2GB
+    <linkflags>"-s ALLOW_MEMORY_GROWTH=1"
 ;
 
 constant JS_MODULE_NAME : [ setvar JS_MODULE_NAME : "WallixModule" ] ;
 constant JS_SOURCE_MAP : [ setvar JS_SOURCE_MAP : "'./'" ] ;
 constant JS_CLIENT_COPY_MODE : [ setvar copy_application_mode : "copy" ] ;
-constant EM_ALLOW_UNIMPLEMENTED_SYSCALLS : [ setvar allow_unimplemented_syscalls : "yes" ] ;
 
 import feature : feature ;
 import toolset ;
 
+# TODO replace with -g3 -gsource-map with optional source-map-base (for node) ?
 feature source_map_support : no yes : propagated ;
 toolset.flags source_map_support SOURCE_MAP_SUPPORT : <source_map_support> ;
 toolset.flags exenode SOURCE_MAP_SUPPORT <source_map_support> ;
@@ -52,13 +78,13 @@ rule emcc_flags ( properties * )
     local fs = ;
 
     # remove -Wno-ctad-maybe-unsupported
-    for f in [ flags $(properties) ]
-    {
-        if $(f) != <cxxflags>-Wno-ctad-maybe-unsupported
-        {
-            fs += $(f) ;
-        }
-    }
+    # for f in [ flags $(properties) ]
+    # {
+    #     if $(f) != <cxxflags>-Wno-ctad-maybe-unsupported
+    #     {
+    #         fs += $(f) ;
+    #     }
+    # }
 
     local ps = [ property-set.create $(properties) ] ;
 
@@ -76,20 +102,6 @@ rule emcc_flags ( properties * )
             # <cxxflags>"-s WASM=1"
         ;
     }
-    # else
-    # {
-    #     fs +=
-    #         <cxxflags>"-s WASM=0"
-    #     ;
-    # }
-
-    # execve and fork with boost unit test | uname() with gethostname()
-    if $(EM_ALLOW_UNIMPLEMENTED_SYSCALLS) = yes
-    {
-        fs +=
-            <cxxflags>"-s ALLOW_UNIMPLEMENTED_SYSCALLS"
-        ;
-    }
 
     return $(fs) ;
 }
@@ -102,17 +114,13 @@ rule filter_flags ( flags * )
     {
         if $(f) != <cxxflags>-msse3
         {
-            if $(f) = <conditional>@flags || $(f) = <conditional>@gflags
+            if $(f) != <conditional>@flags
             {
-                jsflags += <conditional>@emcc_flags ;
-            }
-            else if $(f) = "<variant>debug:<cxx-stl-debug-default>allow-broken-abi"
-            {
-                jsflags += <variant>debug:<cxx-stl-debug-default>on ;
+                jsflags += $(f) ;
             }
             else
             {
-                jsflags += $(f) ;
+                jsflags += <conditional>@emcc_flags ;
             }
         }
     }
@@ -125,9 +133,12 @@ REDEMPTION_CXXFLAGS = [ filter_flags $(REDEMPTION_CXXFLAGS) ] ;
 project redjs
     : requirements
 
+    <cxx-color-default>always
+
     $(REDEMPTION_CXXFLAGS)
-    $(BOOST_STACKTRACE_CXXFLAGS)
-    # $(REDEMPTION_FFMPEG_FLAGS)
+    # not necessary, but perhaps in the future
+    # <define>REDEMPTION_NO_HYPERSCAN=1
+    <cxxflags>-Wno-mismatched-tags
 
     <cxxflags>"-isystem system_include"
     <include>src
@@ -137,13 +148,17 @@ project redjs
     # DISABLE_EXCEPTION_CATCHING = 1 - disable exception catching at all
     # DISABLE_EXCEPTION_CATCHING = 2 - disable exception catching, but enables catching in whitelist
     # <cxxflags>"-s DISABLE_EXCEPTION_CATCHING=0"
-    <variant>debug:<cxxflags>"-s DISABLE_EXCEPTION_CATCHING=0"
-    <variant>release:<cxxflags>"-s DISABLE_EXCEPTION_CATCHING=2"
-    <variant>release:<cxxflags>"-s EXCEPTION_CATCHING_ALLOWED=['Error']"
-    <variant>release:<linkflags>"-s EXCEPTION_CATCHING_ALLOWED=['Error']"
+    <variant>debug:<exception-handling>on/<exception-handling-method>js:<cxxflags>"-s DISABLE_EXCEPTION_CATCHING=0"
+    <variant>release:<exception-handling>on/<exception-handling-method>js:<cxxflags>"-s DISABLE_EXCEPTION_CATCHING=2"
+    <variant>release:<exception-handling>on/<exception-handling-method>js:<cxxflags>"-s EXCEPTION_CATCHING_ALLOWED=['Error']"
+    <variant>release:<exception-handling>on/<exception-handling-method>js:<linkflags>"-s EXCEPTION_CATCHING_ALLOWED=['Error']"
+
+    <variant>debug:<linkflags>"-s STACK_OVERFLOW_CHECK=2"
+
     # <linkflags>"-s SIMD=1"
     # <cxxflags>"-s FS_LOG=1"
-
+    #<linkflags>"-s STACK_OVERFLOW_CHECK=2"
+    # <cxxflags>"-s USE_PTHREADS=0"
     # <cxxflags>"-s FILESYSTEM=0"
     <cxxflags>"-s USE_LIBPNG=0"
     <cxxflags>"-s USE_ZLIB=0"
@@ -151,7 +166,6 @@ project redjs
 
     <cxxflags>"-s STRICT=1"
 
-    # <cxxflags>"-s ALLOW_MEMORY_GROWTH=1"
 
     # <cxxflags>"-s ASM_JS=0"
     # <cxxflags>"-s BINARYEN_TRAP_MODE=js" # clamp, allow
@@ -170,7 +184,7 @@ project redjs
     # <variant>release:<cxxflags>-Oz
 
     # <variant>release:<cxxflags>"-s AGGRESSIVE_VARIABLE_ELIMINATION=1"
-    <variant>release:<cxxflags>"-s EVAL_CTORS=1"
+    # <variant>release:<linkflags>"-s EVAL_CTORS=1"
     # <variant>release:<cxxflags>"-s ELIMINATE_DUPLICATE_FUNCTIONS=1" # slow
     # <variant>release:<cxxflags>"-s ASSERTIONS=0"
     # <variant>release:<cxxflags>"-s ALIASING_FUNCTION_POINTERS=1" #but can break code that compares function pointers across different types.
@@ -183,11 +197,11 @@ project redjs
 
     <cxxflags>-Wno-dollar-in-identifier-extension
     <cxxflags>-Wno-missing-variable-declarations
+    <cxxflags>-fbracket-depth=512
+    # <cxxflags>-sSTANDALONE_WASM
 
     : default-build release
 ;
-
-using emscripten ;
 
 
 constant CXXFLAGS_TEST :
@@ -196,20 +210,20 @@ constant CXXFLAGS_TEST :
     # <cxxflags>"-s NODERAWFS"
 ;
 
-objjs register_exception.bc :
+obj register_exception.o :
     $(REDEMPTION_TEST_PATH)/includes/test_only/test_framework/impl/register_exception.cpp
 :
     $(CXXFLAGS_TEST)
     <cxxflags>-O3
 ;
-objjs test_framework.bc :
+obj test_framework.o :
     $(REDEMPTION_TEST_PATH)/includes/test_only/test_framework/impl/test_framework.cpp
 :
     $(CXXFLAGS_TEST)
     <define>BOOST_TEST_DYN_LINK
     <cxxflags>-O3
 ;
-objjs redemption_unit_test.bc :
+obj redemption_unit_test.o :
     $(REDEMPTION_TEST_PATH)/includes/test_only/test_framework/redemption_unit_tests.cpp
 :
     $(CXXFLAGS_TEST)
@@ -217,42 +231,30 @@ objjs redemption_unit_test.bc :
     <cxxflags>-O3
 ;
 
-alias unit_test.bc :
-    test_framework.bc
-    redemption_unit_test.bc
+alias unit_test.o :
+    test_framework.o
+    redemption_unit_test.o
 ;
 
 constant TEST_DEPENDENCIES :
     $(CXXFLAGS_TEST)
-    <cxxflags>--bind
-    <cxxflags>"-s EXIT_RUNTIME=1"
+    <linkflags>--bind
+    <linkflags>"-s STACK_SIZE=131072"
+    <linkflags>"-s EXIT_RUNTIME=1"
 ;
 
-objjs log_test.bc : $(REDEMPTION_TEST_PATH)/includes/test_only/log_as_logtest.cpp
+obj log_test.o : $(REDEMPTION_TEST_PATH)/includes/test_only/log_as_logtest.cpp
     : <include>$(REDEMPTION_TEST_PATH)/includes ;
-objjs _log_print.bc : $(REDEMPTION_SRC_PATH)/utils/log_as_logprint.cpp ;
-objjs _log_level.bc : src/redjs/log_level.cpp ;
-alias log_print.bc : _log_print.bc _log_level.bc ;
+obj _log_print.o : $(REDEMPTION_SRC_PATH)/utils/log_as_logprint.cpp ;
+obj _log_level.o : src/redjs/log_level.cpp ;
+alias log_print.o : _log_print.o _log_level.o ;
 
-objjs app_path_test.bc : src/core/app_path.cpp :
+obj app_path_test.o : src/core/app_path.cpp :
     <define>SHARE_PATH='\"$(FIXTURES_PATH)\"'
     <define>CFG_PATH='\"$(REDEMPTION_SYS_PATH)/etc/rdpproxy/\"'
 ;
 
-alias app_path_exe.bc : app_path_test.bc ;
-
-alias bz2.bc ;
-alias crypto.bc ;
-alias dl.bc ;
-alias gssapi_krb5.bc ;
-alias krb5.bc ;
-alias libpng.bc ;
-alias openssl.bc ;
-alias snappy.bc ;
-alias z.bc ;
-alias png.bc : libpng.bc z.bc ;
-alias ffmpeg.bc ;
-alias ppocr.bc ;
+alias app_path_exe.o : app_path_test.o ;
 
 
 actions gen_targets
@@ -272,11 +274,12 @@ actions exenode
 
 rule exe-js ( name : src * : objs * : deps * )
 {
-    exejs $(name).em : $(src) $(objs) log_print.bc :
+    exe $(name).em : $(src) $(objs) log_print.o :
         $(deps)
-        <cxxflags>--bind
-        <cxxflags>"-s MODULARIZE=1"
-        <cxxflags>"-s EXPORT_NAME="$(JS_MODULE_NAME)
+        <linkflags>--bind
+        <linkflags>"-s MODULARIZE=1"
+        <linkflags>"-s EXPORT_NAME="$(JS_MODULE_NAME)
+        <linkflags>-sIMPORTED_MEMORY=1
     ;
     alias $(name) : $(name).em ;
 }
@@ -298,7 +301,7 @@ rule test-run-js ( name : sources + : objs * : deps * )
         }
     }
 
-    objjs $(name).bc : $(src) :
+    obj $(name).o : $(src) :
         <include>$(REDEMPTION_TEST_PATH)/includes
         <include>tests/includes
         <define>RED_TEST_MODULE=$(name)
@@ -306,13 +309,13 @@ rule test-run-js ( name : sources + : objs * : deps * )
         <define>BOOST_TEST_DYN_LINK
     ;
 
-    if src/core/error.bc in $(objs)
+    if src/core/error.o in $(objs)
     {
-        objs += register_exception.bc ;
+        objs += register_exception.o ;
     }
 
-    exejs $(name).em
-        : $(name).bc $(objs) unit_test.bc log_test.bc
+    exe $(name).em
+        : $(name).o $(objs) unit_test.o log_test.o
         : $(TEST_DEPENDENCIES) $(deps)
         ;
     make $(name) : $(name).em $(jssources) : @exenode ;

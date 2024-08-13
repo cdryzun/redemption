@@ -276,7 +276,7 @@ static std::string generic_flags_to_string(FlagType flags, ToName to_name, Flag.
     {
         if (flags & flag) {
             auto r = std::to_chars(
-                buffer_it->begin(), buffer_it->end(),
+                buffer_it->data(), buffer_it->data() + buffer_it->size(),
                 FlagType(flag), 16);
             *views_it++ = has_value ? " | "_av : ""_av;
             *views_it++ = to_name(flag);

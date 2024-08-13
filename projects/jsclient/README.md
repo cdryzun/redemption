@@ -41,18 +41,16 @@ node test.js
 
 ## Run bjam
 
-    bjam -j7 toolset=clang js_client
-
-If there is a error: `attempt to link unsupport syscall`, add `-s ALLOW_UNIMPLEMENTED_SYSCALLS=1`.
+    bjam -j7 js_client
 
 Debug mode:
 
-    bjam -j7 toolset=clang debug js_client
+    bjam -j7 debug js_client
 
 And tests with
 
-    bjam -j7 toolset=clang install_node_modules
-    bjam -j7 toolset=clang
+    bjam -j7 install_node_modules
+    bjam -j7
 
 If you get some undefined symbol error, run `bjam targets.jam`.
 
@@ -60,12 +58,12 @@ If you get some undefined symbol error, run `bjam targets.jam`.
 
     npm install source-map-support
 
-    bjam debug source_map_support=yes ....
+    bjam debug -s debug-symbols-source-map=on ....
 
 
 ## Install
 
-    bjam -j7 toolset=clang -s copy_application_mode=symbolic rdpclient
+    bjam -j7 -s copy_application_mode=symbolic rdpclient
 
 Set module name with `-s JS_MODULE_NAME=xxx`
 
@@ -85,29 +83,24 @@ Inner `rdpproxy.ini`.
 enable_websocket=yes
 ```
 
-Or use `websocat` (websocket -> tcp).
+Or use [websocat](https://github.com/vi/websocat) (websocket to tcp).
 
-```bash
-sudo apt install cargo
-wget https://github.com/vi/websocat/archive/master.zip
-unzip master.zip
-cd websocat-master
-cargo build --release --bin websocat
-./target/release/websocat --binary ws-l:127.0.0.1:8080 tcp:127.0.0.1:3389
+```
+websocat --binary ws-l:127.0.0.1:8080 tcp:127.0.0.1:3389
 ```
 
 ## Open rdpclient.html
 
-Create a server at build directory (see `bjam toolset=clang cwd`).
+Create a server at build directory (see `bjam cwd`).
 
-    cd "$(bjam toolset=clang cwd | sed '/^CWD/!d;s/^CWD: //')"
+    cd "$(bjam cwd | sed '/^CWD/!d;s/^CWD: //')"
     python3 -m http.server 7453 --bind 127.0.0.1
     xdg-open http://localhost:7453/client.html
 
 Or run
 
     ./tools/open_client.sh
-
+    # or
     ./tools/open_client.sh debug
 
 Or with parameters

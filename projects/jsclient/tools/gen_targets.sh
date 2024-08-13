@@ -36,33 +36,31 @@ done
 
 ./tools/bjam/gen_targets.py \
     --implicit tests \
-    --main $d/src/main \
-    --src $d/src/red_emscripten \
-    --src $d/src/red_channels \
-    --src $d/src/redjs \
-    --src $d/src/system \
-    --deps-src src/client/common/new_mod_rdp.hpp,$d/src/red_channels/\*.cpp \
-    --deps-src $d/src/redjs/graphics.hpp,$d/src/redjs/image_conversions.cpp \
-    --include $d/src \
+    --main "$d"/src/main \
+    --src "$d"/src/red_emscripten \
+    --src "$d"/src/red_channels \
+    --src "$d"/src/redjs \
+    --src "$d"/src/system \
+    --deps-src src/client/common/new_mod_rdp.hpp,"$d"/src/red_channels/\*.cpp \
+    --deps-src "$d"/src/redjs/graphics.hpp,"$d"/src/redjs/image_conversions.cpp \
+    --include "$d"/src \
     --src-system emscripten \
     --lib '' \
-    --test $d/tests \
+    --test "$d"/tests \
     $disable_sources \
-| sed -E '/^  test_/!{
+| sed -E '
     /^  <variant>[^:]+:<library>dl$|^  <(covfile|variant)|^  \$\(GCOV_NO_BUILD\)|\.coverage ;$/d;
     s/^exe /exe-js /;t
     s@^test-run '$d'/@test-run-js @;t
-    s/^obj ([^.]+).o/objjs \1.bc/;ta
-    s/^  <library>(.*)(\.o)?/  \1.bc/;ta
-    s/^  (.*)\.o/  \1.bc/;ta
-    s/^  (\w+)$/  \1.bc/;
     s/^  \$\(EXE_DEPENDENCIES\)/:\n&/;t
     '"$addjs_deps"'
     :a
     s@ : src/@ : $(REDEMPTION_SRC_PATH)/@g
     s@ : tests/@ : $(REDEMPTION_TEST_PATH)/@g
     s@ : projects/redemption_configs/@ : $(REDEMPTION_CONFIG_PATH)/@g
+    /^ +\$\(BOOST_STACKTRACE_(LINKFLAGS|CXXFLAGS)\) *$/d
+    s@ \$\(BOOST_STACKTRACE_(LINKFLAGS|CXXFLAGS)\)@ @
     s@ '$d'/@ @g
-}'
+'
 # s@^(objjs src/main/[^.]+\.bc : src/[^ ]+) ;$@\1 : <cxxflags>-fno-rtti\&\&-frtti ;@
 exit ${PIPESTATUS[0]}
