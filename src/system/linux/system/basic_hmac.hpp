@@ -28,7 +28,7 @@
 #include <cstring>
 
 #include <openssl/hmac.h>
-
+#include <openssl/evp.h>
 
 namespace detail_
 {
@@ -36,21 +36,55 @@ namespace detail_
 struct HMACWrap
 {
 # if OPENSSL_VERSION_NUMBER < 0x10100000L
-    void init() { HMAC_CTX_init(&this->hmac); }
+    int init(EVP_MD const * evp, bytes_view key)
+    {
+        this->hmac = HMAC_CTX_new();
+        return HMAC_Init_ex(this->hmac, key.as_u8p(), key.size(), evp, nullptr);
+    }
     void deinit() { HMAC_CTX_cleanup(&this->hmac); }
+    int update(bytes_view data) { return HMAC_Update(this->hmac, data.as_u8p(), data.size()); }
+    int final(unsigned char *out, size_t *outl, size_t /*outsize*/) { return HMAC_Final(this->hmac, out, outl); }
     HMAC_CTX * operator->() noexcept { return &this->hmac; }
     operator HMAC_CTX * () noexcept { return &this->hmac; }
 
 private:
     HMAC_CTX hmac;
-# else
-    void init() { this->hmac = HMAC_CTX_new(); }
+
+# elif OPENSSL_VERSION_NUMBER < 0x30000000L
+    int init(EVP_MD const * evp, bytes_view key)
+    {
+        this->hmac = HMAC_CTX_new();
+        return HMAC_Init_ex(this->hmac, key.as_u8p(), key.size(), evp, nullptr);
+    }
     void deinit() { HMAC_CTX_free(this->hmac); }
+    int update(bytes_view data) { return HMAC_Update(this->hmac, data.as_u8p(), data.size()); }
+    int final(unsigned char *out, size_t *outl, size_t /*outsize*/) { return HMAC_Final(this->hmac, out, outl); }
     HMAC_CTX * operator->() noexcept { return this->hmac; }
     operator HMAC_CTX * () noexcept { return this->hmac; }
 
 private:
     HMAC_CTX * hmac = nullptr;
+
+# else
+    int init(EVP_MD const * evp, bytes_view key)
+    {
+        auto mac = EVP_MAC_fetch(nullptr, "HMAC", nullptr);
+        this->hmac = EVP_MAC_CTX_new(mac);
+        EVP_MAC_free(mac);
+        OSSL_PARAM params[2];
+        params[0] = OSSL_PARAM_construct_utf8_string("digest", const_cast<char*>(EVP_MD_name(evp)), 0);
+        params[1] = OSSL_PARAM_construct_end();
+        return EVP_MAC_init(this->hmac, key.as_u8p(), key.size(), params);
+    }
+    void deinit() { EVP_MAC_CTX_free(this->hmac); }
+    int update(bytes_view data) { return EVP_MAC_update(this->hmac, data.as_u8p(), data.size()); }
+    int final(unsigned char *out, size_t *outl, size_t outsize) { return EVP_MAC_final(this->hmac, out, outl, outsize); }
+    EVP_MAC_CTX * operator->() noexcept { return this->hmac; }
+    operator EVP_MAC_CTX * () noexcept { return this->hmac; }
+
+private:
+    EVP_MAC_CTX * hmac = nullptr;
+
 # endif
 };
 
@@ -62,9 +96,7 @@ class basic_HMAC
 public:
     basic_HMAC(bytes_view key)
     {
-        this->hmac.init();
-        int res = HMAC_Init_ex(this->hmac, key.as_u8p(), key.size(), evp(), nullptr);
-        if (res == 0) {
+        if (!this->hmac.init(evp(), key)) {
             throw Error(ERR_SSL_CALL_HMAC_INIT_FAILED);
         }
     }
@@ -76,17 +108,16 @@ public:
 
     void update(bytes_view data)
     {
-        int res = HMAC_Update(this->hmac, data.as_u8p(), data.size());
-        if (res == 0) {
+        if (!this->hmac.update(data)) {
             throw Error(ERR_SSL_CALL_HMAC_UPDATE_FAILED);
         }
     }
 
     void final(sized_writable_u8_array_view<DigestLength> out_data)
     {
-        unsigned int len = 0;
-        int res = HMAC_Final(this->hmac, out_data.data(), &len);
-        if (res == 0) {
+        size_t len = 0;
+
+        if (!this->hmac.final(out_data.data(), &len, DigestLength)) {
             throw Error(ERR_SSL_CALL_HMAC_FINAL_FAILED);
         }
         assert(len == DigestLength);
@@ -107,9 +138,8 @@ public:
         if (this->initialized){
             throw Error(ERR_SSL_CALL_HMAC_INIT_FAILED);
         }
-        this->hmac.init();
-        int res = HMAC_Init_ex(this->hmac, key.as_u8p(), key.size(), evp(), nullptr);
-        if (res == 0) {
+
+        if (!this->hmac.init(evp(), key)) {
             throw Error(ERR_SSL_CALL_HMAC_INIT_FAILED);
         }
         this->initialized = true;
@@ -127,8 +157,8 @@ public:
         if (!this->initialized){
             throw Error(ERR_SSL_CALL_HMAC_UPDATE_FAILED);
         }
-        int res = HMAC_Update(this->hmac, data.as_u8p(), data.size());
-        if (res == 0) {
+
+        if (!this->hmac.update(data)) {
             throw Error(ERR_SSL_CALL_HMAC_UPDATE_FAILED);
         }
     }
@@ -138,9 +168,9 @@ public:
         if (!this->initialized){
             throw Error(ERR_SSL_CALL_HMAC_FINAL_FAILED);
         }
-        unsigned int len = 0;
-        int res = HMAC_Final(this->hmac, out_data.data(), &len);
-        if (res == 0) {
+        size_t len = 0;
+
+        if (!this->hmac.final(out_data.data(), &len, DigestLength)) {
             throw Error(ERR_SSL_CALL_HMAC_FINAL_FAILED);
         }
         assert(len == DigestLength);

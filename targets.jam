@@ -4270,6 +4270,9 @@ test-run tests/system/linux/system/test_ssl_rc4 :
   $(REDEMPTION_TEST_PATH)/system/linux/system/test_ssl_rc4.cpp
 :
   <library>crypto
+  <library>src/core/error.o
+  <library>src/utils/stacktrace.o
+  $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run tests/system/linux/system/test_ssl_sha1 :
   $(REDEMPTION_TEST_PATH)/system/linux/system/test_ssl_sha1.cpp
@@ -4828,6 +4831,7 @@ test-run tests/utils/test_parse_primary_drawing_orders :
 test-run tests/utils/test_parse_server_message :
   $(REDEMPTION_TEST_PATH)/utils/test_parse_server_message.cpp
 :
+  <library>src/utils/strutils.o
 ;
 test-run tests/utils/test_png :
   $(REDEMPTION_TEST_PATH)/utils/test_png.cpp

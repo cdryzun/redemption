@@ -27,6 +27,70 @@
 
 #include <openssl/md4.h>
 
+# if OPENSSL_VERSION_NUMBER >= 0x30000000L
+
+#include "core/error.hpp"
+#include "utils/sugar/movable_ptr.hpp"
+
+#include <openssl/evp.h>
+
+class SslMd4
+{
+    movable_ptr<EVP_MD_CTX> md4;
+
+public:
+    enum : unsigned { DIGEST_LENGTH = MD4_DIGEST_LENGTH };
+
+    SslMd4()
+    {
+        reset();
+    }
+
+    ~SslMd4()
+    {
+        if (md4) {
+            EVP_MD_CTX_free(md4);
+        }
+    }
+
+    void update(bytes_view data)
+    {
+        if (!md4 || EVP_DigestUpdate(md4, data.as_u8p(), data.size()) != 1) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+    }
+
+    void final(sized_writable_u8_array_view<DIGEST_LENGTH> out_data)
+    {
+        if (!md4) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+        unsigned int out_len = DIGEST_LENGTH;
+        if (EVP_DigestFinal_ex(md4, out_data.data(), &out_len) != 1) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+    }
+
+    void reset()
+    {
+        if (md4) {
+            EVP_MD_CTX_free(md4);
+        }
+        md4 = EVP_MD_CTX_new();
+        if (!md4) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+
+        const EVP_MD* md4_md = EVP_md4();
+        if (EVP_DigestInit_ex(md4, md4_md, nullptr) != 1) {
+            EVP_MD_CTX_free(md4);
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+    }
+};
+
+# else
+
 
 class SslMd4
 {
@@ -50,3 +114,5 @@ public:
         MD4_Final(out_data.data(), &this->md4);
     }
 };
+
+# endif

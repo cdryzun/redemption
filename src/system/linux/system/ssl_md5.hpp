@@ -27,6 +27,70 @@
 
 #include <openssl/md5.h>
 
+# if OPENSSL_VERSION_NUMBER >= 0x30000000L
+
+#include "core/error.hpp"
+#include "utils/sugar/movable_ptr.hpp"
+
+#include <openssl/evp.h>
+
+class SslMd5
+{
+    movable_ptr<EVP_MD_CTX> md5;
+
+public:
+    enum : unsigned { DIGEST_LENGTH = MD5_DIGEST_LENGTH };
+
+    SslMd5()
+    {
+        reset();
+    }
+
+    ~SslMd5()
+    {
+        if (md5) {
+            EVP_MD_CTX_free(md5);
+        }
+    }
+
+    void update(bytes_view data)
+    {
+        if (!md5 || EVP_DigestUpdate(md5, data.as_u8p(), data.size()) != 1) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+    }
+
+    void final(sized_writable_u8_array_view<DIGEST_LENGTH> out_data)
+    {
+        if (!md5) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+        unsigned int out_len = DIGEST_LENGTH;
+        if (EVP_DigestFinal_ex(md5, out_data.data(), &out_len) != 1) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+    }
+
+    void reset()
+    {
+        if (md5) {
+            EVP_MD_CTX_free(md5);
+        }
+        md5 = EVP_MD_CTX_new();
+        if (!md5) {
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+
+        const EVP_MD* md5_md = EVP_md5();
+        if (EVP_DigestInit_ex(md5, md5_md, nullptr) != 1) {
+            EVP_MD_CTX_free(md5);
+            throw Error(ERR_SSL_CALL_FAILED);
+        }
+    }
+};
+
+
+# else
 
 class SslMd5
 {
@@ -51,5 +115,6 @@ public:
     }
 };
 
+# endif
 
 using SslHMAC_Md5 = detail_::basic_HMAC<&EVP_md5, SslMd5::DIGEST_LENGTH>;
