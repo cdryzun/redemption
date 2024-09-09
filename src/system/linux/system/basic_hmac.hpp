@@ -36,6 +36,7 @@ namespace detail_
 struct HMACWrap
 {
 # if OPENSSL_VERSION_NUMBER < 0x10100000L
+    using out_size_t = unsigned;
     int init(EVP_MD const * evp, bytes_view key)
     {
         this->hmac = HMAC_CTX_new();
@@ -43,7 +44,7 @@ struct HMACWrap
     }
     void deinit() { HMAC_CTX_cleanup(&this->hmac); }
     int update(bytes_view data) { return HMAC_Update(this->hmac, data.as_u8p(), data.size()); }
-    int final(unsigned char *out, size_t *outl, size_t /*outsize*/) { return HMAC_Final(this->hmac, out, outl); }
+    int final(unsigned char *out, out_size_t *outl, size_t /*outsize*/) { return HMAC_Final(this->hmac, out, outl); }
     HMAC_CTX * operator->() noexcept { return &this->hmac; }
     operator HMAC_CTX * () noexcept { return &this->hmac; }
 
@@ -51,6 +52,7 @@ private:
     HMAC_CTX hmac;
 
 # elif OPENSSL_VERSION_NUMBER < 0x30000000L
+    using out_size_t = unsigned;
     int init(EVP_MD const * evp, bytes_view key)
     {
         this->hmac = HMAC_CTX_new();
@@ -58,7 +60,7 @@ private:
     }
     void deinit() { HMAC_CTX_free(this->hmac); }
     int update(bytes_view data) { return HMAC_Update(this->hmac, data.as_u8p(), data.size()); }
-    int final(unsigned char *out, size_t *outl, size_t /*outsize*/) { return HMAC_Final(this->hmac, out, outl); }
+    int final(unsigned char *out, out_size_t *outl, size_t /*outsize*/) { return HMAC_Final(this->hmac, out, outl); }
     HMAC_CTX * operator->() noexcept { return this->hmac; }
     operator HMAC_CTX * () noexcept { return this->hmac; }
 
@@ -66,6 +68,7 @@ private:
     HMAC_CTX * hmac = nullptr;
 
 # else
+    using out_size_t = size_t;
     int init(EVP_MD const * evp, bytes_view key)
     {
         auto mac = EVP_MAC_fetch(nullptr, "HMAC", nullptr);
@@ -78,7 +81,7 @@ private:
     }
     void deinit() { EVP_MAC_CTX_free(this->hmac); }
     int update(bytes_view data) { return EVP_MAC_update(this->hmac, data.as_u8p(), data.size()); }
-    int final(unsigned char *out, size_t *outl, size_t outsize) { return EVP_MAC_final(this->hmac, out, outl, outsize); }
+    int final(unsigned char *out, out_size_t *outl, size_t outsize) { return EVP_MAC_final(this->hmac, out, outl, outsize); }
     EVP_MAC_CTX * operator->() noexcept { return this->hmac; }
     operator EVP_MAC_CTX * () noexcept { return this->hmac; }
 
@@ -115,7 +118,7 @@ public:
 
     void final(sized_writable_u8_array_view<DigestLength> out_data)
     {
-        size_t len = 0;
+        HMACWrap::out_size_t len = 0;
 
         if (!this->hmac.final(out_data.data(), &len, DigestLength)) {
             throw Error(ERR_SSL_CALL_HMAC_FINAL_FAILED);
@@ -168,7 +171,7 @@ public:
         if (!this->initialized){
             throw Error(ERR_SSL_CALL_HMAC_FINAL_FAILED);
         }
-        size_t len = 0;
+        HMACWrap::out_size_t len = 0;
 
         if (!this->hmac.final(out_data.data(), &len, DigestLength)) {
             throw Error(ERR_SSL_CALL_HMAC_FINAL_FAILED);
