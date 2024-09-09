@@ -323,20 +323,34 @@ for deadmap, idx in dktables.items():
         strings.append('\n')
     strings.append('};\n\n')
 
+def find_scancode(keymap, text: str, default: int) -> int:
+    try:
+        return next(i for i, k in enumerate(keymap) if k and k.text == text)
+    except StopIteration:
+        return default
+
 # prepare keymap_mod and dkeymap_mod
 unique_layout_keymap = {}
 unique_layout_dkeymap = {}
-strings2 = ['static constexpr KeyLayout layouts[] {\n']
+strings2 = ['using Sc = kbdtypes::Scancode;\n\nstatic constexpr KeyLayout layouts[] {\n']
 keymap_by_names = []
 display_names = set()
 for layout in layouts2:
     mods_array = [0]*64
     dmods_array = [0]*64
-    for mod, _keymap, dkeymap, idx in layout.keymaps:
+    sc_R = 0x13
+    sc_C = 0x2E
+    sc_V = 0x2F
+    for mod, keymap, dkeymap, idx in layout.keymaps:
         mask = supported_mods_name_to_mask[mod]
         mods_array[mask] = idx
         if dkeymap:
             dmods_array[mask] = dktables[dkeymap]
+        if mask == 0:
+            sc_R = find_scancode(keymap, 'r', sc_R)
+            sc_C = find_scancode(keymap, 'c', sc_C)
+            sc_V = find_scancode(keymap, 'v', sc_V)
+
     k1 = (*mods_array,)
     k2 = (*dmods_array,)
     k1 = unique_layout_keymap.setdefault(k1, len(unique_layout_keymap))
@@ -349,7 +363,16 @@ for layout in layouts2:
         raise Exception(f"duplicate name: {display_name} ({layout.origin_display_name} / {layout.locale_name})")
     display_names.add(display_name)
 
-    strings2.append(f'    KeyLayout{{KbdId(0x{layout.klid}), KeyLayout::RCtrlIsCtrl({layout.has_right_ctrl_like_oem8 and "false" or "true "}), "{display_name}"_zv/*, "{layout.display_name}"_zv, "{layout.locale_name}"_zv*/, keymap_mod_{k1}, dkeymap_mod_{k2}}},\n')
+    strings2.append('    KeyLayout{'
+        f'KbdId(0x{layout.klid}), '
+        f'KeyLayout::RCtrlIsCtrl({layout.has_right_ctrl_like_oem8 and "false" or "true "}), '
+        f'Sc(0x{sc_R:x}), '
+        f'Sc(0x{sc_C:x}), '
+        f'Sc(0x{sc_V:x}), '
+        f'"{display_name}"_zv/*, "{layout.display_name}"_zv, "{layout.locale_name}"_zv*/, '
+        f'keymap_mod_{k1}, '
+        f'dkeymap_mod_{k2}}},\n'
+    )
     keymap_by_names.append((display_name.upper(), f'    layouts[{len(keymap_by_names)}],\n'))
 strings2.append('};\n')
 

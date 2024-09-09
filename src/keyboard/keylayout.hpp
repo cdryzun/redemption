@@ -20,6 +20,7 @@ Author(s): Proxies Team
 
 #pragma once
 
+#include "keyboard/kbdtypes.hpp"
 #include "utils/sugar/zstring_view.hpp"
 #include "utils/sugar/bounded_array_view.hpp"
 
@@ -128,6 +129,10 @@ struct KeyLayout
 
     KbdId kbdid;
     RCtrlIsCtrl right_ctrl_is_ctrl;
+    // scancodes used with Session Probe
+    kbdtypes::Scancode key_R;
+    kbdtypes::Scancode key_C;
+    kbdtypes::Scancode key_V;
     zstring_view name;
 
     sized_array_view<sized_array_view<unicode_t, 256>, 64> keymap_by_mod;
@@ -195,6 +200,9 @@ namespace detail
     inline constexpr KeyLayout null_layout_layout{
         KeyLayout::KbdId(0),
         KeyLayout::RCtrlIsCtrl(true),
+        kbdtypes::Scancode(),
+        kbdtypes::Scancode(),
+        kbdtypes::Scancode(),
         "null"_zv,
         detail::null_layout_unicode_by_mods,
         detail::null_layout_keytable_by_mods
