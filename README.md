@@ -35,6 +35,7 @@ The project also contains 2 RDP clients:
             2. [Musl libc](#musl-libc)
             3. [ARM](#arm)
     6. [Add .cpp file](#add-cpp-file)
+    7. [Update keylayout](#update-keylayout)
 2. [Run Redemption](#run-redemption)
 3. [Setting Redemption](#setting-redemption)
     1. [Migrate the configuration to the next version](#migrate-the-configuration-to-the-next-version)
@@ -288,6 +289,10 @@ bjam -s TARGET=arm ....
 The compiled files are referenced in `targets.jam`. This is a file that is generated via `./tools/bjam/gen_targets.py` and is updated with `bjam targets.jam` or `./tools/bjam/gen_targets.py > targets.jam`.
 
 When you added a .cpp file or there is a link error, remember to run `bjam targets.jam`.
+
+## Update keylayout
+
+See `tools/gen_keylayouts/`
 
 
 # Run Redemption
