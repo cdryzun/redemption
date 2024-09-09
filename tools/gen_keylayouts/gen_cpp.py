@@ -52,6 +52,99 @@ mods_to_mask = {
     'VK_OEM_8': 32,
 }
 
+display_name_map = {
+    'US': 'en-US',
+    'United States-International': 'en-US.international',
+    'United States-Dvorak': 'en-US.dvorak',
+    'United States-Dvorak for left hand': 'en-US.dvorak_left',
+    'United States-Dvorak for right hand': 'en-US.dvorak_right',
+    'Colemak': 'en-US.colemak',
+    'United Kingdom': 'en-GB',
+    'Irish': 'en-IE.irish',
+    'Scottish Gaelic': 'en-IE',
+    'Canadian French': 'en-CA.fr',
+    'Canadian Multilingual Standard': 'en-CA.multilingual',
+    'French': 'fr-FR',
+    'French (Legacy, AZERTY)': 'fr-FR',
+    'French (Standard, AZERTY)': 'fr-FR.standard',
+    'French (Standard, BÉPO)': 'bépo',
+    'Belgian (Comma)': 'fr-BE',
+    'Swiss French': 'fr-CH',
+    'Belgian French': 'fr-BE.fr',
+    'Canadian French (Legacy)': 'fr-CA',
+    'Czech': 'cs-CZ',
+    'Czech (QWERTY)': 'cs-CZ.qwerty',
+    'Czech Programmers': 'cs-CZ.programmers',
+    'Danish': 'da-DK',
+    'German': 'de-DE',
+    'German (IBM)': 'de-DE.ibm',
+    'German Extended (E1)': 'de-DE.ex1',
+    'German Extended (E2)': 'de-DE.ex2',
+    'Swiss German': 'de-CH',
+    'Greek': 'el-GR',
+    'Greek (220)': 'el-GR.220',
+    'Greek (319)': 'el-GR.319',
+    'Greek (220) Latin': 'el-GR.220_latin',
+    'Greek (319) Latin': 'el-GR.319_latin',
+    'Greek Latin': 'el-GR.latin',
+    'Greek Polytonic': 'el-GR.polytonic',
+    'Spanish': 'es-ES',
+    'Spanish Variation': 'es-ES.variation',
+    'Finnish': 'fi-FI.finnish',
+    'Finnish with Sami': 'fi-SE',
+    'Icelandic': 'is-IS',
+    'Italian': 'it-IT',
+    'Italian (142)': 'it-IT.142',
+    'Dutch': 'nl-NL',
+    'Belgian (Period)': 'nl-BE',
+    'Norwegian': 'nb-NO',
+    'Polish (214)': 'pl-PL',
+    'Polish (Programmers)': 'pl-PL.programmers',
+    'Portuguese': 'pt-PT',
+    'Portuguese (Brazil ABNT)': 'pt-BR.abnt',
+    'Portuguese (Brazil ABNT2)': 'pt-BR.abnt2',
+    'Romanian (Legacy)': 'ro-RO',
+    'Russian': 'ru-RU',
+    'Russian (Typewriter)': 'ru-RU.typewriter',
+    'Standard': 'hr-HR',  # Croatian
+    'Slovak': 'sk-SK',
+    'Slovak (QWERTY)': 'sk-SK.qwerty',
+    'Swedish': 'sv-SE',
+    'Turkish Q': 'tr-TR.q',
+    'Turkish F': 'tr-TR.f',
+    'Ukrainian': 'uk-UA',
+    'Slovenian': 'sl-SI',
+    'Estonian': 'et-EE',
+    'Latvian': 'lv-LV',
+    'Latvian (QWERTY)': 'lv-LV.qwerty',
+    'Lithuanian': 'lt-LT',
+    'Lithuanian IBM': 'lt-LT.ibm',
+    'Macedonian': 'mk-MK',
+    'Faeroese': 'fo-FO',
+    'Maltese 47-Key': 'mt-MT.47',
+    'Maltese 48-Key': 'mt-MT.48',
+    'Swedish with Sami': 'se-SE',
+    'Sami Extended Finland-Sweden': 'se-SE.ext_finland_sweden',
+    'Norwegian with Sami': 'se-NO',
+    'Sami Extended Norway': 'se-NO.ext_norway',
+    'Kazakh': 'kk-KZ',
+    'Kyrgyz Cyrillic': 'ky-KG',
+    'Tatar (Legacy)': 'tt-RU',
+    'Mongolian Cyrillic': 'mn-MN',
+    'United Kingdom Extended': 'cy-GB',
+    'Luxembourgish': 'lb-LU',
+    'Maori': 'mi-NZ',
+    'Latin American': 'es-MX',
+    'Serbian (Latin)': 'sr-La',
+    'Serbian (Cyrillic)': 'sr-Cy',
+    'Uzbek Cyrillic': 'uz-Cy',
+    'Inuktitut - Latin': 'iu-La',
+    'Bosnian (Cyrillic)': 'bs-Cy',
+    'Bulgarian': 'bg-BG',
+    'Bulgarian (Latin)': 'bg-BG.latin',
+    'Hungarian 101-key': 'hu-HU',
+}
+
 supported_mods_mask_to_name = {
     sum(mods_to_mask[m] for m in mod.split(' ')): mod
     for mod in supported_mods
@@ -235,6 +328,7 @@ unique_layout_keymap = {}
 unique_layout_dkeymap = {}
 strings2 = ['static constexpr KeyLayout layouts[] {\n']
 keymap_by_names = []
+display_names = set()
 for layout in layouts2:
     mods_array = [0]*64
     dmods_array = [0]*64
@@ -248,8 +342,15 @@ for layout in layouts2:
     k1 = unique_layout_keymap.setdefault(k1, len(unique_layout_keymap))
     k2 = unique_layout_dkeymap.setdefault(k2, len(unique_layout_dkeymap))
     layout = layout.layout
-    strings2.append(f'    KeyLayout{{KbdId(0x{layout.klid}), KeyLayout::RCtrlIsCtrl({layout.has_right_ctrl_like_oem8 and "false" or "true "}), "{layout.proxy_name or layout.locale_name}"_zv/*, "{layout.display_name}"_zv, "{layout.locale_name}"_zv*/, keymap_mod_{k1}, dkeymap_mod_{k2}}},\n')
-    keymap_by_names.append(((layout.proxy_name or layout.locale_name).upper(), f'    layouts[{len(keymap_by_names)}],\n'))
+    display_name = display_name_map.get(layout.origin_display_name, layout.locale_name)
+
+    # display_name must be unique
+    if display_name in display_names:
+        raise Exception(f"duplicate name: {display_name} ({layout.origin_display_name} / {layout.locale_name})")
+    display_names.add(display_name)
+
+    strings2.append(f'    KeyLayout{{KbdId(0x{layout.klid}), KeyLayout::RCtrlIsCtrl({layout.has_right_ctrl_like_oem8 and "false" or "true "}), "{display_name}"_zv/*, "{layout.display_name}"_zv, "{layout.locale_name}"_zv*/, keymap_mod_{k1}, dkeymap_mod_{k2}}},\n')
+    keymap_by_names.append((display_name.upper(), f'    layouts[{len(keymap_by_names)}],\n'))
 strings2.append('};\n')
 
 keymap_by_names.sort(key=lambda p: p[0])

@@ -18949,33 +18949,38 @@ static constexpr KeyLayout::unicode_t keymap_484[] {
 };
 
 static constexpr KeyLayout::unicode_t keymap_485[] {
-/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
-       //                  ESC
-/*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
-/*10-17*/       'q',       'w',       'e',       'r',       't',       'y',       'u',       'i',
-/*18-1F*/       'o',       'p',       '[',       ']',      '\r',         0,       'a',       's',
-/*20-27*/       'd',       'f',       'g',       'h',       'j',       'k',       'l',       ';',
-/*28-2F*/      '\'',       '`',         0, DK|0x00b0,       'z',       'x',       'c',       'v',
-       //                                          °
-/*30-37*/       'b',       'n',       'm',       ',',       '.',       '/',         0,       '*',
-/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*00-07*/         0,         0,         0,         0,         0,    0x00a7,    0x00b0,         0,
+       //                                                                §          °
+/*08-0F*/    0x00b1,    0x00d7,         0,         0,    0x2014,         0,         0,         0,
+       //         ±          ×                                —
+/*10-17*/         0,         0,    0x0113,    0x0157,         0,         0,    0x016b,    0x012b,
+       //                               ē          ŗ                                ū          ī
+/*18-1F*/    0x00f5,         0,         0,         0,         0,         0,    0x0101,    0x0161,
+       //         õ                                                                 ā          š
+/*20-27*/         0,         0,    0x0123,         0,         0,    0x0137,    0x013c,         0,
+       //                               ģ                                ķ          ļ
+/*28-2F*/ DK|0x00a8,    DK|'~',         0,         0,    0x017e,         0,    0x010d,         0,
+       //         ¨                                ž                     č
+/*30-37*/         0,    0x0146,         0,         0,         0,         0,         0,         0,
+       //                    ņ
+/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,      '\\',         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -18990,16 +18995,16 @@ static constexpr KeyLayout::unicode_t keymap_486[] {
        //                                                                §          °
 /*08-0F*/    0x00b1,    0x00d7,         0,         0,    0x2014,         0,         0,         0,
        //         ±          ×                                —
-/*10-17*/         0,         0,    0x0113,    0x0157,         0,         0,    0x016b,    0x012b,
-       //                               ē          ŗ                                ū          ī
-/*18-1F*/    0x00f5,         0,         0,         0,         0,         0,    0x0101,    0x0161,
-       //         õ                                                                 ā          š
-/*20-27*/         0,         0,    0x0123,         0,         0,    0x0137,    0x013c,         0,
-       //                               ģ                                ķ          ļ
-/*28-2F*/ DK|0x00a8,         0,         0,         0,    0x017e,         0,    0x010d,         0,
-       //         ¨                                           ž                     č
-/*30-37*/         0,    0x0146,         0,         0,         0,         0,         0,         0,
-       //                    ņ
+/*10-17*/         0,         0,    0x0112,    0x0156,         0,         0,    0x016a,    0x012a,
+       //                               Ē          Ŗ                                Ū          Ī
+/*18-1F*/    0x00d5,         0,         0,         0,         0,         0,    0x0100,    0x0160,
+       //         Õ                                                                 Ā          Š
+/*20-27*/         0,         0,    0x0122,         0,         0,    0x0136,    0x013b,         0,
+       //                               Ģ                                Ķ          Ļ
+/*28-2F*/ DK|0x00a8,    DK|'~',         0,         0,    0x017d,         0,    0x010c,         0,
+       //         ¨                                Ž                     Č
+/*30-37*/         0,    0x0145,         0,         0,         0,         0,         0,         0,
+       //                    Ņ
 /*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19028,122 +19033,6 @@ static constexpr KeyLayout::unicode_t keymap_486[] {
 };
 
 static constexpr KeyLayout::unicode_t keymap_487[] {
-/*00-07*/         0,         0,         0,         0,         0,    0x00a7,    0x00b0,         0,
-       //                                                                §          °
-/*08-0F*/    0x00b1,    0x00d7,         0,         0,    0x2014,         0,         0,         0,
-       //         ±          ×                                —
-/*10-17*/         0,         0,    0x0112,    0x0156,         0,         0,    0x016a,    0x012a,
-       //                               Ē          Ŗ                                Ū          Ī
-/*18-1F*/    0x00d5,         0,         0,         0,         0,         0,    0x0100,    0x0160,
-       //         Õ                                                                 Ā          Š
-/*20-27*/         0,         0,    0x0122,         0,         0,    0x0136,    0x013b,         0,
-       //                               Ģ                                Ķ          Ļ
-/*28-2F*/ DK|0x00a8,         0,         0,         0,    0x017d,         0,    0x010c,         0,
-       //         ¨                                           Ž                     Č
-/*30-37*/         0,    0x0145,         0,         0,         0,         0,         0,         0,
-       //                    Ņ
-/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_488[] {
-/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
-       //                  ESC
-/*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
-/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Y',       'U',       'I',
-/*18-1F*/       'O',       'P',       '[',       ']',      '\r',         0,       'A',       'S',
-/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',       ';',
-/*28-2F*/      '\'',       '`',         0, DK|0x00b0,       'Z',       'X',       'C',       'V',
-       //                                          °
-/*30-37*/       'B',       'N',       'M',       ',',       '.',       '/',         0,       '*',
-/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,      '\\',         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_489[] {
-/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
-       //                  ESC
-/*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
-/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Y',       'U',       'I',
-/*18-1F*/       'O',       'P',       '[',       ']',      '\r',         0,       'A',       'S',
-/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',       ';',
-/*28-2F*/      '\'',       '`',         0, DK|0x00b0,       'Z',       'X',       'C',       'V',
-       //                                          °
-/*30-37*/       'B',       'N',       'M',       ',',       '.',       '/',         0,       '*',
-/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
-/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
-/*50-57*/       '2',       '3',       '0',       '.',         0,         0,      '\\',         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_490[] {
 /*00-07*/         0,         0,    0x00a0,    0x00ab,    0x00bb,    0x20ac,         0,    0x2019,
        //                                          «          »          €                     ’
 /*08-0F*/         0,         0,         0,         0,    0x2013,         0,         0,         0,
@@ -19154,8 +19043,8 @@ static constexpr KeyLayout::unicode_t keymap_490[] {
        //         õ                                                                 ā          š
 /*20-27*/         0,         0,    0x0123,         0,         0,    0x0137,    0x013c,         0,
        //                               ģ                                ķ          ļ
-/*28-2F*/ DK|0x00b4,    0x00ad,         0,         0,    0x017e,         0,    0x010d,         0,
-       //         ´          ­                                ž                     č
+/*28-2F*/ DK|0x00b4,    0x00ad,         0, DK|0x00b0,    0x017e,         0,    0x010d,         0,
+       //         ´          ­                     °          ž                     č
 /*30-37*/         0,    0x0146,         0,         0,         0,         0,         0,         0,
        //                    ņ
 /*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19185,7 +19074,7 @@ static constexpr KeyLayout::unicode_t keymap_490[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_491[] {
+static constexpr KeyLayout::unicode_t keymap_488[] {
 /*00-07*/         0,         0,    0x00a0,    0x00ab,    0x00bb,    0x20ac,         0,    0x2019,
        //                                          «          »          €                     ’
 /*08-0F*/         0,         0,         0,         0,    0x2013,         0,         0,         0,
@@ -19196,8 +19085,8 @@ static constexpr KeyLayout::unicode_t keymap_491[] {
        //         Õ                                                                 Ā          Š
 /*20-27*/         0,         0,    0x0122,         0,         0,    0x0136,    0x013b,         0,
        //                               Ģ                                Ķ          Ļ
-/*28-2F*/ DK|0x00b4,    0x00ad,         0,         0,    0x017d,         0,    0x010c,         0,
-       //         ´          ­                                Ž                     Č
+/*28-2F*/ DK|0x00b4,    0x00ad,         0, DK|0x00b0,    0x017d,         0,    0x010c,         0,
+       //         ´          ­                     °          Ž                     Č
 /*30-37*/         0,    0x0145,         0,         0,         0,         0,         0,         0,
        //                    Ņ
 /*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19227,44 +19116,7 @@ static constexpr KeyLayout::unicode_t keymap_491[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_492[] {
-/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
-       //                  ESC
-/*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
-/*10-17*/       'q',       'w',       'e',       'r',       't',       'y',       'u',       'i',
-/*18-1F*/       'o',       'p',       '[',       ']',      '\r',         0,       'a',       's',
-/*20-27*/       'd',       'f',       'g',       'h',       'j',       'k',       'l',       ';',
-/*28-2F*/      '\'',       '`',         0, DK|0x00b0,       'z',       'x',       'c',       'v',
-       //                                          °
-/*30-37*/       'b',       'n',       'm',       ',',       '.',       '/',         0,       '*',
-/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
-/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
-/*50-57*/       '2',       '3',       '0',       '.',         0,         0,      '\\',         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_493[] {
+static constexpr KeyLayout::unicode_t keymap_489[] {
 /*00-07*/         0,    0x001b,    0x0105,    0x010d,    0x0119,    0x0117,    0x012f,    0x0161,
        //                  ESC          ą          č          ę          ė          į          š
 /*08-0F*/    0x0173,    0x016b,       '9',       '0',       '-',    0x017e,      '\b',      '\t',
@@ -19301,7 +19153,7 @@ static constexpr KeyLayout::unicode_t keymap_493[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_494[] {
+static constexpr KeyLayout::unicode_t keymap_490[] {
 /*00-07*/         0,    0x001b,    0x0104,    0x010c,    0x0118,    0x0116,    0x012e,    0x0160,
        //                  ESC          Ą          Č          Ę          Ė          Į          Š
 /*08-0F*/    0x0172,    0x016a,       '(',       ')',       '_',    0x017d,      '\b',      '\t',
@@ -19338,7 +19190,7 @@ static constexpr KeyLayout::unicode_t keymap_494[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_495[] {
+static constexpr KeyLayout::unicode_t keymap_491[] {
 /*00-07*/         0,    0x001b,    0x0105,    0x010d,    0x0119,    0x0117,    0x012f,    0x0161,
        //                  ESC          ą          č          ę          ė          į          š
 /*08-0F*/    0x0173,    0x016b,       '(',       ')',       '_',    0x017e,      '\b',      '\t',
@@ -19375,7 +19227,7 @@ static constexpr KeyLayout::unicode_t keymap_495[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_496[] {
+static constexpr KeyLayout::unicode_t keymap_492[] {
 /*00-07*/         0,         0,       '!',       '@',       '#',       '$',       '%',       '^',
 /*08-0F*/       '&',       '*',         0,         0,         0,       '+',         0,         0,
 /*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19410,7 +19262,7 @@ static constexpr KeyLayout::unicode_t keymap_496[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_497[] {
+static constexpr KeyLayout::unicode_t keymap_493[] {
 /*00-07*/         0,    0x001b,    0x0104,    0x010c,    0x0118,    0x0116,    0x012e,    0x0160,
        //                  ESC          Ą          Č          Ę          Ė          Į          Š
 /*08-0F*/    0x0172,    0x016a,       '9',       '0',       '-',    0x017d,      '\b',      '\t',
@@ -19447,7 +19299,7 @@ static constexpr KeyLayout::unicode_t keymap_497[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_498[] {
+static constexpr KeyLayout::unicode_t keymap_494[] {
 /*00-07*/         0,    0x001b,    0x0104,    0x010c,    0x0118,    0x0116,    0x012e,    0x0160,
        //                  ESC          Ą          Č          Ę          Ė          Į          Š
 /*08-0F*/    0x0172,    0x016a,       '9',       '0',       '-',    0x017d,      '\b',      '\t',
@@ -19484,7 +19336,7 @@ static constexpr KeyLayout::unicode_t keymap_498[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_499[] {
+static constexpr KeyLayout::unicode_t keymap_495[] {
 /*00-07*/         0,         0,       '1',       '2',       '3',       '4',       '5',       '6',
 /*08-0F*/       '7',       '8',       '9',       '0',         0,       '=',         0,         0,
 /*10-17*/         0,         0,    0x20ac,         0,         0,         0,         0,         0,
@@ -19520,7 +19372,7 @@ static constexpr KeyLayout::unicode_t keymap_499[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_500[] {
+static constexpr KeyLayout::unicode_t keymap_496[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,       '9',       '0',         0,         0,         0,         0,
 /*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19555,7 +19407,7 @@ static constexpr KeyLayout::unicode_t keymap_500[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_501[] {
+static constexpr KeyLayout::unicode_t keymap_497[] {
 /*00-07*/         0,    0x001b,    0x0105,    0x010d,    0x0119,    0x0117,    0x012f,    0x0161,
        //                  ESC          ą          č          ę          ė          į          š
 /*08-0F*/    0x0173,    0x016b,       '9',       '0',       '-',    0x017e,      '\b',      '\t',
@@ -19592,7 +19444,7 @@ static constexpr KeyLayout::unicode_t keymap_501[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_502[] {
+static constexpr KeyLayout::unicode_t keymap_498[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -19631,7 +19483,7 @@ static constexpr KeyLayout::unicode_t keymap_502[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_503[] {
+static constexpr KeyLayout::unicode_t keymap_499[] {
 /*00-07*/         0,    0x001b,       '!',       '"',    0x20ac,       '$',       '%',       '^',
        //                  ESC                                €
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -19670,7 +19522,7 @@ static constexpr KeyLayout::unicode_t keymap_503[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_504[] {
+static constexpr KeyLayout::unicode_t keymap_500[] {
 /*00-07*/         0,    0x001b,       '!',       '"',         0,       '$',       '%',       '^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -19709,7 +19561,7 @@ static constexpr KeyLayout::unicode_t keymap_504[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_505[] {
+static constexpr KeyLayout::unicode_t keymap_501[] {
 /*00-07*/         0,         0,         0,         0,    0x00a3,         0,         0,         0,
        //                                                     £
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19747,7 +19599,7 @@ static constexpr KeyLayout::unicode_t keymap_505[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_506[] {
+static constexpr KeyLayout::unicode_t keymap_502[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,    0x00c8,         0,         0,         0,    0x00d9,    0x00cc,
@@ -19785,7 +19637,7 @@ static constexpr KeyLayout::unicode_t keymap_506[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_507[] {
+static constexpr KeyLayout::unicode_t keymap_503[] {
 /*00-07*/         0,    0x001b,       '1',       '2',         0,       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -19824,7 +19676,7 @@ static constexpr KeyLayout::unicode_t keymap_507[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_508[] {
+static constexpr KeyLayout::unicode_t keymap_504[] {
 /*00-07*/         0,    0x001b,       '1',       '2',         0,       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -19863,7 +19715,7 @@ static constexpr KeyLayout::unicode_t keymap_508[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_509[] {
+static constexpr KeyLayout::unicode_t keymap_505[] {
 /*00-07*/         0,         0,         0,         0,    0x00a3,         0,         0,         0,
        //                                                     £
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -19901,7 +19753,7 @@ static constexpr KeyLayout::unicode_t keymap_509[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_510[] {
+static constexpr KeyLayout::unicode_t keymap_506[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,    0x00c8,         0,         0,         0,    0x00d9,    0x00cc,
@@ -19938,7 +19790,7 @@ static constexpr KeyLayout::unicode_t keymap_510[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_511[] {
+static constexpr KeyLayout::unicode_t keymap_507[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -19977,7 +19829,7 @@ static constexpr KeyLayout::unicode_t keymap_511[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_512[] {
+static constexpr KeyLayout::unicode_t keymap_508[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+',      '\\',      '\b',      '\t',
@@ -20018,7 +19870,7 @@ static constexpr KeyLayout::unicode_t keymap_512[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_513[] {
+static constexpr KeyLayout::unicode_t keymap_509[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',    0x00a4,       '%',       '&',
        //                  ESC                                           ¤
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
@@ -20059,7 +19911,7 @@ static constexpr KeyLayout::unicode_t keymap_513[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_514[] {
+static constexpr KeyLayout::unicode_t keymap_510[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',    0x00a4,       '%',       '&',
        //                  ESC                                           ¤
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
@@ -20100,7 +19952,7 @@ static constexpr KeyLayout::unicode_t keymap_514[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_515[] {
+static constexpr KeyLayout::unicode_t keymap_511[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/       'q',       'w',         0,         0,         0,       'y',         0,    0x00ef,
@@ -20140,7 +19992,7 @@ static constexpr KeyLayout::unicode_t keymap_515[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_516[] {
+static constexpr KeyLayout::unicode_t keymap_512[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/       'Q',       'W',         0,         0,         0,       'Y',         0,    0x00cf,
@@ -20180,7 +20032,7 @@ static constexpr KeyLayout::unicode_t keymap_516[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_517[] {
+static constexpr KeyLayout::unicode_t keymap_513[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+',      '\\',      '\b',      '\t',
@@ -20221,7 +20073,7 @@ static constexpr KeyLayout::unicode_t keymap_517[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_518[] {
+static constexpr KeyLayout::unicode_t keymap_514[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+',      '\\',      '\b',      '\t',
@@ -20262,7 +20114,7 @@ static constexpr KeyLayout::unicode_t keymap_518[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_519[] {
+static constexpr KeyLayout::unicode_t keymap_515[] {
 /*00-07*/         0,         0,         0,       '@',    0x00a3,       '$',    0x20ac,         0,
        //                                                     £                     €
 /*08-0F*/       '{',       '[',       ']',       '}',         0, DK|0x00b4,         0,         0,
@@ -20305,7 +20157,7 @@ static constexpr KeyLayout::unicode_t keymap_519[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_520[] {
+static constexpr KeyLayout::unicode_t keymap_516[] {
 /*00-07*/         0,         0,         0,       '@',    0x00a3,       '$',    0x20ac,         0,
        //                                                     £                     €
 /*08-0F*/       '{',       '[',       ']',       '}',         0, DK|0x00b4,         0,         0,
@@ -20347,7 +20199,7 @@ static constexpr KeyLayout::unicode_t keymap_520[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_521[] {
+static constexpr KeyLayout::unicode_t keymap_517[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+',      '\\',      '\b',      '\t',
@@ -20388,7 +20240,7 @@ static constexpr KeyLayout::unicode_t keymap_521[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_522[] {
+static constexpr KeyLayout::unicode_t keymap_518[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',    0x00b0,       '_',      '\b',      '\t',
@@ -20427,7 +20279,7 @@ static constexpr KeyLayout::unicode_t keymap_522[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_523[] {
+static constexpr KeyLayout::unicode_t keymap_519[] {
 /*00-07*/         0,    0x001b,       '&',    0x00e9,       '"',      '\'',       '(',    0x00a7,
        //                  ESC                     é                                           §
 /*08-0F*/    0x00e8,       '!',    0x00e7,    0x00e0,       ')',       '-',      '\b',      '\t',
@@ -20465,7 +20317,7 @@ static constexpr KeyLayout::unicode_t keymap_523[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_524[] {
+static constexpr KeyLayout::unicode_t keymap_520[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -20505,7 +20357,7 @@ static constexpr KeyLayout::unicode_t keymap_524[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_525[] {
+static constexpr KeyLayout::unicode_t keymap_521[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',       '?',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -20545,7 +20397,7 @@ static constexpr KeyLayout::unicode_t keymap_525[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_526[] {
+static constexpr KeyLayout::unicode_t keymap_522[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',       '?',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -20585,7 +20437,7 @@ static constexpr KeyLayout::unicode_t keymap_526[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_527[] {
+static constexpr KeyLayout::unicode_t keymap_523[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -20625,7 +20477,7 @@ static constexpr KeyLayout::unicode_t keymap_527[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_528[] {
+static constexpr KeyLayout::unicode_t keymap_524[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -20665,7 +20517,7 @@ static constexpr KeyLayout::unicode_t keymap_528[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_529[] {
+static constexpr KeyLayout::unicode_t keymap_525[] {
 /*00-07*/         0,         0,         0,         0,         0,    0x00a4,         0,         0,
        //                                                                ¤
 /*08-0F*/       '{',       '}',       '[',       ']',         0,    0x00ac,         0,         0,
@@ -20706,7 +20558,7 @@ static constexpr KeyLayout::unicode_t keymap_529[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_530[] {
+static constexpr KeyLayout::unicode_t keymap_526[] {
 /*00-07*/         0,         0,         0,         0,         0,    0x00a4,         0,         0,
        //                                                                ¤
 /*08-0F*/       '{',       '}',       '[',       ']',         0,    0x00ac,         0,         0,
@@ -20745,7 +20597,7 @@ static constexpr KeyLayout::unicode_t keymap_530[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_531[] {
+static constexpr KeyLayout::unicode_t keymap_527[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -20785,7 +20637,7 @@ static constexpr KeyLayout::unicode_t keymap_531[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_532[] {
+static constexpr KeyLayout::unicode_t keymap_528[] {
 /*00-07*/         0,         0,    0x00a1,         0,    0x00a3,    0x20ac,    0x215c,    0x215d,
        //                               ¡                     £          €          ⅜          ⅝
 /*08-0F*/    0x215e,    0x2122,    0x00b1,         0,    0x00bf, DK|0x02db,         0,         0,
@@ -20828,7 +20680,7 @@ static constexpr KeyLayout::unicode_t keymap_532[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_533[] {
+static constexpr KeyLayout::unicode_t keymap_529[] {
 /*00-07*/         0,         0,    0x00b9,    0x00b2,    0x00b3,    0x00bc,    0x00bd,    0x00be,
        //                               ¹          ²          ³          ¼          ½          ¾
 /*08-0F*/         0,         0,         0,         0,         0, DK|0x00b8,         0,         0,
@@ -20870,7 +20722,7 @@ static constexpr KeyLayout::unicode_t keymap_533[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_534[] {
+static constexpr KeyLayout::unicode_t keymap_530[] {
 /*00-07*/         0,    0x001b,       '!',       '"',    0x00a3,       '$',       '%',       '^',
        //                  ESC                                £
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -20906,7 +20758,7 @@ static constexpr KeyLayout::unicode_t keymap_534[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_535[] {
+static constexpr KeyLayout::unicode_t keymap_531[] {
 /*00-07*/         0,    0x001b,       '!',       '"',    0x00a3,       '$',       '%',       '^',
        //                  ESC                                £
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -20942,163 +20794,163 @@ static constexpr KeyLayout::unicode_t keymap_535[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
+static constexpr KeyLayout::unicode_t keymap_532[] {
+/*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*10-17*/         0,         0,    0x00e9,         0,         0,    0x00fd,    0x00fa,    0x00ed,
+       //                               é                                ý          ú          í
+/*18-1F*/    0x00f3,         0,         0,         0,         0,         0,    0x00e1,         0,
+       //         ó                                                                 á
+/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*28-2F*/    0x2019,    0x00ac,         0,         0,         0,         0,         0,         0,
+       //         ’          ¬
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_533[] {
+/*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*10-17*/         0,         0,    0x00c9,         0,         0,    0x00dd,    0x00da,    0x00cd,
+       //                               É                                Ý          Ú          Í
+/*18-1F*/    0x00d3,         0,         0,         0,         0,         0,    0x00c1,         0,
+       //         Ó                                                                 Á
+/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*28-2F*/    0x2019,    0x00ac,         0,         0,         0,         0,         0,         0,
+       //         ’          ¬
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_534[] {
+/*00-07*/         0,         0,         0,         0,         0,    0x20ac,         0,         0,
+       //                                                                €
+/*08-0F*/    0x204a,         0,         0,         0,         0,         0,         0,         0,
+       //         ⁊
+/*10-17*/         0,         0,    0x00e9,         0,         0,    0x00fd,    0x00fa,    0x00ed,
+       //                               é                                ý          ú          í
+/*18-1F*/    0x00f3,         0,         0,         0,         0,         0,    0x00e1,         0,
+       //         ó                                                                 á
+/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*28-2F*/   DK|'\'',    0x00a6,         0,         0,         0,         0,         0,         0,
+       //         ¦
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_535[] {
+/*00-07*/         0,         0,         0,         0,         0,    0x20ac,         0,         0,
+       //                                                                €
+/*08-0F*/    0x204a,         0,         0,         0,         0,         0,         0,         0,
+       //         ⁊
+/*10-17*/         0,         0,    0x00c9,         0,         0,    0x00dd,    0x00da,    0x00cd,
+       //                               É                                Ý          Ú          Í
+/*18-1F*/    0x00d3,         0,         0,         0,         0,         0,    0x00c1,         0,
+       //         Ó                                                                 Á
+/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*28-2F*/   DK|'\'',    0x00a6,         0,         0,         0,         0,         0,         0,
+       //         ¦
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
 static constexpr KeyLayout::unicode_t keymap_536[] {
-/*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*10-17*/         0,         0,    0x00e9,         0,         0,    0x00fd,    0x00fa,    0x00ed,
-       //                               é                                ý          ú          í
-/*18-1F*/    0x00f3,         0,         0,         0,         0,         0,    0x00e1,         0,
-       //         ó                                                                 á
-/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*28-2F*/    0x2019,    0x00ac,         0,         0,         0,         0,         0,         0,
-       //         ’          ¬
-/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_537[] {
-/*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*10-17*/         0,         0,    0x00c9,         0,         0,    0x00dd,    0x00da,    0x00cd,
-       //                               É                                Ý          Ú          Í
-/*18-1F*/    0x00d3,         0,         0,         0,         0,         0,    0x00c1,         0,
-       //         Ó                                                                 Á
-/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*28-2F*/    0x2019,    0x00ac,         0,         0,         0,         0,         0,         0,
-       //         ’          ¬
-/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_538[] {
-/*00-07*/         0,         0,         0,         0,         0,    0x20ac,         0,         0,
-       //                                                                €
-/*08-0F*/    0x204a,         0,         0,         0,         0,         0,         0,         0,
-       //         ⁊
-/*10-17*/         0,         0,    0x00e9,         0,         0,    0x00fd,    0x00fa,    0x00ed,
-       //                               é                                ý          ú          í
-/*18-1F*/    0x00f3,         0,         0,         0,         0,         0,    0x00e1,         0,
-       //         ó                                                                 á
-/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*28-2F*/   DK|'\'',    0x00a6,         0,         0,         0,         0,         0,         0,
-       //         ¦
-/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_539[] {
-/*00-07*/         0,         0,         0,         0,         0,    0x20ac,         0,         0,
-       //                                                                €
-/*08-0F*/    0x204a,         0,         0,         0,         0,         0,         0,         0,
-       //         ⁊
-/*10-17*/         0,         0,    0x00c9,         0,         0,    0x00dd,    0x00da,    0x00cd,
-       //                               É                                Ý          Ú          Í
-/*18-1F*/    0x00d3,         0,         0,         0,         0,         0,    0x00c1,         0,
-       //         Ó                                                                 Á
-/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*28-2F*/   DK|'\'',    0x00a6,         0,         0,         0,         0,         0,         0,
-       //         ¦
-/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
-/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
-};
-
-static constexpr KeyLayout::unicode_t keymap_540[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,       '%', DK|0x02c7,         0,         0,
        //                                                                ˇ
@@ -21137,7 +20989,7 @@ static constexpr KeyLayout::unicode_t keymap_540[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_541[] {
+static constexpr KeyLayout::unicode_t keymap_537[] {
 /*00-07*/         0,         0,       '+',    0x011b,    0x0161,    0x010d,    0x0159,    0x017e,
        //                                          ě          š          č          ř          ž
 /*08-0F*/    0x00fd,    0x00e1,    0x00ed,    0x00e9,       '=', DK|0x00b4,         0,         0,
@@ -21179,7 +21031,7 @@ static constexpr KeyLayout::unicode_t keymap_541[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_542[] {
+static constexpr KeyLayout::unicode_t keymap_538[] {
 /*00-07*/         0,         0,       '+',    0x011b,    0x0161,    0x010d,    0x0159,    0x017e,
        //                                          ě          š          č          ř          ž
 /*08-0F*/    0x00fd,    0x00e1,    0x00ed,    0x00e9,       '=', DK|0x00b4,         0,         0,
@@ -21220,7 +21072,241 @@ static constexpr KeyLayout::unicode_t keymap_542[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
+static constexpr KeyLayout::unicode_t keymap_539[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
+       //                  ESC
+/*08-0F*/       '7',       '8',       '9',       '0',    0x00df, DK|0x00b4,      '\b',      '\t',
+       //                                                     ß          ´
+/*10-17*/       'q',       'w',       'e',       'r',       't',       'z',       'u',       'i',
+/*18-1F*/       'o',       'p',    0x00fc,       '+',      '\r',         0,       'a',       's',
+       //                               ü
+/*20-27*/       'd',       'f',       'g',       'h',       'j',       'k',       'l',    0x00f6,
+       //                                                                                      ö
+/*28-2F*/    0x00e4,    DK|'^',         0,       '#',       'y',       'x',       'c',       'v',
+       //         ä
+/*30-37*/       'b',       'n',       'm',       ',',       '.',       '-',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '<',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_540[] {
+/*00-07*/         0,    0x001b,       '!',       '"',    0x00a7,       '$',       '%',       '&',
+       //                  ESC                                §
+/*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Z',       'U',       'I',
+/*18-1F*/       'O',       'P',    0x00dc,       '*',      '\r',         0,       'A',       'S',
+       //                               Ü
+/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',    0x00d6,
+       //                                                                                      Ö
+/*28-2F*/    0x00c4,    0x00b0,         0,      '\'',       'Y',       'X',       'C',       'V',
+       //         Ä          °
+/*30-37*/       'B',       'N',       'M',       ';',       ':',       '_',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '>',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_541[] {
+/*00-07*/         0,    0x001b,       '!',       '"',    0x00a7,       '$',       '%',       '&',
+       //                  ESC                                §
+/*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Z',       'U',       'I',
+/*18-1F*/       'O',       'P',    0x00dc,       '*',      '\r',         0,       'A',       'S',
+       //                               Ü
+/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',    0x00d6,
+       //                                                                                      Ö
+/*28-2F*/    0x00c4,    0x00b0,         0,      '\'',       'Y',       'X',       'C',       'V',
+       //         Ä          °
+/*30-37*/       'B',       'N',       'M',       ';',       ':',       '_',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
+/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
+/*50-57*/       '2',       '3',       '0',       ',',         0,         0,       '>',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_542[] {
+/*00-07*/         0,    0x001b,         0,         0,         0,         0,         0,         0,
+       //                  ESC
+/*08-0F*/         0,         0,         0,         0,         0,         0,    0x007f,         0,
+/*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*18-1F*/         0,         0,    0x001b,    0x001d,      '\n',         0,         0,         0,
+       //                             ESC
+/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*28-2F*/         0,         0,         0,    0x001c,         0,         0,         0,         0,
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\n',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
 static constexpr KeyLayout::unicode_t keymap_543[] {
+/*00-07*/         0,         0,    0x2019,    0x00b2,    0x00b3,    0x2014,    0x00a1,    0x00bf,
+       //                               ’          ²          ³          —          ¡          ¿
+/*08-0F*/       '{',       '[',       ']',       '}',      '\\', DK|0x02d9,         0,         0,
+       //                                                                ˙
+/*10-17*/       '@', DK|0x00af,    0x20ac, DK|0x02dd, DK|0x02c7, DK|0x00a8, DK|0x02d8, DK|0x02dc,
+       //                    ¯          €          ˝          ˇ          ¨          ˘          ˜
+/*18-1F*/ DK|0x02da, DK|0x02c0, DK|0x02bc,       '~',         0,         0,    0x263a,    0x2033,
+       //         ˚          ˀ          ʼ                                           ☺          ″
+/*20-27*/    0x2032, DK|0x02df,    0x1e9e, DK|0x02cd, DK|0x00b8, DK|0x02cf, DK|0x02db, DK|0x02cc,
+       //         ′          ˟          ẞ          ˍ          ¸          ˏ          ˛          ˌ
+/*28-2F*/ DK|0x02d7,    0x00d7,         0,    0x2212,    0x203a,    0x00bb,    0x202f,    0x00ab,
+       //         ˗          ×                     −          ›          »                     «
+/*30-37*/    0x2039,    0x2013,    0x00b5,    0x2011,    0x00b7,    0x00ad,         0,         0,
+       //         ‹          –          µ          ‑          ·          ­
+/*38-3F*/         0,    0x00a0,         0,         0,         0,         0,         0,         0,
+       //                     
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '|',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_544[] {
+/*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*18-1F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*20-27*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*28-2F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,    0x00a0,         0,         0,         0,         0,         0,         0,
+       //                     
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_545[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -21262,7 +21348,7 @@ static constexpr KeyLayout::unicode_t keymap_543[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_544[] {
+static constexpr KeyLayout::unicode_t keymap_546[] {
 /*00-07*/         0,    0x001b,       '!',       '"',    0x00a3,       '$',       '%',    0x00ac,
        //                  ESC                                £                                ¬
 /*08-0F*/       '/',       '(',       ')',       '=',    0x00b0,       '*',      '\b',      '\t',
@@ -21305,7 +21391,7 @@ static constexpr KeyLayout::unicode_t keymap_544[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_545[] {
+static constexpr KeyLayout::unicode_t keymap_547[] {
 /*00-07*/         0,    0x001b,       '!',       '"',    0x00a3,       '$',       '%',    0x00ac,
        //                  ESC                                £                                ¬
 /*08-0F*/       '/',       '(',       ')',       '=',    0x00b0,       '*',      '\b',      '\t',
@@ -21348,7 +21434,7 @@ static constexpr KeyLayout::unicode_t keymap_545[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_546[] {
+static constexpr KeyLayout::unicode_t keymap_548[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -21390,7 +21476,7 @@ static constexpr KeyLayout::unicode_t keymap_546[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_547[] {
+static constexpr KeyLayout::unicode_t keymap_549[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -21432,7 +21518,7 @@ static constexpr KeyLayout::unicode_t keymap_547[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_548[] {
+static constexpr KeyLayout::unicode_t keymap_550[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,    0x20ac,         0,         0,         0,         0,         0,
@@ -21469,7 +21555,7 @@ static constexpr KeyLayout::unicode_t keymap_548[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_549[] {
+static constexpr KeyLayout::unicode_t keymap_551[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -21505,7 +21591,7 @@ static constexpr KeyLayout::unicode_t keymap_549[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_550[] {
+static constexpr KeyLayout::unicode_t keymap_552[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -21547,7 +21633,7 @@ static constexpr KeyLayout::unicode_t keymap_550[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_551[] {
+static constexpr KeyLayout::unicode_t keymap_553[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -21583,7 +21669,7 @@ static constexpr KeyLayout::unicode_t keymap_551[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_552[] {
+static constexpr KeyLayout::unicode_t keymap_554[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',    DK|'^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -21619,7 +21705,7 @@ static constexpr KeyLayout::unicode_t keymap_552[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_553[] {
+static constexpr KeyLayout::unicode_t keymap_555[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',    DK|'^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -21655,7 +21741,7 @@ static constexpr KeyLayout::unicode_t keymap_553[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_554[] {
+static constexpr KeyLayout::unicode_t keymap_556[] {
 /*00-07*/         0,         0,    0x00b9,         0,         0,    0x00a3,         0,         0,
        //                               ¹                                £
 /*08-0F*/         0,         0,         0,         0,         0,    0x00f7,         0,         0,
@@ -21697,7 +21783,7 @@ static constexpr KeyLayout::unicode_t keymap_554[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_555[] {
+static constexpr KeyLayout::unicode_t keymap_557[] {
 /*00-07*/         0,         0,    0x00b9,         0,         0,    0x00a3,         0,         0,
        //                               ¹                                £
 /*08-0F*/         0,         0,         0,         0,         0,    0x00f7,         0,         0,
@@ -21739,7 +21825,7 @@ static constexpr KeyLayout::unicode_t keymap_555[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_556[] {
+static constexpr KeyLayout::unicode_t keymap_558[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -21775,7 +21861,7 @@ static constexpr KeyLayout::unicode_t keymap_556[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_557[] {
+static constexpr KeyLayout::unicode_t keymap_559[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -21811,7 +21897,7 @@ static constexpr KeyLayout::unicode_t keymap_557[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_558[] {
+static constexpr KeyLayout::unicode_t keymap_560[] {
 /*00-07*/         0,         0,    0x00a1,    0x00b2,    0x00b3,    0x00a4,    0x20ac,    0x00bc,
        //                               ¡          ²          ³          ¤          €          ¼
 /*08-0F*/    0x00bd,    0x00be,    0x2018,    0x2019,    0x00a5,    0x00d7,         0,         0,
@@ -21853,7 +21939,7 @@ static constexpr KeyLayout::unicode_t keymap_558[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_559[] {
+static constexpr KeyLayout::unicode_t keymap_561[] {
 /*00-07*/         0,         0,    0x00a1,    0x00b2,    0x00b3,    0x00a4,    0x20ac,    0x00bc,
        //                               ¡          ²          ³          ¤          €          ¼
 /*08-0F*/    0x00bd,    0x00be,    0x2018,    0x2019,    0x00a5,    0x00d7,         0,         0,
@@ -21895,7 +21981,7 @@ static constexpr KeyLayout::unicode_t keymap_559[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_560[] {
+static constexpr KeyLayout::unicode_t keymap_562[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -21931,7 +22017,7 @@ static constexpr KeyLayout::unicode_t keymap_560[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_561[] {
+static constexpr KeyLayout::unicode_t keymap_563[] {
 /*00-07*/         0,    0x001b,       '"',    0x00ab,    0x00bb,       '(',       ')',       '@',
        //                  ESC                     «          »
 /*08-0F*/       '+',       '-',       '/',       '*',       '=',       '%',      '\b',      '\t',
@@ -21971,7 +22057,7 @@ static constexpr KeyLayout::unicode_t keymap_561[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_562[] {
+static constexpr KeyLayout::unicode_t keymap_564[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',    0x00b0,       '`',      '\b',      '\t',
@@ -22012,7 +22098,7 @@ static constexpr KeyLayout::unicode_t keymap_562[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_563[] {
+static constexpr KeyLayout::unicode_t keymap_565[] {
 /*00-07*/         0,    0x001b,       '"',    0x00ab,    0x00bb,       '(',       ')',       '@',
        //                  ESC                     «          »
 /*08-0F*/       '+',       '-',       '/',       '*',    0x00b0,       '`',      '\b',      '\t',
@@ -22053,7 +22139,7 @@ static constexpr KeyLayout::unicode_t keymap_563[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_564[] {
+static constexpr KeyLayout::unicode_t keymap_566[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,    0x001e,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -22088,7 +22174,7 @@ static constexpr KeyLayout::unicode_t keymap_564[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_565[] {
+static constexpr KeyLayout::unicode_t keymap_567[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,    0x2032,    0x2033,         0,         0,
        //                                                     ′          ″
@@ -22128,7 +22214,7 @@ static constexpr KeyLayout::unicode_t keymap_565[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_566[] {
+static constexpr KeyLayout::unicode_t keymap_568[] {
 /*00-07*/         0,         0,    0x201e,    0x201c,    0x201d,    0x2a7d,    0x2a7e,         0,
        //                               „          “          ”          ⩽          ⩾
 /*08-0F*/         0,    0x00bc,    0x00bd,    0x00be,    0x2032,    0x2033,         0,         0,
@@ -22171,7 +22257,7 @@ static constexpr KeyLayout::unicode_t keymap_566[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_567[] {
+static constexpr KeyLayout::unicode_t keymap_569[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '=',       '%',      '\b',      '\t',
@@ -22211,7 +22297,7 @@ static constexpr KeyLayout::unicode_t keymap_567[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_568[] {
+static constexpr KeyLayout::unicode_t keymap_570[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '=',       '%',      '\b',      '\t',
@@ -22251,7 +22337,7 @@ static constexpr KeyLayout::unicode_t keymap_568[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_569[] {
+static constexpr KeyLayout::unicode_t keymap_571[] {
 /*00-07*/         0,    0x001b,         0,         0,         0,    0x001b,    0x001d,         0,
        //                  ESC                                         ESC
 /*08-0F*/         0,         0,         0,         0,         0,         0,    0x007f,         0,
@@ -22287,7 +22373,7 @@ static constexpr KeyLayout::unicode_t keymap_569[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_570[] {
+static constexpr KeyLayout::unicode_t keymap_572[] {
 /*00-07*/         0,         0,    0x2014,       '<',       '>',       '[',       ']',       '^',
        //                               —
 /*08-0F*/    0x00b1,    0x2212,    0x00f7,    0x00d7,    0x2260,    0x2030,         0,         0,
@@ -22329,7 +22415,7 @@ static constexpr KeyLayout::unicode_t keymap_570[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_571[] {
+static constexpr KeyLayout::unicode_t keymap_573[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,    0x2260,    0x2030,         0,         0,
        //                                                     ≠          ‰
@@ -22369,7 +22455,7 @@ static constexpr KeyLayout::unicode_t keymap_571[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_572[] {
+static constexpr KeyLayout::unicode_t keymap_574[] {
 /*00-07*/         0,    0x001b,       '"',    0x00ab,    0x00bb,       '(',       ')',       '@',
        //                  ESC                     «          »
 /*08-0F*/       '+',       '-',       '/',       '*',       '=',       '%',      '\b',      '\t',
@@ -22409,7 +22495,7 @@ static constexpr KeyLayout::unicode_t keymap_572[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_573[] {
+static constexpr KeyLayout::unicode_t keymap_575[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+', DK|0x00b4,      '\b',      '\t',
@@ -22451,7 +22537,7 @@ static constexpr KeyLayout::unicode_t keymap_573[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_574[] {
+static constexpr KeyLayout::unicode_t keymap_576[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',    0x00a4,       '%',       '&',
        //                  ESC                                           ¤
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
@@ -22492,7 +22578,7 @@ static constexpr KeyLayout::unicode_t keymap_574[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_575[] {
+static constexpr KeyLayout::unicode_t keymap_577[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',    0x00a4,       '%',       '&',
        //                  ESC                                           ¤
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
@@ -22533,7 +22619,7 @@ static constexpr KeyLayout::unicode_t keymap_575[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_576[] {
+static constexpr KeyLayout::unicode_t keymap_578[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/       'q',       'w',         0,         0,         0,       'y',         0,    0x00ef,
@@ -22573,7 +22659,7 @@ static constexpr KeyLayout::unicode_t keymap_576[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_577[] {
+static constexpr KeyLayout::unicode_t keymap_579[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/       'Q',       'W',         0,         0,         0,       'Y',         0,    0x00cf,
@@ -22613,7 +22699,7 @@ static constexpr KeyLayout::unicode_t keymap_577[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_578[] {
+static constexpr KeyLayout::unicode_t keymap_580[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+', DK|0x00b4,      '\b',      '\t',
@@ -22655,7 +22741,7 @@ static constexpr KeyLayout::unicode_t keymap_578[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_579[] {
+static constexpr KeyLayout::unicode_t keymap_581[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+', DK|0x00b4,      '\b',      '\t',
@@ -22697,7 +22783,7 @@ static constexpr KeyLayout::unicode_t keymap_579[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_580[] {
+static constexpr KeyLayout::unicode_t keymap_582[] {
 /*00-07*/         0,         0,         0,       '@',    0x00a3,       '$',    0x20ac,         0,
        //                                                     £                     €
 /*08-0F*/       '{',       '[',       ']',       '}',      '\\',         0,         0,         0,
@@ -22739,7 +22825,7 @@ static constexpr KeyLayout::unicode_t keymap_580[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_581[] {
+static constexpr KeyLayout::unicode_t keymap_583[] {
 /*00-07*/         0,         0,         0,       '@',    0x00a3,       '$',    0x20ac,         0,
        //                                                     £                     €
 /*08-0F*/       '{',       '[',       ']',       '}',      '\\',         0,         0,         0,
@@ -22780,7 +22866,7 @@ static constexpr KeyLayout::unicode_t keymap_581[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_582[] {
+static constexpr KeyLayout::unicode_t keymap_584[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '+', DK|0x00b4,      '\b',      '\t',
@@ -22822,7 +22908,7 @@ static constexpr KeyLayout::unicode_t keymap_582[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_583[] {
+static constexpr KeyLayout::unicode_t keymap_585[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '.',      '\b',      '\t',
@@ -22864,7 +22950,7 @@ static constexpr KeyLayout::unicode_t keymap_583[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_584[] {
+static constexpr KeyLayout::unicode_t keymap_586[] {
 /*00-07*/         0,    0x001b,       '!',       '?',       '+',       '"',       '%',       '=',
        //                  ESC
 /*08-0F*/       ':',       '/',    0x2013,    0x2116,       '$',    0x20ac,      '\b',      '\t',
@@ -22907,7 +22993,7 @@ static constexpr KeyLayout::unicode_t keymap_584[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_585[] {
+static constexpr KeyLayout::unicode_t keymap_587[] {
 /*00-07*/         0,    0x001b,       '!',       '?',       '+',       '"',       '%',       '=',
        //                  ESC
 /*08-0F*/       ':',       '/',    0x2013,    0x2116,       '$',    0x20ac,      '\b',      '\t',
@@ -22950,7 +23036,7 @@ static constexpr KeyLayout::unicode_t keymap_585[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_586[] {
+static constexpr KeyLayout::unicode_t keymap_588[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '.',      '\b',      '\t',
@@ -22992,7 +23078,7 @@ static constexpr KeyLayout::unicode_t keymap_586[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_587[] {
+static constexpr KeyLayout::unicode_t keymap_589[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '.',      '\b',      '\t',
@@ -23034,7 +23120,7 @@ static constexpr KeyLayout::unicode_t keymap_587[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_588[] {
+static constexpr KeyLayout::unicode_t keymap_590[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '.',      '\b',      '\t',
@@ -23076,7 +23162,294 @@ static constexpr KeyLayout::unicode_t keymap_588[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_589[] {
+static constexpr KeyLayout::unicode_t keymap_591[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
+       //                  ESC
+/*08-0F*/       '7',       '8',       '9',       '0',    0x00df, DK|0x00b4,      '\b',      '\t',
+       //                                                     ß          ´
+/*10-17*/       'q',       'w',       'e',       'r',       't',       'z',       'u',       'i',
+/*18-1F*/       'o',       'p',    0x00fc,       '+',      '\r',         0,       'a',       's',
+       //                               ü
+/*20-27*/       'd',       'f',       'g',       'h',       'j',       'k',       'l',    0x00f6,
+       //                                                                                      ö
+/*28-2F*/    0x00e4,    DK|'^',         0,       '#',       'y',       'x',       'c',       'v',
+       //         ä
+/*30-37*/       'b',       'n',       'm',       ',',       '.',       '-',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_592[] {
+/*00-07*/         0,    0x001b,       '!',       '"',    0x00a7,       '$',       '%',       '&',
+       //                  ESC                                §
+/*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Z',       'U',       'I',
+/*18-1F*/       'O',       'P',    0x00dc,       '*',      '\r',         0,       'A',       'S',
+       //                               Ü
+/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',    0x00d6,
+       //                                                                                      Ö
+/*28-2F*/    0x00c4,    0x00b0,         0,      '\'',       'Y',       'X',       'C',       'V',
+       //         Ä          °
+/*30-37*/       'B',       'N',       'M',       ';',       ':',       '_',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_593[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
+       //                  ESC
+/*08-0F*/       '7',       '8',       '9',       '0',    0x00df, DK|0x00b4,      '\b',      '\t',
+       //                                                     ß          ´
+/*10-17*/       'q',       'w',       'e',       'r',       't',       'z',       'u',       'i',
+/*18-1F*/       'o',       'p',    0x00fc,       '+',      '\r',         0,       'a',       's',
+       //                               ü
+/*20-27*/       'd',       'f',       'g',       'h',       'j',       'k',       'l',    0x00f6,
+       //                                                                                      ö
+/*28-2F*/    0x00e4,    DK|'^',         0,       '#',       'y',       'x',       'c',       'v',
+       //         ä
+/*30-37*/       'b',       'n',       'm',       ',',       '.',       '-',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_594[] {
+/*00-07*/         0,    0x001b,       '!',       '"',    0x00a7,       '$',       '%',       '&',
+       //                  ESC                                §
+/*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Z',       'U',       'I',
+/*18-1F*/       'O',       'P',    0x00dc,       '*',      '\r',         0,       'A',       'S',
+       //                               Ü
+/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',    0x00d6,
+       //                                                                                      Ö
+/*28-2F*/    0x00c4,    0x00b0,         0,      '\'',       'Y',       'X',       'C',       'V',
+       //         Ä          °
+/*30-37*/       'B',       'N',       'M',       ';',       ':',       '_',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_595[] {
+/*00-07*/         0,    0x001b,       '!',       '"',    0x00a7,       '$',       '%',       '&',
+       //                  ESC                                §
+/*08-0F*/       '/',       '(',       ')',       '=',       '?',    DK|'`',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'E',       'R',       'T',       'Z',       'U',       'I',
+/*18-1F*/       'O',       'P',    0x00dc,       '*',      '\r',         0,       'A',       'S',
+       //                               Ü
+/*20-27*/       'D',       'F',       'G',       'H',       'J',       'K',       'L',    0x00d6,
+       //                                                                                      Ö
+/*28-2F*/    0x00c4,    0x00b0,         0,      '\'',       'Y',       'X',       'C',       'V',
+       //         Ä          °
+/*30-37*/       'B',       'N',       'M',       ';',       ':',       '_',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
+/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
+/*50-57*/       '2',       '3',       '0',       ',',         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_596[] {
+/*00-07*/         0,         0,    0x2019,       '<',       '>',    0x2014,    0x00a1,    0x00bf,
+       //                               ’                                —          ¡          ¿
+/*08-0F*/       '{',       '[',       ']',       '}',      '\\', DK|0x02d9,         0,         0,
+       //                                                                ˙
+/*10-17*/       '@', DK|0x00af,    0x20ac, DK|0x02dd, DK|0x02c7, DK|0x00a8, DK|0x02d8, DK|0x02dc,
+       //                    ¯          €          ˝          ˇ          ¨          ˘          ˜
+/*18-1F*/ DK|0x02da, DK|0x02c0, DK|0x02bc,       '~',         0,         0,    0x263a,    0x2033,
+       //         ˚          ˀ          ʼ                                           ☺          ″
+/*20-27*/    0x2032, DK|0x02df,    0x1e9e, DK|0x02cd, DK|0x00b8, DK|0x02cf, DK|0x02db, DK|0x02cc,
+       //         ′          ˟          ẞ          ˍ          ¸          ˏ          ˛          ˌ
+/*28-2F*/ DK|0x02d7,       '|',         0,    0x2212,    0x203a,    0x00bb,    0x202f,    0x00ab,
+       //         ˗                                −          ›          »                     «
+/*30-37*/    0x2039,    0x2013,    0x00b5,    0x2011,    0x00b7,    0x00ad,         0,         0,
+       //         ‹          –          µ          ‑          ·          ­
+/*38-3F*/         0,    0x00a0,         0,         0,         0,         0,         0,         0,
+       //                     
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_597[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
+       //                  ESC
+/*08-0F*/       '7',       '8',       '9',       '0',    0x00df, DK|0x00b4,      '\b',      '\t',
+       //                                                     ß          ´
+/*10-17*/       'q',       'w',       'e',       'r',       't',       'z',       'u',       'i',
+/*18-1F*/       'o',       'p',    0x00fc,       '+',      '\r',         0,       'a',       's',
+       //                               ü
+/*20-27*/       'd',       'f',       'g',       'h',       'j',       'k',       'l',    0x00f6,
+       //                                                                                      ö
+/*28-2F*/    0x00e4,    DK|'^',         0,       '#',       'y',       'x',       'c',       'v',
+       //         ä
+/*30-37*/       'b',       'n',       'm',       ',',       '.',       '-',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
+/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
+/*50-57*/       '2',       '3',       '0',       ',',         0,         0, DK|0x02df,         0,
+       //                                                                           ˟
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_598[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       ']',      '\b',      '\t',
@@ -23114,7 +23487,7 @@ static constexpr KeyLayout::unicode_t keymap_589[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_590[] {
+static constexpr KeyLayout::unicode_t keymap_599[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',       '$',       '%',       '&',
        //                  ESC
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',       '[',      '\b',      '\t',
@@ -23152,7 +23525,7 @@ static constexpr KeyLayout::unicode_t keymap_590[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_591[] {
+static constexpr KeyLayout::unicode_t keymap_600[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',       '$',       '%',       '&',
        //                  ESC
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',       '[',      '\b',      '\t',
@@ -23190,7 +23563,7 @@ static constexpr KeyLayout::unicode_t keymap_591[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_592[] {
+static constexpr KeyLayout::unicode_t keymap_601[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       ']',      '\b',      '\t',
@@ -23228,7 +23601,7 @@ static constexpr KeyLayout::unicode_t keymap_592[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_593[] {
+static constexpr KeyLayout::unicode_t keymap_602[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       ']',      '\b',      '\t',
@@ -23266,7 +23639,7 @@ static constexpr KeyLayout::unicode_t keymap_593[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_594[] {
+static constexpr KeyLayout::unicode_t keymap_603[] {
 /*00-07*/         0,    0x001b,         0,         0,         0,         0,         0,         0,
        //                  ESC
 /*08-0F*/         0,         0,         0,         0,         0,    0x001d,    0x007f,         0,
@@ -23303,7 +23676,7 @@ static constexpr KeyLayout::unicode_t keymap_594[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_595[] {
+static constexpr KeyLayout::unicode_t keymap_604[] {
 /*00-07*/         0,         0,         0,    0x00b2,    0x00b3,    0x00a3,    0x00a7,    0x00b6,
        //                                          ²          ³          £          §          ¶
 /*08-0F*/         0,    0x00a4,    0x00a6,    0x00b0,    0x00b1,    0x00bd,         0,         0,
@@ -23344,7 +23717,7 @@ static constexpr KeyLayout::unicode_t keymap_595[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_596[] {
+static constexpr KeyLayout::unicode_t keymap_605[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       ']',      '\b',      '\t',
@@ -23382,7 +23755,7 @@ static constexpr KeyLayout::unicode_t keymap_596[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_597[] {
+static constexpr KeyLayout::unicode_t keymap_606[] {
 /*00-07*/         0,    0x001b,       '[',       ']',       '/',       'p',       'f',       'm',
        //                  ESC
 /*08-0F*/       'l',       'j',       '4',       '3',       '2',       '1',      '\b',      '\t',
@@ -23418,7 +23791,7 @@ static constexpr KeyLayout::unicode_t keymap_597[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_598[] {
+static constexpr KeyLayout::unicode_t keymap_607[] {
 /*00-07*/         0,    0x001b,       '{',       '}',       '?',       'P',       'F',       'M',
        //                  ESC
 /*08-0F*/       'L',       'J',       '$',       '#',       '@',       '!',      '\b',      '\t',
@@ -23454,7 +23827,7 @@ static constexpr KeyLayout::unicode_t keymap_598[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_599[] {
+static constexpr KeyLayout::unicode_t keymap_608[] {
 /*00-07*/         0,    0x001b,       '{',       '}',       '?',       'p',       'f',       'm',
        //                  ESC
 /*08-0F*/       'l',       'j',       '$',       '#',       '@',       '!',      '\b',      '\t',
@@ -23490,7 +23863,7 @@ static constexpr KeyLayout::unicode_t keymap_599[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_600[] {
+static constexpr KeyLayout::unicode_t keymap_609[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -23525,7 +23898,7 @@ static constexpr KeyLayout::unicode_t keymap_600[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_601[] {
+static constexpr KeyLayout::unicode_t keymap_610[] {
 /*00-07*/         0,    0x001b,       '[',       ']',       '/',       'P',       'F',       'M',
        //                  ESC
 /*08-0F*/       'L',       'J',       '4',       '3',       '2',       '1',      '\b',      '\t',
@@ -23561,7 +23934,7 @@ static constexpr KeyLayout::unicode_t keymap_601[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_602[] {
+static constexpr KeyLayout::unicode_t keymap_611[] {
 /*00-07*/         0,    0x001b,       '[',       ']',       '/',       'P',       'F',       'M',
        //                  ESC
 /*08-0F*/       'L',       'J',       '4',       '3',       '2',       '1',      '\b',      '\t',
@@ -23597,7 +23970,7 @@ static constexpr KeyLayout::unicode_t keymap_602[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_603[] {
+static constexpr KeyLayout::unicode_t keymap_612[] {
 /*00-07*/         0,    0x001b,    0x001b,    0x001d,         0,         0,         0,         0,
        //                  ESC        ESC
 /*08-0F*/         0,         0,         0,         0,         0,         0,    0x007f,         0,
@@ -23633,7 +24006,7 @@ static constexpr KeyLayout::unicode_t keymap_603[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_604[] {
+static constexpr KeyLayout::unicode_t keymap_613[] {
 /*00-07*/         0,    0x001b,       '[',       ']',       '/',       'p',       'f',       'm',
        //                  ESC
 /*08-0F*/       'l',       'j',       '4',       '3',       '2',       '1',      '\b',      '\t',
@@ -23669,7 +24042,7 @@ static constexpr KeyLayout::unicode_t keymap_604[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_605[] {
+static constexpr KeyLayout::unicode_t keymap_614[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -23706,7 +24079,7 @@ static constexpr KeyLayout::unicode_t keymap_605[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_606[] {
+static constexpr KeyLayout::unicode_t keymap_615[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',       '$',       '%',       '&',
        //                  ESC
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',       '*',      '\b',      '\t',
@@ -23743,7 +24116,7 @@ static constexpr KeyLayout::unicode_t keymap_606[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_607[] {
+static constexpr KeyLayout::unicode_t keymap_616[] {
 /*00-07*/         0,    0x001b,       '!',       '"',       '#',       '$',       '%',       '&',
        //                  ESC
 /*08-0F*/       '/',       '(',       ')',       '=',       '?',       '*',      '\b',      '\t',
@@ -23780,7 +24153,7 @@ static constexpr KeyLayout::unicode_t keymap_607[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_608[] {
+static constexpr KeyLayout::unicode_t keymap_617[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -23817,7 +24190,7 @@ static constexpr KeyLayout::unicode_t keymap_608[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_609[] {
+static constexpr KeyLayout::unicode_t keymap_618[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -23854,7 +24227,7 @@ static constexpr KeyLayout::unicode_t keymap_609[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_610[] {
+static constexpr KeyLayout::unicode_t keymap_619[] {
 /*00-07*/         0,    0x001b,         0,         0,         0,         0,         0,         0,
        //                  ESC
 /*08-0F*/         0,         0,         0,         0,         0,         0,    0x007f,         0,
@@ -23891,7 +24264,7 @@ static constexpr KeyLayout::unicode_t keymap_610[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_611[] {
+static constexpr KeyLayout::unicode_t keymap_620[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,         0,    0x20ac,         0,         0,         0,         0,         0,
@@ -23927,7 +24300,7 @@ static constexpr KeyLayout::unicode_t keymap_611[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_612[] {
+static constexpr KeyLayout::unicode_t keymap_621[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',      '\'',       '+',      '\b',      '\t',
@@ -23964,7 +24337,7 @@ static constexpr KeyLayout::unicode_t keymap_612[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_613[] {
+static constexpr KeyLayout::unicode_t keymap_622[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       'j',       'l',
        //                  ESC
 /*08-0F*/       'm',       'f',       'p',       '/',       '[',       ']',      '\b',      '\t',
@@ -24000,7 +24373,7 @@ static constexpr KeyLayout::unicode_t keymap_613[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_614[] {
+static constexpr KeyLayout::unicode_t keymap_623[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       'J',       'L',
        //                  ESC
 /*08-0F*/       'M',       'F',       'P',       '?',       '{',       '}',      '\b',      '\t',
@@ -24036,7 +24409,7 @@ static constexpr KeyLayout::unicode_t keymap_614[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_615[] {
+static constexpr KeyLayout::unicode_t keymap_624[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       'j',       'l',
        //                  ESC
 /*08-0F*/       'm',       'f',       'p',       '?',       '{',       '}',      '\b',      '\t',
@@ -24072,7 +24445,7 @@ static constexpr KeyLayout::unicode_t keymap_615[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_616[] {
+static constexpr KeyLayout::unicode_t keymap_625[] {
 /*00-07*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*08-0F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*10-17*/         0,    0x001e,         0,         0,         0,         0,         0,         0,
@@ -24107,7 +24480,7 @@ static constexpr KeyLayout::unicode_t keymap_616[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_617[] {
+static constexpr KeyLayout::unicode_t keymap_626[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       'J',       'L',
        //                  ESC
 /*08-0F*/       'M',       'F',       'P',       '/',       '[',       ']',      '\b',      '\t',
@@ -24143,7 +24516,7 @@ static constexpr KeyLayout::unicode_t keymap_617[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_618[] {
+static constexpr KeyLayout::unicode_t keymap_627[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       'J',       'L',
        //                  ESC
 /*08-0F*/       'M',       'F',       'P',       '/',       '[',       ']',      '\b',      '\t',
@@ -24179,7 +24552,7 @@ static constexpr KeyLayout::unicode_t keymap_618[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_619[] {
+static constexpr KeyLayout::unicode_t keymap_628[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       'j',       'l',
        //                  ESC
 /*08-0F*/       'm',       'f',       'p',       '/',       '[',       ']',      '\b',      '\t',
@@ -24215,7 +24588,7 @@ static constexpr KeyLayout::unicode_t keymap_619[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_620[] {
+static constexpr KeyLayout::unicode_t keymap_629[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',    DK|'^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -24251,7 +24624,7 @@ static constexpr KeyLayout::unicode_t keymap_620[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_621[] {
+static constexpr KeyLayout::unicode_t keymap_630[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',    DK|'^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
@@ -24287,7 +24660,7 @@ static constexpr KeyLayout::unicode_t keymap_621[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_622[] {
+static constexpr KeyLayout::unicode_t keymap_631[] {
 /*00-07*/         0,         0,    0x00b9,         0,         0,    0x00a3,         0,         0,
        //                               ¹                                £
 /*08-0F*/         0,         0,         0,         0,         0,    0x00f7,         0,         0,
@@ -24329,7 +24702,7 @@ static constexpr KeyLayout::unicode_t keymap_622[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_623[] {
+static constexpr KeyLayout::unicode_t keymap_632[] {
 /*00-07*/         0,         0,    0x00b9,         0,         0,    0x00a3,         0,         0,
        //                               ¹                                £
 /*08-0F*/         0,         0,         0,         0,         0,    0x00f7,         0,         0,
@@ -24371,7 +24744,7 @@ static constexpr KeyLayout::unicode_t keymap_623[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_624[] {
+static constexpr KeyLayout::unicode_t keymap_633[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -24407,7 +24780,7 @@ static constexpr KeyLayout::unicode_t keymap_624[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_625[] {
+static constexpr KeyLayout::unicode_t keymap_634[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -24443,7 +24816,7 @@ static constexpr KeyLayout::unicode_t keymap_625[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_626[] {
+static constexpr KeyLayout::unicode_t keymap_635[] {
 /*00-07*/         0,         0,    0x00a1,    0x00b2,    0x00b3,    0x00a4,    0x20ac,    0x00bc,
        //                               ¡          ²          ³          ¤          €          ¼
 /*08-0F*/    0x00bd,    0x00be,    0x2018,    0x2019,    0x00a5,    0x00d7,         0,         0,
@@ -24485,7 +24858,7 @@ static constexpr KeyLayout::unicode_t keymap_626[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_627[] {
+static constexpr KeyLayout::unicode_t keymap_636[] {
 /*00-07*/         0,         0,    0x00a1,    0x00b2,    0x00b3,    0x00a4,    0x20ac,    0x00bc,
        //                               ¡          ²          ³          ¤          €          ¼
 /*08-0F*/    0x00bd,    0x00be,    0x2018,    0x2019,    0x00a5,    0x00d7,         0,         0,
@@ -24527,7 +24900,7 @@ static constexpr KeyLayout::unicode_t keymap_627[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_628[] {
+static constexpr KeyLayout::unicode_t keymap_637[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
@@ -24563,7 +24936,7 @@ static constexpr KeyLayout::unicode_t keymap_628[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_629[] {
+static constexpr KeyLayout::unicode_t keymap_638[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',    DK|'-',    DK|'=',      '\b',      '\t',
@@ -24604,7 +24977,7 @@ static constexpr KeyLayout::unicode_t keymap_629[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_630[] {
+static constexpr KeyLayout::unicode_t keymap_639[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',       '^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',    DK|'_',    DK|'+',      '\b',      '\t',
@@ -24645,7 +25018,7 @@ static constexpr KeyLayout::unicode_t keymap_630[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_631[] {
+static constexpr KeyLayout::unicode_t keymap_640[] {
 /*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',       '^',
        //                  ESC
 /*08-0F*/       '&',       '*',       '(',       ')',    DK|'_',    DK|'+',      '\b',      '\t',
@@ -24686,7 +25059,7 @@ static constexpr KeyLayout::unicode_t keymap_631[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_632[] {
+static constexpr KeyLayout::unicode_t keymap_641[] {
 /*00-07*/         0,         0,         0,    0x00b2,    0x00b3,         0,         0,         0,
        //                                          ²          ³
 /*08-0F*/         0,         0,         0,         0,         0, DK|0x1fdf,         0,         0,
@@ -24726,7 +25099,7 @@ static constexpr KeyLayout::unicode_t keymap_632[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_633[] {
+static constexpr KeyLayout::unicode_t keymap_642[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',    DK|'-',    DK|'=',      '\b',      '\t',
@@ -24767,7 +25140,7 @@ static constexpr KeyLayout::unicode_t keymap_633[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_634[] {
+static constexpr KeyLayout::unicode_t keymap_643[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',    DK|'-',    DK|'=',      '\b',      '\t',
@@ -24808,7 +25181,7 @@ static constexpr KeyLayout::unicode_t keymap_634[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_635[] {
+static constexpr KeyLayout::unicode_t keymap_644[] {
 /*00-07*/         0,         0,    0x03da,    0x03de,    0x03e0,    0x00a3,    0x00a7,    0x00b6,
        //                               Ϛ          Ϟ          Ϡ          £          §          ¶
 /*08-0F*/         0,    0x00a4,    0x00a6,    0x00b0,    0x00b1, DK|0x00bd,         0,         0,
@@ -24850,7 +25223,7 @@ static constexpr KeyLayout::unicode_t keymap_635[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_636[] {
+static constexpr KeyLayout::unicode_t keymap_645[] {
 /*00-07*/         0,         0,    0x03da,    0x03de,    0x03e0,    0x00a3,    0x00a7,    0x00b6,
        //                               Ϛ          Ϟ          Ϡ          £          §          ¶
 /*08-0F*/         0,    0x00a4,    0x00a6,    0x00b0,    0x00b1, DK|0x00bd,         0,         0,
@@ -24892,7 +25265,7 @@ static constexpr KeyLayout::unicode_t keymap_636[] {
 /*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
 };
 
-static constexpr KeyLayout::unicode_t keymap_637[] {
+static constexpr KeyLayout::unicode_t keymap_646[] {
 /*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
        //                  ESC
 /*08-0F*/       '7',       '8',       '9',       '0',    DK|'-',    DK|'=',      '\b',      '\t',
@@ -24910,6 +25283,394 @@ static constexpr KeyLayout::unicode_t keymap_637[] {
 /*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
 /*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
 /*50-57*/       '2',       '3',       '0',       ',',         0,         0,       '<',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_647[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
+       //                  ESC
+/*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
+/*10-17*/       'q',       'w',       'f',       'p',       'g',       'j',       'l',       'u',
+/*18-1F*/       'y',       ';',       '[',       ']',      '\r',         0,       'a',       'r',
+/*20-27*/       's',       't',       'd',       'h',       'n',       'e',       'i',       'o',
+/*28-2F*/      '\'',       '`',         0,      '\\',       'z',       'x',       'c',       'v',
+/*30-37*/       'b',       'k',       'm',       ',',       '.',       '/',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '-',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_648[] {
+/*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',       '^',
+       //                  ESC
+/*08-0F*/       '&',       '*',       '(',       ')',       '_',       '+',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'F',       'P',       'G',       'J',       'L',       'U',
+/*18-1F*/       'Y',       ':',       '{',       '}',      '\r',         0,       'A',       'R',
+/*20-27*/       'S',       'T',       'D',       'H',       'N',       'E',       'I',       'O',
+/*28-2F*/       '"',       '~',         0,       '|',       'Z',       'X',       'C',       'V',
+/*30-37*/       'B',       'K',       'M',       '<',       '>',       '?',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '_',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,      '\r',         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,       '/',         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,    0x0003,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_649[] {
+/*00-07*/         0,    0x001b,       '!',       '@',       '#',       '$',       '%',         0,
+       //                  ESC
+/*08-0F*/         0,         0,       '(',       ')',       '_',       '+',      '\b',      '\t',
+/*10-17*/       'q',       'w',       'f',       'p',       'g',       'j',       'l',       'u',
+/*18-1F*/       'y',         0,       '{',       '}',      '\r',         0,       'a',       'r',
+/*20-27*/       's',       't',       'd',       'h',       'n',       'e',       'i',       'o',
+/*28-2F*/         0,       '~',         0,       '|',       'z',       'x',       'c',       'v',
+/*30-37*/       'b',       'k',       'm',       '<',       '>',       '?',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '_',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_650[] {
+/*00-07*/         0,         0,    0x00b9,    0x00b2,    0x00b3,    0x00a3,    0x00a5,    0x0127,
+       //                               ¹          ²          ³          £          ¥          ħ
+/*08-0F*/    0x00f0,    0x00fe,    0x201c,    0x201d,    0x2014,    0x00f7,         0,         0,
+       //         ð          þ          “          ”          —          ÷
+/*10-17*/    0x00e4,    0x00e5,    0x00e3,    0x00f8,         0,    0x0111,    0x0142,    0x00fa,
+       //         ä          å          ã          ø                     đ          ł          ú
+/*18-1F*/    0x00fc,    0x00f6,    0x2039,    0x203a,         0,         0,    0x00e1,         0,
+       //         ü          ö          ‹          ›                                á
+/*20-27*/    0x00df,         0,         0,         0,    0x00f1,    0x00e9,    0x00ed,    0x00f3,
+       //         ß                                           ñ          é          í          ó
+/*28-2F*/    0x00f5,         0,         0,         0,    0x00e6,         0,    0x00e7,    0x0153,
+       //         õ                                           æ                     ç          œ
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,    0x00a0,         0,         0,         0,         0,         0,         0,
+       //                     
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,    0x2014,         0,
+       //                                                                           —
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_651[] {
+/*00-07*/         0,         0,    0x00b9,    0x00b2,    0x00b3,    0x00a3,    0x00a5,    0x0126,
+       //                               ¹          ²          ³          £          ¥          Ħ
+/*08-0F*/    0x00d0,    0x00de,    0x201c,    0x201d,    0x2014,    0x00f7,         0,         0,
+       //         Ð          Þ          “          ”          —          ÷
+/*10-17*/    0x00c4,    0x00c5,    0x00c3,    0x00d8,         0,    0x0110,    0x0141,    0x00da,
+       //         Ä          Å          Ã          Ø                     Đ          Ł          Ú
+/*18-1F*/    0x00dc,    0x00d6,    0x2039,    0x203a,         0,         0,    0x00c1,         0,
+       //         Ü          Ö          ‹          ›                                Á
+/*20-27*/    0x1e9e, DK|0x02dd,         0,         0,    0x00d1,    0x00c9,    0x00cd,    0x00d3,
+       //         ẞ          ˝                                Ñ          É          Í          Ó
+/*28-2F*/    0x00d5,         0,         0,         0,    0x00c6,         0,    0x00c7,    0x0152,
+       //         Õ                                           Æ                     Ç          Œ
+/*30-37*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*38-3F*/         0,    0x00a0,         0,         0,         0,         0,         0,         0,
+       //                     
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,    0x2014,         0,
+       //                                                                           —
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_652[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',         0,
+       //                  ESC
+/*08-0F*/         0,         0,       '9',       '0',       '-',       '=',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'F',       'P',       'G',       'J',       'L',       'U',
+/*18-1F*/       'Y',         0,       '[',       ']',      '\r',         0,       'A',       'R',
+/*20-27*/       'S',       'T',       'D',       'H',       'N',       'E',       'I',       'O',
+/*28-2F*/         0,       '`',         0,      '\\',       'Z',       'X',       'C',       'V',
+/*30-37*/       'B',       'K',       'M',       ',',       '.',       '/',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,       '-',         0,         0,         0,       '+',         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,       '-',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_653[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',         0,
+       //                  ESC
+/*08-0F*/         0,         0,       '9',       '0',       '-',       '=',      '\b',      '\t',
+/*10-17*/       'Q',       'W',       'F',       'P',       'G',       'J',       'L',       'U',
+/*18-1F*/       'Y',         0,       '[',       ']',      '\r',         0,       'A',       'R',
+/*20-27*/       'S',       'T',       'D',       'H',       'N',       'E',       'I',       'O',
+/*28-2F*/         0,       '`',         0,      '\\',       'Z',       'X',       'C',       'V',
+/*30-37*/       'B',       'K',       'M',       ',',       '.',       '/',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
+/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
+/*50-57*/       '2',       '3',       '0',       '.',         0,         0,       '-',         0,
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,      '\t',         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_654[] {
+/*00-07*/         0,         0,    0x00a1,    0x00ba,    0x00aa,    0x00a2,    0x20ac,    0x0127,
+       //                               ¡          º          ª          ¢          €          ħ
+/*08-0F*/    0x00f0,    0x00fe,    0x2018,    0x2019,    0x2013,    0x00d7,         0,         0,
+       //         ð          þ          ‘          ’          –          ×
+/*10-17*/    0x00e4,    0x00e5,    0x00e3,    0x00f8, DK|0x02db,    0x0111,    0x0142,    0x00fa,
+       //         ä          å          ã          ø          ˛          đ          ł          ú
+/*18-1F*/    0x00fc,    0x00f6,    0x00ab,    0x00bb,         0,         0,    0x00e1,    DK|'`',
+       //         ü          ö          «          »                                á
+/*20-27*/    0x00df, DK|0x00b4, DK|0x00a8, DK|0x02c7,    0x00f1,    0x00e9,    0x00ed,    0x00f3,
+       //         ß          ´          ¨          ˇ          ñ          é          í          ó
+/*28-2F*/    0x00f5,    DK|'~',         0,    DK|'*',    0x00e6,    DK|'^',    0x00e7,    0x0153,
+       //         õ                     æ          ç          œ
+/*30-37*/ DK|0x02d8, DK|0x02da, DK|0x00af, DK|0x00b8, DK|0x02d9,    0x00bf,         0,         0,
+       //         ˘          ˚          ¯          ¸          ˙          ¿
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,    0x2013,         0,
+       //                                                                           –
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_655[] {
+/*00-07*/         0,         0,    0x00a1,    0x00ba,    0x00aa,    0x00a2,    0x20ac,    0x0126,
+       //                               ¡          º          ª          ¢          €          Ħ
+/*08-0F*/    0x00d0,    0x00de,    0x2018,    0x2019,    0x2013,    0x00d7,         0,         0,
+       //         Ð          Þ          ‘          ’          –          ×
+/*10-17*/    0x00c4,    0x00c5,    0x00c3,    0x00d8,         0,    0x0110,    0x0141,    0x00da,
+       //         Ä          Å          Ã          Ø                     Đ          Ł          Ú
+/*18-1F*/    0x00dc,    0x00d6,    0x00ab,    0x00bb,         0,         0,    0x00c1,         0,
+       //         Ü          Ö          «          »                                Á
+/*20-27*/    0x1e9e,         0,         0,         0,    0x00d1,    0x00c9,    0x00cd,    0x00d3,
+       //         ẞ                                           Ñ          É          Í          Ó
+/*28-2F*/    0x00d5,    DK|'~',         0,    DK|'*',    0x00c6,         0,    0x00c7,    0x0152,
+       //         Õ                     Æ                     Ç          Œ
+/*30-37*/         0,         0,         0, DK|0x00b8, DK|0x02d9,    0x00bf,         0,         0,
+       //                                          ¸          ˙          ¿
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*48-4F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*50-57*/         0,         0,         0,         0,         0,         0,    0x2013,         0,
+       //                                                                           –
+/*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*70-77*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*78-7F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*80-87*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*88-8F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*90-97*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*98-9F*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A0-A7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*A8-AF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B0-B7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*B8-BF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C0-C7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*C8-CF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D0-D7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*D8-DF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E0-E7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*E8-EF*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F0-F7*/         0,         0,         0,         0,         0,         0,         0,         0,
+/*F8-FF*/         0,         0,         0,         0,         0,         0,         0,         0,
+};
+
+static constexpr KeyLayout::unicode_t keymap_656[] {
+/*00-07*/         0,    0x001b,       '1',       '2',       '3',       '4',       '5',       '6',
+       //                  ESC
+/*08-0F*/       '7',       '8',       '9',       '0',       '-',       '=',      '\b',      '\t',
+/*10-17*/       'q',       'w',       'f',       'p',       'g',       'j',       'l',       'u',
+/*18-1F*/       'y',       ';',       '[',       ']',      '\r',         0,       'a',       'r',
+/*20-27*/       's',       't',       'd',       'h',       'n',       'e',       'i',       'o',
+/*28-2F*/      '\'',       '`',         0,      '\\',       'z',       'x',       'c',       'v',
+/*30-37*/       'b',       'k',       'm',       ',',       '.',       '/',         0,       '*',
+/*38-3F*/         0,       ' ',         0,         0,         0,         0,         0,         0,
+/*40-47*/         0,         0,         0,         0,         0,         0,         0,       '7',
+/*48-4F*/       '8',       '9',       '-',       '4',       '5',       '6',       '+',       '1',
+/*50-57*/       '2',       '3',       '0',       '.',         0,         0,       '-',         0,
 /*58-5F*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*60-67*/         0,         0,         0,         0,         0,         0,         0,         0,
 /*68-6F*/         0,         0,         0,         0,         0,         0,         0,         0,
@@ -26131,7 +26892,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_72[] {
     {.dkey={.second=0x0025 /* % */, .result=0x20B0 /* ₰ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x20B3 /* ₳ */}},
     {.dkey={.second=0x0042 /* B */, .result=0x0E3F /* ฿ */}},
-    {.dkey={.second=0x0043 /* C */, .result=0x20A1 /* ₡ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x20B5 /* ₵ */}},
     {.dkey={.second=0x0044 /* D */, .result=0x20AF /* ₯ */}},
     {.dkey={.second=0x0046 /* F */, .result=0x20A3 /* ₣ */}},
     {.dkey={.second=0x004C /* L */, .result=0x20A4 /* ₤ */}},
@@ -26221,7 +26982,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_73[] {
 };
 
 static constexpr KeyLayout::DKeyTable::Data dkeydata_74[] {
-    {.meta={.size=27, .accent=0x017F /* ſ */}},
+    {.meta={.size=29, .accent=0x017F /* ſ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x017F /* ſ */}},
     {.dkey={.second=0x0027 /* ' */, .result=0x02BC /* ʼ */}},
     {.dkey={.second=0x0030 /* 0 */, .result=0x00AB /* « */}},
@@ -26247,8 +27008,10 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_74[] {
     {.dkey={.second=0x0074 /* t */, .result=0x00FE /* þ */}},
     {.dkey={.second=0x00A0 /*   */, .result=0x2003 /*   */}},
     {.dkey={.second=0x00AB /* « */, .result=0x201E /* „ */}},
-    {.dkey={.second=0x00BB /* » */, .result=0x201F /* ‟ */}},
+    {.dkey={.second=0x00BB /* » */, .result=0x201C /* “ */}},
     {.dkey={.second=0x017F /* ſ */, .result=0x017F /* ſ */}},
+    {.dkey={.second=0x2018 /* ‘ */, .result=0x201A /* ‚ */}},
+    {.dkey={.second=0x2019 /* ’ */, .result=0x2018 /* ‘ */}},
 };
 
 static constexpr KeyLayout::DKeyTable::Data dkeydata_75[] {
@@ -26511,6 +27274,1001 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_87[] {
 };
 
 static constexpr KeyLayout::DKeyTable::Data dkeydata_88[] {
+    {.meta={.size=48, .accent=0x00B4 /* ´ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00B4 /* ´ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C1 /* Á */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x0106 /* Ć */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00C9 /* É */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x01F4 /* Ǵ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CD /* Í */}},
+    {.dkey={.second=0x004B /* K */, .result=0x1E30 /* Ḱ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x0139 /* Ĺ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x1E3E /* Ḿ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0143 /* Ń */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D3 /* Ó */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x1E54 /* Ṕ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0154 /* Ŕ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x015A /* Ś */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00DA /* Ú */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E82 /* Ẃ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x00DD /* Ý */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x0179 /* Ź */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E1 /* á */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x0107 /* ć */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00E9 /* é */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x01F5 /* ǵ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00ED /* í */}},
+    {.dkey={.second=0x006B /* k */, .result=0x1E31 /* ḱ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013A /* ĺ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x1E3F /* ḿ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0144 /* ń */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F3 /* ó */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x1E55 /* ṕ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0155 /* ŕ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x015B /* ś */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00FA /* ú */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E83 /* ẃ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x00FD /* ý */}},
+    {.dkey={.second=0x007A /* z */, .result=0x017A /* ź */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0301 /* ́ */}},
+    {.dkey={.second=0x00B8 /* ¸ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01D7 /* Ǘ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01D8 /* ǘ */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DA /* ˚ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DF /* ˟ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_89[] {
+    {.meta={.size=49, .accent=0x005E /* ^ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x005E /* ^ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0x207D /* ⁽ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0x207E /* ⁾ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x207A /* ⁺ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x207B /* ⁻ */}},
+    {.dkey={.second=0x0030 /* 0 */, .result=0x2070 /* ⁰ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x00B9 /* ¹ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x00B2 /* ² */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x00B3 /* ³ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x2074 /* ⁴ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x2075 /* ⁵ */}},
+    {.dkey={.second=0x0036 /* 6 */, .result=0x2076 /* ⁶ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x2077 /* ⁷ */}},
+    {.dkey={.second=0x0038 /* 8 */, .result=0x2078 /* ⁸ */}},
+    {.dkey={.second=0x0039 /* 9 */, .result=0x2079 /* ⁹ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2259 /* ≙ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C2 /* Â */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x0108 /* Ĉ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00CA /* Ê */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x011C /* Ĝ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x0124 /* Ĥ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CE /* Î */}},
+    {.dkey={.second=0x004A /* J */, .result=0x0134 /* Ĵ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D4 /* Ô */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x015C /* Ŝ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00DB /* Û */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x0174 /* Ŵ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x0176 /* Ŷ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x1E90 /* Ẑ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0302 /* ̂ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E2 /* â */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x0109 /* ĉ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00EA /* ê */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x011D /* ĝ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x0125 /* ĥ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00EE /* î */}},
+    {.dkey={.second=0x006A /* j */, .result=0x0135 /* ĵ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F4 /* ô */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x015D /* ŝ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00FB /* û */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x0175 /* ŵ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x0177 /* ŷ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x1E91 /* ẑ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C0 /* ˀ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C7 /* ˇ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02CC /* ˌ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_90[] {
+    {.meta={.size=25, .accent=0x0060 /* ` */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x0060 /* ` */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C0 /* À */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00C8 /* È */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CC /* Ì */}},
+    {.dkey={.second=0x004E /* N */, .result=0x01F8 /* Ǹ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D2 /* Ò */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00D9 /* Ù */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E80 /* Ẁ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1EF2 /* Ỳ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0300 /* ̀ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E0 /* à */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00E8 /* è */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00EC /* ì */}},
+    {.dkey={.second=0x006E /* n */, .result=0x01F9 /* ǹ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F2 /* ò */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00F9 /* ù */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E81 /* ẁ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1EF3 /* ỳ */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01DB /* Ǜ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01DC /* ǜ */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_91[] {
+    {.meta={.size=49, .accent=0x02D9 /* ˙ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02D9 /* ˙ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0226 /* Ȧ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x1E02 /* Ḃ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x010A /* Ċ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x1E0A /* Ḋ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0116 /* Ė */}},
+    {.dkey={.second=0x0046 /* F */, .result=0x1E1E /* Ḟ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x0120 /* Ġ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E22 /* Ḣ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x0130 /* İ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013F /* Ŀ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x1E40 /* Ṁ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x1E44 /* Ṅ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x022E /* Ȯ */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x1E56 /* Ṗ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x1E58 /* Ṙ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x1E60 /* Ṡ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x1E6A /* Ṫ */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E86 /* Ẇ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x1E8A /* Ẋ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1E8E /* Ẏ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x017B /* Ż */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0227 /* ȧ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x1E03 /* ḃ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x010B /* ċ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x1E0B /* ḋ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0117 /* ė */}},
+    {.dkey={.second=0x0066 /* f */, .result=0x1E1F /* ḟ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x0121 /* ġ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E23 /* ḣ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x0140 /* ŀ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x1E41 /* ṁ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x1E45 /* ṅ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x022F /* ȯ */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x1E57 /* ṗ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x1E59 /* ṙ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x1E61 /* ṡ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x1E6B /* ṫ */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E87 /* ẇ */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x1E8B /* ẋ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1E8F /* ẏ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x017C /* ż */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x2E1E /* ⸞ */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C7 /* ˇ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02CC /* ˌ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0310 /* ̐ */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x0307 /* ̇ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_92[] {
+    {.meta={.size=32, .accent=0x00AF /* ¯ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00AF /* ¯ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2E40 /* ⹀ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2261 /* ≡ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0100 /* Ā */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0112 /* Ē */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x1E20 /* Ḡ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x012A /* Ī */}},
+    {.dkey={.second=0x004F /* O */, .result=0x014C /* Ō */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x016A /* Ū */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x0232 /* Ȳ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0101 /* ā */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0113 /* ē */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x1E21 /* ḡ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x012B /* ī */}},
+    {.dkey={.second=0x006F /* o */, .result=0x014D /* ō */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x016B /* ū */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x0233 /* ȳ */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0304 /* ̄ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00C4 /* Ä */, .result=0x01DE /* Ǟ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x022A /* Ȫ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01D5 /* Ǖ */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x01DF /* ǟ */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x022B /* ȫ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01D6 /* ǖ */}},
+    {.dkey={.second=0x02CC /* ˌ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DB /* ˛ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DF /* ˟ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_93[] {
+    {.meta={.size=43, .accent=0x02DD /* ˝ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02DD /* ˝ */}},
+    {.dkey={.second=0x0023 /* # */, .result=0x2016 /* ‖ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x02C8 /* ˈ */}},
+    {.dkey={.second=0x002C /* , */, .result=0x02D1 /* ˑ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x02CC /* ˌ */}},
+    {.dkey={.second=0x002E /* . */, .result=0x02D0 /* ː */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x003A /* : */, .result=0x02D0 /* ː */}},
+    {.dkey={.second=0x004F /* O */, .result=0x0150 /* Ő */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x0170 /* Ű */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0066 /* f */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x006A /* j */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x006B /* k */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x006C /* l */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x006D /* m */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x006F /* o */, .result=0x0151 /* ő */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0071 /* q */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x0171 /* ű */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x007A /* z */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DD /* ˝ */, .result=0x030B /* ̋ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_94[] {
+    {.meta={.size=60, .accent=0x02C7 /* ˇ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02C7 /* ˇ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0x208D /* ₍ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0x208E /* ₎ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x208A /* ₊ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x208B /* ₋ */}},
+    {.dkey={.second=0x0030 /* 0 */, .result=0x2080 /* ₀ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x2081 /* ₁ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x2082 /* ₂ */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x2083 /* ₃ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x2084 /* ₄ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x2085 /* ₅ */}},
+    {.dkey={.second=0x0036 /* 6 */, .result=0x2086 /* ₆ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x2087 /* ₇ */}},
+    {.dkey={.second=0x0038 /* 8 */, .result=0x2088 /* ₈ */}},
+    {.dkey={.second=0x0039 /* 9 */, .result=0x2089 /* ₉ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x208C /* ₌ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x01CD /* Ǎ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x010C /* Č */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x010E /* Ď */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x011A /* Ě */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x01E6 /* Ǧ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x021E /* Ȟ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x01CF /* Ǐ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x01E8 /* Ǩ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013D /* Ľ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0147 /* Ň */}},
+    {.dkey={.second=0x004F /* O */, .result=0x01D1 /* Ǒ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0158 /* Ř */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x0160 /* Š */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x0164 /* Ť */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x01D3 /* Ǔ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x017D /* Ž */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x01CE /* ǎ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x010D /* č */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x010F /* ď */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x011B /* ě */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x01E7 /* ǧ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x021F /* ȟ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x01D0 /* ǐ */}},
+    {.dkey={.second=0x006A /* j */, .result=0x01F0 /* ǰ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x01E9 /* ǩ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013E /* ľ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0148 /* ň */}},
+    {.dkey={.second=0x006F /* o */, .result=0x01D2 /* ǒ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0159 /* ř */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x0161 /* š */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x0165 /* ť */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x01D4 /* ǔ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x017E /* ž */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x035F /* ͟ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01D9 /* Ǚ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01DA /* ǚ */}},
+    {.dkey={.second=0x02C7 /* ˇ */, .result=0x030C /* ̌ */}},
+    {.dkey={.second=0x02CD /* ˍ */, .result=0x035F /* ͟ */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x035C /* ͜ */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DA /* ˚ */, .result=0x0325 /* ̥ */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0330 /* ̰ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_95[] {
+    {.meta={.size=28, .accent=0x00A8 /* ¨ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00A8 /* ¨ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2E1A /* ⸚ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C4 /* Ä */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00CB /* Ë */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E26 /* Ḧ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CF /* Ï */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D6 /* Ö */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00DC /* Ü */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E84 /* Ẅ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x1E8C /* Ẍ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x0178 /* Ÿ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E4 /* ä */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00EB /* ë */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E27 /* ḧ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00EF /* ï */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F6 /* ö */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x1E97 /* ẗ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00FC /* ü */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E85 /* ẅ */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x1E8D /* ẍ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x00FF /* ÿ */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0308 /* ̈ */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C7 /* ˇ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_96[] {
+    {.meta={.size=37, .accent=0x02D8 /* ˘ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02D8 /* ˘ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x2153 /* ⅓ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x2154 /* ⅔ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0102 /* Ă */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x0187 /* Ƈ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0114 /* Ĕ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x011E /* Ğ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E2A /* Ḫ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x012C /* Ĭ */}},
+    {.dkey={.second=0x004A /* J */, .result=0x0132 /* Ĳ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x014E /* Ŏ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0212 /* Ȓ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x016C /* Ŭ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0103 /* ă */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x0188 /* ƈ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0115 /* ĕ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x011F /* ğ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E2B /* ḫ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x012D /* ĭ */}},
+    {.dkey={.second=0x006A /* j */, .result=0x0133 /* ĳ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x0138 /* ĸ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0149 /* ŉ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x014F /* ŏ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0213 /* ȓ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x016D /* ŭ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B8 /* ¸ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C0 /* ˀ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C7 /* ˇ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02CC /* ˌ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0306 /* ̆ */}},
+    {.dkey={.second=0x02DA /* ˚ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DF /* ˟ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_97[] {
+    {.meta={.size=27, .accent=0x02DC /* ˜ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02DC /* ˜ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2243 /* ≃ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2245 /* ≅ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C3 /* Ã */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x1EBC /* Ẽ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x0128 /* Ĩ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x00D1 /* Ñ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D5 /* Õ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x0168 /* Ũ */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x1E7C /* Ṽ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1EF8 /* Ỹ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E3 /* ã */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x1EBD /* ẽ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0129 /* ĩ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x00F1 /* ñ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F5 /* õ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x0169 /* ũ */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x1E7D /* ṽ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1EF9 /* ỹ */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x2248 /* ≈ */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0303 /* ̃ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_98[] {
+    {.meta={.size=90, .accent=0x02DA /* ˚ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02DA /* ˚ */}},
+    {.dkey={.second=0x0023 /* # */, .result=0x220E /* ∎ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0x2772 /* ❲ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0x2773 /* ❳ */}},
+    {.dkey={.second=0x002A /* * */, .result=0x2217 /* ∗ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x2295 /* ⊕ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2296 /* ⊖ */}},
+    {.dkey={.second=0x002E /* . */, .result=0x22C5 /* ⋅ */}},
+    {.dkey={.second=0x002F /* / */, .result=0x2215 /* ∕ */}},
+    {.dkey={.second=0x0030 /* 0 */, .result=0x24EA /* ⓪ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x2460 /* ① */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x2461 /* ② */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x2462 /* ③ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x2463 /* ④ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x2464 /* ⑤ */}},
+    {.dkey={.second=0x0036 /* 6 */, .result=0x2465 /* ⑥ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x2466 /* ⑦ */}},
+    {.dkey={.second=0x0038 /* 8 */, .result=0x2467 /* ⑧ */}},
+    {.dkey={.second=0x0039 /* 9 */, .result=0x2468 /* ⑨ */}},
+    {.dkey={.second=0x003A /* : */, .result=0x2236 /* ∶ */}},
+    {.dkey={.second=0x003B /* ; */, .result=0x21CC /* ⇌ */}},
+    {.dkey={.second=0x003C /* < */, .result=0x226A /* ≪ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x225D /* ≝ */}},
+    {.dkey={.second=0x003E /* > */, .result=0x226B /* ≫ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C5 /* Å */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x21CE /* ⇎ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x2102 /* ℂ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x2206 /* ∆ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x2204 /* ∄ */}},
+    {.dkey={.second=0x0046 /* F */, .result=0x2234 /* ∴ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x2284 /* ⊄ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x210F /* ℏ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x221D /* ∝ */}},
+    {.dkey={.second=0x004A /* J */, .result=0x2285 /* ⊅ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x2287 /* ⊇ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x2229 /* ∩ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x21CF /* ⇏ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x2115 /* ℕ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x2220 /* ∠ */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x2117 /* ℗ */}},
+    {.dkey={.second=0x0051 /* Q */, .result=0x211A /* ℚ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x211D /* ℝ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x2207 /* ∇ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x221F /* ∟ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x016E /* Ů */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x2227 /* ∧ */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x02AC /* ʬ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x2135 /* ℵ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x2222 /* ∢ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x2124 /* ℤ */}},
+    {.dkey={.second=0x005B /* [ */, .result=0x27E6 /* ⟦ */}},
+    {.dkey={.second=0x005D /* ] */, .result=0x27E7 /* ⟧ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E5 /* å */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x21D4 /* ⇔ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x221B /* ∛ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x2202 /* ∂ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x2203 /* ∃ */}},
+    {.dkey={.second=0x0066 /* f */, .result=0x2235 /* ∵ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x2282 /* ⊂ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x210E /* ℎ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x221E /* ∞ */}},
+    {.dkey={.second=0x006A /* j */, .result=0x2283 /* ⊃ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x2286 /* ⊆ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x222A /* ∪ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x21D2 /* ⇒ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x21D0 /* ⇐ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x2221 /* ∡ */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x220F /* ∏ */}},
+    {.dkey={.second=0x0071 /* q */, .result=0x2200 /* ∀ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x221A /* √ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x2194 /* ↔ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x22A5 /* ⊥ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x016F /* ů */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x2228 /* ∨ */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E98 /* ẘ */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x2715 /* ✕ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1E99 /* ẙ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x26A1 /* ⚡ */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x2E1B /* ⸛ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B7 /* · */, .result=0x2219 /* ∙ */}},
+    {.dkey={.second=0x00C4 /* Ä */, .result=0x220C /* ∌ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x2209 /* ∉ */}},
+    {.dkey={.second=0x00D7 /* × */, .result=0x2297 /* ⊗ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x2226 /* ∦ */}},
+    {.dkey={.second=0x00DF /* ß */, .result=0x222B /* ∫ */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x220B /* ∋ */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x2208 /* ∈ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x2225 /* ∥ */}},
+    {.dkey={.second=0x02DA /* ˚ */, .result=0x030A /* ̊ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_99[] {
+    {.meta={.size=17, .accent=0x02C0 /* ˀ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02C0 /* ˀ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x1EA2 /* Ả */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x1EBA /* Ẻ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x1EC8 /* Ỉ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x1ECE /* Ỏ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x1EE6 /* Ủ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1EF6 /* Ỷ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x1EA3 /* ả */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x1EBB /* ẻ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x1EC9 /* ỉ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x1ECF /* ỏ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x1EE7 /* ủ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1EF7 /* ỷ */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02C0 /* ˀ */, .result=0x0309 /* ̉ */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_100[] {
+    {.meta={.size=72, .accent=0x02BC /* ʼ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02BC /* ʼ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x215B /* ⅛ */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x215C /* ⅜ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x215D /* ⅝ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x215E /* ⅞ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0391 /* Α */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x0392 /* Β */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x03A8 /* Ψ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x0394 /* Δ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0395 /* Ε */}},
+    {.dkey={.second=0x0046 /* F */, .result=0x03A6 /* Φ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x0393 /* Γ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x0397 /* Η */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x0399 /* Ι */}},
+    {.dkey={.second=0x004A /* J */, .result=0x039E /* Ξ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x039A /* Κ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x039B /* Λ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x039C /* Μ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x039D /* Ν */}},
+    {.dkey={.second=0x004F /* O */, .result=0x01A0 /* Ơ */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x03A0 /* Π */}},
+    {.dkey={.second=0x0051 /* Q */, .result=0x0342 /* ͂ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x03A1 /* Ρ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x03A3 /* Σ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x03A4 /* Τ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x01AF /* Ư */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x03A9 /* Ω */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x0314 /* ̔ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x03A7 /* Χ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x03A5 /* Υ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x0396 /* Ζ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x03B1 /* α */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x03B2 /* β */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x03C8 /* ψ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x03B4 /* δ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x03B5 /* ε */}},
+    {.dkey={.second=0x0066 /* f */, .result=0x03C6 /* φ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x03B3 /* γ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x03B7 /* η */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x03B9 /* ι */}},
+    {.dkey={.second=0x006A /* j */, .result=0x03BE /* ξ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x03BA /* κ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x03BB /* λ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x03BC /* μ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x03BD /* ν */}},
+    {.dkey={.second=0x006F /* o */, .result=0x01A1 /* ơ */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x03C0 /* π */}},
+    {.dkey={.second=0x0071 /* q */, .result=0x0345 /* ͅ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x03C1 /* ρ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x03C3 /* σ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x03C4 /* τ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x01B0 /* ư */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x03C9 /* ω */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x03C2 /* ς */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x03C7 /* χ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x03C5 /* υ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x03B6 /* ζ */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00C4 /* Ä */, .result=0x0391 /* Α */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x039F /* Ο */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x0398 /* Θ */}},
+    {.dkey={.second=0x00DF /* ß */, .result=0x0313 /* ̓ */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x03B1 /* α */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x03BF /* ο */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x03B8 /* θ */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x031B /* ̛ */}},
+    {.dkey={.second=0x02C0 /* ˀ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02CC /* ˌ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DC /* ˜ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_101[] {
+    {.meta={.size=89, .accent=0x02DF /* ˟ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x200A /*   */}},
+    {.dkey={.second=0x0021 /* ! */, .result=0x25CA /* ◊ */}},
+    {.dkey={.second=0x0022 /* " */, .result=0x00A6 /* ¦ */}},
+    {.dkey={.second=0x0023 /* # */, .result=0x2020 /* † */}},
+    {.dkey={.second=0x0024 /* $ */, .result=0x2133 /* ℳ */}},
+    {.dkey={.second=0x0025 /* % */, .result=0x20B0 /* ₰ */}},
+    {.dkey={.second=0x0026 /* & */, .result=0x204A /* ⁊ */}},
+    {.dkey={.second=0x0027 /* ' */, .result=0x2021 /* ‡ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0x27EA /* ⟪ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0x27EB /* ⟫ */}},
+    {.dkey={.second=0x002A /* * */, .result=0x2052 /* ⁒ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x00B1 /* ± */}},
+    {.dkey={.second=0x002C /* , */, .result=0x02BB /* ʻ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2022 /* • */}},
+    {.dkey={.second=0x002E /* . */, .result=0x2026 /* … */}},
+    {.dkey={.second=0x002F /* / */, .result=0x2116 /* № */}},
+    {.dkey={.second=0x0030 /* 0 */, .result=0x00F7 /* ÷ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x00BC /* ¼ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x00BD /* ½ */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x00BE /* ¾ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x00A4 /* ¤ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x2030 /* ‰ */}},
+    {.dkey={.second=0x0036 /* 6 */, .result=0x2044 /* ⁄ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x2300 /* ⌀ */}},
+    {.dkey={.second=0x0038 /* 8 */, .result=0x27E8 /* ⟨ */}},
+    {.dkey={.second=0x0039 /* 9 */, .result=0x27E9 /* ⟩ */}},
+    {.dkey={.second=0x003A /* : */, .result=0x2713 /* ✓ */}},
+    {.dkey={.second=0x003B /* ; */, .result=0x2665 /* ♥ */}},
+    {.dkey={.second=0x003C /* < */, .result=0x2264 /* ≤ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2205 /* ∅ */}},
+    {.dkey={.second=0x003E /* > */, .result=0x2265 /* ≥ */}},
+    {.dkey={.second=0x003F /* ? */, .result=0x00AC /* ¬ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x2019 /* ’ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x00A9 /* © */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x00D0 /* Ð */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x018F /* Ə */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x261B /* ☛ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x261A /* ☚ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x26A5 /* ⚥ */}},
+    {.dkey={.second=0x004A /* J */, .result=0x02BA /* ʺ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x0141 /* Ł */}},
+    {.dkey={.second=0x004D /* M */, .result=0x2217 /* ∗ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x014A /* Ŋ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D8 /* Ø */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x2190 /* ← */}},
+    {.dkey={.second=0x0051 /* Q */, .result=0x2642 /* ♂ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x00AE /* ® */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x2211 /* ∑ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x00DE /* Þ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x2191 /* ↑ */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x2018 /* ‘ */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x2640 /* ♀ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x201A /* ‚ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x23D1 /* ⏑ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x01B7 /* Ʒ */}},
+    {.dkey={.second=0x005F /* _ */, .result=0x25E6 /* ◦ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x00A5 /* ¥ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x201D /* ” */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x00A2 /* ¢ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x00F0 /* ð */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0259 /* ə */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x02BF /* ʿ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x02BE /* ʾ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0131 /* ı */}},
+    {.dkey={.second=0x006A /* j */, .result=0x02B9 /* ʹ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x0142 /* ł */}},
+    {.dkey={.second=0x006D /* m */, .result=0x200C /* ‌ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x014B /* ŋ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F8 /* ø */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x2192 /* → */}},
+    {.dkey={.second=0x0071 /* q */, .result=0x00BA /* º */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x2122 /* ™ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x017F /* ſ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x00FE /* þ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x2193 /* ↓ */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x201C /* “ */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x00AA /* ª */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x201E /* „ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x2423 /* ␣ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x0292 /* ʒ */}},
+    {.dkey={.second=0x00A7 /* § */, .result=0x00B6 /* ¶ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x00A3 /* £ */}},
+    {.dkey={.second=0x00C4 /* Ä */, .result=0x00C6 /* Æ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x0152 /* Œ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x2197 /* ↗ */}},
+    {.dkey={.second=0x00DF /* ß */, .result=0x2260 /* ≠ */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x00E6 /* æ */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x0153 /* œ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x2198 /* ↘ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_102[] {
+    {.meta={.size=25, .accent=0x02CD /* ˍ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02CD /* ˍ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x00B1 /* ± */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2E40 /* ⹀ */}},
+    {.dkey={.second=0x003C /* < */, .result=0x2264 /* ≤ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2261 /* ≡ */}},
+    {.dkey={.second=0x003E /* > */, .result=0x2265 /* ≥ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x1E06 /* Ḇ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x1E0E /* Ḏ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x1E34 /* Ḵ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x1E3A /* Ḻ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x1E48 /* Ṉ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x1E5E /* Ṟ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x1E6E /* Ṯ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x1E94 /* Ẕ */}},
+    {.dkey={.second=0x005F /* _ */, .result=0x2017 /* ‗ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x1E07 /* ḇ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x1E0F /* ḏ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E96 /* ẖ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x1E35 /* ḵ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x1E3B /* ḻ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x1E49 /* ṉ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x1E5F /* ṟ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x1E6F /* ṯ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x1E95 /* ẕ */}},
+    {.dkey={.second=0x02CD /* ˍ */, .result=0x0331 /* ̱ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_103[] {
+    {.meta={.size=26, .accent=0x00B8 /* ¸ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00B8 /* ¸ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x00C7 /* Ç */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x1E10 /* Ḑ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0228 /* Ȩ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x0122 /* Ģ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E28 /* Ḩ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x0136 /* Ķ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013B /* Ļ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0145 /* Ņ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0156 /* Ŗ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x015E /* Ş */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x0162 /* Ţ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x00E7 /* ç */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x1E11 /* ḑ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0229 /* ȩ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x0123 /* ģ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E29 /* ḩ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x0137 /* ķ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013C /* ļ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0146 /* ņ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0157 /* ŗ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x015F /* ş */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x0163 /* ţ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x00B8 /* ¸ */, .result=0x0327 /* ̧ */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_104[] {
+    {.meta={.size=61, .accent=0x02CF /* ˏ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x2E34 /* ⸴ */}},
+    {.dkey={.second=0x0021 /* ! */, .result=0x01C3 /* ǃ */}},
+    {.dkey={.second=0x0022 /* " */, .result=0x01C1 /* ǁ */}},
+    {.dkey={.second=0x0023 /* # */, .result=0x01C2 /* ǂ */}},
+    {.dkey={.second=0x0027 /* ' */, .result=0x01C0 /* ǀ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0x2E24 /* ⸤ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0x2E25 /* ⸥ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x01C0 /* ǀ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x01C1 /* ǁ */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x01C2 /* ǂ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x01C3 /* ǃ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2E17 /* ⸗ */}},
+    {.dkey={.second=0x003F /* ? */, .result=0x2E2E /* ⸮ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0xA722 /* Ꜣ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0xA724 /* Ꜥ */}},
+    {.dkey={.second=0x0046 /* F */, .result=0x0191 /* Ƒ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x0122 /* Ģ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x01F6 /* Ƕ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0xA7BC /* Ꞽ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x0136 /* Ķ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013B /* Ļ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0145 /* Ņ */}},
+    {.dkey={.second=0x0051 /* Q */, .result=0x0241 /* Ɂ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x211E /* ℞ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x0218 /* Ș */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x021A /* Ț */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x01F7 /* Ƿ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x021C /* Ȝ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x0224 /* Ȥ */}},
+    {.dkey={.second=0x005B /* [ */, .result=0x2E22 /* ⸢ */}},
+    {.dkey={.second=0x005D /* ] */, .result=0x2E23 /* ⸣ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x032D /* ̭ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x030F /* ̏ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0xA723 /* ꜣ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0xA725 /* ꜥ */}},
+    {.dkey={.second=0x0066 /* f */, .result=0x0192 /* ƒ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x0123 /* ģ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x0195 /* ƕ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0xA7BD /* ꞽ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x0137 /* ķ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013C /* ļ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0146 /* ņ */}},
+    {.dkey={.second=0x0071 /* q */, .result=0x0242 /* ɂ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x027C /* ɼ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x0219 /* ș */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x021B /* ț */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x01BF /* ƿ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x021D /* ȝ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x0225 /* ȥ */}},
+    {.dkey={.second=0x007C /* | */, .result=0x2980 /* ⦀ */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0305 /* ̅ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x030D /* ̍ */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0315 /* ̕ */}},
+    {.dkey={.second=0x02C0 /* ˀ */, .result=0x0312 /* ̒ */}},
+    {.dkey={.second=0x02CD /* ˍ */, .result=0x0332 /* ̲ */}},
+    {.dkey={.second=0x02CF /* ˏ */, .result=0x0326 /* ̦ */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x032F /* ̯ */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x0358 /* ͘ */}},
+    {.dkey={.second=0x02DB /* ˛ */, .result=0x1AB7 /* ᪷ */}},
+    {.dkey={.second=0x2032 /* ′ */, .result=0x2035 /* ‵ */}},
+    {.dkey={.second=0x2033 /* ″ */, .result=0x2036 /* ‶ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_105[] {
+    {.meta={.size=13, .accent=0x02DB /* ˛ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02DB /* ˛ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0104 /* Ą */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0118 /* Ę */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x012E /* Į */}},
+    {.dkey={.second=0x004F /* O */, .result=0x01EA /* Ǫ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x0172 /* Ų */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0105 /* ą */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0119 /* ę */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x012F /* į */}},
+    {.dkey={.second=0x006F /* o */, .result=0x01EB /* ǫ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x0173 /* ų */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02DB /* ˛ */, .result=0x0328 /* ̨ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_106[] {
+    {.meta={.size=46, .accent=0x02CC /* ˌ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x2E33 /* ⸳ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x1EA0 /* Ạ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x1E04 /* Ḅ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x1E0C /* Ḍ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x1EB8 /* Ẹ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E24 /* Ḥ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x1ECA /* Ị */}},
+    {.dkey={.second=0x004B /* K */, .result=0x1E32 /* Ḳ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x1E36 /* Ḷ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x1E42 /* Ṃ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x1E46 /* Ṇ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x1ECC /* Ọ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x1E5A /* Ṛ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x1E62 /* Ṣ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x1E6C /* Ṭ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x1EE4 /* Ụ */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x1E7E /* Ṿ */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E88 /* Ẉ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1EF4 /* Ỵ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x1E92 /* Ẓ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x1EA1 /* ạ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x1E05 /* ḅ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x1E0D /* ḍ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x1EB9 /* ẹ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E25 /* ḥ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x1ECB /* ị */}},
+    {.dkey={.second=0x006B /* k */, .result=0x1E33 /* ḳ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x1E37 /* ḷ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x1E43 /* ṃ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x1E47 /* ṇ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x1ECD /* ọ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x1E5B /* ṛ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x1E63 /* ṣ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x1E6D /* ṭ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x1EE5 /* ụ */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x1E7F /* ṿ */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E89 /* ẉ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1EF5 /* ỵ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x1E93 /* ẓ */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x2E1F /* ⸟ */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02BC /* ʼ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02CC /* ˌ */, .result=0x0323 /* ̣ */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x0000 /*   */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_107[] {
+    {.meta={.size=78, .accent=0x02D7 /* ˗ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x2012 /* ‒ */}},
+    {.dkey={.second=0x0023 /* # */, .result=0x203B /* ※ */}},
+    {.dkey={.second=0x0025 /* % */, .result=0x2114 /* ℔ */}},
+    {.dkey={.second=0x0027 /* ' */, .result=0x266A /* ♪ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0xFD3E /* ﴾ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0xFD3F /* ﴿ */}},
+    {.dkey={.second=0x002A /* * */, .result=0x2042 /* ⁂ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x2318 /* ⌘ */}},
+    {.dkey={.second=0x002C /* , */, .result=0x25C1 /* ◁ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2E3A /* ⸺ */}},
+    {.dkey={.second=0x002E /* . */, .result=0x25CF /* ● */}},
+    {.dkey={.second=0x002F /* / */, .result=0x2105 /* ℅ */}},
+    {.dkey={.second=0x0030 /* 0 */, .result=0x2714 /* ✔ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x25FE /* ◾ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x25FD /* ◽ */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x2751 /* ❑ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x2756 /* ❖ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x2023 /* ‣ */}},
+    {.dkey={.second=0x0036 /* 6 */, .result=0x27A4 /* ➤ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x2B9A /* ⮚ */}},
+    {.dkey={.second=0x0038 /* 8 */, .result=0x2717 /* ✗ */}},
+    {.dkey={.second=0x0039 /* 9 */, .result=0x2718 /* ✘ */}},
+    {.dkey={.second=0x003A /* : */, .result=0x00F7 /* ÷ */}},
+    {.dkey={.second=0x003B /* ; */, .result=0x25A1 /* □ */}},
+    {.dkey={.second=0x003C /* < */, .result=0x2619 /* ☙ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2766 /* ❦ */}},
+    {.dkey={.second=0x003E /* > */, .result=0x2767 /* ❧ */}},
+    {.dkey={.second=0x003F /* ? */, .result=0xFFFD /* � */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x0243 /* Ƀ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0xA792 /* Ꞓ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x0110 /* Đ */}},
+    {.dkey={.second=0x0046 /* F */, .result=0xA798 /* Ꞙ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x01E4 /* Ǥ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x0126 /* Ħ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x0197 /* Ɨ */}},
+    {.dkey={.second=0x004A /* J */, .result=0x0248 /* Ɉ */}},
+    {.dkey={.second=0x004B /* K */, .result=0xA740 /* Ꝁ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x023D /* Ƚ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x019F /* Ɵ */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x2C63 /* Ᵽ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x024C /* Ɍ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0xA7C9 /* Ꟊ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x0166 /* Ŧ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x0244 /* Ʉ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x024E /* Ɏ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x01B5 /* Ƶ */}},
+    {.dkey={.second=0x005B /* [ */, .result=0x2045 /* ⁅ */}},
+    {.dkey={.second=0x005D /* ] */, .result=0x2046 /* ⁆ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x02C6 /* ˆ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x0180 /* ƀ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0xA793 /* ꞓ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x0111 /* đ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0xAB33 /* ꬳ */}},
+    {.dkey={.second=0x0066 /* f */, .result=0xA799 /* ꞙ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x01E5 /* ǥ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x0127 /* ħ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0268 /* ɨ */}},
+    {.dkey={.second=0x006A /* j */, .result=0x0249 /* ɉ */}},
+    {.dkey={.second=0x006B /* k */, .result=0xA741 /* ꝁ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x019A /* ƚ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x0275 /* ɵ */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x1D7D /* ᵽ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x024D /* ɍ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0xA7CA /* ꟊ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x0167 /* ŧ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x0289 /* ʉ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x024F /* ɏ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x01B6 /* ƶ */}},
+    {.dkey={.second=0x007C /* | */, .result=0x271D /* ✝ */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x2053 /* ⁓ */}},
+    {.dkey={.second=0x00B0 /* ° */, .result=0x25CC /* ◌ */}},
+    {.dkey={.second=0x00B7 /* · */, .result=0x25C9 /* ◉ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x200D /* ‍ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x2003 /*   */}},
+    {.dkey={.second=0x00DF /* ß */, .result=0x2007 /*   */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x200B /* ​ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x2009 /*   */}},
+    {.dkey={.second=0x02D7 /* ˗ */, .result=0x0335 /* ̵ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_108[] {
     {.meta={.size=15, .accent=0x0027 /* ' */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0027 /* ' */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C1 /* Á */}},
@@ -26529,7 +28287,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_88[] {
     {.dkey={.second=0x0079 /* y */, .result=0x00FD /* ý */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_89[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_109[] {
     {.meta={.size=12, .accent=0x0022 /* " */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0022 /* " */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C4 /* Ä */}},
@@ -26545,7 +28303,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_89[] {
     {.dkey={.second=0x0079 /* y */, .result=0x00FF /* ÿ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_90[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_110[] {
     {.meta={.size=27, .accent=0x005E /* ^ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x005E /* ^ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C2 /* Â */}},
@@ -26576,7 +28334,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_90[] {
     {.dkey={.second=0x007A /* z */, .result=0x1E91 /* ẑ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_91[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_111[] {
     {.meta={.size=5, .accent=0x002C /* , */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002C /* , */}},
     {.dkey={.second=0x0053 /* S */, .result=0x0218 /* Ș */}},
@@ -26585,7 +28343,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_91[] {
     {.dkey={.second=0x0074 /* t */, .result=0x021B /* ț */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_92[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_112[] {
     {.meta={.size=44, .accent=0x02D9 /* ˙ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x02D9 /* ˙ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x0226 /* Ȧ */}},
@@ -26633,7 +28391,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_92[] {
     {.dkey={.second=0x017F /* ſ */, .result=0x1E9B /* ẛ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_93[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_113[] {
     {.meta={.size=40, .accent=0x00B4 /* ´ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00B4 /* ´ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C1 /* Á */}},
@@ -26677,7 +28435,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_93[] {
     {.dkey={.second=0x00E6 /* æ */, .result=0x01FD /* ǽ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_94[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_114[] {
     {.meta={.size=18, .accent=0x0060 /* ` */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0060 /* ` */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C0 /* À */}},
@@ -26699,7 +28457,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_94[] {
     {.dkey={.second=0x0079 /* y */, .result=0x1EF3 /* ỳ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_95[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_115[] {
     {.meta={.size=36, .accent=0x02C7 /* ˇ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x02C7 /* ˇ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x01CD /* Ǎ */}},
@@ -26739,7 +28497,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_95[] {
     {.dkey={.second=0x0292 /* ʒ */, .result=0x01EF /* ǯ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_96[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_116[] {
     {.meta={.size=5, .accent=0x221E /* ∞ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x221E /* ∞ */}},
     {.dkey={.second=0x002D /* - */, .result=0x221E /* ∞ */}},
@@ -26748,7 +28506,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_96[] {
     {.dkey={.second=0x2A7E /* ⩾ */, .result=0x2265 /* ≥ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_97[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_117[] {
     {.meta={.size=18, .accent=0x002F /* / */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002F /* / */}},
     {.dkey={.second=0x003C /* < */, .result=0x226E /* ≮ */}},
@@ -26770,7 +28528,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_97[] {
     {.dkey={.second=0x2A7E /* ⩾ */, .result=0x2271 /* ≱ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_98[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_118[] {
     {.meta={.size=23, .accent=0x002D /* - */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002D /* - */}},
     {.dkey={.second=0x0042 /* B */, .result=0x0243 /* Ƀ */}},
@@ -26797,7 +28555,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_98[] {
     {.dkey={.second=0x007A /* z */, .result=0x01B6 /* ƶ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_99[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_119[] {
     {.meta={.size=20, .accent=0x00A8 /* ¨ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00A8 /* ¨ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C4 /* Ä */}},
@@ -26821,7 +28579,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_99[] {
     {.dkey={.second=0x0079 /* y */, .result=0x00FF /* ÿ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_100[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_120[] {
     {.meta={.size=23, .accent=0x00B8 /* ¸ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00B8 /* ¸ */}},
     {.dkey={.second=0x0043 /* C */, .result=0x00C7 /* Ç */}},
@@ -26848,7 +28606,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_100[] {
     {.dkey={.second=0x0074 /* t */, .result=0x0163 /* ţ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_101[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_121[] {
     {.meta={.size=17, .accent=0x1D49 /* ᵉ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x1D49 /* ᵉ */}},
     {.dkey={.second=0x0028 /* ( */, .result=0x207D /* ⁽ */}},
@@ -26869,7 +28627,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_101[] {
     {.dkey={.second=0x1D49 /* ᵉ */, .result=0x0000 /*   */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_102[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_122[] {
     {.meta={.size=25, .accent=0x00DF /* ß */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00DF /* ß */}},
     {.dkey={.second=0x002D /* - */, .result=0x00AD /* ­ */}},
@@ -26898,7 +28656,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_102[] {
     {.dkey={.second=0x202F /*   */, .result=0x2003 /*   */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_103[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_123[] {
     {.meta={.size=14, .accent=0x02D8 /* ˘ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x02D8 /* ˘ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x0102 /* Ă */}},
@@ -26916,7 +28674,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_103[] {
     {.dkey={.second=0x02D8 /* ˘ */, .result=0x0000 /*   */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_104[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_124[] {
     {.meta={.size=21, .accent=0x007E /* ~ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x007E /* ~ */}},
     {.dkey={.second=0x002D /* - */, .result=0x2243 /* ≃ */}},
@@ -26941,7 +28699,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_104[] {
     {.dkey={.second=0x0079 /* y */, .result=0x1EF9 /* ỹ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_105[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_125[] {
     {.meta={.size=18, .accent=0x00AF /* ¯ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00AF /* ¯ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x0100 /* Ā */}},
@@ -26963,7 +28721,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_105[] {
     {.dkey={.second=0x00E6 /* æ */, .result=0x01E3 /* ǣ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_106[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_126[] {
     {.meta={.size=7, .accent=0x02DA /* ˚ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x02DA /* ˚ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x00C5 /* Å */}},
@@ -26974,7 +28732,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_106[] {
     {.dkey={.second=0x0079 /* y */, .result=0x1E99 /* ẙ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_107[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_127[] {
     {.meta={.size=50, .accent=0x00B5 /* µ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00B5 /* µ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x0391 /* Α */}},
@@ -27028,7 +28786,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_107[] {
     {.dkey={.second=0x007A /* z */, .result=0x03B6 /* ζ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_108[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_128[] {
     {.meta={.size=39, .accent=0x002E /* . */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002E /* . */}},
     {.dkey={.second=0x0041 /* A */, .result=0x1EA0 /* Ạ */}},
@@ -27071,7 +28829,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_108[] {
     {.dkey={.second=0x007A /* z */, .result=0x1E93 /* ẓ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_109[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_129[] {
     {.meta={.size=11, .accent=0x02DB /* ˛ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x02DB /* ˛ */}},
     {.dkey={.second=0x0041 /* A */, .result=0x0104 /* Ą */}},
@@ -27086,7 +28844,101 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_109[] {
     {.dkey={.second=0x0075 /* u */, .result=0x0173 /* ų */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_110[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_130[] {
+    {.meta={.size=90, .accent=0x02DF /* ˟ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x200A /*   */}},
+    {.dkey={.second=0x0021 /* ! */, .result=0x25CA /* ◊ */}},
+    {.dkey={.second=0x0022 /* " */, .result=0x00A6 /* ¦ */}},
+    {.dkey={.second=0x0023 /* # */, .result=0x2020 /* † */}},
+    {.dkey={.second=0x0024 /* $ */, .result=0x2133 /* ℳ */}},
+    {.dkey={.second=0x0025 /* % */, .result=0x20B0 /* ₰ */}},
+    {.dkey={.second=0x0026 /* & */, .result=0x204A /* ⁊ */}},
+    {.dkey={.second=0x0027 /* ' */, .result=0x2021 /* ‡ */}},
+    {.dkey={.second=0x0028 /* ( */, .result=0x27EA /* ⟪ */}},
+    {.dkey={.second=0x0029 /* ) */, .result=0x27EB /* ⟫ */}},
+    {.dkey={.second=0x002A /* * */, .result=0x2052 /* ⁒ */}},
+    {.dkey={.second=0x002B /* + */, .result=0x00D7 /* × */}},
+    {.dkey={.second=0x002C /* , */, .result=0x02BB /* ʻ */}},
+    {.dkey={.second=0x002D /* - */, .result=0x2022 /* • */}},
+    {.dkey={.second=0x002E /* . */, .result=0x2026 /* … */}},
+    {.dkey={.second=0x002F /* / */, .result=0x2116 /* № */}},
+    {.dkey={.second=0x0030 /* 0 */, .result=0x00F7 /* ÷ */}},
+    {.dkey={.second=0x0031 /* 1 */, .result=0x00BC /* ¼ */}},
+    {.dkey={.second=0x0032 /* 2 */, .result=0x00BD /* ½ */}},
+    {.dkey={.second=0x0033 /* 3 */, .result=0x00BE /* ¾ */}},
+    {.dkey={.second=0x0034 /* 4 */, .result=0x00A4 /* ¤ */}},
+    {.dkey={.second=0x0035 /* 5 */, .result=0x2030 /* ‰ */}},
+    {.dkey={.second=0x0036 /* 6 */, .result=0x2044 /* ⁄ */}},
+    {.dkey={.second=0x0037 /* 7 */, .result=0x2300 /* ⌀ */}},
+    {.dkey={.second=0x0038 /* 8 */, .result=0x27E8 /* ⟨ */}},
+    {.dkey={.second=0x0039 /* 9 */, .result=0x27E9 /* ⟩ */}},
+    {.dkey={.second=0x003A /* : */, .result=0x2713 /* ✓ */}},
+    {.dkey={.second=0x003B /* ; */, .result=0x2665 /* ♥ */}},
+    {.dkey={.second=0x003C /* < */, .result=0x2264 /* ≤ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2205 /* ∅ */}},
+    {.dkey={.second=0x003E /* > */, .result=0x2265 /* ≥ */}},
+    {.dkey={.second=0x003F /* ? */, .result=0x00AC /* ¬ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x2019 /* ’ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x00A9 /* © */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x00D0 /* Ð */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x018F /* Ə */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x261B /* ☛ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x261A /* ☚ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x26A5 /* ⚥ */}},
+    {.dkey={.second=0x004A /* J */, .result=0x02BA /* ʺ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x0141 /* Ł */}},
+    {.dkey={.second=0x004D /* M */, .result=0x2217 /* ∗ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x014A /* Ŋ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D8 /* Ø */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x2190 /* ← */}},
+    {.dkey={.second=0x0051 /* Q */, .result=0x2642 /* ♂ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x00AE /* ® */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x2211 /* ∑ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x00DE /* Þ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x2191 /* ↑ */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x2018 /* ‘ */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x2640 /* ♀ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x201A /* ‚ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x23D1 /* ⏑ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x01B7 /* Ʒ */}},
+    {.dkey={.second=0x005F /* _ */, .result=0x25E6 /* ◦ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x00A5 /* ¥ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x201D /* ” */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x00A2 /* ¢ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x00F0 /* ð */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0259 /* ə */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x02BF /* ʿ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x02BE /* ʾ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0131 /* ı */}},
+    {.dkey={.second=0x006A /* j */, .result=0x02B9 /* ʹ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x0142 /* ł */}},
+    {.dkey={.second=0x006D /* m */, .result=0x200C /* ‌ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x014B /* ŋ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F8 /* ø */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x2192 /* → */}},
+    {.dkey={.second=0x0071 /* q */, .result=0x00BA /* º */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x2122 /* ™ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x017F /* ſ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x00FE /* þ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x2193 /* ↓ */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x201C /* “ */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x00AA /* ª */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x201E /* „ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x2423 /* ␣ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x0292 /* ʒ */}},
+    {.dkey={.second=0x00A7 /* § */, .result=0x00B6 /* ¶ */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x00A3 /* £ */}},
+    {.dkey={.second=0x00C4 /* Ä */, .result=0x00C6 /* Æ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x0152 /* Œ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x2197 /* ↗ */}},
+    {.dkey={.second=0x00DF /* ß */, .result=0x2260 /* ≠ */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x00E6 /* æ */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x0153 /* œ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x2198 /* ↘ */}},
+    {.dkey={.second=0x200A /*   */, .result=0x033D /* ̽ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_131[] {
     {.meta={.size=8, .accent=0x002D /* - */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002D /* - */}},
     {.dkey={.second=0x002E /* . */, .result=0x00AF /* ¯ */}},
@@ -27098,7 +28950,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_110[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x1FE1 /* ῡ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_111[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_132[] {
     {.meta={.size=11, .accent=0x003D /* = */}},
     {.dkey={.second=0x0020 /*   */, .result=0x003D /* = */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FCF /* ῏ */}},
@@ -27113,7 +28965,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_111[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F66 /* ὦ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_112[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_133[] {
     {.meta={.size=16, .accent=0x003B /* ; */}},
     {.dkey={.second=0x0020 /*   */, .result=0x003B /* ; */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FFD /* ´ */}},
@@ -27133,7 +28985,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_112[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F7D /* ώ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_113[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_134[] {
     {.meta={.size=7, .accent=0x005B /* [ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x005B /* [ */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FC0 /* ῀ */}},
@@ -27144,7 +28996,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_113[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FF6 /* ῶ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_114[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_135[] {
     {.meta={.size=16, .accent=0x005D /* ] */}},
     {.dkey={.second=0x0020 /*   */, .result=0x005D /* ] */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FEF /* ` */}},
@@ -27164,7 +29016,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_114[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F7C /* ὼ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_115[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_136[] {
     {.meta={.size=16, .accent=0x0384 /* ΄ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0384 /* ΄ */}},
     {.dkey={.second=0x002E /* . */, .result=0x0384 /* ΄ */}},
@@ -27184,7 +29036,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_115[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x03CE /* ώ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_116[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_137[] {
     {.meta={.size=16, .accent=0x0027 /* ' */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0027 /* ' */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FBF /* ᾿ */}},
@@ -27204,7 +29056,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_116[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F60 /* ὠ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_117[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_138[] {
     {.meta={.size=4, .accent=0x007E /* ~ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x007E /* ~ */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FEE /* ΅ */}},
@@ -27212,7 +29064,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_117[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x1FE3 /* ΰ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_118[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_139[] {
     {.meta={.size=15, .accent=0x005C /* \ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x005C /* \ */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FCD /* ῍ */}},
@@ -27231,7 +29083,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_118[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F62 /* ὢ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_119[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_140[] {
     {.meta={.size=15, .accent=0x002F /* / */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002F /* / */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FCE /* ῎ */}},
@@ -27250,7 +29102,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_119[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F64 /* ὤ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_120[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_141[] {
     {.meta={.size=8, .accent=0x005F /* _ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x005F /* _ */}},
     {.dkey={.second=0x002E /* . */, .result=0x02D8 /* ˘ */}},
@@ -27262,7 +29114,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_120[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x1FE0 /* ῠ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_121[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_142[] {
     {.meta={.size=12, .accent=0x002B /* + */}},
     {.dkey={.second=0x0020 /*   */, .result=0x002B /* + */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FDF /* ῟ */}},
@@ -27278,7 +29130,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_121[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F67 /* ὧ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_122[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_143[] {
     {.meta={.size=6, .accent=0x003A /* : */}},
     {.dkey={.second=0x0020 /*   */, .result=0x003A /* : */}},
     {.dkey={.second=0x002E /* . */, .result=0x00A8 /* ¨ */}},
@@ -27288,7 +29140,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_122[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x03CB /* ϋ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_123[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_144[] {
     {.meta={.size=4, .accent=0x0385 /* ΅ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0385 /* ΅ */}},
     {.dkey={.second=0x002E /* . */, .result=0x0385 /* ΅ */}},
@@ -27296,7 +29148,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_123[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x03B0 /* ΰ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_124[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_145[] {
     {.meta={.size=8, .accent=0x007B /* { */}},
     {.dkey={.second=0x0020 /*   */, .result=0x007B /* { */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FBE /* ι */}},
@@ -27308,13 +29160,13 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_124[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FF3 /* ῳ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_125[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_146[] {
     {.meta={.size=2, .accent=0x007D /* } */}},
     {.dkey={.second=0x0020 /*   */, .result=0x007D /* } */}},
     {.dkey={.second=0x002E /* . */, .result=0x0387 /* · */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_126[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_147[] {
     {.meta={.size=6, .accent=0x00A8 /* ¨ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00A8 /* ¨ */}},
     {.dkey={.second=0x002E /* . */, .result=0x00A8 /* ¨ */}},
@@ -27324,7 +29176,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_126[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x03CB /* ϋ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_127[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_148[] {
     {.meta={.size=18, .accent=0x0022 /* " */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0022 /* " */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FFE /* ῾ */}},
@@ -27346,7 +29198,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_127[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F61 /* ὡ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_128[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_149[] {
     {.meta={.size=4, .accent=0x0060 /* ` */}},
     {.dkey={.second=0x0020 /*   */, .result=0x0060 /* ` */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FED /* ῭ */}},
@@ -27354,7 +29206,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_128[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x1FE2 /* ῢ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_129[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_150[] {
     {.meta={.size=16, .accent=0x007C /* | */}},
     {.dkey={.second=0x0020 /*   */, .result=0x007C /* | */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FDD /* ῝ */}},
@@ -27374,7 +29226,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_129[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F63 /* ὣ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_130[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_151[] {
     {.meta={.size=16, .accent=0x003F /* ? */}},
     {.dkey={.second=0x0020 /*   */, .result=0x003F /* ? */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FDE /* ῞ */}},
@@ -27394,7 +29246,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_130[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1F65 /* ὥ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_131[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_152[] {
     {.meta={.size=6, .accent=0x1FDF /* ῟ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F8F /* ᾏ */}},
     {.dkey={.second=0x0397 /* Η */, .result=0x1F9F /* ᾟ */}},
@@ -27404,7 +29256,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_131[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA7 /* ᾧ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_132[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_153[] {
     {.meta={.size=6, .accent=0x1FFE /* ῾ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F89 /* ᾉ */}},
     {.dkey={.second=0x0397 /* Η */, .result=0x1F99 /* ᾙ */}},
@@ -27414,7 +29266,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_132[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA1 /* ᾡ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_133[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_154[] {
     {.meta={.size=6, .accent=0x1FDD /* ῝ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F8B /* ᾋ */}},
     {.dkey={.second=0x0397 /* Η */, .result=0x1F9B /* ᾛ */}},
@@ -27424,7 +29276,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_133[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA3 /* ᾣ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_134[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_155[] {
     {.meta={.size=6, .accent=0x1FDE /* ῞ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F8D /* ᾍ */}},
     {.dkey={.second=0x0397 /* Η */, .result=0x1F9D /* ᾝ */}},
@@ -27434,7 +29286,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_134[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA5 /* ᾥ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_135[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_156[] {
     {.meta={.size=7, .accent=0x00BD /* ½ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00BD /* ½ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F8E /* ᾎ */}},
@@ -27445,14 +29297,14 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_135[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA6 /* ᾦ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_136[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_157[] {
     {.meta={.size=3, .accent=0x1FFD /* ´ */}},
     {.dkey={.second=0x03B1 /* α */, .result=0x1FB4 /* ᾴ */}},
     {.dkey={.second=0x03B7 /* η */, .result=0x1FC4 /* ῄ */}},
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FF4 /* ῴ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_137[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_158[] {
     {.meta={.size=4, .accent=0x00AB /* « */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00AB /* « */}},
     {.dkey={.second=0x03B1 /* α */, .result=0x1FB7 /* ᾷ */}},
@@ -27460,7 +29312,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_137[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FF7 /* ῷ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_138[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_159[] {
     {.meta={.size=4, .accent=0x00BB /* » */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00BB /* » */}},
     {.dkey={.second=0x03B1 /* α */, .result=0x1FB2 /* ᾲ */}},
@@ -27468,7 +29320,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_138[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FF2 /* ῲ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_139[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_160[] {
     {.meta={.size=6, .accent=0x1FBF /* ᾿ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F88 /* ᾈ */}},
     {.dkey={.second=0x0397 /* Η */, .result=0x1F98 /* ᾘ */}},
@@ -27478,7 +29330,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_139[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA0 /* ᾠ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_140[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_161[] {
     {.meta={.size=4, .accent=0x1FC1 /* ῁ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x1FC1 /* ῁ */}},
     {.dkey={.second=0x002E /* . */, .result=0x1FC1 /* ῁ */}},
@@ -27486,7 +29338,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_140[] {
     {.dkey={.second=0x03C5 /* υ */, .result=0x1FE7 /* ῧ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_141[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_162[] {
     {.meta={.size=7, .accent=0x00AC /* ¬ */}},
     {.dkey={.second=0x0020 /*   */, .result=0x00AC /* ¬ */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F8A /* ᾊ */}},
@@ -27497,7 +29349,7 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_141[] {
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA2 /* ᾢ */}},
 };
 
-static constexpr KeyLayout::DKeyTable::Data dkeydata_142[] {
+static constexpr KeyLayout::DKeyTable::Data dkeydata_163[] {
     {.meta={.size=6, .accent=0x1FBE /* ι */}},
     {.dkey={.second=0x0391 /* Α */, .result=0x1F8C /* ᾌ */}},
     {.dkey={.second=0x0397 /* Η */, .result=0x1F9C /* ᾜ */}},
@@ -27505,6 +29357,410 @@ static constexpr KeyLayout::DKeyTable::Data dkeydata_142[] {
     {.dkey={.second=0x03B1 /* α */, .result=0x1F84 /* ᾄ */}},
     {.dkey={.second=0x03B7 /* η */, .result=0x1F94 /* ᾔ */}},
     {.dkey={.second=0x03C9 /* ω */, .result=0x1FA4 /* ᾤ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_164[] {
+    {.meta={.size=13, .accent=0x02DB /* ˛ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02DB /* ˛ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0104 /* Ą */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0118 /* Ę */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x012E /* Į */}},
+    {.dkey={.second=0x004F /* O */, .result=0x01EA /* Ǫ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x0172 /* Ų */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0105 /* ą */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0119 /* ę */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x012F /* į */}},
+    {.dkey={.second=0x006F /* o */, .result=0x01EB /* ǫ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x0173 /* ų */}},
+    {.dkey={.second=0x014D /* ō */, .result=0x01ED /* ǭ */}},
+    {.dkey={.second=0x02DB /* ˛ */, .result=0x02DB /* ˛ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_165[] {
+    {.meta={.size=20, .accent=0x0060 /* ` */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x0060 /* ` */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C0 /* À */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00C8 /* È */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CC /* Ì */}},
+    {.dkey={.second=0x004E /* N */, .result=0x01F8 /* Ǹ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D2 /* Ò */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00D9 /* Ù */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E80 /* Ẁ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1EF2 /* Ỳ */}},
+    {.dkey={.second=0x0060 /* ` */, .result=0x0060 /* ` */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E0 /* à */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00E8 /* è */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00EC /* ì */}},
+    {.dkey={.second=0x006E /* n */, .result=0x01F9 /* ǹ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F2 /* ò */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00F9 /* ù */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E81 /* ẁ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1EF3 /* ỳ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01DB /* Ǜ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01DC /* ǜ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_166[] {
+    {.meta={.size=47, .accent=0x00B4 /* ´ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00B4 /* ´ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C1 /* Á */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x0106 /* Ć */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00C9 /* É */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x01F4 /* Ǵ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CD /* Í */}},
+    {.dkey={.second=0x004B /* K */, .result=0x1E30 /* Ḱ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x0139 /* Ĺ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x1E3E /* Ḿ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0143 /* Ń */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D3 /* Ó */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x1E54 /* Ṕ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0154 /* Ŕ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x015A /* Ś */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00DA /* Ú */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E82 /* Ẃ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x00DD /* Ý */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x0179 /* Ź */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E1 /* á */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x0107 /* ć */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00E9 /* é */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x01F5 /* ǵ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00ED /* í */}},
+    {.dkey={.second=0x006B /* k */, .result=0x1E31 /* ḱ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013A /* ĺ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x1E3F /* ḿ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0144 /* ń */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F3 /* ó */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x1E55 /* ṕ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0155 /* ŕ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x015B /* ś */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00FA /* ú */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E83 /* ẃ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x00FD /* ý */}},
+    {.dkey={.second=0x007A /* z */, .result=0x017A /* ź */}},
+    {.dkey={.second=0x00B4 /* ´ */, .result=0x00B4 /* ´ */}},
+    {.dkey={.second=0x00C5 /* Å */, .result=0x01FA /* Ǻ */}},
+    {.dkey={.second=0x00C6 /* Æ */, .result=0x01FC /* Ǽ */}},
+    {.dkey={.second=0x00C7 /* Ç */, .result=0x1E08 /* Ḉ */}},
+    {.dkey={.second=0x00D8 /* Ø */, .result=0x01FE /* Ǿ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01D7 /* Ǘ */}},
+    {.dkey={.second=0x00E5 /* å */, .result=0x01FB /* ǻ */}},
+    {.dkey={.second=0x00E6 /* æ */, .result=0x01FD /* ǽ */}},
+    {.dkey={.second=0x00E7 /* ç */, .result=0x1E09 /* ḉ */}},
+    {.dkey={.second=0x00F5 /* õ */, .result=0x1E4D /* ṍ */}},
+    {.dkey={.second=0x00F8 /* ø */, .result=0x01FF /* ǿ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01D8 /* ǘ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_167[] {
+    {.meta={.size=25, .accent=0x00A8 /* ¨ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00A8 /* ¨ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C4 /* Ä */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00CB /* Ë */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E26 /* Ḧ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CF /* Ï */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D6 /* Ö */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00DC /* Ü */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E84 /* Ẅ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x1E8C /* Ẍ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x0178 /* Ÿ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E4 /* ä */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00EB /* ë */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E27 /* ḧ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00EF /* ï */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F6 /* ö */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x1E97 /* ẗ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00FC /* ü */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E85 /* ẅ */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x1E8D /* ẍ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x00FF /* ÿ */}},
+    {.dkey={.second=0x00A8 /* ¨ */, .result=0x00A8 /* ¨ */}},
+    {.dkey={.second=0x00CD /* Í */, .result=0x1E2E /* Ḯ */}},
+    {.dkey={.second=0x00DA /* Ú */, .result=0x01D7 /* Ǘ */}},
+    {.dkey={.second=0x00ED /* í */, .result=0x1E2F /* ḯ */}},
+    {.dkey={.second=0x00FA /* ú */, .result=0x01D8 /* ǘ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_168[] {
+    {.meta={.size=37, .accent=0x02C7 /* ˇ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02C7 /* ˇ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x01CD /* Ǎ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x010C /* Č */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x010E /* Ď */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x011A /* Ě */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x01E6 /* Ǧ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x021E /* Ȟ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x01CF /* Ǐ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x01E8 /* Ǩ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013D /* Ľ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0147 /* Ň */}},
+    {.dkey={.second=0x004F /* O */, .result=0x01D1 /* Ǒ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0158 /* Ř */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x0160 /* Š */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x0164 /* Ť */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x01D3 /* Ǔ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x017D /* Ž */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x01CE /* ǎ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x010D /* č */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x010F /* ď */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x011B /* ě */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x01E7 /* ǧ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x021F /* ȟ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x01D0 /* ǐ */}},
+    {.dkey={.second=0x006A /* j */, .result=0x01F0 /* ǰ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x01E9 /* ǩ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013E /* ľ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0148 /* ň */}},
+    {.dkey={.second=0x006F /* o */, .result=0x01D2 /* ǒ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0159 /* ř */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x0161 /* š */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x0165 /* ť */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x01D4 /* ǔ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x017E /* ž */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01D9 /* Ǚ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01DA /* ǚ */}},
+    {.dkey={.second=0x02C7 /* ˇ */, .result=0x02C7 /* ˇ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_169[] {
+    {.meta={.size=24, .accent=0x007E /* ~ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x007E /* ~ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C3 /* Ã */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x1EBC /* Ẽ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x0128 /* Ĩ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x00D1 /* Ñ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D5 /* Õ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x0168 /* Ũ */}},
+    {.dkey={.second=0x0056 /* V */, .result=0x1E7C /* Ṽ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1EF8 /* Ỹ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E3 /* ã */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x1EBD /* ẽ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0129 /* ĩ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x00F1 /* ñ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F5 /* õ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x0169 /* ũ */}},
+    {.dkey={.second=0x0076 /* v */, .result=0x1E7D /* ṽ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1EF9 /* ỹ */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x007E /* ~ */}},
+    {.dkey={.second=0x00D3 /* Ó */, .result=0x1E4C /* Ṍ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x1E4E /* Ṏ */}},
+    {.dkey={.second=0x00DA /* Ú */, .result=0x1E78 /* Ṹ */}},
+    {.dkey={.second=0x00F3 /* ó */, .result=0x1E4D /* ṍ */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x1E4F /* ṏ */}},
+    {.dkey={.second=0x00FA /* ú */, .result=0x1E79 /* ṹ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_170[] {
+    {.meta={.size=18, .accent=0x002A /* * */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x002A /* * */}},
+    {.dkey={.second=0x0025 /* % */, .result=0x2030 /* ‰ */}},
+    {.dkey={.second=0x002A /* * */, .result=0x002A /* * */}},
+    {.dkey={.second=0x002B /* + */, .result=0x00B1 /* ± */}},
+    {.dkey={.second=0x002E /* . */, .result=0x2026 /* … */}},
+    {.dkey={.second=0x003C /* < */, .result=0x2264 /* ≤ */}},
+    {.dkey={.second=0x003D /* = */, .result=0x2260 /* ≠ */}},
+    {.dkey={.second=0x003E /* > */, .result=0x2265 /* ≥ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x00A9 /* © */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x00B0 /* ° */}},
+    {.dkey={.second=0x006D /* m */, .result=0x00B5 /* µ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x2116 /* № */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x00B6 /* ¶ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x00AE /* ® */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x00A7 /* § */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x2122 /* ™ */}},
+    {.dkey={.second=0x007C /* | */, .result=0x00A6 /* ¦ */}},
+    {.dkey={.second=0x007E /* ~ */, .result=0x2248 /* ≈ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_171[] {
+    {.meta={.size=38, .accent=0x005E /* ^ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x005E /* ^ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C2 /* Â */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x0108 /* Ĉ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x00CA /* Ê */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x011C /* Ĝ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x0124 /* Ĥ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x00CE /* Î */}},
+    {.dkey={.second=0x004A /* J */, .result=0x0134 /* Ĵ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x00D4 /* Ô */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x015C /* Ŝ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x00DB /* Û */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x0174 /* Ŵ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x0176 /* Ŷ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x1E90 /* Ẑ */}},
+    {.dkey={.second=0x005E /* ^ */, .result=0x005E /* ^ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E2 /* â */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x0109 /* ĉ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x00EA /* ê */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x011D /* ĝ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x0125 /* ĥ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x00EE /* î */}},
+    {.dkey={.second=0x006A /* j */, .result=0x0135 /* ĵ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x00F4 /* ô */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x015D /* ŝ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x00FB /* û */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x0175 /* ŵ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x0177 /* ŷ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x1E91 /* ẑ */}},
+    {.dkey={.second=0x00C1 /* Á */, .result=0x1EA4 /* Ấ */}},
+    {.dkey={.second=0x00C3 /* Ã */, .result=0x1EAA /* Ẫ */}},
+    {.dkey={.second=0x00C9 /* É */, .result=0x1EBE /* Ế */}},
+    {.dkey={.second=0x00D3 /* Ó */, .result=0x1ED0 /* Ố */}},
+    {.dkey={.second=0x00D5 /* Õ */, .result=0x1ED6 /* Ỗ */}},
+    {.dkey={.second=0x00E1 /* á */, .result=0x1EA5 /* ấ */}},
+    {.dkey={.second=0x00E3 /* ã */, .result=0x1EAB /* ẫ */}},
+    {.dkey={.second=0x00E9 /* é */, .result=0x1EBF /* ế */}},
+    {.dkey={.second=0x00F3 /* ó */, .result=0x1ED1 /* ố */}},
+    {.dkey={.second=0x00F5 /* õ */, .result=0x1ED7 /* ỗ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_172[] {
+    {.meta={.size=18, .accent=0x02D8 /* ˘ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02D8 /* ˘ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0102 /* Ă */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0114 /* Ĕ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x011E /* Ğ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x012C /* Ĭ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x014E /* Ŏ */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x016C /* Ŭ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0103 /* ă */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0115 /* ĕ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x011F /* ğ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x012D /* ĭ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x014F /* ŏ */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x016D /* ŭ */}},
+    {.dkey={.second=0x00C1 /* Á */, .result=0x1EAE /* Ắ */}},
+    {.dkey={.second=0x00C3 /* Ã */, .result=0x1EB4 /* Ẵ */}},
+    {.dkey={.second=0x00E1 /* á */, .result=0x1EAF /* ắ */}},
+    {.dkey={.second=0x00E3 /* ã */, .result=0x1EB5 /* ẵ */}},
+    {.dkey={.second=0x02D8 /* ˘ */, .result=0x02D8 /* ˘ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_173[] {
+    {.meta={.size=10, .accent=0x02DA /* ˚ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02DA /* ˚ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x00C5 /* Å */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x016E /* Ů */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x00E5 /* å */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x016F /* ů */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E98 /* ẘ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1E99 /* ẙ */}},
+    {.dkey={.second=0x00C1 /* Á */, .result=0x01FA /* Ǻ */}},
+    {.dkey={.second=0x00E1 /* á */, .result=0x01FB /* ǻ */}},
+    {.dkey={.second=0x02DA /* ˚ */, .result=0x02DA /* ˚ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_174[] {
+    {.meta={.size=30, .accent=0x00AF /* ¯ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00AF /* ¯ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0100 /* Ā */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0112 /* Ē */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x1E20 /* Ḡ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x012A /* Ī */}},
+    {.dkey={.second=0x004F /* O */, .result=0x014C /* Ō */}},
+    {.dkey={.second=0x0055 /* U */, .result=0x016A /* Ū */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x0232 /* Ȳ */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0101 /* ā */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0113 /* ē */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x1E21 /* ḡ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x012B /* ī */}},
+    {.dkey={.second=0x006F /* o */, .result=0x014D /* ō */}},
+    {.dkey={.second=0x0075 /* u */, .result=0x016B /* ū */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x0233 /* ȳ */}},
+    {.dkey={.second=0x00AF /* ¯ */, .result=0x00AF /* ¯ */}},
+    {.dkey={.second=0x00C4 /* Ä */, .result=0x01DE /* Ǟ */}},
+    {.dkey={.second=0x00C6 /* Æ */, .result=0x01E2 /* Ǣ */}},
+    {.dkey={.second=0x00C9 /* É */, .result=0x1E16 /* Ḗ */}},
+    {.dkey={.second=0x00D3 /* Ó */, .result=0x1E52 /* Ṓ */}},
+    {.dkey={.second=0x00D5 /* Õ */, .result=0x022C /* Ȭ */}},
+    {.dkey={.second=0x00D6 /* Ö */, .result=0x022A /* Ȫ */}},
+    {.dkey={.second=0x00DC /* Ü */, .result=0x01D5 /* Ǖ */}},
+    {.dkey={.second=0x00E4 /* ä */, .result=0x01DF /* ǟ */}},
+    {.dkey={.second=0x00E6 /* æ */, .result=0x01E3 /* ǣ */}},
+    {.dkey={.second=0x00E9 /* é */, .result=0x1E17 /* ḗ */}},
+    {.dkey={.second=0x00F3 /* ó */, .result=0x1E53 /* ṓ */}},
+    {.dkey={.second=0x00F5 /* õ */, .result=0x022D /* ȭ */}},
+    {.dkey={.second=0x00F6 /* ö */, .result=0x022B /* ȫ */}},
+    {.dkey={.second=0x00FC /* ü */, .result=0x01D6 /* ǖ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_175[] {
+    {.meta={.size=26, .accent=0x00B8 /* ¸ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x00B8 /* ¸ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x00C7 /* Ç */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x1E10 /* Ḑ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0228 /* Ȩ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x0122 /* Ģ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E28 /* Ḩ */}},
+    {.dkey={.second=0x004B /* K */, .result=0x0136 /* Ķ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013B /* Ļ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x0145 /* Ņ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x0156 /* Ŗ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x015E /* Ş */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x0162 /* Ţ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x00E7 /* ç */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x1E11 /* ḑ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0229 /* ȩ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x0123 /* ģ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E29 /* ḩ */}},
+    {.dkey={.second=0x006B /* k */, .result=0x0137 /* ķ */}},
+    {.dkey={.second=0x006C /* l */, .result=0x013C /* ļ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x0146 /* ņ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x0157 /* ŗ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x015F /* ş */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x0163 /* ţ */}},
+    {.dkey={.second=0x00B8 /* ¸ */, .result=0x00B8 /* ¸ */}},
+    {.dkey={.second=0x0106 /* Ć */, .result=0x1E08 /* Ḉ */}},
+    {.dkey={.second=0x0107 /* ć */, .result=0x1E09 /* ḉ */}},
+};
+
+static constexpr KeyLayout::DKeyTable::Data dkeydata_176[] {
+    {.meta={.size=46, .accent=0x02D9 /* ˙ */}},
+    {.dkey={.second=0x0020 /*   */, .result=0x02D9 /* ˙ */}},
+    {.dkey={.second=0x0041 /* A */, .result=0x0226 /* Ȧ */}},
+    {.dkey={.second=0x0042 /* B */, .result=0x1E02 /* Ḃ */}},
+    {.dkey={.second=0x0043 /* C */, .result=0x010A /* Ċ */}},
+    {.dkey={.second=0x0044 /* D */, .result=0x1E0A /* Ḋ */}},
+    {.dkey={.second=0x0045 /* E */, .result=0x0116 /* Ė */}},
+    {.dkey={.second=0x0046 /* F */, .result=0x1E1E /* Ḟ */}},
+    {.dkey={.second=0x0047 /* G */, .result=0x0120 /* Ġ */}},
+    {.dkey={.second=0x0048 /* H */, .result=0x1E22 /* Ḣ */}},
+    {.dkey={.second=0x0049 /* I */, .result=0x0130 /* İ */}},
+    {.dkey={.second=0x004C /* L */, .result=0x013F /* Ŀ */}},
+    {.dkey={.second=0x004D /* M */, .result=0x1E40 /* Ṁ */}},
+    {.dkey={.second=0x004E /* N */, .result=0x1E44 /* Ṅ */}},
+    {.dkey={.second=0x004F /* O */, .result=0x022E /* Ȯ */}},
+    {.dkey={.second=0x0050 /* P */, .result=0x1E56 /* Ṗ */}},
+    {.dkey={.second=0x0052 /* R */, .result=0x1E58 /* Ṙ */}},
+    {.dkey={.second=0x0053 /* S */, .result=0x1E60 /* Ṡ */}},
+    {.dkey={.second=0x0054 /* T */, .result=0x1E6A /* Ṫ */}},
+    {.dkey={.second=0x0057 /* W */, .result=0x1E86 /* Ẇ */}},
+    {.dkey={.second=0x0058 /* X */, .result=0x1E8A /* Ẋ */}},
+    {.dkey={.second=0x0059 /* Y */, .result=0x1E8E /* Ẏ */}},
+    {.dkey={.second=0x005A /* Z */, .result=0x017B /* Ż */}},
+    {.dkey={.second=0x0061 /* a */, .result=0x0227 /* ȧ */}},
+    {.dkey={.second=0x0062 /* b */, .result=0x1E03 /* ḃ */}},
+    {.dkey={.second=0x0063 /* c */, .result=0x010B /* ċ */}},
+    {.dkey={.second=0x0064 /* d */, .result=0x1E0B /* ḋ */}},
+    {.dkey={.second=0x0065 /* e */, .result=0x0117 /* ė */}},
+    {.dkey={.second=0x0066 /* f */, .result=0x1E1F /* ḟ */}},
+    {.dkey={.second=0x0067 /* g */, .result=0x0121 /* ġ */}},
+    {.dkey={.second=0x0068 /* h */, .result=0x1E23 /* ḣ */}},
+    {.dkey={.second=0x0069 /* i */, .result=0x0131 /* ı */}},
+    {.dkey={.second=0x006C /* l */, .result=0x0140 /* ŀ */}},
+    {.dkey={.second=0x006D /* m */, .result=0x1E41 /* ṁ */}},
+    {.dkey={.second=0x006E /* n */, .result=0x1E45 /* ṅ */}},
+    {.dkey={.second=0x006F /* o */, .result=0x022F /* ȯ */}},
+    {.dkey={.second=0x0070 /* p */, .result=0x1E57 /* ṗ */}},
+    {.dkey={.second=0x0072 /* r */, .result=0x1E59 /* ṙ */}},
+    {.dkey={.second=0x0073 /* s */, .result=0x1E61 /* ṡ */}},
+    {.dkey={.second=0x0074 /* t */, .result=0x1E6B /* ṫ */}},
+    {.dkey={.second=0x0077 /* w */, .result=0x1E87 /* ẇ */}},
+    {.dkey={.second=0x0078 /* x */, .result=0x1E8B /* ẋ */}},
+    {.dkey={.second=0x0079 /* y */, .result=0x1E8F /* ẏ */}},
+    {.dkey={.second=0x007A /* z */, .result=0x017C /* ż */}},
+    {.dkey={.second=0x015A /* Ś */, .result=0x1E64 /* Ṥ */}},
+    {.dkey={.second=0x015B /* ś */, .result=0x1E65 /* ṥ */}},
+    {.dkey={.second=0x02D9 /* ˙ */, .result=0x02D9 /* ˙ */}},
 };
 
 static constexpr KeyLayout::DKeyTable dkeymap_0[] {
@@ -29242,7 +31498,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_91[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {dkeydata_42},  {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_31},  {dkeydata_40},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29261,7 +31517,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_92[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {dkeydata_40},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_37},  {nullptr},      {nullptr},      {dkeydata_42},  {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29275,25 +31531,6 @@ static constexpr KeyLayout::DKeyTable dkeymap_92[] {
 };
 
 static constexpr KeyLayout::DKeyTable dkeymap_93[] {
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {dkeydata_31},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-};
-
-static constexpr KeyLayout::DKeyTable dkeymap_94[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_44},  {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29312,7 +31549,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_94[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_95[] {
+static constexpr KeyLayout::DKeyTable dkeymap_94[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29331,7 +31568,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_95[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_96[] {
+static constexpr KeyLayout::DKeyTable dkeymap_95[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_46},  {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29350,7 +31587,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_96[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_97[] {
+static constexpr KeyLayout::DKeyTable dkeymap_96[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_46},  {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29369,7 +31606,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_97[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_98[] {
+static constexpr KeyLayout::DKeyTable dkeymap_97[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29388,7 +31625,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_98[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_99[] {
+static constexpr KeyLayout::DKeyTable dkeymap_98[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29407,7 +31644,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_99[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_100[] {
+static constexpr KeyLayout::DKeyTable dkeymap_99[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29426,7 +31663,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_100[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_101[] {
+static constexpr KeyLayout::DKeyTable dkeymap_100[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29445,7 +31682,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_101[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_102[] {
+static constexpr KeyLayout::DKeyTable dkeymap_101[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_7},   {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29464,7 +31701,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_102[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_103[] {
+static constexpr KeyLayout::DKeyTable dkeymap_102[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_11},  {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29483,7 +31720,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_103[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_104[] {
+static constexpr KeyLayout::DKeyTable dkeymap_103[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29502,7 +31739,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_104[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_105[] {
+static constexpr KeyLayout::DKeyTable dkeymap_104[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_3},   {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29521,7 +31758,64 @@ static constexpr KeyLayout::DKeyTable dkeymap_105[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
+static constexpr KeyLayout::DKeyTable dkeymap_105[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_88},  {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_89},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
 static constexpr KeyLayout::DKeyTable dkeymap_106[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_90},  {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_107[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_91},  {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_92},  {nullptr},      {dkeydata_93},  {dkeydata_94},  {dkeydata_95},  {dkeydata_96},  {dkeydata_97},
+    {dkeydata_98},  {dkeydata_99},  {dkeydata_100}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_101}, {nullptr},      {dkeydata_102}, {dkeydata_103}, {dkeydata_104}, {dkeydata_105}, {dkeydata_106},
+    {dkeydata_107}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_108[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29540,51 +31834,13 @@ static constexpr KeyLayout::DKeyTable dkeymap_106[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_107[] {
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {dkeydata_88},  {dkeydata_8},   {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-};
-
-static constexpr KeyLayout::DKeyTable dkeymap_108[] {
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_5},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {dkeydata_89},  {dkeydata_14},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-};
-
 static constexpr KeyLayout::DKeyTable dkeymap_109[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_90},  {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_108}, {dkeydata_8},   {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29598,12 +31854,12 @@ static constexpr KeyLayout::DKeyTable dkeymap_109[] {
 };
 
 static constexpr KeyLayout::DKeyTable dkeymap_110[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_5},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {dkeydata_91},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_109}, {dkeydata_14},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29619,9 +31875,9 @@ static constexpr KeyLayout::DKeyTable dkeymap_110[] {
 static constexpr KeyLayout::DKeyTable dkeymap_111[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_110}, {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {dkeydata_92},  {dkeydata_72},  {dkeydata_91},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29638,11 +31894,11 @@ static constexpr KeyLayout::DKeyTable dkeymap_111[] {
 static constexpr KeyLayout::DKeyTable dkeymap_112[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {dkeydata_93},  {nullptr},      {nullptr},      {dkeydata_94},  {nullptr},      {dkeydata_95},  {dkeydata_96},
-    {dkeydata_97},  {nullptr},      {dkeydata_98},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {dkeydata_99},  {nullptr},      {nullptr},      {dkeydata_100}, {dkeydata_101}, {dkeydata_102}, {dkeydata_103}, {dkeydata_104},
-    {dkeydata_105}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {dkeydata_106}, {dkeydata_107}, {dkeydata_108}, {dkeydata_109}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {dkeydata_111}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29655,6 +31911,44 @@ static constexpr KeyLayout::DKeyTable dkeymap_112[] {
 };
 
 static constexpr KeyLayout::DKeyTable dkeymap_113[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_112}, {dkeydata_72},  {dkeydata_111}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_114[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_113}, {nullptr},      {nullptr},      {dkeydata_114}, {nullptr},      {dkeydata_115}, {dkeydata_116},
+    {dkeydata_117}, {nullptr},      {dkeydata_118}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_119}, {nullptr},      {nullptr},      {dkeydata_120}, {dkeydata_121}, {dkeydata_122}, {dkeydata_123}, {dkeydata_124},
+    {dkeydata_125}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {dkeydata_126}, {dkeydata_127}, {dkeydata_128}, {dkeydata_129}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_115[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29673,7 +31967,64 @@ static constexpr KeyLayout::DKeyTable dkeymap_113[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_114[] {
+static constexpr KeyLayout::DKeyTable dkeymap_116[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_88},  {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_89},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_130}, {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_117[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_90},  {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_130}, {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_118[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_91},  {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_92},  {nullptr},      {dkeydata_93},  {dkeydata_94},  {dkeydata_95},  {dkeydata_96},  {dkeydata_97},
+    {dkeydata_98},  {dkeydata_99},  {dkeydata_100}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_130}, {nullptr},      {dkeydata_102}, {dkeydata_103}, {dkeydata_104}, {dkeydata_105}, {dkeydata_106},
+    {dkeydata_107}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_130}, {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_119[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29692,7 +32043,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_114[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_115[] {
+static constexpr KeyLayout::DKeyTable dkeymap_120[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29711,7 +32062,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_115[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_116[] {
+static constexpr KeyLayout::DKeyTable dkeymap_121[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_5},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29730,7 +32081,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_116[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_117[] {
+static constexpr KeyLayout::DKeyTable dkeymap_122[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29749,7 +32100,7 @@ static constexpr KeyLayout::DKeyTable dkeymap_117[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_118[] {
+static constexpr KeyLayout::DKeyTable dkeymap_123[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29768,33 +32119,14 @@ static constexpr KeyLayout::DKeyTable dkeymap_118[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_119[] {
+static constexpr KeyLayout::DKeyTable dkeymap_124[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_110}, {dkeydata_111}, {nullptr},      {nullptr},
-    {dkeydata_112}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {dkeydata_113}, {dkeydata_114}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_115},
-    {dkeydata_116}, {dkeydata_117}, {nullptr},      {dkeydata_118}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_119}, {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-};
-
-static constexpr KeyLayout::DKeyTable dkeymap_120[] {
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_120}, {dkeydata_121}, {nullptr},      {nullptr},
-    {dkeydata_122}, {dkeydata_123}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {dkeydata_124}, {dkeydata_125}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_126},
-    {dkeydata_127}, {dkeydata_128}, {nullptr},      {dkeydata_129}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_130}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_131}, {dkeydata_132}, {nullptr},      {nullptr},
+    {dkeydata_133}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {dkeydata_134}, {dkeydata_135}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_136},
+    {dkeydata_137}, {dkeydata_138}, {nullptr},      {dkeydata_139}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_140}, {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29806,14 +32138,14 @@ static constexpr KeyLayout::DKeyTable dkeymap_120[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_121[] {
+static constexpr KeyLayout::DKeyTable dkeymap_125[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_131}, {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {dkeydata_132}, {nullptr},      {nullptr},      {dkeydata_133}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_134}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_141}, {dkeydata_142}, {nullptr},      {nullptr},
+    {dkeydata_143}, {dkeydata_144}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {dkeydata_145}, {dkeydata_146}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_147},
+    {dkeydata_148}, {dkeydata_149}, {nullptr},      {dkeydata_150}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_151}, {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -29825,14 +32157,90 @@ static constexpr KeyLayout::DKeyTable dkeymap_121[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
 };
 
-static constexpr KeyLayout::DKeyTable dkeymap_122[] {
+static constexpr KeyLayout::DKeyTable dkeymap_126[] {
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_135}, {nullptr},      {nullptr},
-    {dkeydata_136}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {dkeydata_137}, {dkeydata_138}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_123},
-    {dkeydata_139}, {dkeydata_140}, {nullptr},      {dkeydata_141}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
-    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_142}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_152}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {dkeydata_153}, {nullptr},      {nullptr},      {dkeydata_154}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_155}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_127[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_156}, {nullptr},      {nullptr},
+    {dkeydata_157}, {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {dkeydata_158}, {dkeydata_159}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_144},
+    {dkeydata_160}, {dkeydata_161}, {nullptr},      {dkeydata_162}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_163}, {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_128[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_64},  {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_129[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_164}, {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {dkeydata_165},
+    {nullptr},      {dkeydata_166}, {dkeydata_167}, {dkeydata_168}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_169}, {nullptr},      {dkeydata_170}, {nullptr},      {dkeydata_171}, {nullptr},      {nullptr},
+    {dkeydata_172}, {dkeydata_173}, {dkeydata_174}, {dkeydata_175}, {dkeydata_176}, {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+};
+
+static constexpr KeyLayout::DKeyTable dkeymap_130[] {
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {dkeydata_169}, {nullptr},      {dkeydata_170}, {nullptr},      {nullptr},      {nullptr},      {nullptr},
+    {nullptr},      {nullptr},      {nullptr},      {dkeydata_175}, {dkeydata_176}, {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
     {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},      {nullptr},
@@ -30505,10 +32913,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_59[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_60[] {
-    keymap_485, keymap_106, keymap_45, keymap_33, keymap_0, keymap_0, keymap_490, keymap_487,
-    keymap_492, keymap_106, keymap_0, keymap_0, keymap_0, keymap_0, keymap_490, keymap_487,
-    keymap_488, keymap_107, keymap_0, keymap_0, keymap_0, keymap_0, keymap_491, keymap_486,
-    keymap_489, keymap_107, keymap_0, keymap_0, keymap_0, keymap_0, keymap_491, keymap_486,
+    keymap_40, keymap_41, keymap_45, keymap_33, keymap_0, keymap_0, keymap_487, keymap_486,
+    keymap_46, keymap_41, keymap_0, keymap_0, keymap_0, keymap_0, keymap_487, keymap_486,
+    keymap_43, keymap_42, keymap_0, keymap_0, keymap_0, keymap_0, keymap_488, keymap_485,
+    keymap_44, keymap_42, keymap_0, keymap_0, keymap_0, keymap_0, keymap_488, keymap_485,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30516,10 +32924,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_60[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_61[] {
-    keymap_493, keymap_494, keymap_45, keymap_33, keymap_0, keymap_0, keymap_499, keymap_496,
-    keymap_501, keymap_494, keymap_0, keymap_0, keymap_0, keymap_0, keymap_499, keymap_496,
-    keymap_497, keymap_495, keymap_0, keymap_0, keymap_0, keymap_0, keymap_500, keymap_0,
-    keymap_498, keymap_495, keymap_0, keymap_0, keymap_0, keymap_0, keymap_500, keymap_0,
+    keymap_489, keymap_490, keymap_45, keymap_33, keymap_0, keymap_0, keymap_495, keymap_492,
+    keymap_497, keymap_490, keymap_0, keymap_0, keymap_0, keymap_0, keymap_495, keymap_492,
+    keymap_493, keymap_491, keymap_0, keymap_0, keymap_0, keymap_0, keymap_496, keymap_0,
+    keymap_494, keymap_491, keymap_0, keymap_0, keymap_0, keymap_0, keymap_496, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30527,10 +32935,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_61[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_62[] {
-    keymap_502, keymap_503, keymap_236, keymap_0, keymap_0, keymap_0, keymap_509, keymap_506,
-    keymap_511, keymap_503, keymap_0, keymap_0, keymap_0, keymap_0, keymap_509, keymap_506,
-    keymap_507, keymap_504, keymap_0, keymap_0, keymap_0, keymap_0, keymap_510, keymap_505,
-    keymap_508, keymap_504, keymap_0, keymap_0, keymap_0, keymap_0, keymap_510, keymap_505,
+    keymap_498, keymap_499, keymap_236, keymap_0, keymap_0, keymap_0, keymap_505, keymap_502,
+    keymap_507, keymap_499, keymap_0, keymap_0, keymap_0, keymap_0, keymap_505, keymap_502,
+    keymap_503, keymap_500, keymap_0, keymap_0, keymap_0, keymap_0, keymap_506, keymap_501,
+    keymap_504, keymap_500, keymap_0, keymap_0, keymap_0, keymap_0, keymap_506, keymap_501,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30538,10 +32946,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_62[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_63[] {
-    keymap_512, keymap_513, keymap_236, keymap_0, keymap_0, keymap_0, keymap_519, keymap_516,
-    keymap_521, keymap_513, keymap_0, keymap_0, keymap_0, keymap_0, keymap_519, keymap_516,
-    keymap_517, keymap_514, keymap_0, keymap_0, keymap_0, keymap_0, keymap_520, keymap_515,
-    keymap_518, keymap_514, keymap_0, keymap_0, keymap_0, keymap_0, keymap_520, keymap_515,
+    keymap_508, keymap_509, keymap_236, keymap_0, keymap_0, keymap_0, keymap_515, keymap_512,
+    keymap_517, keymap_509, keymap_0, keymap_0, keymap_0, keymap_0, keymap_515, keymap_512,
+    keymap_513, keymap_510, keymap_0, keymap_0, keymap_0, keymap_0, keymap_516, keymap_511,
+    keymap_514, keymap_510, keymap_0, keymap_0, keymap_0, keymap_0, keymap_516, keymap_511,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30550,9 +32958,9 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_63[] {
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_64[] {
     keymap_311, keymap_312, keymap_317, keymap_14, keymap_0, keymap_0, keymap_318, keymap_314,
-    keymap_523, keymap_312, keymap_0, keymap_0, keymap_0, keymap_0, keymap_318, keymap_314,
+    keymap_519, keymap_312, keymap_0, keymap_0, keymap_0, keymap_0, keymap_318, keymap_314,
     keymap_315, keymap_313, keymap_0, keymap_0, keymap_0, keymap_0, keymap_319, keymap_0,
-    keymap_522, keymap_313, keymap_0, keymap_0, keymap_0, keymap_0, keymap_319, keymap_0,
+    keymap_518, keymap_313, keymap_0, keymap_0, keymap_0, keymap_0, keymap_319, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30560,21 +32968,21 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_64[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_65[] {
-    keymap_524, keymap_525, keymap_236, keymap_0, keymap_0, keymap_0, keymap_529, keymap_0,
-    keymap_531, keymap_525, keymap_0, keymap_0, keymap_0, keymap_0, keymap_529, keymap_0,
-    keymap_527, keymap_526, keymap_0, keymap_0, keymap_0, keymap_0, keymap_530, keymap_0,
-    keymap_528, keymap_526, keymap_0, keymap_0, keymap_0, keymap_0, keymap_530, keymap_0,
-    keymap_533, keymap_532, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_520, keymap_521, keymap_236, keymap_0, keymap_0, keymap_0, keymap_525, keymap_0,
+    keymap_527, keymap_521, keymap_0, keymap_0, keymap_0, keymap_0, keymap_525, keymap_0,
+    keymap_523, keymap_522, keymap_0, keymap_0, keymap_0, keymap_0, keymap_526, keymap_0,
+    keymap_524, keymap_522, keymap_0, keymap_0, keymap_0, keymap_0, keymap_526, keymap_0,
+    keymap_529, keymap_528, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_66[] {
-    keymap_265, keymap_534, keymap_45, keymap_33, keymap_0, keymap_0, keymap_538, keymap_537,
-    keymap_274, keymap_534, keymap_0, keymap_0, keymap_0, keymap_0, keymap_538, keymap_537,
-    keymap_270, keymap_535, keymap_0, keymap_0, keymap_0, keymap_0, keymap_539, keymap_536,
-    keymap_271, keymap_535, keymap_0, keymap_0, keymap_0, keymap_0, keymap_539, keymap_536,
+    keymap_265, keymap_530, keymap_45, keymap_33, keymap_0, keymap_0, keymap_534, keymap_533,
+    keymap_274, keymap_530, keymap_0, keymap_0, keymap_0, keymap_0, keymap_534, keymap_533,
+    keymap_270, keymap_531, keymap_0, keymap_0, keymap_0, keymap_0, keymap_535, keymap_532,
+    keymap_271, keymap_531, keymap_0, keymap_0, keymap_0, keymap_0, keymap_535, keymap_532,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30582,10 +32990,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_66[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_67[] {
-    keymap_40, keymap_41, keymap_394, keymap_0, keymap_0, keymap_0, keymap_541, keymap_540,
-    keymap_113, keymap_41, keymap_0, keymap_0, keymap_0, keymap_0, keymap_541, keymap_540,
-    keymap_43, keymap_42, keymap_0, keymap_0, keymap_0, keymap_0, keymap_542, keymap_540,
-    keymap_110, keymap_42, keymap_0, keymap_0, keymap_0, keymap_0, keymap_542, keymap_540,
+    keymap_40, keymap_41, keymap_394, keymap_0, keymap_0, keymap_0, keymap_537, keymap_536,
+    keymap_113, keymap_41, keymap_0, keymap_0, keymap_0, keymap_0, keymap_537, keymap_536,
+    keymap_43, keymap_42, keymap_0, keymap_0, keymap_0, keymap_0, keymap_538, keymap_536,
+    keymap_110, keymap_42, keymap_0, keymap_0, keymap_0, keymap_0, keymap_538, keymap_536,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30593,10 +33001,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_67[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_68[] {
-    keymap_543, keymap_544, keymap_45, keymap_33, keymap_0, keymap_0, keymap_548, keymap_0,
-    keymap_550, keymap_544, keymap_0, keymap_0, keymap_0, keymap_0, keymap_548, keymap_0,
-    keymap_546, keymap_545, keymap_0, keymap_0, keymap_0, keymap_0, keymap_549, keymap_0,
-    keymap_547, keymap_545, keymap_0, keymap_0, keymap_0, keymap_0, keymap_549, keymap_0,
+    keymap_21, keymap_22, keymap_542, keymap_4, keymap_0, keymap_0, keymap_543, keymap_24,
+    keymap_29, keymap_22, keymap_0, keymap_0, keymap_0, keymap_0, keymap_543, keymap_24,
+    keymap_540, keymap_539, keymap_0, keymap_0, keymap_0, keymap_0, keymap_544, keymap_0,
+    keymap_541, keymap_539, keymap_0, keymap_0, keymap_0, keymap_0, keymap_544, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30604,10 +33012,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_68[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_69[] {
-    keymap_551, keymap_552, keymap_45, keymap_33, keymap_0, keymap_0, keymap_558, keymap_555,
-    keymap_560, keymap_552, keymap_0, keymap_0, keymap_0, keymap_0, keymap_558, keymap_555,
-    keymap_556, keymap_553, keymap_0, keymap_0, keymap_0, keymap_0, keymap_559, keymap_554,
-    keymap_557, keymap_553, keymap_0, keymap_0, keymap_0, keymap_0, keymap_559, keymap_554,
+    keymap_545, keymap_546, keymap_45, keymap_33, keymap_0, keymap_0, keymap_550, keymap_0,
+    keymap_552, keymap_546, keymap_0, keymap_0, keymap_0, keymap_0, keymap_550, keymap_0,
+    keymap_548, keymap_547, keymap_0, keymap_0, keymap_0, keymap_0, keymap_551, keymap_0,
+    keymap_549, keymap_547, keymap_0, keymap_0, keymap_0, keymap_0, keymap_551, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30615,10 +33023,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_69[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_70[] {
-    keymap_561, keymap_562, keymap_569, keymap_564, keymap_0, keymap_0, keymap_570, keymap_566,
-    keymap_572, keymap_562, keymap_0, keymap_0, keymap_0, keymap_0, keymap_570, keymap_566,
-    keymap_567, keymap_563, keymap_0, keymap_0, keymap_0, keymap_0, keymap_571, keymap_565,
-    keymap_568, keymap_563, keymap_0, keymap_0, keymap_0, keymap_0, keymap_571, keymap_565,
+    keymap_553, keymap_554, keymap_45, keymap_33, keymap_0, keymap_0, keymap_560, keymap_557,
+    keymap_562, keymap_554, keymap_0, keymap_0, keymap_0, keymap_0, keymap_560, keymap_557,
+    keymap_558, keymap_555, keymap_0, keymap_0, keymap_0, keymap_0, keymap_561, keymap_556,
+    keymap_559, keymap_555, keymap_0, keymap_0, keymap_0, keymap_0, keymap_561, keymap_556,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30626,10 +33034,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_70[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_71[] {
-    keymap_573, keymap_574, keymap_236, keymap_0, keymap_0, keymap_0, keymap_580, keymap_577,
-    keymap_582, keymap_574, keymap_0, keymap_0, keymap_0, keymap_0, keymap_580, keymap_577,
-    keymap_578, keymap_575, keymap_0, keymap_0, keymap_0, keymap_0, keymap_581, keymap_576,
-    keymap_579, keymap_575, keymap_0, keymap_0, keymap_0, keymap_0, keymap_581, keymap_576,
+    keymap_563, keymap_564, keymap_571, keymap_566, keymap_0, keymap_0, keymap_572, keymap_568,
+    keymap_574, keymap_564, keymap_0, keymap_0, keymap_0, keymap_0, keymap_572, keymap_568,
+    keymap_569, keymap_565, keymap_0, keymap_0, keymap_0, keymap_0, keymap_573, keymap_567,
+    keymap_570, keymap_565, keymap_0, keymap_0, keymap_0, keymap_0, keymap_573, keymap_567,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30637,10 +33045,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_71[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_72[] {
-    keymap_583, keymap_584, keymap_236, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_588, keymap_584, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_586, keymap_585, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_587, keymap_585, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_575, keymap_576, keymap_236, keymap_0, keymap_0, keymap_0, keymap_582, keymap_579,
+    keymap_584, keymap_576, keymap_0, keymap_0, keymap_0, keymap_0, keymap_582, keymap_579,
+    keymap_580, keymap_577, keymap_0, keymap_0, keymap_0, keymap_0, keymap_583, keymap_578,
+    keymap_581, keymap_577, keymap_0, keymap_0, keymap_0, keymap_0, keymap_583, keymap_578,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30648,10 +33056,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_72[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_73[] {
-    keymap_589, keymap_590, keymap_594, keymap_407, keymap_0, keymap_0, keymap_595, keymap_0,
-    keymap_596, keymap_590, keymap_0, keymap_0, keymap_0, keymap_0, keymap_595, keymap_0,
-    keymap_592, keymap_591, keymap_0, keymap_0, keymap_0, keymap_0, keymap_412, keymap_0,
-    keymap_593, keymap_591, keymap_0, keymap_0, keymap_0, keymap_0, keymap_412, keymap_0,
+    keymap_585, keymap_586, keymap_236, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_590, keymap_586, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_588, keymap_587, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_589, keymap_587, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30659,10 +33067,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_73[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_74[] {
-    keymap_597, keymap_598, keymap_603, keymap_600, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_604, keymap_598, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_601, keymap_599, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_602, keymap_599, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_591, keymap_592, keymap_542, keymap_4, keymap_0, keymap_0, keymap_596, keymap_24,
+    keymap_597, keymap_592, keymap_0, keymap_0, keymap_0, keymap_0, keymap_596, keymap_24,
+    keymap_594, keymap_593, keymap_0, keymap_0, keymap_0, keymap_0, keymap_544, keymap_0,
+    keymap_595, keymap_593, keymap_0, keymap_0, keymap_0, keymap_0, keymap_544, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30670,10 +33078,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_74[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_75[] {
-    keymap_605, keymap_606, keymap_610, keymap_0, keymap_0, keymap_0, keymap_611, keymap_0,
-    keymap_612, keymap_606, keymap_0, keymap_0, keymap_0, keymap_0, keymap_611, keymap_0,
-    keymap_608, keymap_607, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_609, keymap_607, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_598, keymap_599, keymap_603, keymap_407, keymap_0, keymap_0, keymap_604, keymap_0,
+    keymap_605, keymap_599, keymap_0, keymap_0, keymap_0, keymap_0, keymap_604, keymap_0,
+    keymap_601, keymap_600, keymap_0, keymap_0, keymap_0, keymap_0, keymap_412, keymap_0,
+    keymap_602, keymap_600, keymap_0, keymap_0, keymap_0, keymap_0, keymap_412, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30681,10 +33089,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_75[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_76[] {
-    keymap_613, keymap_614, keymap_420, keymap_616, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_619, keymap_614, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_617, keymap_615, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
-    keymap_618, keymap_615, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_606, keymap_607, keymap_612, keymap_609, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_613, keymap_607, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_610, keymap_608, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_611, keymap_608, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30692,10 +33100,10 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_76[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_77[] {
-    keymap_283, keymap_620, keymap_45, keymap_33, keymap_0, keymap_0, keymap_626, keymap_623,
-    keymap_628, keymap_620, keymap_0, keymap_0, keymap_0, keymap_0, keymap_626, keymap_623,
-    keymap_624, keymap_621, keymap_0, keymap_0, keymap_0, keymap_0, keymap_627, keymap_622,
-    keymap_625, keymap_621, keymap_0, keymap_0, keymap_0, keymap_0, keymap_627, keymap_622,
+    keymap_614, keymap_615, keymap_619, keymap_0, keymap_0, keymap_0, keymap_620, keymap_0,
+    keymap_621, keymap_615, keymap_0, keymap_0, keymap_0, keymap_0, keymap_620, keymap_0,
+    keymap_617, keymap_616, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_618, keymap_616, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -30703,10 +33111,43 @@ static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_77[] {
 };
 
 static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_78[] {
-    keymap_629, keymap_630, keymap_36, keymap_33, keymap_0, keymap_0, keymap_635, keymap_632,
-    keymap_637, keymap_630, keymap_0, keymap_0, keymap_0, keymap_0, keymap_635, keymap_632,
-    keymap_633, keymap_631, keymap_0, keymap_0, keymap_0, keymap_0, keymap_636, keymap_632,
-    keymap_634, keymap_631, keymap_0, keymap_0, keymap_0, keymap_0, keymap_636, keymap_632,
+    keymap_622, keymap_623, keymap_420, keymap_625, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_628, keymap_623, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_626, keymap_624, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_627, keymap_624, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+};
+
+static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_79[] {
+    keymap_283, keymap_629, keymap_45, keymap_33, keymap_0, keymap_0, keymap_635, keymap_632,
+    keymap_637, keymap_629, keymap_0, keymap_0, keymap_0, keymap_0, keymap_635, keymap_632,
+    keymap_633, keymap_630, keymap_0, keymap_0, keymap_0, keymap_0, keymap_636, keymap_631,
+    keymap_634, keymap_630, keymap_0, keymap_0, keymap_0, keymap_0, keymap_636, keymap_631,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+};
+
+static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_80[] {
+    keymap_638, keymap_639, keymap_36, keymap_33, keymap_0, keymap_0, keymap_644, keymap_641,
+    keymap_646, keymap_639, keymap_0, keymap_0, keymap_0, keymap_0, keymap_644, keymap_641,
+    keymap_642, keymap_640, keymap_0, keymap_0, keymap_0, keymap_0, keymap_645, keymap_641,
+    keymap_643, keymap_640, keymap_0, keymap_0, keymap_0, keymap_0, keymap_645, keymap_641,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+    keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
+};
+
+static constexpr sized_array_view<KeyLayout::unicode_t, 256> keymap_mod_81[] {
+    keymap_647, keymap_648, keymap_542, keymap_33, keymap_0, keymap_0, keymap_654, keymap_651,
+    keymap_656, keymap_648, keymap_0, keymap_0, keymap_0, keymap_0, keymap_654, keymap_651,
+    keymap_652, keymap_649, keymap_0, keymap_0, keymap_0, keymap_0, keymap_655, keymap_650,
+    keymap_653, keymap_649, keymap_0, keymap_0, keymap_0, keymap_0, keymap_655, keymap_650,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
     keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0, keymap_0,
@@ -31154,10 +33595,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_39[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_40[] {
-    dkeymap_91, dkeymap_92, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_43, dkeymap_93,
-    dkeymap_91, dkeymap_92, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_43, dkeymap_93,
-    dkeymap_91, dkeymap_92, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_43, dkeymap_93,
-    dkeymap_91, dkeymap_92, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_43, dkeymap_93,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_92, dkeymap_91,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_92, dkeymap_91,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_92, dkeymap_91,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_92, dkeymap_91,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31165,10 +33606,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_40[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_41[] {
-    dkeymap_0, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_96, dkeymap_95,
-    dkeymap_0, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_96, dkeymap_95,
-    dkeymap_0, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_97, dkeymap_0,
-    dkeymap_0, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_97, dkeymap_0,
+    dkeymap_0, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_95, dkeymap_94,
+    dkeymap_0, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_95, dkeymap_94,
+    dkeymap_0, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_96, dkeymap_0,
+    dkeymap_0, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_96, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31176,21 +33617,21 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_41[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_42[] {
-    dkeymap_98, dkeymap_99, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_100, dkeymap_0,
-    dkeymap_98, dkeymap_99, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_100, dkeymap_0,
-    dkeymap_98, dkeymap_99, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_101, dkeymap_0,
-    dkeymap_98, dkeymap_99, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_101, dkeymap_0,
-    dkeymap_103, dkeymap_102, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_97, dkeymap_98, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_99, dkeymap_0,
+    dkeymap_97, dkeymap_98, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_99, dkeymap_0,
+    dkeymap_97, dkeymap_98, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_100, dkeymap_0,
+    dkeymap_97, dkeymap_98, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_100, dkeymap_0,
+    dkeymap_102, dkeymap_101, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_43[] {
-    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_104, dkeymap_0,
-    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_104, dkeymap_0,
-    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_104, dkeymap_0,
-    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_104, dkeymap_0,
+    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_103, dkeymap_0,
+    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_103, dkeymap_0,
+    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_103, dkeymap_0,
+    dkeymap_72, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_103, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31198,10 +33639,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_43[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_44[] {
-    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_105,
-    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_105,
-    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_105,
-    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_105,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_104,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_104,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_104,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_1, dkeymap_104,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31209,10 +33650,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_44[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_45[] {
-    dkeymap_10, dkeymap_106, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
-    dkeymap_10, dkeymap_106, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
-    dkeymap_10, dkeymap_106, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
-    dkeymap_10, dkeymap_106, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
+    dkeymap_105, dkeymap_106, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_107, dkeymap_0,
+    dkeymap_105, dkeymap_106, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_107, dkeymap_0,
+    dkeymap_106, dkeymap_105, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_106, dkeymap_105, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31220,10 +33661,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_45[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_46[] {
-    dkeymap_107, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_107, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_107, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_107, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_10, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
+    dkeymap_10, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
+    dkeymap_10, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
+    dkeymap_10, dkeymap_108, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_12, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31231,10 +33672,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_46[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_47[] {
-    dkeymap_109, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_112, dkeymap_111,
-    dkeymap_109, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_112, dkeymap_111,
-    dkeymap_109, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_110,
-    dkeymap_109, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_110,
+    dkeymap_109, dkeymap_110, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_109, dkeymap_110, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_109, dkeymap_110, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_109, dkeymap_110, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31242,10 +33683,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_47[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_48[] {
-    dkeymap_97, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_113, dkeymap_95,
-    dkeymap_97, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_113, dkeymap_95,
-    dkeymap_97, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_97, dkeymap_94, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_111, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_114, dkeymap_113,
+    dkeymap_111, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_114, dkeymap_113,
+    dkeymap_111, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_112,
+    dkeymap_111, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_112,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31253,10 +33694,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_48[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_49[] {
-    dkeymap_114, dkeymap_115, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_114, dkeymap_115, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_114, dkeymap_115, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
-    dkeymap_114, dkeymap_115, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_96, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_115, dkeymap_94,
+    dkeymap_96, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_115, dkeymap_94,
+    dkeymap_96, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_96, dkeymap_93, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31264,10 +33705,10 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_49[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_50[] {
-    dkeymap_72, dkeymap_116, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_118, dkeymap_117,
-    dkeymap_72, dkeymap_116, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_118, dkeymap_117,
-    dkeymap_72, dkeymap_116, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_118, dkeymap_117,
-    dkeymap_72, dkeymap_116, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_118, dkeymap_117,
+    dkeymap_116, dkeymap_117, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_118, dkeymap_0,
+    dkeymap_116, dkeymap_117, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_118, dkeymap_0,
+    dkeymap_117, dkeymap_116, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_117, dkeymap_116, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31275,10 +33716,43 @@ static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_50[] {
 };
 
 static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_51[] {
-    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_122, dkeymap_121,
-    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_122, dkeymap_121,
-    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_122, dkeymap_121,
-    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_122, dkeymap_121,
+    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_119, dkeymap_120, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+};
+
+static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_52[] {
+    dkeymap_72, dkeymap_121, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_123, dkeymap_122,
+    dkeymap_72, dkeymap_121, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_123, dkeymap_122,
+    dkeymap_72, dkeymap_121, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_123, dkeymap_122,
+    dkeymap_72, dkeymap_121, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_123, dkeymap_122,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+};
+
+static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_53[] {
+    dkeymap_124, dkeymap_125, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_127, dkeymap_126,
+    dkeymap_124, dkeymap_125, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_127, dkeymap_126,
+    dkeymap_124, dkeymap_125, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_127, dkeymap_126,
+    dkeymap_124, dkeymap_125, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_127, dkeymap_126,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
+};
+
+static constexpr sized_array_view<KeyLayout::DKeyTable, 128> dkeymap_mod_54[] {
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_129, dkeymap_128,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_129, dkeymap_128,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_130, dkeymap_0,
+    dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_130, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
     dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0, dkeymap_0,
@@ -31358,28 +33832,31 @@ static constexpr KeyLayout layouts[] {
     KeyLayout{KbdId(0x0001043a), KeyLayout::RCtrlIsCtrl(true ), "mt-MT.48"_zv/*, "Maltese 48-Key"_zv, "mt"_zv*/, keymap_mod_62, dkeymap_mod_4},
     KeyLayout{KbdId(0x0001043b), KeyLayout::RCtrlIsCtrl(true ), "se-NO.ext_norway"_zv/*, "Sami Extended Norway"_zv, "se-Latn-NO"_zv*/, keymap_mod_63, dkeymap_mod_41},
     KeyLayout{KbdId(0x0001080c), KeyLayout::RCtrlIsCtrl(true ), "fr-BE"_zv/*, "Belgian (Comma)"_zv, "fr-BE"_zv*/, keymap_mod_64, dkeymap_mod_25},
-    KeyLayout{KbdId(0x0001083b), KeyLayout::RCtrlIsCtrl(true ), "se-SE"_zv/*, "Finnish with Sami"_zv, "se-Latn-SE"_zv*/, keymap_mod_40, dkeymap_mod_28},
+    KeyLayout{KbdId(0x0001083b), KeyLayout::RCtrlIsCtrl(true ), "fi-SE"_zv/*, "Finnish with Sami"_zv, "se-Latn-SE"_zv*/, keymap_mod_40, dkeymap_mod_28},
     KeyLayout{KbdId(0x00011009), KeyLayout::RCtrlIsCtrl(false), "en-CA.multilingual"_zv/*, "Canadian Multilingual Standard"_zv, "en-CA"_zv*/, keymap_mod_65, dkeymap_mod_42},
     KeyLayout{KbdId(0x00011809), KeyLayout::RCtrlIsCtrl(true ), "en-IE"_zv/*, "Scottish Gaelic"_zv, "en-IE"_zv*/, keymap_mod_66, dkeymap_mod_43},
     KeyLayout{KbdId(0x00020405), KeyLayout::RCtrlIsCtrl(true ), "cs-CZ.programmers"_zv/*, "Czech Programmers"_zv, "cs"_zv*/, keymap_mod_67, dkeymap_mod_44},
-    KeyLayout{KbdId(0x00020408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.319"_zv/*, "Greek (319)"_zv, "el"_zv*/, keymap_mod_68, dkeymap_mod_45},
-    KeyLayout{KbdId(0x00020409), KeyLayout::RCtrlIsCtrl(true ), "en-US.international"_zv/*, "United States-International"_zv, "en-US"_zv*/, keymap_mod_69, dkeymap_mod_46},
-    KeyLayout{KbdId(0x0002040c), KeyLayout::RCtrlIsCtrl(true ), "bépo"_zv/*, "French (Standard, BÉPO)"_zv, "fr-FR"_zv*/, keymap_mod_70, dkeymap_mod_47},
-    KeyLayout{KbdId(0x0002083b), KeyLayout::RCtrlIsCtrl(true ), "se-SE.ext_finland_sweden"_zv/*, "Sami Extended Finland-Sweden"_zv, "se-Latn-SE"_zv*/, keymap_mod_71, dkeymap_mod_48},
-    KeyLayout{KbdId(0x00030402), KeyLayout::RCtrlIsCtrl(true ), "bg-BG"_zv/*, "Bulgarian"_zv, "bg"_zv*/, keymap_mod_72, dkeymap_mod_4},
-    KeyLayout{KbdId(0x00030408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.220_latin"_zv/*, "Greek (220) Latin"_zv, "el"_zv*/, keymap_mod_73, dkeymap_mod_34},
-    KeyLayout{KbdId(0x00030409), KeyLayout::RCtrlIsCtrl(true ), "en-US.dvorak_left"_zv/*, "United States-Dvorak for left hand"_zv, "en-US"_zv*/, keymap_mod_74, dkeymap_mod_4},
-    KeyLayout{KbdId(0x00040408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.319_latin"_zv/*, "Greek (319) Latin"_zv, "el"_zv*/, keymap_mod_75, dkeymap_mod_49},
-    KeyLayout{KbdId(0x00040409), KeyLayout::RCtrlIsCtrl(true ), "en-US.dvorak_right"_zv/*, "United States-Dvorak for right hand"_zv, "en-US"_zv*/, keymap_mod_76, dkeymap_mod_4},
-    KeyLayout{KbdId(0x00050408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.latin"_zv/*, "Greek Latin"_zv, "el"_zv*/, keymap_mod_77, dkeymap_mod_50},
-    KeyLayout{KbdId(0x00060408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.polytonic"_zv/*, "Greek Polytonic"_zv, "el"_zv*/, keymap_mod_78, dkeymap_mod_51},
+    KeyLayout{KbdId(0x00020407), KeyLayout::RCtrlIsCtrl(true ), "de-DE.ex1"_zv/*, "German Extended (E1)"_zv, "de-DE"_zv*/, keymap_mod_68, dkeymap_mod_45},
+    KeyLayout{KbdId(0x00020408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.319"_zv/*, "Greek (319)"_zv, "el"_zv*/, keymap_mod_69, dkeymap_mod_46},
+    KeyLayout{KbdId(0x00020409), KeyLayout::RCtrlIsCtrl(true ), "en-US.international"_zv/*, "United States-International"_zv, "en-US"_zv*/, keymap_mod_70, dkeymap_mod_47},
+    KeyLayout{KbdId(0x0002040c), KeyLayout::RCtrlIsCtrl(true ), "bépo"_zv/*, "French (Standard, BÉPO)"_zv, "fr-FR"_zv*/, keymap_mod_71, dkeymap_mod_48},
+    KeyLayout{KbdId(0x0002083b), KeyLayout::RCtrlIsCtrl(true ), "se-SE.ext_finland_sweden"_zv/*, "Sami Extended Finland-Sweden"_zv, "se-Latn-SE"_zv*/, keymap_mod_72, dkeymap_mod_49},
+    KeyLayout{KbdId(0x00030402), KeyLayout::RCtrlIsCtrl(true ), "bg-BG"_zv/*, "Bulgarian"_zv, "bg"_zv*/, keymap_mod_73, dkeymap_mod_4},
+    KeyLayout{KbdId(0x00030407), KeyLayout::RCtrlIsCtrl(true ), "de-DE.ex2"_zv/*, "German Extended (E2)"_zv, "de-DE"_zv*/, keymap_mod_74, dkeymap_mod_50},
+    KeyLayout{KbdId(0x00030408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.220_latin"_zv/*, "Greek (220) Latin"_zv, "el"_zv*/, keymap_mod_75, dkeymap_mod_34},
+    KeyLayout{KbdId(0x00030409), KeyLayout::RCtrlIsCtrl(true ), "en-US.dvorak_left"_zv/*, "United States-Dvorak for left hand"_zv, "en-US"_zv*/, keymap_mod_76, dkeymap_mod_4},
+    KeyLayout{KbdId(0x00040408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.319_latin"_zv/*, "Greek (319) Latin"_zv, "el"_zv*/, keymap_mod_77, dkeymap_mod_51},
+    KeyLayout{KbdId(0x00040409), KeyLayout::RCtrlIsCtrl(true ), "en-US.dvorak_right"_zv/*, "United States-Dvorak for right hand"_zv, "en-US"_zv*/, keymap_mod_78, dkeymap_mod_4},
+    KeyLayout{KbdId(0x00050408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.latin"_zv/*, "Greek Latin"_zv, "el"_zv*/, keymap_mod_79, dkeymap_mod_52},
+    KeyLayout{KbdId(0x00060408), KeyLayout::RCtrlIsCtrl(true ), "el-GR.polytonic"_zv/*, "Greek Polytonic"_zv, "el"_zv*/, keymap_mod_80, dkeymap_mod_53},
+    KeyLayout{KbdId(0x00060409), KeyLayout::RCtrlIsCtrl(true ), "en-US.colemak"_zv/*, "Colemak"_zv, "en-US"_zv*/, keymap_mod_81, dkeymap_mod_54},
 };
 
 static constexpr KeyLayout layouts_sorted_by_name[] {
-    layouts[79],
+    layouts[80],
     layouts[52],
     layouts[51],
-    layouts[77],
+    layouts[78],
     layouts[0],
     layouts[74],
     layouts[53],
@@ -31387,29 +33864,33 @@ static constexpr KeyLayout layouts_sorted_by_name[] {
     layouts[1],
     layouts[36],
     layouts[2],
+    layouts[75],
+    layouts[81],
     layouts[54],
     layouts[3],
     layouts[55],
-    layouts[80],
-    layouts[75],
     layouts[82],
+    layouts[76],
     layouts[84],
-    layouts[85],
+    layouts[86],
+    layouts[87],
     layouts[48],
     layouts[72],
     layouts[37],
     layouts[73],
     layouts[50],
     layouts[4],
+    layouts[88],
     layouts[56],
-    layouts[81],
     layouts[83],
-    layouts[76],
+    layouts[85],
+    layouts[77],
     layouts[5],
     layouts[57],
     layouts[38],
     layouts[22],
     layouts[6],
+    layouts[71],
     layouts[26],
     layouts[70],
     layouts[39],
@@ -31449,8 +33930,7 @@ static constexpr KeyLayout layouts_sorted_by_name[] {
     layouts[28],
     layouts[69],
     layouts[43],
-    layouts[71],
-    layouts[78],
+    layouts[79],
     layouts[17],
     layouts[64],
     layouts[21],
@@ -31554,17 +34034,20 @@ KeyLayout const* find_layout_by_id(KeyLayout::KbdId id) noexcept
     case KbdId{0x00011009}: return &layouts[72];
     case KbdId{0x00011809}: return &layouts[73];
     case KbdId{0x00020405}: return &layouts[74];
-    case KbdId{0x00020408}: return &layouts[75];
-    case KbdId{0x00020409}: return &layouts[76];
-    case KbdId{0x0002040c}: return &layouts[77];
-    case KbdId{0x0002083b}: return &layouts[78];
-    case KbdId{0x00030402}: return &layouts[79];
-    case KbdId{0x00030408}: return &layouts[80];
-    case KbdId{0x00030409}: return &layouts[81];
-    case KbdId{0x00040408}: return &layouts[82];
-    case KbdId{0x00040409}: return &layouts[83];
-    case KbdId{0x00050408}: return &layouts[84];
-    case KbdId{0x00060408}: return &layouts[85];
+    case KbdId{0x00020407}: return &layouts[75];
+    case KbdId{0x00020408}: return &layouts[76];
+    case KbdId{0x00020409}: return &layouts[77];
+    case KbdId{0x0002040c}: return &layouts[78];
+    case KbdId{0x0002083b}: return &layouts[79];
+    case KbdId{0x00030402}: return &layouts[80];
+    case KbdId{0x00030407}: return &layouts[81];
+    case KbdId{0x00030408}: return &layouts[82];
+    case KbdId{0x00030409}: return &layouts[83];
+    case KbdId{0x00040408}: return &layouts[84];
+    case KbdId{0x00040409}: return &layouts[85];
+    case KbdId{0x00050408}: return &layouts[86];
+    case KbdId{0x00060408}: return &layouts[87];
+    case KbdId{0x00060409}: return &layouts[88];
     }
     return nullptr;
 }
