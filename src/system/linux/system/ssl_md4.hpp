@@ -27,7 +27,7 @@
 
 #include <openssl/md4.h>
 
-# if OPENSSL_VERSION_NUMBER >= 0x30000000L
+# if 0 && OPENSSL_VERSION_NUMBER >= 0x30000000L
 
 #include "core/error.hpp"
 #include "utils/sugar/movable_ptr.hpp"
