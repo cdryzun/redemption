@@ -297,6 +297,7 @@ class ACLPassthrough():
         kv['target_login'] = self.shared.get('target_login')
         kv['target_host'] = self.shared.get('target_host')
         kv['target_device'] = self.shared.get('target_host')
+        kv['mod_rdp:enable_kerberos'] = False
 
         if '$' in kv['target_host']:
             app_params = kv['target_host']
