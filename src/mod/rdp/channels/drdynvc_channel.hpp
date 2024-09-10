@@ -88,7 +88,7 @@ public:
 
             case drdynvc::CMD_CREATE:
                 if (bool(this->verbose & RDPVerbose::drdynvc) &&
-                    (flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)))
+                    ((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) == (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)))
                 {
                     drdynvc::DVCCreateResponsePDU create_response;
 
@@ -153,7 +153,8 @@ public:
         switch (Cmd)
         {
             case drdynvc::CMD_CREATE:
-                if (flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST))
+                if ((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) ==
+                    (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST))
                 {
                     drdynvc::DVCCreateRequestPDU create_request;
 

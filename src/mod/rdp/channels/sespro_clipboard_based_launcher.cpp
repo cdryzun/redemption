@@ -673,7 +673,7 @@ bool SessionProbeClipboardBasedLauncher::process_client_cliprdr_message(InStream
 
     const size_t saved_chunk_offset = chunk.get_offset();
 
-    if ((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) &&
+    if (((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) == (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) &&
         (chunk.in_remain() >= 8 /* msgType(2) + msgFlags(2) + dataLen(4) */)) {
         const uint8_t* current_chunk_pos  = chunk.get_current();
         const size_t   current_chunk_size = chunk.in_remain();
@@ -774,7 +774,7 @@ void SessionProbeClipboardBasedLauncher::process_server_message(
 
 // Returns false to prevent message to be sent to client.
 bool SessionProbeClipboardBasedLauncher::process_server_cliprdr_message(InStream & chunk, REDEMPTION_UNUSED_IN_DEBUG uint32_t length, uint32_t flags) {
-    if ((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) &&
+    if (((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) == (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) &&
         (chunk.in_remain() >= 8 /* msgType(2) + msgFlags(2) + dataLen(4) */)) {
         assert(chunk.in_remain() == length);
 

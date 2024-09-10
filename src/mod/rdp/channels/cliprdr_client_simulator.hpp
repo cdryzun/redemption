@@ -55,7 +55,7 @@ public:
 
         InStream s(chunk_data);
 
-        if ((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) &&
+        if (((flags & (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) == (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST)) &&
             (s.in_remain() >= 8 /* msgType(2) + msgFlags(2) + dataLen(4) */)) {
 
             const uint16_t msgType = s.in_uint16_le();
