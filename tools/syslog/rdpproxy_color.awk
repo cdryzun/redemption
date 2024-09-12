@@ -1,4 +1,4 @@
-#!/usr/bin/awk  -OSf
+#!/usr/bin/env -S gawk -OSf
 # colout '-po' '-cE' '^... .. ..:..:.. ([^ ]+ rdpproxy\[[0-9]+\]: )?' 'n' '--' '-cER' '(INFO [^-]+-- [-=]{3,}>? )([^-=<]*)(.*)?' 'b' 'g' 'b' '--' '-ERci1' '^((INFO)|(WARNING)|(ERR)|(NOTICE)|(DEBUG|EMERG|ALERT|CRIT))[^-]+-- ' 'n' 'b' 'Y' 'R' 'c' 'W' '--' '-cER' '(#[0-9]+)()' '+v,W' '+rv' '+u' '+ru' '--' '-c' '(src/[^:]+|/[^:]+):([:0-9]+)' 'c' 'Y' '--' '-c' '(Assertion) `(.*)'\'' failed.' 'e7,o' 'R' '--' '-c' '^(\[RDP )(Session|Proxy\]) ' '137' '--' '-cri5' '( type)="([^"]+)"|^([^=]+)="((\\"|[^"])*)"' 'lr' 'lm' 'lb' '243' '--' '-c' '(.+) in (/.*)' 'w' 'i,da' '--' '-cER' '^SUMMARY:' 'r'
 
 # created ven. sept. 06 11:45:01 2024
