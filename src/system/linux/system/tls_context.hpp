@@ -103,6 +103,9 @@ inline char const* apply_tls_config(
      * won't recognize it and will disconnect you after sending a TLS alert.
      */
     SSL_CTX_set_options(ctx, SSL_OP_ALL);
+    if (tls_config.enable_legacy_server_connect) {
+        SSL_CTX_set_options(ctx, SSL_OP_LEGACY_SERVER_CONNECT);
+    }
 
     CHECK_CALL(SSL_CTX_set_min_proto_version, ctx, to_version(tls_config.min_level));
     if (tls_config.max_level) {

@@ -981,6 +981,15 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     });
 
     _.member(MemberInfo{
+        .name = "tls_enable_legacy_server",
+        .value = value<bool>(false),
+        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .desc =
+        "Allow TLS legacy insecure renegotiation to unpatched servers.\n"
+        "For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in :REF:[mod_rdp]:cipher_string.\n",
+    });
+
+    _.member(MemberInfo{
         .name = names{
             .all = "tls_1_3_ciphersuites",
             .display = "TLS 1.3 cipher suites",

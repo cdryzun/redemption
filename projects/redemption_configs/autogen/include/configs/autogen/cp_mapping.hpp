@@ -22,6 +22,7 @@ cp_spec = {
         ('mod_rdp:tls_min_level', 'tls_min_level', 2),
         ('mod_rdp:tls_max_level', 'tls_max_level', 0),
         ('mod_rdp:cipher_string', 'cipher_string', "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256"),
+        ('mod_rdp:tls_enable_legacy_server', 'tls_enable_legacy_server', False),
         ('mod_rdp:tls_1_3_ciphersuites', 'tls_1_3_ciphersuites', ""),
         ('mod_rdp:tls_key_exchange_groups', 'tls_key_exchange_groups', "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192"),
         ('mod_rdp:show_common_cipher_list', 'show_common_cipher_list', False),

@@ -27,6 +27,7 @@ struct TlsConfig
     std::string cipher_list;
     std::string tls_1_3_ciphersuites;
     std::string key_exchange_groups;
+    bool enable_legacy_server_connect = false;
     bool show_common_cipher_list = false;
 };
 

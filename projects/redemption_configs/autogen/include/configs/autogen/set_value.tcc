@@ -643,6 +643,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "tls_enable_legacy_server"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_rdp::tls_enable_legacy_server&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
         else if (key == "tls_1_3_ciphersuites"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),

@@ -20,27 +20,27 @@ namespace configs
         inline constexpr int section3 = 18; /* all_target_mod */
         // inline constexpr int section4 = 19; /* remote_program */
         inline constexpr int section5 = 19; /* mod_rdp */
-        inline constexpr int section6 = 62; /* protocol */
-        inline constexpr int section7 = 63; /* session_probe */
-        inline constexpr int section8 = 108; /* server_cert */
-        inline constexpr int section9 = 117; /* mod_vnc */
-        inline constexpr int section10 = 125; /* session_log */
-        // inline constexpr int section11 = 127; /* ocr */
-        inline constexpr int section12 = 127; /* capture */
-        inline constexpr int section13 = 134; /* audit */
-        inline constexpr int section14 = 143; /* file_verification */
-        inline constexpr int section15 = 151; /* file_storage */
-        // inline constexpr int section16 = 152; /* icap_server_down */
-        // inline constexpr int section17 = 152; /* icap_server_up */
-        inline constexpr int section18 = 152; /* crypto */
-        // inline constexpr int section19 = 154; /* websocket */
-        // inline constexpr int section20 = 154; /* vnc_over_ssh */
-        inline constexpr int section21 = 154; /* context */
-        // inline constexpr int section22 = 243; /* internal_mod */
-        inline constexpr int section23 = 243; /* mod_replay */
-        inline constexpr int section24 = 245; /* translation */
-        // inline constexpr int section25 = 247; /* theme */
-        // inline constexpr int section26 = 247; /* debug */
+        inline constexpr int section6 = 63; /* protocol */
+        inline constexpr int section7 = 64; /* session_probe */
+        inline constexpr int section8 = 109; /* server_cert */
+        inline constexpr int section9 = 118; /* mod_vnc */
+        inline constexpr int section10 = 126; /* session_log */
+        // inline constexpr int section11 = 128; /* ocr */
+        inline constexpr int section12 = 128; /* capture */
+        inline constexpr int section13 = 135; /* audit */
+        inline constexpr int section14 = 144; /* file_verification */
+        inline constexpr int section15 = 152; /* file_storage */
+        // inline constexpr int section16 = 153; /* icap_server_down */
+        // inline constexpr int section17 = 153; /* icap_server_up */
+        inline constexpr int section18 = 153; /* crypto */
+        // inline constexpr int section19 = 155; /* websocket */
+        // inline constexpr int section20 = 155; /* vnc_over_ssh */
+        inline constexpr int section21 = 155; /* context */
+        // inline constexpr int section22 = 244; /* internal_mod */
+        inline constexpr int section23 = 244; /* mod_replay */
+        inline constexpr int section24 = 246; /* translation */
+        // inline constexpr int section25 = 248; /* theme */
+        // inline constexpr int section26 = 248; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -1012,6 +1012,22 @@ namespace cfg
         using mapped_type = std::string;
         type value { "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256" };
     };
+    /// Allow TLS legacy insecure renegotiation to unpatched servers. <br/>
+    /// For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in [mod_rdp]cipher_string. <br/>
+    /// type: bool <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_rdp:tls_enable_legacy_server <br/>
+    /// displayName: TLS enable legacy server <br/>
+    /// default: false <br/>
+    struct mod_rdp::tls_enable_legacy_server {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 9};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
     /// Configure the available TLSv1.3 ciphersuites. <br/>
     /// Empty to apply system-wide configuration. <br/>
     /// The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION <br/>
@@ -1024,7 +1040,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 9};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 10};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1041,7 +1057,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 10};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 11};
         using type = std::string;
         using mapped_type = std::string;
         type value { "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" };
@@ -1056,7 +1072,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 11};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 12};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1097,7 +1113,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 12};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 13};
         using type = std::string;
         using mapped_type = ::configs::spec_types::list<std::string>;
         type value { "*" };
@@ -1111,7 +1127,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 13};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 14};
         using type = std::string;
         using mapped_type = ::configs::spec_types::list<std::string>;
         type value {  };
@@ -1126,7 +1142,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 14};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 15};
         using type = std::string;
         using mapped_type = std::string;
         type value { "*" };
@@ -1141,7 +1157,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 15};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 16};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1166,7 +1182,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 16};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 17};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1181,7 +1197,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 17};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 18};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1204,7 +1220,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 18};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 19};
         using type = std::string;
         using mapped_type = ::configs::spec_types::list<std::string>;
         type value {  };
@@ -1216,7 +1232,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 19};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 20};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1247,7 +1263,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 20};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 21};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1260,7 +1276,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 21};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 22};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1273,7 +1289,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 22};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 23};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1287,7 +1303,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 23};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 24};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1302,7 +1318,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 24};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 25};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1317,7 +1333,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 25};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 26};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1429,7 +1445,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 26};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 27};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1486,7 +1502,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 27};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 28};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1513,7 +1529,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 28};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 29};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1529,7 +1545,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 29};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 30};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1546,7 +1562,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 30};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 31};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1561,7 +1577,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 31};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 32};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1576,7 +1592,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 32};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 33};
         using type = RdpModeConsole;
         using mapped_type = std::string;
         type value { RdpModeConsole::allow };
@@ -1591,7 +1607,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 33};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 34};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1607,7 +1623,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 34};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 35};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1621,7 +1637,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 35};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 36};
         using type = std::chrono::milliseconds;
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 15000>;
         type value { 0 };
@@ -1635,7 +1651,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 36};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 37};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1649,7 +1665,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 37};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 38};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1662,7 +1678,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 38};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 39};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1675,7 +1691,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 39};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 40};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1689,7 +1705,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 40};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 41};
         using type = std::chrono::milliseconds;
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 3000, 120000>;
         type value { 3000 };
@@ -1707,7 +1723,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 41};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 42};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1721,7 +1737,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 42};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 43};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -4617,7 +4633,7 @@ namespace cfg
         type value { true };
     };
     /// List of keyboard layouts available by the internal pages button located at bottom left of some internal pages (login, selector, etc). <br/>
-    /// Possible values: bg-BG, bg-BG.latin, bs-Cy, bépo, cs-CZ, cs-CZ.programmers, cs-CZ.qwerty, cy-GB, da-DK, de-CH, de-DE, de-DE.ibm, el-GR, el-GR.220, el-GR.220_latin, el-GR.319, el-GR.319_latin, el-GR.latin, el-GR.polytonic, en-CA.fr, en-CA.multilingual, en-GB, en-IE, en-IE.irish, en-US, en-US.dvorak, en-US.dvorak_left, en-US.dvorak_right, en-US.international, es-ES, es-ES.variation, es-MX, et-EE, fi-FI.finnish, fo-FO, fr-BE, fr-BE.fr, fr-CA, fr-CH, fr-FR, fr-FR.standard, hr-HR, hu-HU, is-IS, it-IT, it-IT.142, iu-La, kk-KZ, ky-KG, lb-LU, lt-LT, lt-LT.ibm, lv-LV, lv-LV.qwerty, mi-NZ, mk-MK, mn-MN, mt-MT.47, mt-MT.48, nb-NO, nl-BE, nl-NL, pl-PL, pl-PL.programmers, pt-BR.abnt, pt-BR.abnt2, pt-PT, ro-RO, ru-RU, ru-RU.typewriter, se-NO, se-NO.ext_norway, se-SE, se-SE, se-SE.ext_finland_sweden, sk-SK, sk-SK.qwerty, sl-SI, sr-Cy, sr-La, sv-SE, tr-TR.f, tr-TR.q, tt-RU, uk-UA, uz-Cy <br/>
+    /// Possible values: bg-BG, bg-BG.latin, bs-Cy, bépo, cs-CZ, cs-CZ.programmers, cs-CZ.qwerty, cy-GB, da-DK, de-CH, de-DE, de-DE.ex1, de-DE.ex2, de-DE.ibm, el-GR, el-GR.220, el-GR.220_latin, el-GR.319, el-GR.319_latin, el-GR.latin, el-GR.polytonic, en-CA.fr, en-CA.multilingual, en-GB, en-IE, en-IE.irish, en-US, en-US.colemak, en-US.dvorak, en-US.dvorak_left, en-US.dvorak_right, en-US.international, es-ES, es-ES.variation, es-MX, et-EE, fi-FI.finnish, fi-SE, fo-FO, fr-BE, fr-BE.fr, fr-CA, fr-CH, fr-FR, fr-FR.standard, hr-HR, hu-HU, is-IS, it-IT, it-IT.142, iu-La, kk-KZ, ky-KG, lb-LU, lt-LT, lt-LT.ibm, lv-LV, lv-LV.qwerty, mi-NZ, mk-MK, mn-MN, mt-MT.47, mt-MT.48, nb-NO, nl-BE, nl-NL, pl-PL, pl-PL.programmers, pt-BR.abnt, pt-BR.abnt2, pt-PT, ro-RO, ru-RU, ru-RU.typewriter, se-NO, se-NO.ext_norway, se-SE, se-SE.ext_finland_sweden, sk-SK, sk-SK.qwerty, sl-SI, sr-Cy, sr-La, sv-SE, tr-TR.f, tr-TR.q, tt-RU, uk-UA, uz-Cy <br/>
     /// type: std::string <br/>
     /// default: "en-US, fr-FR, de-DE, ru-RU" <br/>
     struct internal_mod::keyboard_layout_proposals {
@@ -5288,6 +5304,7 @@ struct mod_rdp
 , cfg::mod_rdp::allow_rdp_legacy_fallback
 , cfg::mod_rdp::tls_min_level
 , cfg::mod_rdp::tls_max_level
+, cfg::mod_rdp::tls_enable_legacy_server
 , cfg::mod_rdp::show_common_cipher_list
 , cfg::mod_rdp::persistent_disk_bitmap_cache
 , cfg::mod_rdp::cache_waiting_list
@@ -5725,6 +5742,7 @@ using VariablesAclPack = Pack<
 , cfg::mod_rdp::tls_min_level
 , cfg::mod_rdp::tls_max_level
 , cfg::mod_rdp::cipher_string
+, cfg::mod_rdp::tls_enable_legacy_server
 , cfg::mod_rdp::tls_1_3_ciphersuites
 , cfg::mod_rdp::tls_key_exchange_groups
 , cfg::mod_rdp::show_common_cipher_list
@@ -5948,15 +5966,15 @@ using VariablesAclPack = Pack<
 
 
 constexpr U64BitFlags<4> loggable_field{ {
-  0b1111101111111111111111111111111111111111111111101111011111101100
-, 0b1111111111110111111111111111111111111111111111111111111111111111
-, 0b0100010111100111000011111101100011000000111111111111110111111101
-, 0b0000000000111110000000111000001100011011111110001010011111111111
+  0b1111011111111111111111111111111111111111111111101111011111101100
+, 0b1111111111101111111111111111111111111111111111111111111111111111
+, 0b1000101111001110000111111011000110000001111111111111101111111011
+, 0b0000000001111100000001110000011000110111111100010100111111111110
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b0000000000000000010000000000000000000000000000000000000000000000
+, 0b0000000000000000100000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };
 } // namespace configs

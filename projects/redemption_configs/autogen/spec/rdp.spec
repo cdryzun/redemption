@@ -91,6 +91,12 @@ tls_max_level = integer(min=0, default=0)
 # The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 cipher_string = string(default="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256")
 
+# Allow TLS legacy insecure renegotiation to unpatched servers.
+# For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in "Cipher string" option.
+#_advanced
+#_display_name=TLS enable legacy server
+tls_enable_legacy_server = boolean(default=False)
+
 # Configure the available TLSv1.3 ciphersuites.
 # Empty to apply system-wide configuration.
 # The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION

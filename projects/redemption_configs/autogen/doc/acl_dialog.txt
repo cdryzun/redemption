@@ -78,6 +78,9 @@ cfg::mod_rdp::cipher_string ⇐ mod_rdp:cipher_string   [std::string]
     TLSv1.2 and below additional ciphers supported.
     Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
     The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+cfg::mod_rdp::tls_enable_legacy_server ⇐ mod_rdp:tls_enable_legacy_server   [bool]
+    Allow TLS legacy insecure renegotiation to unpatched servers.
+    For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in [mod_rdp]cipher_string.
 cfg::mod_rdp::tls_1_3_ciphersuites ⇐ mod_rdp:tls_1_3_ciphersuites   [std::string]
     Configure the available TLSv1.3 ciphersuites.
     Empty to apply system-wide configuration.

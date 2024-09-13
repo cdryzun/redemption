@@ -99,6 +99,7 @@ namespace cfg
         struct tls_min_level;
         struct tls_max_level;
         struct cipher_string;
+        struct tls_enable_legacy_server;
         struct tls_1_3_ciphersuites;
         struct tls_key_exchange_groups;
         struct show_common_cipher_list;

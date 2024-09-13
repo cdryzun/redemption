@@ -89,6 +89,7 @@ template<> struct acl_and_spec_type<cfg::mod_rdp::allow_rdp_legacy_fallback> { u
 template<> struct acl_and_spec_type<cfg::mod_rdp::tls_min_level> { using type = uint32_t; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::tls_max_level> { using type = uint32_t; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::cipher_string> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::mod_rdp::tls_enable_legacy_server> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::tls_1_3_ciphersuites> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::tls_key_exchange_groups> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::show_common_cipher_list> { using type = bool; };
