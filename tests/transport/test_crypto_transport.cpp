@@ -1393,3 +1393,29 @@ RED_AUTO_TEST_CASE_WD(TestInCryptoTransportBigReadEncrypted, wd)
 
     RED_CHECK(make_array_view(buffer, original_filesize) == original_contents);
 }
+
+RED_AUTO_TEST_CASE_WD(TestInCryptoTransportWithoutHashDirectory, wd)
+{
+    LCGRandom rnd;
+    CryptoContext cctx;
+    init_keys(cctx);
+
+    uint8_t qhash[MD_HASH::DIGEST_LENGTH]{};
+    uint8_t fhash[MD_HASH::DIGEST_LENGTH]{};
+
+    auto finalname = wd.add_file("encrypted.txt");
+    auto hash_dir = wd.create_subdirectory("hash");
+    auto hash_finalname = hash_dir.add_file("hash_encrypted.txt");
+    {
+
+        cctx.set_trace_type(TraceType::cryptofile);
+
+        OutCryptoTransport ct(cctx, rnd, [](const Error & /*error*/){});
+        ct.open(finalname, hash_finalname, FilePermissions(0777));
+        ct.send("We write, ", 10);
+        ct.send("and again, ", 11);
+        ct.send("and so on.", 10);
+        RED_CHECK(rmdir(hash_dir.dirname()) != -1);
+        ct.close(qhash, fhash);
+    }
+}

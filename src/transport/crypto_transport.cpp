@@ -19,6 +19,9 @@
  */
 
 #include "transport/crypto_transport.hpp"
+
+#include <iostream>
+
 #include "capture/cryptofile.hpp"
 #include "transport/mwrm_reader.hpp"
 #include "transport/file_transport.hpp"
@@ -810,10 +813,29 @@ namespace
 void OutCryptoTransport::create_hash_file(HashArray const & qhash, HashArray const & fhash)
 {
     ocrypto hash_encrypter(this->cctx, this->rnd);
-    OutFileTransport hash_out_file(unique_fd(::open(
-        this->hash_filename.c_str(),
-        O_WRONLY | O_CREAT,
-        S_IRUSR | S_IRGRP)));
+
+    auto open_hash = [&] {
+        return unique_fd(::open(
+            this->hash_filename.c_str(),
+            O_WRONLY | O_CREAT,
+            S_IRUSR | S_IRGRP));
+    };
+
+    unique_fd open_file = open_hash();
+
+    if(!open_file.is_open() && errno == ENOENT) {
+        std::string dir_path = this->hash_filename.substr(0, this->hash_filename.find_last_of('/'));
+        if (!dir_path.empty()) {
+            if (::mkdir(dir_path.c_str(), S_IRWXU) == -1) {
+                int const err = errno;
+                LOG(LOG_ERR, "OutCryptoTransport::create_hash_file: mkdir failed for directory %s: %s", dir_path.c_str(), strerror(err));
+                throw Error(ERR_TRANSPORT_OPEN_FAILED, err);
+            }
+            open_file = open_hash();
+        }
+    }
+
+    OutFileTransport hash_out_file(std::move(open_file));
     if (!hash_out_file.is_open()){
         int const err = errno;
         LOG(LOG_ERR, "OutCryptoTransport::open: open failed hash file %s: %s", this->hash_filename, strerror(err));
