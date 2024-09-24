@@ -429,3 +429,43 @@ RED_AUTO_TEST_CASE_WD(fdx_capture_encrypted, wd)
     RED_REQUIRE(file_content.size() > 4);
     RED_REQUIRE(array_view(file_content).first(4) == "WCFM"sv);
 }
+
+RED_AUTO_TEST_CASE_WD(fdx_capture_encrypted_without_hash_directory, wd)
+{
+    using namespace std::string_view_literals;
+
+    auto record_path = wd.create_subdirectory("record");
+    auto hash_path = wd.create_subdirectory("hash");
+    auto sid = "my_session_id"sv;
+    auto fdx_basename = "sid,blabla.fdx"sv;
+
+    CryptoContext cctx;
+    LCGRandom rnd;
+
+    FdxCapture fdx_capture(
+        record_path.dirname().string(),
+        hash_path.dirname().string(),
+        "sid,blabla", sid, FilePermissions(0660), cctx, rnd,
+        [](const Error & /*error*/){});
+
+    auto record_sid_path = record_path.create_subdirectory(sid);
+    auto hash_sid_path = hash_path.create_subdirectory(sid);
+
+    {
+        auto sig1 = Mwrm3::Sha256Signature{"abcdefghijabcdefghijabcdefghijab"_av};
+        FdxCapture::TflFile tfl1 = fdx_capture.new_tfl(Mwrm3::Direction::ClientToServer);
+        tfl1.trans.send("ijkl"sv);
+        RED_CHECK(rmdir(hash_sid_path.dirname()) != -1);
+        RED_CHECK(rmdir(hash_path.dirname()) != -1);
+        fdx_capture.close_tfl(tfl1, "file1", Mwrm3::TransferedStatus::Completed, sig1);
+    }
+
+    OutCryptoTransport::HashArray qhash;
+    OutCryptoTransport::HashArray fhash;
+    fdx_capture.close(qhash, fhash);
+
+    (void)record_sid_path.add_file(str_concat(sid, ",000001.tfl"));
+    (void)hash_sid_path.add_file(str_concat(sid, ",000001.tfl"));
+    (void)record_path.add_file(fdx_basename);
+    (void)hash_path.add_file(fdx_basename);
+}

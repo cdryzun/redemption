@@ -826,11 +826,7 @@ void OutCryptoTransport::create_hash_file(HashArray const & qhash, HashArray con
     if(!open_file.is_open() && errno == ENOENT) {
         std::string dir_path = this->hash_filename.substr(0, this->hash_filename.find_last_of('/'));
         if (!dir_path.empty()) {
-            if (::mkdir(dir_path.c_str(), S_IRWXU) == -1) {
-                int const err = errno;
-                LOG(LOG_ERR, "OutCryptoTransport::create_hash_file: mkdir failed for directory %s: %s", dir_path.c_str(), strerror(err));
-                throw Error(ERR_TRANSPORT_OPEN_FAILED, err);
-            }
+            recursive_create_directory(dir_path.c_str(), S_IRWXU);
             open_file = open_hash();
         }
     }
