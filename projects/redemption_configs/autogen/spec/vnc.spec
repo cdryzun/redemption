@@ -41,6 +41,58 @@ server_unix_alt = boolean(default=False)
 #_display_name=Enable IPv6
 enable_ipv6 = boolean(default=True)
 
+# Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+#_display_name=TLS min level
+tls_min_level = integer(min=0, default=2)
+
+# Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+#_display_name=TLS max level
+tls_max_level = integer(min=0, default=0)
+
+# TLSv1.2 and below additional ciphers supported.
+# Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
+# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+cipher_string = string(default="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256")
+
+# Allow TLS legacy insecure renegotiation to unpatched servers.
+#_advanced
+#_display_name=TLS enable legacy server
+tls_enable_legacy_server = boolean(default=False)
+
+# Configure the available TLSv1.3 ciphersuites.
+# Empty to apply system-wide configuration.
+# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+#_display_name=TLS 1.3 cipher suites
+tls_1_3_ciphersuites = string(default="")
+
+# Configure the supported key exchange groups.
+# Empty to apply system-wide configuration.
+# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+#_display_name=TLS key exchange groups
+tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
+
+# Show in the logs the common cipher list supported by client and server
+# ⚠ Only for debug purposes
+#_advanced
+show_common_cipher_list = boolean(default=False)
+
+# ⚠ The use of this feature is not recommended!<br/>
+# When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made.
+# &nbsp; &nbsp;   - noauth
+# &nbsp; &nbsp;   - vncauth
+# &nbsp; &nbsp;   - mslogon
+# &nbsp; &nbsp;   - mslogoniiauth
+# &nbsp; &nbsp;   - ultravnc_dsm_old
+# &nbsp; &nbsp;   - ultravnc_dsm_new
+# &nbsp; &nbsp;   - tlsnone
+# &nbsp; &nbsp;   - tlsvnc
+# &nbsp; &nbsp;   - tlsplain
+# &nbsp; &nbsp;   - x509none
+# &nbsp; &nbsp;   - x509vnc
+# &nbsp; &nbsp;   - x509plain
+#_advanced
+force_authentication_method = string(default="")
+
 [vnc_over_ssh]
 
 enable = boolean(default=False)

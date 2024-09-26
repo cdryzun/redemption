@@ -52,7 +52,7 @@ REDEMPTION_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wzero-as-null-pointer-constant")
 // inline void ssl_debug_log(SSL* ssl)
 // {
 //     SSL_set_msg_callback(ssl, SSL_trace);
-//     SSL_set_msg_callback_arg(ssl, BIO_new_fp(stdout, 0));
+//     SSL_set_msg_callback_arg(ssl, BIO_new_fp(stderr, 0));
 // }
 
 REDEMPTION_NOINLINE
@@ -116,7 +116,7 @@ inline char const* apply_tls_config(
 
     // when not defined, use system default
     // "DEFAULT@SECLEVEL=1" (<= openssl-1.1)
-    // "DEFAULT@SECLEVEL=1" (>= openssl-2)
+    // "DEFAULT@SECLEVEL=2" (>= openssl-2)
     if (not tls_config.cipher_list.empty()) {
         // Not compatible with MSTSC 6.1 on XP and W2K3
         // SSL_CTX_set_cipher_list(ctx, "HIGH:!ADH:!3DES");

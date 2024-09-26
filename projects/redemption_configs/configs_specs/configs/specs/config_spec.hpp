@@ -2154,7 +2154,105 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .name = "enable_ipv6",
         .value = value(true),
         .spec = connpolicy(vnc, loggable),
-        .desc = "Enable target connection on IPv6" ,
+        .desc = "Enable target connection on IPv6",
+    });
+
+
+    _.member(MemberInfo{
+        .name = "tls_min_level",
+        .value = value<types::u32>(2),
+        .spec = connpolicy(vnc, loggable),
+        .desc = "Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
+    });
+
+    _.member(MemberInfo{
+        .name = "tls_max_level",
+        .value = value<types::u32>(0),
+        .spec = connpolicy(vnc, loggable),
+        .desc = "Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
+    });
+
+    // since openssl 2, the security level is 2
+    // "DEFAULT@SECLEVEL=1" (<= 1.1)
+    // "DEFAULT@SECLEVEL=2" (>= 2)
+    _.member(MemberInfo{
+        .name = "cipher_string",
+        .value = value<std::string>(
+            "ECDHE-ECDSA-AES256-GCM-SHA384"
+            ":ECDHE-RSA-AES256-GCM-SHA384"
+            ":DHE-RSA-AES256-GCM-SHA384"
+            ":ECDHE-ECDSA-AES128-GCM-SHA256"
+            ":ECDHE-RSA-AES128-GCM-SHA256"
+            ":DHE-RSA-AES128-GCM-SHA256"
+        ),
+        .spec = connpolicy(vnc, loggable),
+        .desc =
+            "TLSv1.2 and below additional ciphers supported.\n"
+            "Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.\n"
+            "The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
+    });
+
+    _.member(MemberInfo{
+        .name = "tls_enable_legacy_server",
+        .value = value<bool>(false),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc = "Allow TLS legacy insecure renegotiation to unpatched servers.",
+    });
+
+    _.member(MemberInfo{
+        .name = names{
+            .all = "tls_1_3_ciphersuites",
+            .display = "TLS 1.3 cipher suites",
+        },
+        .value = value<std::string>(""),
+        .spec = connpolicy(vnc, loggable),
+        .desc = tls_1_3_ciphersuites_desc,
+    });
+
+    _.member(MemberInfo{
+        .name = "tls_key_exchange_groups",
+        .value = value<std::string>(
+            "P-256"
+            ":P-384"
+            ":P-521"
+            ":ffdhe3072"
+            ":ffdhe4096"
+            ":ffdhe6144"
+            ":ffdhe8192"
+        ),
+        .spec = connpolicy(vnc, loggable),
+        .desc = tls_key_exchange_groups,
+    });
+
+    _.member(MemberInfo{
+        .name = "show_common_cipher_list",
+        .value = value(false),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .tags = Tag::Debug,
+        .desc = "Show in the logs the common cipher list supported by client and server\n"
+        "⚠ Only for debug purposes",
+    });
+
+    _.member(MemberInfo{
+        .name = "force_authentication_method",
+        .value = value<std::string>(),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .tags = Tag::Workaround,
+        .desc =
+            "When specified, force the proxy to use a specific authentication method. "
+            "If this method is not supported by the server, the connection will not be made.\n"
+            "  - noauth\n"
+            "  - vncauth\n"
+            "  - mslogon\n"
+            "  - mslogoniiauth\n"
+            "  - ultravnc_dsm_old\n"
+            "  - ultravnc_dsm_new\n"
+            "  - tlsnone\n"
+            "  - tlsvnc\n"
+            "  - tlsplain\n"
+            "  - x509none\n"
+            "  - x509vnc\n"
+            "  - x509plain",
     });
 });
 

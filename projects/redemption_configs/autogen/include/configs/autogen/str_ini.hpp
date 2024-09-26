@@ -1269,6 +1269,71 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:enable_ipv6)
 #enable_ipv6 = 1
 
+# Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+# (min = 0)
+#_display_name=TLS min level
+# (acl config: proxy ⇐ mod_vnc:tls_min_level)
+#tls_min_level = 2
+
+# Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+# (min = 0)
+#_display_name=TLS max level
+# (acl config: proxy ⇐ mod_vnc:tls_max_level)
+#tls_max_level = 0
+
+# TLSv1.2 and below additional ciphers supported.
+# Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
+# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# (acl config: proxy ⇐ mod_vnc:cipher_string)
+#cipher_string = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256
+
+# Allow TLS legacy insecure renegotiation to unpatched servers.
+# (type: boolean (0/no/false or 1/yes/true))
+#_advanced
+#_display_name=TLS enable legacy server
+# (acl config: proxy ⇐ mod_vnc:tls_enable_legacy_server)
+#tls_enable_legacy_server = 0
+
+# Configure the available TLSv1.3 ciphersuites.
+# Empty to apply system-wide configuration.
+# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+#_display_name=TLS 1.3 cipher suites
+# (acl config: proxy ⇐ mod_vnc:tls_1_3_ciphersuites)
+#tls_1_3_ciphersuites = 
+
+# Configure the supported key exchange groups.
+# Empty to apply system-wide configuration.
+# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+#_display_name=TLS key exchange groups
+# (acl config: proxy ⇐ mod_vnc:tls_key_exchange_groups)
+#tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
+
+# Show in the logs the common cipher list supported by client and server
+# ⚠ Only for debug purposes
+# (type: boolean (0/no/false or 1/yes/true))
+#_advanced
+# (acl config: proxy ⇐ mod_vnc:show_common_cipher_list)
+#show_common_cipher_list = 0
+
+# ⚠ The use of this feature is not recommended!
+# 
+# When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made.
+#   - noauth
+#   - vncauth
+#   - mslogon
+#   - mslogoniiauth
+#   - ultravnc_dsm_old
+#   - ultravnc_dsm_new
+#   - tlsnone
+#   - tlsvnc
+#   - tlsplain
+#   - x509none
+#   - x509vnc
+#   - x509plain
+#_advanced
+# (acl config: proxy ⇐ mod_vnc:force_authentication_method)
+#force_authentication_method = 
+
 [session_log]
 
 # Saves session logs to a .log file.

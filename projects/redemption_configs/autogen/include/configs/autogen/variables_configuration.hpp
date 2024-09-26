@@ -24,23 +24,23 @@ namespace configs
         inline constexpr int section7 = 64; /* session_probe */
         inline constexpr int section8 = 109; /* server_cert */
         inline constexpr int section9 = 118; /* mod_vnc */
-        inline constexpr int section10 = 126; /* session_log */
-        // inline constexpr int section11 = 128; /* ocr */
-        inline constexpr int section12 = 128; /* capture */
-        inline constexpr int section13 = 135; /* audit */
-        inline constexpr int section14 = 144; /* file_verification */
-        inline constexpr int section15 = 152; /* file_storage */
-        // inline constexpr int section16 = 153; /* icap_server_down */
-        // inline constexpr int section17 = 153; /* icap_server_up */
-        inline constexpr int section18 = 153; /* crypto */
-        // inline constexpr int section19 = 155; /* websocket */
-        // inline constexpr int section20 = 155; /* vnc_over_ssh */
-        inline constexpr int section21 = 155; /* context */
-        // inline constexpr int section22 = 244; /* internal_mod */
-        inline constexpr int section23 = 244; /* mod_replay */
-        inline constexpr int section24 = 246; /* translation */
-        // inline constexpr int section25 = 248; /* theme */
-        // inline constexpr int section26 = 248; /* debug */
+        inline constexpr int section10 = 134; /* session_log */
+        // inline constexpr int section11 = 136; /* ocr */
+        inline constexpr int section12 = 136; /* capture */
+        inline constexpr int section13 = 143; /* audit */
+        inline constexpr int section14 = 152; /* file_verification */
+        inline constexpr int section15 = 160; /* file_storage */
+        // inline constexpr int section16 = 161; /* icap_server_down */
+        // inline constexpr int section17 = 161; /* icap_server_up */
+        inline constexpr int section18 = 161; /* crypto */
+        // inline constexpr int section19 = 163; /* websocket */
+        // inline constexpr int section20 = 163; /* vnc_over_ssh */
+        inline constexpr int section21 = 163; /* context */
+        // inline constexpr int section22 = 252; /* internal_mod */
+        inline constexpr int section23 = 252; /* mod_replay */
+        inline constexpr int section24 = 254; /* translation */
+        // inline constexpr int section25 = 256; /* theme */
+        // inline constexpr int section26 = 256; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -2799,6 +2799,142 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
+    /// Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3 <br/>
+    /// type: uint32_t <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:tls_min_level <br/>
+    /// displayName: TLS min level <br/>
+    /// default: 2 <br/>
+    struct mod_vnc::tls_min_level {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 8};
+        using type = uint32_t;
+        using mapped_type = uint32_t;
+        type value { 2 };
+    };
+    /// Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3 <br/>
+    /// type: uint32_t <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:tls_max_level <br/>
+    /// displayName: TLS max level <br/>
+    /// default: 0 <br/>
+    struct mod_vnc::tls_max_level {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 9};
+        using type = uint32_t;
+        using mapped_type = uint32_t;
+        type value { 0 };
+    };
+    /// TLSv1.2 and below additional ciphers supported. <br/>
+    /// Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers. <br/>
+    /// The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT <br/>
+    /// type: std::string <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:cipher_string <br/>
+    /// default: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256" <br/>
+    struct mod_vnc::cipher_string {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 10};
+        using type = std::string;
+        using mapped_type = std::string;
+        type value { "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256" };
+    };
+    /// Allow TLS legacy insecure renegotiation to unpatched servers. <br/>
+    /// type: bool <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:tls_enable_legacy_server <br/>
+    /// displayName: TLS enable legacy server <br/>
+    /// default: false <br/>
+    struct mod_vnc::tls_enable_legacy_server {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 11};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
+    /// Configure the available TLSv1.3 ciphersuites. <br/>
+    /// Empty to apply system-wide configuration. <br/>
+    /// The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION <br/>
+    /// type: std::string <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:tls_1_3_ciphersuites <br/>
+    /// displayName: TLS 1.3 cipher suites <br/>
+    /// default: "" <br/>
+    struct mod_vnc::tls_1_3_ciphersuites {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 12};
+        using type = std::string;
+        using mapped_type = std::string;
+        type value {  };
+    };
+    /// Configure the supported key exchange groups. <br/>
+    /// Empty to apply system-wide configuration. <br/>
+    /// The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups <br/>
+    /// type: std::string <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:tls_key_exchange_groups <br/>
+    /// displayName: TLS key exchange groups <br/>
+    /// default: "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" <br/>
+    struct mod_vnc::tls_key_exchange_groups {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 13};
+        using type = std::string;
+        using mapped_type = std::string;
+        type value { "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" };
+    };
+    /// Show in the logs the common cipher list supported by client and server <br/>
+    /// ⚠ Only for debug purposes <br/>
+    /// type: bool <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:show_common_cipher_list <br/>
+    /// default: false <br/>
+    struct mod_vnc::show_common_cipher_list {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 14};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
+    /// When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made. <br/>
+    ///   - noauth <br/>
+    ///   - vncauth <br/>
+    ///   - mslogon <br/>
+    ///   - mslogoniiauth <br/>
+    ///   - ultravnc_dsm_old <br/>
+    ///   - ultravnc_dsm_new <br/>
+    ///   - tlsnone <br/>
+    ///   - tlsvnc <br/>
+    ///   - tlsplain <br/>
+    ///   - x509none <br/>
+    ///   - x509vnc <br/>
+    ///   - x509plain <br/>
+    /// type: std::string <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_vnc:force_authentication_method <br/>
+    /// default: "" <br/>
+    struct mod_vnc::force_authentication_method {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section9 + 15};
+        using type = std::string;
+        using mapped_type = std::string;
+        type value {  };
+    };
 
     /// Saves session logs to a .log file. <br/>
     /// The format is a date followed by one or more key="value" separated by a space on the same line. <br/>
@@ -5425,7 +5561,11 @@ struct server_cert
 { static constexpr bool is_section = true; };
 
 struct mod_vnc
-: cfg::mod_vnc::clipboard_up
+: cfg::mod_vnc::cipher_string
+, cfg::mod_vnc::tls_1_3_ciphersuites
+, cfg::mod_vnc::tls_key_exchange_groups
+, cfg::mod_vnc::force_authentication_method
+, cfg::mod_vnc::clipboard_up
 , cfg::mod_vnc::clipboard_down
 , cfg::mod_vnc::encodings
 , cfg::mod_vnc::support_cursor_pseudo_encoding
@@ -5434,6 +5574,10 @@ struct mod_vnc
 , cfg::mod_vnc::server_is_macos
 , cfg::mod_vnc::server_unix_alt
 , cfg::mod_vnc::enable_ipv6
+, cfg::mod_vnc::tls_min_level
+, cfg::mod_vnc::tls_max_level
+, cfg::mod_vnc::tls_enable_legacy_server
+, cfg::mod_vnc::show_common_cipher_list
 { static constexpr bool is_section = true; };
 
 struct session_log
@@ -5840,6 +5984,14 @@ using VariablesAclPack = Pack<
 , cfg::mod_vnc::server_is_macos
 , cfg::mod_vnc::server_unix_alt
 , cfg::mod_vnc::enable_ipv6
+, cfg::mod_vnc::tls_min_level
+, cfg::mod_vnc::tls_max_level
+, cfg::mod_vnc::cipher_string
+, cfg::mod_vnc::tls_enable_legacy_server
+, cfg::mod_vnc::tls_1_3_ciphersuites
+, cfg::mod_vnc::tls_key_exchange_groups
+, cfg::mod_vnc::show_common_cipher_list
+, cfg::mod_vnc::force_authentication_method
 , cfg::session_log::enable_session_log_file
 , cfg::session_log::keyboard_input_masking_level
 , cfg::capture::record_filebase
@@ -5968,13 +6120,13 @@ using VariablesAclPack = Pack<
 constexpr U64BitFlags<4> loggable_field{ {
   0b1111011111111111111111111111111111111111111111101111011111101100
 , 0b1111111111101111111111111111111111111111111111111111111111111111
-, 0b1000101111001110000111111011000110000001111111111111101111111011
-, 0b0000000001111100000001110000011000110111111100010100111111111110
+, 0b1100111000011111101100011000000111111111111110111111101111111111
+, 0b0111110000000111000001100011011111110001010011111111111010001011
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b0000000000000000100000000000000000000000000000000000000000000000
+, 0b0000000010000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };
 } // namespace configs

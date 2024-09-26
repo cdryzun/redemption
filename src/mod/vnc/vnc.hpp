@@ -273,6 +273,9 @@ private:
     EventRef clipboard_timeout_timer;
 
     SessionLogApi& session_log;
+
+    TlsConfig tls_config;
+
     /** @brief type of VNC authentication */
     enum VncAuthType : int32_t {
         VNC_AUTH_INVALID     = 0,
@@ -296,6 +299,7 @@ private:
     };
 
     VncAuthType choosenAuth;
+    VncAuthType force_authentication_method = VNC_AUTH_INVALID;
 
     const bool cursor_pseudo_encoding_supported;
 
@@ -322,7 +326,10 @@ public:
            , bool cursor_pseudo_encoding_supported
            , ClientExecute* rail_client_execute
            , VNCVerbose verbose
-           , SessionLogApi& session_log);
+           , SessionLogApi& session_log
+           , TlsConfig const& tls_config
+           , std::string_view force_authentication_method
+    );
 
     ~mod_vnc();
 

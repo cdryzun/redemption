@@ -1675,6 +1675,70 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "tls_min_level"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::tls_min_level&>(this->variables).value,
+                ::configs::spec_type<uint32_t>{},
+                value
+            );
+        }
+        else if (key == "tls_max_level"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::tls_max_level&>(this->variables).value,
+                ::configs::spec_type<uint32_t>{},
+                value
+            );
+        }
+        else if (key == "cipher_string"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::cipher_string&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
+        else if (key == "tls_enable_legacy_server"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::tls_enable_legacy_server&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
+        else if (key == "tls_1_3_ciphersuites"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::tls_1_3_ciphersuites&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
+        else if (key == "tls_key_exchange_groups"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::tls_key_exchange_groups&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
+        else if (key == "show_common_cipher_list"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::show_common_cipher_list&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
+        else if (key == "force_authentication_method"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::force_authentication_method&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
 
         else if (static_cast<cfg::debug::config>(this->variables).value) {
             LOG(LOG_WARNING, "unknown parameter %s in section [%s]",

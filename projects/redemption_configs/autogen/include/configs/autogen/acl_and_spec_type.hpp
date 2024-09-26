@@ -219,6 +219,14 @@ template<> struct acl_and_spec_type<cfg::mod_vnc::bogus_clipboard_infinite_loop>
 template<> struct acl_and_spec_type<cfg::mod_vnc::server_is_macos> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_vnc::server_unix_alt> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_vnc::enable_ipv6> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::tls_min_level> { using type = uint32_t; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::tls_max_level> { using type = uint32_t; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::cipher_string> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::tls_enable_legacy_server> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::tls_1_3_ciphersuites> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::tls_key_exchange_groups> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::show_common_cipher_list> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::mod_vnc::force_authentication_method> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::session_log::enable_session_log_file> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::session_log::enable_syslog_format> { using type = SessionLogFormat; };
 template<> struct acl_and_spec_type<cfg::session_log::keyboard_input_masking_level> { using type = KeyboardInputMaskingLevel; };

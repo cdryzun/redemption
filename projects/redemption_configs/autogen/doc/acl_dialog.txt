@@ -455,6 +455,41 @@ cfg::mod_vnc::server_unix_alt ⇐ mod_vnc:server_unix_alt   [bool]
     When disabled, Ctrl + Alt becomes AltGr (Windows behavior)
 cfg::mod_vnc::enable_ipv6 ⇐ mod_vnc:enable_ipv6   [bool]
     Enable target connection on IPv6
+cfg::mod_vnc::tls_min_level ⇐ mod_vnc:tls_min_level   [uint32_t]
+    Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+cfg::mod_vnc::tls_max_level ⇐ mod_vnc:tls_max_level   [uint32_t]
+    Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+cfg::mod_vnc::cipher_string ⇐ mod_vnc:cipher_string   [std::string]
+    TLSv1.2 and below additional ciphers supported.
+    Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
+    The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+cfg::mod_vnc::tls_enable_legacy_server ⇐ mod_vnc:tls_enable_legacy_server   [bool]
+    Allow TLS legacy insecure renegotiation to unpatched servers.
+cfg::mod_vnc::tls_1_3_ciphersuites ⇐ mod_vnc:tls_1_3_ciphersuites   [std::string]
+    Configure the available TLSv1.3 ciphersuites.
+    Empty to apply system-wide configuration.
+    The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+cfg::mod_vnc::tls_key_exchange_groups ⇐ mod_vnc:tls_key_exchange_groups   [std::string]
+    Configure the supported key exchange groups.
+    Empty to apply system-wide configuration.
+    The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+cfg::mod_vnc::show_common_cipher_list ⇐ mod_vnc:show_common_cipher_list   [bool]
+    Show in the logs the common cipher list supported by client and server
+    ⚠ Only for debug purposes
+cfg::mod_vnc::force_authentication_method ⇐ mod_vnc:force_authentication_method   [std::string]
+    When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made.
+      - noauth
+      - vncauth
+      - mslogon
+      - mslogoniiauth
+      - ultravnc_dsm_old
+      - ultravnc_dsm_new
+      - tlsnone
+      - tlsvnc
+      - tlsplain
+      - x509none
+      - x509vnc
+      - x509plain
 
 cfg::session_log::enable_session_log_file ⇐ session_log:enable_session_log_file   [bool]
     Saves session logs to a .log file.

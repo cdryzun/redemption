@@ -78,10 +78,14 @@ public:
     ModVNCWithSocket(
         Random & rand,
         gdi::GraphicApi & drawable,
-        Inifile & ini, SocketTransport::Name name, unique_fd sck,
+        Inifile & ini,
+        SocketTransport::Name name,
+        unique_fd sck,
         SocketTransport::Verbose verbose,
         EventContainer& events,
         SessionLogApi& session_log,
+        const TlsConfig& tls_config,
+        std::string_view force_authentication_method,
         const char* username,
         const char* password,
         FrontAPI& front,
@@ -106,7 +110,8 @@ public:
           clipboard_up, clipboard_down, encodings,
           clipboard_server_encoding_type, bogus_clipboard_infinite_loop,
           layout, locks, server_is_apple, send_alt_ksym, cursor_pseudo_encoding_supported,
-          rail_client_execute, vnc_verbose, session_log)
+          rail_client_execute, vnc_verbose, session_log, tls_config,
+          force_authentication_method)
     {}
 };
 
@@ -152,6 +157,16 @@ ModPack create_mod_vnc(
         : nullptr
     };
 
+    TlsConfig tls_config {
+        .min_level = ini.get<cfg::mod_vnc::tls_min_level>(),
+        .max_level = ini.get<cfg::mod_vnc::tls_max_level>(),
+        .cipher_list = ini.get<cfg::mod_vnc::cipher_string>(),
+        .tls_1_3_ciphersuites = ini.get<cfg::mod_vnc::tls_1_3_ciphersuites>(),
+        .key_exchange_groups = ini.get<cfg::mod_vnc::tls_key_exchange_groups>(),
+        .enable_legacy_server_connect = ini.get<cfg::mod_vnc::tls_enable_legacy_server>(),
+        .show_common_cipher_list = ini.get<cfg::mod_vnc::show_common_cipher_list>(),
+    };
+
     auto new_mod = std::make_unique<ModVNCWithSocket>(
         rand,
         host_mod ? host_mod->proxy_gd() : drawable,
@@ -161,6 +176,8 @@ ModPack create_mod_vnc(
         safe_cast<SocketTransport::Verbose>(ini.get<cfg::debug::sck_mod>()),
         events,
         session_log,
+        tls_config,
+        ini.get<cfg::mod_vnc::force_authentication_method>(),
         ini.get<cfg::globals::target_user>().c_str(),
         ini.get<cfg::context::target_password>().c_str(),
         front,

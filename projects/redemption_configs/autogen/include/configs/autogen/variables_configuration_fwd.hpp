@@ -241,6 +241,14 @@ namespace cfg
         struct server_is_macos;
         struct server_unix_alt;
         struct enable_ipv6;
+        struct tls_min_level;
+        struct tls_max_level;
+        struct cipher_string;
+        struct tls_enable_legacy_server;
+        struct tls_1_3_ciphersuites;
+        struct tls_key_exchange_groups;
+        struct show_common_cipher_list;
+        struct force_authentication_method;
     };
 
     struct session_log {

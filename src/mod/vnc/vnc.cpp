@@ -90,6 +90,8 @@ mod_vnc::mod_vnc( Transport & t
            , ClientExecute* rail_client_execute
            , VNCVerbose verbose
            , SessionLogApi& session_log
+           , TlsConfig const& tls_config
+           , std::string_view force_authentication_method
            )
     : front(front)
     , t(VncTransport(*this, t))
@@ -115,6 +117,7 @@ mod_vnc::mod_vnc( Transport & t
 #ifndef __EMSCRIPTEN__
     , session_log(session_log)
 #endif
+    , tls_config(tls_config)
     , choosenAuth(VNC_AUTH_INVALID)
     , cursor_pseudo_encoding_supported(cursor_pseudo_encoding_supported)
     , server_data_buf(*this)
@@ -148,6 +151,53 @@ mod_vnc::mod_vnc( Transport & t
                 }
             );
         });
+
+    using namespace std::string_view_literals;
+
+    if (!force_authentication_method.empty()) {
+        if (force_authentication_method == "none"sv) {
+            this->force_authentication_method = VNC_AUTH_NONE;
+        }
+        else  if (force_authentication_method == "vncauth"sv) {
+            this->force_authentication_method = VNC_AUTH_VNC;
+        }
+        else  if (force_authentication_method == "mslogon"sv) {
+            this->force_authentication_method = VNC_AUTH_ULTRA_MS_LOGON;
+        }
+        else  if (force_authentication_method == "mslogoniiauth"sv) {
+            this->force_authentication_method = VNC_AUTH_ULTRA_MsLogonIIAuth;
+        }
+        else  if (force_authentication_method == "ultravnc_dsm_old"sv) {
+            this->force_authentication_method = VNC_AUTH_ULTRA_SecureVNCPluginAuth;
+        }
+        else  if (force_authentication_method == "ultravnc_dsm_new"sv) {
+            this->force_authentication_method = VNC_AUTH_ULTRA_SecureVNCPluginAuth_new;
+        }
+        else  if (force_authentication_method == "tlsnone"sv) {
+            this->force_authentication_method = VeNCRYPT_TLSNone;
+        }
+        else  if (force_authentication_method == "tlsvnc"sv) {
+            this->force_authentication_method = VeNCRYPT_TLSVnc;
+        }
+        else  if (force_authentication_method == "tlsplain"sv) {
+            this->force_authentication_method = VeNCRYPT_TLSPlain;
+        }
+        else  if (force_authentication_method == "x509none"sv) {
+            this->force_authentication_method = VeNCRYPT_X509None;
+        }
+        else  if (force_authentication_method == "x509vnc"sv) {
+            this->force_authentication_method = VeNCRYPT_X509Vnc;
+        }
+        else  if (force_authentication_method == "x509plain"sv) {
+            this->force_authentication_method = VeNCRYPT_X509Plain;
+        }
+        else {
+            LOG(LOG_ERR, "mod_vnc: unknwown force_authentication_method: %.*s",
+                static_cast<int>(force_authentication_method.size()),
+                force_authentication_method.data());
+            throw Error(ERR_VNC);
+        }
+    }
 }
 
 mod_vnc::~mod_vnc() = default;
@@ -485,24 +535,12 @@ void mod_vnc::rdp_input_invalidate(Rect r) {
 
 bool mod_vnc::doTlsSwitch()
 {
-    TlsConfig tls_config {};
-    AnonymousTls anonymous_tls{};
-
-    REDEMPTION_DIAGNOSTIC_PUSH()
-    REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
-    switch(this->choosenAuth) {
-    case VeNCRYPT_TLSNone:
-    case VeNCRYPT_TLSPlain:
-    case VeNCRYPT_TLSVnc:
-        /* needed params for anonymous TLS */
-        tls_config.max_level = 3;
-        tls_config.cipher_list = "ADH";
-        anonymous_tls = AnonymousTls::Yes;
-        break;
-    default:
-        break;
-    }
-    REDEMPTION_DIAGNOSTIC_POP()
+    auto const anonymous_tls
+      = (this->choosenAuth == VeNCRYPT_TLSNone
+      || this->choosenAuth == VeNCRYPT_TLSPlain
+      || this->choosenAuth == VeNCRYPT_TLSVnc)
+        ? AnonymousTls::Yes
+        : AnonymousTls::No;
 
     NullServerNotifier notifier;
 
@@ -745,14 +783,20 @@ bool mod_vnc::treatVeNCrypt() {
 
         for (uint8_t i = 0; i < nSubTypes; i++) {
             uint32_t subtype = s.in_uint32_be();
-            LOG(LOG_DEBUG, " * %s", securityTypeString(subtype));
+            bool accept_auth = force_authentication_method == VNC_AUTH_INVALID
+                            || subtype == force_authentication_method;
+            LOG(LOG_DEBUG, " * %s%s",
+                securityTypeString(subtype),
+                accept_auth ? "" : " (ignored)");
 
             if (subtype == VNC_AUTH_VENCRYPT) {
                 LOG(LOG_ERR, "VeNCrypt auth type not allowed in VeNCrypt subtypes");
                 throw Error(ERR_VNC_CONNECTION_ERROR);
             }
 
-            this->updatePreferedAuth(subtype, preferedAuth, preferedAuthIndex);
+            if (accept_auth) {
+                this->updatePreferedAuth(subtype, preferedAuth, preferedAuthIndex);
+            }
         }
         this->server_data_buf.advance(1 + nSubTypes * 4);
 
@@ -952,9 +996,16 @@ bool mod_vnc::draw_event_impl()
 
                 for (size_t i = 0; i < nAuthTypes; i++) {
                     VncAuthType authType = static_cast<VncAuthType>(s.in_uint8());
+                    bool accept_auth = force_authentication_method == VNC_AUTH_INVALID
+                                    || authType == VNC_AUTH_VENCRYPT
+                                    || authType == force_authentication_method;
                     LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
-                           "* %s", securityTypeString(authType));
-                    this->updatePreferedAuth(authType, preferedAuth, preferedAuthIndex);
+                           "* %s%s", securityTypeString(authType),
+                           accept_auth ? "" : " (ignored)");
+
+                    if (accept_auth) {
+                        this->updatePreferedAuth(authType, preferedAuth, preferedAuthIndex);
+                    }
                 }
                 LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
                        "%s security choosen", securityTypeString(preferedAuth));
