@@ -331,6 +331,20 @@ std::string keyA(FrontCtx& front_ctx)
     return mod.events();
 }
 
+std::string send_test_string(FrontCtx& front_ctx)
+{
+    auto& mod = front_ctx.mod;
+    front_ctx.front.input_event_scancode(KbdFlags::NoFlags, Scancode::T, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::Release, Scancode::T, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::NoFlags, Scancode::E, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::Release, Scancode::E, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::NoFlags, Scancode::S, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::Release, Scancode::S, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::NoFlags, Scancode::T, mod, 0);
+    front_ctx.front.input_event_scancode(KbdFlags::Release, Scancode::T, mod, 0);
+    return mod.events();
+}
+
 inline constexpr auto keyA_av =
     "{KbdFlags=0x0000, Scancode=0x1E}, {KbdFlags=0x8000, Scancode=0x1E}"_av;
 inline constexpr auto no_keys =
@@ -450,10 +464,8 @@ void init_ini(Inifile& ini)
 }
 
 template<class F>
-void sharing_test(bool enable_shared_control, F f)
+void sharing_test(Inifile &ini, bool enable_shared_control, F f)
 {
-    Inifile ini;
-    init_ini(ini);
     AccumulateInputMod mod;
     SessionLogTest& session_log = mod.session_log;
     EventManager event_manager;
@@ -472,6 +484,7 @@ void sharing_test(bool enable_shared_control, F f)
         .screen_info = user.front.get_client_info().screen_info,
         .kill_fn = [](void* killed) { *static_cast<bool*>(killed) = true; },
         .fn_ctx = &guest_killed,
+        .user_front = &user.front,
     });
     RED_CHECK(guest.front.is_up_and_running());
 
@@ -496,8 +509,9 @@ void sharing_test(bool enable_shared_control, F f)
 RED_AUTO_TEST_CASE(TestViewAndControlSharingFront)
 {
     using namespace TestFrontData;
-
-sharing_test(true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& mod, Gd& gd, bool& guest_killed){
+    Inifile ini;
+    init_ini(ini);
+sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& mod, Gd& gd, bool& guest_killed){
     RED_CHECK(mod.session_log.events() == "SESSION_INVITE_GUEST_CONNECTION guest=\"guest-1\" mode=\"view-control\"\n"_av);
 
     RED_TEST_CONTEXT("user control") {
@@ -680,8 +694,9 @@ sharing_test(true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& mod, 
 RED_AUTO_TEST_CASE(TestViewOnlySharingFront)
 {
     using namespace TestFrontData;
-
-sharing_test(false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& mod, Gd& gd, bool& guest_killed){
+    Inifile ini;
+    init_ini(ini);
+sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& mod, Gd& gd, bool& guest_killed){
     RED_CHECK(mod.session_log.events() == "SESSION_INVITE_GUEST_CONNECTION guest=\"guest-1\" mode=\"view-only\"\n"_av);
 
     RED_TEST_CONTEXT("user control") {
@@ -880,4 +895,66 @@ RED_AUTO_TEST_CASE_WD(TestGuestCtx, wd)
     RED_CHECK(!guest_ctx.has_front());
     RED_CHECK(mod.session_log.events() ==
         "SESSION_INVITE_GUEST_CONNECTION_REJECTED name=\"guest-1\" reason=\"bad password\"\n"_av);
+}
+
+RED_AUTO_TEST_CASE(TestKeyPressNotifications)
+{
+    using namespace TestFrontData;
+    Inifile ini;
+    init_ini(ini);
+    ini.set<cfg::context::pattern_notify>("$kbd:test");
+
+    constexpr auto test_keys = [](std::string_view expected_name) {
+        return str_concat("{KbdFlags=0x0000, Scancode=0x14}, "
+             "{KbdFlags=0x8000, Scancode=0x14}, "
+             "{KbdFlags=0x0000, Scancode=0x12}, "
+             "{KbdFlags=0x8000, Scancode=0x12}, "
+             "{KbdFlags=0x0000, Scancode=0x1F}, "
+             "{KbdFlags=0x8000, Scancode=0x1F}"
+             "NOTIFY_PATTERN_DETECTED pattern=\"$kbd:test\" data=\"test\" control_owner=\""_av, expected_name, "\"\n"
+             "FINDPATTERN_NOTIFY: $kbd:test\x02test\n"
+             ", {KbdFlags=0x0000, Scancode=0x14}, "
+             "{KbdFlags=0x8000, Scancode=0x14}"_av);
+    };
+
+
+sharing_test(ini, true, [&](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& mod, Gd& /* gd */, bool& /* guest_killed */){
+    RED_CHECK(mod.session_log.events() == "SESSION_INVITE_GUEST_CONNECTION guest=\"guest-1\" mode=\"view-control\"\n"_av);
+    RED_CHECK(user.front.can_be_start_capture(mod.session_log));
+    user.front.session_probe_started(true);
+
+    RED_TEST_CONTEXT("user with control") {
+
+        RED_TEST_CONTEXT("user send Test") {
+            RED_CHECK(send_test_string(user) == test_keys("user"));
+        }
+
+        RED_TEST_CONTEXT("guest send Test") {
+            RED_CHECK(send_test_string(guest) == no_keys);
+        }
+
+    }
+
+
+    RED_CHECK(shortcut(user, Shortcut::Give) ==
+        "{KbdFlags=0x0000, Scancode=0x1D}, {KbdFlags=0x0000, Scancode=0x2A}, {KbdFlags=0x0000, Scancode=0x38}, {KeyLocks=0x02}"
+        "SESSION_INVITE_CONTROL_OWNERSHIP_CHANGED new_control_owner=\"guest-1\" control_owner=\"user\"\n"_av);
+
+
+
+    RED_TEST_CONTEXT("guest with control") {
+
+        RED_TEST_CONTEXT("guest send Test") {
+            RED_CHECK(send_test_string(guest) == test_keys("guest-1"));
+        }
+
+        RED_TEST_CONTEXT("user send Test") {
+            RED_CHECK(send_test_string(user) == no_keys);
+        }
+
+    }
+
+
+});
+
 }

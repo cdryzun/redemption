@@ -262,6 +262,7 @@ private:
                 .screen_info = user_front.get_client_info().screen_info,
                 .kill_fn = kill_fn,
                 .fn_ctx = fn_ctx,
+                .user_front = &user_front,
             }
         )
         {}

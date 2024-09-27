@@ -767,6 +767,7 @@ private:
         bool const is_guest;
         bool const enable_shared_control;
         NullGdWithNewPointer gd_for_pointer_cache {};
+        Front* user_front;
 
         void reset() noexcept
         {
@@ -938,6 +939,7 @@ public:
         ScreenInfo screen_info;
         void(*kill_fn)(void*);
         void* fn_ctx;
+        Front* user_front;
     };
 
     Front( EventContainer& events
@@ -973,6 +975,7 @@ public:
         .input_id = guest_params.is_guest /* disable input for guest */,
         .is_guest = guest_params.is_guest,
         .enable_shared_control = guest_params.enable_shared_control,
+        .user_front = guest_params.user_front,
     }
     {
         LOG_IF(bool(verbose), LOG_INFO, "Front::verbosity=0x%x", underlying_cast(verbose));
@@ -5250,15 +5253,22 @@ private:
         );
     }
 
-    bool sharing_scancode_filtered(Callback & cb)
+    enum class ScancodeFiltredResult : uint8_t {
+        IsRedirected,
+        IsBlocked,
+        IsAccepted,
+    };
+    ScancodeFiltredResult sharing_scancode_filtered(Callback & cb)
     {
         if (!this->sharing_ctx.is_sharing_mode) {
-            return false;
+            return ScancodeFiltredResult::IsAccepted;
         }
 
         // input from guest
         if (!this->sharing_ctx.guest) {
-            return !this->sharing_ctx.has_input();
+            return this->sharing_ctx.has_input()
+                ? ScancodeFiltredResult::IsRedirected
+                : ScancodeFiltredResult::IsBlocked;
         }
 
         // input from host
@@ -5269,26 +5279,28 @@ private:
         {
             if (this->keymap.is_session_sharing_take_control()) {
                 this->session_sharing_take_control(cb);
-                return true;
+                return ScancodeFiltredResult::IsBlocked;
             }
 
             if (this->keymap.is_session_sharing_give_control()) {
                 this->session_sharing_give_control(cb);
-                return true;
+                return ScancodeFiltredResult::IsBlocked;
             }
         }
 
         if (this->keymap.is_session_sharing_kill_guest()) {
             this->sharing_ctx.guest->auto_kill();
-            return true;
+            return ScancodeFiltredResult::IsBlocked;
         }
 
         if (this->keymap.is_session_sharing_toggle_graphics()) {
             this->session_sharing_toggle_graphics(cb);
-            return true;
+            return ScancodeFiltredResult::IsBlocked;
         }
 
-        return !this->sharing_ctx.has_input();
+        return this->sharing_ctx.has_input()
+            ? ScancodeFiltredResult::IsAccepted
+            : ScancodeFiltredResult::IsBlocked;
     }
 
 public:
@@ -5306,44 +5318,61 @@ public:
             if (this->ini.get<cfg::client::disable_tsk_switch_shortcuts>() && this->keymap.is_tsk_switch_shortcut()) {
                 LOG(LOG_INFO, "Front::input_event_scancode: Ctrl+Alt+Del, Ctrl+Shift+Esc or Windows+Tab keyboard sequences ignored.");
             }
-            else if (!this->sharing_scancode_filtered(cb)) {
-                bool send_to_mod = !this->capture;
-                if (!send_to_mod) {
-                    auto const now = this->events_guard.get_monotonic_time();
-                    auto const& uchars = decoded_keys.uchars;
-                    if (uchars[0] && uchars[1]) {
-                        send_to_mod = this->capture->kbd_input(now, uchars[0])
-                                   || this->capture->kbd_input(now, uchars[1]);
-                    }
-                    else if (uchars[0]) {
-                        send_to_mod = this->capture->kbd_input(now, uchars[0]);
-                    }
-                    else {
-                        uint32_t uchar {};
-                        switch (underlying_cast(keymap.last_kevent())) {
-                            #define CASE(name, value) case underlying_cast(name): uchar = value; break
-                            CASE(Keymap::KEvent::LeftArrow, 0x00002190);
-                            CASE(Keymap::KEvent::UpArrow, 0x00002191);
-                            CASE(Keymap::KEvent::RightArrow, 0x00002192);
-                            CASE(Keymap::KEvent::DownArrow, 0x00002193);
-                            CASE(Keymap::KEvent::Home, 0x00002196);
-                            CASE(Keymap::KEvent::End, 0x00002198);
-                            #undef CASE
-                        }
+            else {
+                switch (this->sharing_scancode_filtered(cb)) {
+                case ScancodeFiltredResult::IsAccepted:
+                    send_scancode(kbdFlags, scancode, cb, event_time, decoded_keys);
+                    break;
+                case ScancodeFiltredResult::IsBlocked:
+                    break;
+                case ScancodeFiltredResult::IsRedirected:
+                    this->sharing_ctx.user_front->send_scancode(kbdFlags, scancode, cb, event_time, decoded_keys);
+                    break;
 
-                        send_to_mod = uchar ? this->capture->kbd_input(now, uchar) : true;
-                    }
-                }
-
-                if (send_to_mod) {
-                    cb.rdp_input_scancode(kbdFlags, scancode, event_time, this->keymap);
-
-                    if (this->keymap.is_app_switching_shortcut()) {
-                        this->possible_active_window_change();
-                    }
                 }
             }
             this->has_user_activity = true;
+        }
+    }
+
+    void send_scancode(
+        Keymap::KbdFlags kbdFlags, Keymap::Scancode scancode,
+        Callback & cb, uint32_t event_time, Keymap::DecodedKeys decoded_keys
+    ) {
+        bool send_to_mod = !this->capture;
+        if (!send_to_mod) {
+            auto const now = this->events_guard.get_monotonic_time();
+            auto const& uchars = decoded_keys.uchars;
+            if (uchars[0] && uchars[1]) {
+                send_to_mod = this->capture->kbd_input(now, uchars[0])
+                           || this->capture->kbd_input(now, uchars[1]);
+            }
+            else if (uchars[0]) {
+                send_to_mod = this->capture->kbd_input(now, uchars[0]);
+            }
+            else {
+                uint32_t uchar {};
+                switch (underlying_cast(keymap.last_kevent())) {
+                    #define CASE(name, value) case underlying_cast(name): uchar = value; break
+                    CASE(Keymap::KEvent::LeftArrow, 0x00002190);
+                    CASE(Keymap::KEvent::UpArrow, 0x00002191);
+                    CASE(Keymap::KEvent::RightArrow, 0x00002192);
+                    CASE(Keymap::KEvent::DownArrow, 0x00002193);
+                    CASE(Keymap::KEvent::Home, 0x00002196);
+                    CASE(Keymap::KEvent::End, 0x00002198);
+                    #undef CASE
+                }
+
+                send_to_mod = uchar ? this->capture->kbd_input(now, uchar) : true;
+            }
+        }
+
+        if (send_to_mod) {
+            cb.rdp_input_scancode(kbdFlags, scancode, event_time, this->keymap);
+
+            if (this->keymap.is_app_switching_shortcut()) {
+                this->possible_active_window_change();
+            }
         }
     }
 
