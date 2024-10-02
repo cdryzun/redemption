@@ -16,8 +16,12 @@ if (( $# == 0 )) || [[ "$1" = '-h' || "$1" = '--help' ]]; then
     Ex: $0 libscytale
 
 Environment variables:
+    PRINT_SOURCES=${PRINT_SOURCES:-0}
+        List sources files instead of copy
     DEBUG=${DEBUG:-0}
-    DEST=$dest" >&2
+        Bash debug
+    DEST=$dest
+        Copy destination path" >&2
     exit
 fi
 
@@ -50,16 +54,22 @@ fi
 
 popd >/dev/null
 
-# rm -r "$dest" ||:
+if [[ "${PRINT_SOURCES:-0}" = '1' ]]; then
+    for srcfile in "${!sources[@]}"; do
+        echo "$srcfile"
+    done
+else
+    # rm -r "$dest" ||:
+    # create new arbo
+    dirs=()
+    for dir in "${!dirset[@]}"; do
+        dirs+=("$dest/$dir")
+    done
+    mkdir -p "${dirs[@]}"
 
-# create new arbo
-dirs=()
-for dir in "${!dirset[@]}"; do
-    dirs+=("$dest/$dir")
-done
-mkdir -p "${dirs[@]}"
+    # copy files
+    for dir in "${!dirset[@]}"; do
+        cp ${dirset[$dir]} "$dest/$dir"
+    done
 
-# copy files
-for dir in "${!dirset[@]}"; do
-    cp ${dirset[$dir]} "$dest/$dir"
-done
+fi
