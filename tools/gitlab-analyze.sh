@@ -6,6 +6,7 @@ cd $(realpath -m "$0/../..")
 set -ex
 
 free
+nproc ||:
 
 {
 
