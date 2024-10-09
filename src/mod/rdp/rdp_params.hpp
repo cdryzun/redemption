@@ -220,6 +220,8 @@ struct ModRDPParams
     /// Note: may be required for correct smartcard support; see issue #27767.
     bool forward_client_build_number = true;
 
+    bool windows_xp_clipboard_support = false;
+
     ModRDPParams( const char * target_user
                 , const char * target_password
                 , const char * target_host
@@ -450,6 +452,8 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%u",     static_cast<unsigned>, save_session_info_pdu);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             allow_session_reconnection_by_shortcut);
+
+        RDP_PARAMS_LOG("%s",     yes_or_no,             windows_xp_clipboard_support);
 
         RDP_PARAMS_LOG("0x%08X", static_cast<unsigned>, verbose);
         RDP_PARAMS_LOG("0x%08X", static_cast<unsigned>, cache_verbose);

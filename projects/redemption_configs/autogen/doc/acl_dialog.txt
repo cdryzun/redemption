@@ -177,6 +177,8 @@ cfg::mod_rdp::use_session_probe_to_launch_remote_program ⇐ mod_rdp:use_session
     The difference is that Session Probe does not start a new application when its host session is resumed. Conversely, launching applications according to Remote Programs Virtual Channel Extension of Remote Desktop Protocol is not affected by this behavior. However, launching applications via the native method requires them to be published in Remote Desktop Services, which is unnecessary if launched by the Session Probe.
 cfg::mod_rdp::replace_null_pointer_by_default_pointer ⇐ mod_rdp:replace_null_pointer_by_default_pointer   [bool]
     Replace an empty mouse pointer with normal pointer.
+cfg::mod_rdp::windows_xp_clipboard_support ⇐ mod_rdp:windows_xp_clipboard_support   [bool]
+    Enable Windows XP clipboard support.
 
 cfg::protocol::save_session_info_pdu ⇐ protocol:save_session_info_pdu   [RdpSaveSessionInfoPDU]
       0: Windows

@@ -112,6 +112,7 @@ struct FileValidatorService;
 # include "mod/rdp/channels/cliprdr_channel.hpp"
 # include "mod/rdp/channels/cliprdr_client_simulator.hpp"
 # include "mod/rdp/channels/cliprdr_unexpected_pdu_filter.hpp"
+# include "mod/rdp/channels/cliprdr_winxp_message_compensator.hpp"
 # include "mod/rdp/channels/validator_params.hpp"
 # include "mod/rdp/channels/virtual_channel_filter.hpp"
 # include "mod/rdp/channels/clipboard_virtual_channels_params.hpp"
@@ -344,6 +345,9 @@ private:
 
     std::unique_ptr<ClipboardVirtualChannel>      clipboard_virtual_channel;
 
+    std::unique_ptr<CliprdrWinXPMessageCompensator>
+                                                  cliprdr_winxp_message_compensator;
+
     std::unique_ptr<VirtualChannelDataSender>     file_system_to_client_sender;
     std::unique_ptr<VirtualChannelDataSender>     file_system_to_server_sender;
 
@@ -380,6 +384,8 @@ private:
 
     const bool bogus_freerdp_clipboard;
 
+    const bool windows_xp_clipboard_support;
+
 public:
     mod_rdp_channels(
         const ChannelsAuthorizations & channels_authorizations,
@@ -415,6 +421,7 @@ public:
     , validator_params(mod_rdp_params.validator_params)
     , callbacks(callbacks)
     , bogus_freerdp_clipboard(mod_rdp_params.bogus_freerdp_clipboard)
+    , windows_xp_clipboard_support(mod_rdp_params.windows_xp_clipboard_support)
     {}
 
     void log6(LogId id, KVLogList kv_list)
@@ -567,6 +574,15 @@ private:
         this->clipboard_to_server_sender = this->create_to_server_synchronous_sender(channel_names::cliprdr, stc);
 
         RemovableVirtualChannelFilter<CliprdrVirtualChannelProcessor>* filter_ptr = nullptr;
+
+        if (this->windows_xp_clipboard_support)
+        {
+            this->cliprdr_winxp_message_compensator = std::make_unique<CliprdrWinXPMessageCompensator>(
+                    bool(this->verbose & RDPVerbose::cliprdr)
+                );
+
+            this->cliprdr_vc_filter.insert_before(*this->cliprdr_winxp_message_compensator);
+        }
 
         if (this->clipboard_to_client_sender)
         {

@@ -707,6 +707,9 @@ ModPack create_mod_rdp(
     mod_rdp_params.allow_session_reconnection_by_shortcut
         = ini.get<cfg::mod_rdp::allow_session_reconnection_by_shortcut>();
 
+    mod_rdp_params.windows_xp_clipboard_support
+        = ini.get<cfg::mod_rdp::windows_xp_clipboard_support>();
+
     mod_rdp_params.enable_restricted_admin_mode = ini.get<cfg::mod_rdp::enable_restricted_admin_mode>();
     mod_rdp_params.file_system_params.smartcard_passthrough        = smartcard_passthrough;
     mod_rdp_params.forward_client_build_number = ini.get<cfg::mod_rdp::forward_client_build_number>();

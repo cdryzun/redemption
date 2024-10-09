@@ -147,6 +147,7 @@ template<> struct acl_and_spec_type<cfg::mod_rdp::effective_krb_armoring_passwor
 template<> struct acl_and_spec_type<cfg::mod_rdp::remote_programs_disconnect_message_delay> { using type = ::configs::spec_types::range<std::chrono::milliseconds, 3000, 120000>; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::use_session_probe_to_launch_remote_program> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::replace_null_pointer_by_default_pointer> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::mod_rdp::windows_xp_clipboard_support> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::protocol::save_session_info_pdu> { using type = RdpSaveSessionInfoPDU; };
 template<> struct acl_and_spec_type<cfg::session_probe::enable_session_probe> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::session_probe::exe_or_file> { using type = ::configs::spec_types::fixed_string; };

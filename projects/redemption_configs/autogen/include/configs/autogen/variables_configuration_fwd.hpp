@@ -157,6 +157,7 @@ namespace cfg
         struct remote_programs_disconnect_message_delay;
         struct use_session_probe_to_launch_remote_program;
         struct replace_null_pointer_by_default_pointer;
+        struct windows_xp_clipboard_support;
     };
 
     struct protocol {

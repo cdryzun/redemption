@@ -72,6 +72,7 @@ namespace configs
         "mod_rdp:remote_programs_disconnect_message_delay"_zv,
         "mod_rdp:use_session_probe_to_launch_remote_program"_zv,
         "mod_rdp:replace_null_pointer_by_default_pointer"_zv,
+        "mod_rdp:windows_xp_clipboard_support"_zv,
         "protocol:save_session_info_pdu"_zv,
         "session_probe:enable_session_probe"_zv,
         "session_probe:use_smart_launcher"_zv,

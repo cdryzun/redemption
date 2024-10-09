@@ -237,6 +237,9 @@ use_session_probe_to_launch_remote_program = boolean(default=True)
 #_advanced
 replace_null_pointer_by_default_pointer = boolean(default=False)
 
+# Enable Windows XP clipboard support.
+windows_xp_clipboard_support = boolean(default=False)
+
 [protocol]
 
 # &nbsp; &nbsp;   0: Windows

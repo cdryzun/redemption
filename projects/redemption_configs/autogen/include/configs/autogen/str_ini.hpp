@@ -745,6 +745,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:replace_null_pointer_by_default_pointer)
 #replace_null_pointer_by_default_pointer = 0
 
+# Enable Windows XP clipboard support.
+# (type: boolean (0/no/false or 1/yes/true))
+# (acl config: proxy ⇐ mod_rdp:windows_xp_clipboard_support)
+#windows_xp_clipboard_support = 0
+
 [protocol]
 
 #   0: Windows

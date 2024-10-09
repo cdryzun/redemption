@@ -1499,6 +1499,13 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .tags = Tag::Workaround,
         .desc = "Replace an empty mouse pointer with normal pointer.",
     });
+
+    _.member(MemberInfo{
+        .name = "windows_xp_clipboard_support",
+        .value = value(false),
+        .spec = connpolicy(rdp, loggable),
+        .desc = "Enable Windows XP clipboard support.",
+    });
 });
 
 _.section("protocol", [&]
