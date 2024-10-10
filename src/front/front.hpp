@@ -5253,6 +5253,16 @@ private:
         );
     }
 
+    void update_activity()
+    {
+        if (this->sharing_ctx.is_guest) {
+            this->sharing_ctx.user_front->has_user_activity = true;
+        }
+        else {
+            this->has_user_activity = true;
+        }
+    }
+
     enum class ScancodeFiltredResult : uint8_t {
         IsRedirected,
         IsBlocked,
@@ -5331,7 +5341,7 @@ public:
 
                 }
             }
-            this->has_user_activity = true;
+            this->update_activity();
         }
     }
 
@@ -5382,7 +5392,7 @@ public:
             if (this->sharing_ctx.has_input()) {
                 cb.rdp_input_unicode(flag, unicode);
             }
-            this->has_user_activity = true;
+            this->update_activity();
         }
     }
 
@@ -5393,7 +5403,7 @@ public:
             if (this->sharing_ctx.has_input()) {
                 cb.rdp_input_synchronize(key_locks);
             }
-            this->has_user_activity = true;
+            this->update_activity();
         }
     }
 
@@ -5401,7 +5411,7 @@ public:
     {
         this->mouse_x = x;
         this->mouse_y = y;
-        this->has_user_activity = true;
+        this->update_activity();
 
         if (this->state == FRONT_UP_AND_RUNNING && this->sharing_ctx.has_input()) {
             cb.rdp_input_mouse(pointer_flags, x, y);
@@ -5418,7 +5428,7 @@ public:
 
     void input_extended_mouse(uint16_t x, uint16_t y, uint16_t pointer_flags, Callback & cb)
     {
-        this->has_user_activity = true;
+        this->update_activity();
 
         if (this->state == FRONT_UP_AND_RUNNING && this->sharing_ctx.has_input()) {
             cb.rdp_input_mouse_ex(pointer_flags, x, y);
