@@ -288,7 +288,6 @@ PatternSearcher::PatternSearcher(
 
     // open streams
     if (is_kbd) {
-        // TODO used only 1 stream for any kill pattern
         len = d->nb_pattern;
         d->nb_stream = len;
         memset(streams, 0, sizeof(*streams) * len);
@@ -327,8 +326,11 @@ void PatternSearcher::reset_kbd_streams()
 {
     assert(d);
     auto* scratch = d->scratch;
+    auto* scan_result_it = d->internal_scan_results;
     for (hs_stream_t* stream : d->av_streams()) {
         hs_reset_stream(stream, 0, scratch, nullptr, nullptr);
+        scan_result_it->offset_data = d->total_len;
+        ++scan_result_it;
     }
 }
 

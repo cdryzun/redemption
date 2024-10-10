@@ -259,7 +259,7 @@ public:
         total_len += utf8_char.size();
     }
 
-    chars_view get(uint64_t match_len)
+    chars_view last_chars(uint64_t match_len)
     {
         auto len = static_cast<std::size_t>(p - kbd_data);
         if (len >= match_len) {
@@ -310,7 +310,7 @@ public:
                         if (result.is_pattern_kill) {
                             can_be_sent_to_server = false;
                         }
-                        auto text = utf8_kbd_buffer.get(result.match_len);
+                        auto text = utf8_kbd_buffer.last_chars(result.match_len);
                         report_pattern("kbd"_av, session_log, result, text);
                     }
                 }

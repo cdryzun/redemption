@@ -2233,22 +2233,22 @@ RED_AUTO_TEST_CASE(TestUtf8KbdBuffer)
     static_assert(str.size() == 62);
 
     buffer.push(str);
-    RED_TEST(buffer.get(str.size()) == str);
-    RED_TEST(buffer.get(str.size() * 2) == str);
-    RED_TEST(buffer.get(str.size() / 2) == str.drop_front(str.size() / 2));
+    RED_TEST(buffer.last_chars(str.size()) == str);
+    RED_TEST(buffer.last_chars(str.size() * 2) == str);
+    RED_TEST(buffer.last_chars(str.size() / 2) == str.drop_front(str.size() / 2));
 
     buffer.push(str);
-    RED_TEST(buffer.get(str.size()) == str);
-    RED_TEST(buffer.get(str.size() * 2) == str_concat(str, str));
-    RED_TEST(buffer.get(str.size() * 3) == str_concat(str, str));
-    RED_TEST(buffer.get(str.size() / 2) == str.drop_front(str.size() / 2));
+    RED_TEST(buffer.last_chars(str.size()) == str);
+    RED_TEST(buffer.last_chars(str.size() * 2) == str_concat(str, str));
+    RED_TEST(buffer.last_chars(str.size() * 3) == str_concat(str, str));
+    RED_TEST(buffer.last_chars(str.size() / 2) == str.drop_front(str.size() / 2));
 
     buffer.push("+=/*"_av);
-    RED_TEST(buffer.get(128) == str_concat(str, str, "+=/*"_av));
-    RED_TEST(buffer.get(129) == str_concat(str, str, "+=/*"_av));
+    RED_TEST(buffer.last_chars(128) == str_concat(str, str, "+=/*"_av));
+    RED_TEST(buffer.last_chars(129) == str_concat(str, str, "+=/*"_av));
 
     buffer.push("a"_av);
-    RED_TEST(buffer.get(10) == "56789+=/*a"_av);
+    RED_TEST(buffer.last_chars(10) == "56789+=/*a"_av);
 }
 
 RED_AUTO_TEST_CASE(TestKbdCapture)
@@ -2337,9 +2337,8 @@ RED_AUTO_TEST_CASE(TestKbdCapturePatternNotify)
     };
     Capture::PatternKbd kbd_capture(report_message, {&cap_pattern, 1}, {});
 
-    char const str[] = "abcdaaaaaaaaaaaaaaaabcdeaabcdeaaaaaaaaaaaaabcde";
     unsigned pattern_count = 0;
-    for (auto c : str) {
+    for (auto c : bytes_view("abcdaaaaaaaaaaaaaaaabcdeaabcdeaaaaaaaaaaaaabcde"_av)) {
         if (!kbd_capture.kbd_input(MonotonicTimePoint{}, c)) {
             ++pattern_count;
         }
@@ -2372,14 +2371,22 @@ RED_AUTO_TEST_CASE(TestKbdCapturePatternKill)
     };
     Capture::PatternKbd kbd_capture(report_message, {&cap_pattern, 1}, {});
 
-    char const str[] = "abcdab/cdaa";
     unsigned pattern_count = 0;
-    for (auto c : str) {
-        if (!kbd_capture.kbd_input(MonotonicTimePoint{}, c)) {
-            ++pattern_count;
-        }
+    for (auto c : bytes_view("abcdab/cdaa"_av)) {
+        pattern_count += !kbd_capture.kbd_input(MonotonicTimePoint{}, c);
     }
     RED_CHECK_EQUAL(1, pattern_count);
+    RED_CHECK(report_message.events() ==
+        "KILL_PATTERN_DETECTED pattern=\"$kbd:ab/cd\" data=\"ab/cd\"\n"
+        "FINDPATTERN_KILL: $kbd:ab/cd\x02""ab/cd\n"
+        ""_av);
+
+    // new line (\r because windows layout)
+    // -> reset buffer position (ignore "aa" of previous line)
+    for (auto c : bytes_view("aa\rab/cd"_av)) {
+        pattern_count += !kbd_capture.kbd_input(MonotonicTimePoint{}, c);
+    }
+    RED_CHECK_EQUAL(2, pattern_count);
     RED_CHECK(report_message.events() ==
         "KILL_PATTERN_DETECTED pattern=\"$kbd:ab/cd\" data=\"ab/cd\"\n"
         "FINDPATTERN_KILL: $kbd:ab/cd\x02""ab/cd\n"
