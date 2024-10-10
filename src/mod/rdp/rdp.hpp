@@ -1050,7 +1050,9 @@ public:
             return;
         }
 
-        auto auth_channel_message = stream.in_skip_remaining().as_chars();
+        const char* auth_channel_message_ptr = stream.in_skip_remaining().as_charp();
+        chars_view auth_channel_message(auth_channel_message_ptr, ::strlen(auth_channel_message_ptr));
+
         LOG_IF(bool(this->verbose & RDPVerbose::basic_trace), LOG_INFO,
             "mod_rdp::process_auth_event: AuthChannelMessage=\"%.*s\"",
             static_cast<int>(auth_channel_message.size()),
