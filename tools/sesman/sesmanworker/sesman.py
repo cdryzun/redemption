@@ -1451,6 +1451,7 @@ class Sesman():
                     # waiting for status update
                     r, w, x = select([self.proxy_conx], [], [],
                                      WORKFLOW_POLL_INTERVAL)
+                    self.engine.keepalive(timeout=KEEPALIVE_TIMEOUT)
                 else:
                     r = self.wait_read_proxy_conx()
                 logtimer.resume()
