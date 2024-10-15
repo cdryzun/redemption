@@ -342,7 +342,8 @@ allow_multiple_handshake = boolean(default=False)
 # This only support text data clipboard (not files).
 clipboard_up = boolean(default=False)
 
-# Check this option to enable the clipboard download (from server to client).This only support text data clipboard (not files).
+# Check this option to enable the clipboard download (from server to client).
+# This only support text data clipboard (not files).
 clipboard_down = boolean(default=False)
 
 # Sets additional graphics encoding types that will be negotiated with the VNC server:

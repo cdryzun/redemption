@@ -2320,7 +2320,7 @@
       "name": "clipboard_down",
       "type": "bool",
       "value": false,
-      "description": "Check this option to enable the clipboard download (from server to client).This only support text data clipboard (not files).",
+      "description": "Check this option to enable the clipboard download (from server to client).\nThis only support text data clipboard (not files).",
       "globalSpec": true,
       "aclToProxy": true,
       "logStategy": "1"

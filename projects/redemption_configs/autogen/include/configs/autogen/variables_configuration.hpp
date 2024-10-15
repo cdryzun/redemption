@@ -2702,7 +2702,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Check this option to enable the clipboard download (from server to client).This only support text data clipboard (not files). <br/>
+    /// Check this option to enable the clipboard download (from server to client). <br/>
+    /// This only support text data clipboard (not files). <br/>
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
     /// default: false <br/>

@@ -2096,7 +2096,7 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .name = "clipboard_down",
         .value = value(false),
         .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable)),
-        .desc = "Check this option to enable the clipboard download (from server to client)."
+        .desc = "Check this option to enable the clipboard download (from server to client).\n"
         "This only support text data clipboard (not files).",
     });
 

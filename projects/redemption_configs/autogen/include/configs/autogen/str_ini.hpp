@@ -1225,7 +1225,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ clipboard_up)
 #clipboard_up = 0
 
-# Check this option to enable the clipboard download (from server to client).This only support text data clipboard (not files).
+# Check this option to enable the clipboard download (from server to client).
+# This only support text data clipboard (not files).
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ clipboard_down)
 #clipboard_down = 0
