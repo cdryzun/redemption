@@ -2040,37 +2040,47 @@ _.section(names{"server_cert"}, [&]
     _.member(MemberInfo{
         .name = "server_cert_store",
         .value = value<bool>(true),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp | vnc, loggable),
         .desc = "Keep known server certificates on Bastion",
     });
 
     _.member(MemberInfo{
         .name = "server_cert_check",
         .value = from_enum(ServerCertCheck::fails_if_no_match_and_succeed_if_no_know),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp | vnc, loggable),
     });
 
-    auto cert_notification_log = from_enum(ServerNotification::SIEM);
-    auto cert_notification_nolog = from_enum(ServerNotification::nobody);
+    _.member(MemberInfo{
+        .name = "server_access_allowed_message",
+        .value = from_enum(ServerCertNotification::nobody),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
+        .desc = "Warn if check allow connexion to server.",
+    });
 
-    struct P { std::string_view name; char const * desc; cfg_generators::ValueAsStrings const& value; };
-    for (P p : {
-        P{"server_access_allowed_message", "Warn if check allow connexion to server.", cert_notification_nolog},
-        P{"server_cert_create_message", "Warn that new server certificate file was created.", cert_notification_log},
-        P{"server_cert_success_message", "Warn that server certificate file was successfully checked.", cert_notification_nolog},
-        P{"server_cert_failure_message", "Warn that server certificate file checking failed.", cert_notification_log},
-    }) {
-        _.member(MemberInfo{
-            .name = p.name,
-            .value = p.value,
-            .spec = connpolicy(rdp, loggable, spec::advanced),
-            .desc = p.desc,
-        });
-    }
+    _.member(MemberInfo{
+        .name = "server_cert_create_message",
+        .value = from_enum(ServerCertNotification::SIEM),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
+        .desc = "Warn that new server certificate file was created.",
+    });
+
+    _.member(MemberInfo{
+        .name = "server_cert_success_message",
+        .value = from_enum(ServerCertNotification::nobody),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
+        .desc = "Warn that server certificate file was successfully checked.",
+    });
+
+    _.member(MemberInfo{
+        .name = "server_cert_failure_message",
+        .value = from_enum(ServerCertNotification::SIEM),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
+        .desc = "Warn that server certificate file checking failed.",
+    });
 
     _.member(MemberInfo{
         .name = "error_message",
-        .value = cert_notification_log,
+        .value = from_enum(ServerCertNotification::SIEM),
         .spec = ini_only(no_acl),
         .desc = "Warn that server certificate check raised some internal error.",
     });

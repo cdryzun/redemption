@@ -26,6 +26,7 @@
 #include "core/client_info.hpp"
 #include "mod/vnc/vnc.hpp"
 #include "mod/internal/rail_module_host_mod.hpp"
+#include "mod/load_server_cert_params.hpp"
 #include "transport/socket_transport.hpp"
 #include "acl/module_manager/create_module_vnc.hpp"
 #include "acl/module_manager/create_module_rail.hpp"
@@ -86,6 +87,8 @@ public:
         SessionLogApi& session_log,
         const TlsConfig& tls_config,
         std::string_view force_authentication_method,
+        ServerCertParams const& server_cert_params,
+        std::string_view device_id,
         const char* username,
         const char* password,
         FrontAPI& front,
@@ -111,7 +114,7 @@ public:
           clipboard_server_encoding_type, bogus_clipboard_infinite_loop,
           layout, locks, server_is_apple, send_alt_ksym, cursor_pseudo_encoding_supported,
           rail_client_execute, vnc_verbose, session_log, tls_config,
-          force_authentication_method)
+          force_authentication_method, server_cert_params, device_id)
     {}
 };
 
@@ -157,7 +160,7 @@ ModPack create_mod_vnc(
         : nullptr
     };
 
-    TlsConfig tls_config {
+    TlsConfig tls_config = {
         .min_level = ini.get<cfg::mod_vnc::tls_min_level>(),
         .max_level = ini.get<cfg::mod_vnc::tls_max_level>(),
         .cipher_list = ini.get<cfg::mod_vnc::cipher_string>(),
@@ -178,6 +181,8 @@ ModPack create_mod_vnc(
         session_log,
         tls_config,
         ini.get<cfg::mod_vnc::force_authentication_method>(),
+        load_server_cert_params(ini),
+        ini.get<cfg::globals::device_id>(),
         ini.get<cfg::globals::target_user>().c_str(),
         ini.get<cfg::context::target_password>().c_str(),
         front,

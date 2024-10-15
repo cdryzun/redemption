@@ -30,7 +30,6 @@
 #include "core/RDP/gcc/userdata/cs_core.hpp"
 #include "core/RDP/gcc/userdata/sc_core.hpp"
 #include "core/RDP/gcc.hpp"
-#include "core/server_notifier_api.hpp"
 
 
 ProxyRecorder::ProxyRecorder(
@@ -211,8 +210,7 @@ void ProxyRecorder::back_nla_negociation(Transport & backConn)
 {
     LOG_IF(this->verbosity > 8, LOG_INFO, "======== NEGOCIATING_BACK_NLA : front receive : frontbuffer content ======");
 
-    NullServerNotifier null_notifier;
-    if (not this->nego_client->recv_next_data(backBuffer, null_notifier)) {
+    if (not this->nego_client->recv_next_data(backBuffer, NullFunctionWithDefaultResult())) {
         if (this->verbosity > 4) {
             LOG(LOG_INFO, "stop NegoClient");
         }

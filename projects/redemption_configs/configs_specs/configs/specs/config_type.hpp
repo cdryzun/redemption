@@ -103,7 +103,7 @@ inline void config_type_definition(type_enumerations & e)
       .value("depth32", 32, "32-bit RGB mask + alpha")
     ;
 
-    e.enumeration_flags("ServerNotification", withNameWhenDescription)
+    e.enumeration_flags("ServerCertNotification", withNameWhenDescription)
       .value("nobody")
       .value("SIEM", "message sent to SIEM")
     ;

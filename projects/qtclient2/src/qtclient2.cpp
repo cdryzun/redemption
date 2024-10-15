@@ -162,6 +162,7 @@ int main(int argc, char** argv)
         .cipher_list = profile.cipher_string,
         // TODO .tls_1_3_ciphersuites
         // TODO .key_exchange_groups
+        // TODO .enable_legacy_server_connect
         .show_common_cipher_list = true,
     };
 

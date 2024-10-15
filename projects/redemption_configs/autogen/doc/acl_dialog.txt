@@ -413,25 +413,25 @@ cfg::server_cert::server_cert_check ⇐ server_cert:server_cert_check   [ServerC
       2: succeed if certificates exists (not checked), fails if missing.
       3: always succeed.
     System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
-cfg::server_cert::server_access_allowed_message ⇐ server_cert:server_access_allowed_message   [ServerNotification]
+cfg::server_cert::server_access_allowed_message ⇐ server_cert:server_access_allowed_message   [ServerCertNotification]
     Warn if check allow connexion to server.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
     Note: values can be added (enable all: 0x1 = 0x1)
-cfg::server_cert::server_cert_create_message ⇐ server_cert:server_cert_create_message   [ServerNotification]
+cfg::server_cert::server_cert_create_message ⇐ server_cert:server_cert_create_message   [ServerCertNotification]
     Warn that new server certificate file was created.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
     Note: values can be added (enable all: 0x1 = 0x1)
-cfg::server_cert::server_cert_success_message ⇐ server_cert:server_cert_success_message   [ServerNotification]
+cfg::server_cert::server_cert_success_message ⇐ server_cert:server_cert_success_message   [ServerCertNotification]
     Warn that server certificate file was successfully checked.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
     Note: values can be added (enable all: 0x1 = 0x1)
-cfg::server_cert::server_cert_failure_message ⇐ server_cert:server_cert_failure_message   [ServerNotification]
+cfg::server_cert::server_cert_failure_message ⇐ server_cert:server_cert_failure_message   [ServerCertNotification]
     Warn that server certificate file checking failed.
       0x0: nobody
       0x1: SIEM: message sent to SIEM

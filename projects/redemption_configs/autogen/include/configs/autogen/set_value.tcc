@@ -1575,7 +1575,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
                 static_cast<cfg::server_cert::server_access_allowed_message&>(this->variables).value,
-                ::configs::spec_type<ServerNotification>{},
+                ::configs::spec_type<ServerCertNotification>{},
                 value
             );
         }
@@ -1583,7 +1583,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
                 static_cast<cfg::server_cert::server_cert_create_message&>(this->variables).value,
-                ::configs::spec_type<ServerNotification>{},
+                ::configs::spec_type<ServerCertNotification>{},
                 value
             );
         }
@@ -1591,7 +1591,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
                 static_cast<cfg::server_cert::server_cert_success_message&>(this->variables).value,
-                ::configs::spec_type<ServerNotification>{},
+                ::configs::spec_type<ServerCertNotification>{},
                 value
             );
         }
@@ -1599,7 +1599,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
                 static_cast<cfg::server_cert::server_cert_failure_message&>(this->variables).value,
-                ::configs::spec_type<ServerNotification>{},
+                ::configs::spec_type<ServerCertNotification>{},
                 value
             );
         }
@@ -1607,7 +1607,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
                 static_cast<cfg::server_cert::error_message&>(this->variables).value,
-                ::configs::spec_type<ServerNotification>{},
+                ::configs::spec_type<ServerCertNotification>{},
                 value
             );
         }

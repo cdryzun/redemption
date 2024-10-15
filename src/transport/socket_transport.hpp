@@ -33,7 +33,6 @@
 
 
 class TLSContext;
-class ServerNotifier;
 
 class SocketTransport
 : public Transport
@@ -107,7 +106,10 @@ public:
 
     TlsResult enable_server_tls(const char * certificate_password, TlsConfig const& tls_config) override;
 
-    TlsResult enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls) override;
+    TlsResult enable_client_tls(
+        CertificateChecker certificate_checker,
+        TlsConfig const& tls_config, AnonymousTls anonymous_tls
+    ) override;
 
     bool disconnect() override;
 

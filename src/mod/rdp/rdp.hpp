@@ -1922,7 +1922,14 @@ class mod_rdp : public mod_api, public rdp_api, public sespro_api
         RdpNegociation rdp_negociation;
         const std::chrono::seconds open_session_timeout;
 #ifndef __EMSCRIPTEN__
-        CertificateResult result = CertificateResult::wait;
+        enum class Status
+        {
+            Uninit,
+            Wait,
+            Ok,
+            Error,
+        };
+        Status status = Status::Uninit;
 #endif
 
         template<class... Ts>
@@ -2098,6 +2105,8 @@ public:
                 ?  mod_rdp_params.open_session_timeout
                 :  15s;
 
+        using CertificateChecker = BasicFunction<CertificateResult(X509& certificate)>;
+
         this->private_rdp_negociation = std::make_unique<PrivateRdpNegociation>(
             open_session_timeout, program, directory,
             this->channels.channels_authorizations, this->channels.mod_channel_list,
@@ -2107,47 +2116,54 @@ public:
             this->trans, this->front, info, this->redir_info,
             gen, this->events_guard.get_time_base(), mod_rdp_params,
             this->session_log, this->license_store,
-    #ifndef __EMSCRIPTEN__
+#ifndef __EMSCRIPTEN__
             this->channels.drive.file_system_drive_manager.has_managed_drive()
          || this->channels.session_probe.enable_session_probe,
             this->channels.remote_app.convert_remoteapp_to_desktop,
-    #else
+#else
             false,
             false,
-    #endif
-            tls_config
+#endif
+            tls_config,
+#ifndef __EMSCRIPTEN__
+            !this->enable_server_cert_external_validation
+                ? CertificateChecker{NullFunctionWithDefaultResult{}}
+                : CertificateChecker{[this](X509& certificate){
+                    auto& status = this->private_rdp_negociation->status;
+
+                    switch (status) {
+                        case PrivateRdpNegociation::Status::Uninit: {
+                            std::string blob_str;
+                            if (!cert_to_escaped_string(certificate, blob_str)) {
+                                LOG(LOG_ERR, "cert_to_string failed");
+                                return CertificateResult::Invalid;
+                            }
+
+                            // LOG(LOG_INFO, "cert pem: %s", blob_str);
+
+                            this->vars.set_acl<cfg::server_cert::external_cert>(std::move(blob_str));
+                            this->vars.ask<cfg::server_cert::external_response>();
+
+                            status = PrivateRdpNegociation::Status::Wait;
+                            return CertificateResult::Wait;
+                        }
+                        case PrivateRdpNegociation::Status::Wait:
+                            return CertificateResult::Wait;
+                        case PrivateRdpNegociation::Status::Ok:
+                            return CertificateResult::Valid;
+                        case PrivateRdpNegociation::Status::Error:
+                            return CertificateResult::Invalid;
+                    }
+
+                    return CertificateResult::Invalid;
+                }}
+#else
+            CertificateChecker{NullFunction{}}
+#endif
         );
 
-        RdpNegociation& rdp_negociation = this->private_rdp_negociation->rdp_negociation;
-
-    #ifndef __EMSCRIPTEN__
-        if (this->enable_server_cert_external_validation) {
-            LOG(LOG_INFO, "**** Enable server cert external validation");
-            rdp_negociation.set_cert_callback([this](X509& certificate){
-                auto& result = this->private_rdp_negociation->result;
-
-                if (result != CertificateResult::wait) {
-                    return result;
-                }
-
-                std::string blob_str;
-                if (!cert_to_escaped_string(certificate, blob_str)) {
-                    LOG(LOG_ERR, "cert_to_string failed");
-                    return result;
-                }
-
-                // LOG(LOG_INFO, "cert pem: %s", blob_str);
-
-                this->vars.set_acl<cfg::server_cert::external_cert>(blob_str);
-                this->vars.ask<cfg::server_cert::external_response>();
-
-                return result;
-            });
-        }
-    #endif
-
         LOG(LOG_INFO, "**** Start Negociation");
-        rdp_negociation.start_negociation();
+        this->private_rdp_negociation->rdp_negociation.start_negociation();
         this->start_event();
     }   // mod_rdp
 
@@ -2339,15 +2355,18 @@ public:
 
     void acl_update(AclFieldMask const& acl_fields) override
     {
+#ifndef __EMSCRIPTEN__
         if (this->enable_server_cert_external_validation
          && acl_fields.has<cfg::server_cert::external_response>()
         ) {
             auto const& message = this->vars.get<cfg::server_cert::external_response>();
 
             if (message == "Ok" || message == "ok") {
+                this->private_rdp_negociation->status = PrivateRdpNegociation::Status::Ok;
                 LOG(LOG_INFO, "Certificate was valid according to authentifier");
             }
             else {
+                this->private_rdp_negociation->status = PrivateRdpNegociation::Status::Error;
                 LOG(LOG_INFO, "Certificate was invalid according to authentifier: %s", message);
                 throw Error(ERR_TRANSPORT_TLS_CERTIFICATE_INVALID);
             }
@@ -2363,7 +2382,6 @@ public:
             }
         }
 
-#ifndef __EMSCRIPTEN__
         // AuthCHANNEL CHECK
         if (acl_fields.has<cfg::context::auth_channel_answer>()
          && this->channels.auth_channel != CHANNELS::ChannelNameId()
@@ -2428,6 +2446,8 @@ public:
                 }
             }
         }
+#else
+        (void)acl_fields;
 #endif
     }
 

@@ -158,7 +158,9 @@ Transport::TlsResult SocketTransport::enable_server_tls(const char * certificate
     }
 }
 
-Transport::TlsResult SocketTransport::enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls)
+Transport::TlsResult SocketTransport::enable_client_tls(
+    CertificateChecker certificate_checker,
+    TlsConfig const& tls_config, AnonymousTls anonymous_tls)
 {
     auto process = [&, this] () -> TlsResult {
         switch (this->tls_state) {
@@ -177,7 +179,7 @@ Transport::TlsResult SocketTransport::enable_client_tls(ServerNotifier & server_
                 TlsResult ret = this->tls->enable_client_tls_loop();
                 if (ret == TlsResult::Ok) {
                     ret = this->tls->check_certificate(
-                        server_notifier,
+                        certificate_checker,
                         this->ip_address, this->port, bool(anonymous_tls));
                     switch (ret) {
                         case TlsResult::Ok:
@@ -197,7 +199,7 @@ Transport::TlsResult SocketTransport::enable_client_tls(ServerNotifier & server_
                 return TlsResult::Fail;
             case TLSState::WaitCertCb:
                 switch (this->tls->certificate_external_validation(
-                    server_notifier, this->ip_address, this->port
+                    certificate_checker, this->ip_address, this->port
                 )) {
                     case TlsResult::Ok:
                         LOG(LOG_INFO, "SocketTransport::enable_client_tls() done");

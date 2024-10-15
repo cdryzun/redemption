@@ -34,6 +34,51 @@ inactivity_timeout = integer(min=0, default=0)
 #_display_name=TCP user timeout
 tcp_user_timeout = integer(min=0, max=3600000, default=0)
 
+[server_cert]
+
+# Keep known server certificates on Bastion
+server_cert_store = boolean(default=True)
+
+# Behavior of certificates check.
+# &nbsp; &nbsp;   0: fails if certificates doesn't match or miss.
+# &nbsp; &nbsp;   1: fails if certificate doesn't match, succeed if no known certificate.
+# &nbsp; &nbsp;   2: succeed if certificates exists (not checked), fails if missing.
+# &nbsp; &nbsp;   3: always succeed.
+# System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
+server_cert_check = option(0, 1, 2, 3, default=1)
+
+# Warn if check allow connexion to server.
+# &nbsp; &nbsp;   0x0: nobody
+# &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
+# Note: values can be added (enable all: 0x1 = 0x1)
+#_advanced
+#_hex
+server_access_allowed_message = integer(min=0, max=1, default=0)
+
+# Warn that new server certificate file was created.
+# &nbsp; &nbsp;   0x0: nobody
+# &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
+# Note: values can be added (enable all: 0x1 = 0x1)
+#_advanced
+#_hex
+server_cert_create_message = integer(min=0, max=1, default=1)
+
+# Warn that server certificate file was successfully checked.
+# &nbsp; &nbsp;   0x0: nobody
+# &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
+# Note: values can be added (enable all: 0x1 = 0x1)
+#_advanced
+#_hex
+server_cert_success_message = integer(min=0, max=1, default=0)
+
+# Warn that server certificate file checking failed.
+# &nbsp; &nbsp;   0x0: nobody
+# &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
+# Note: values can be added (enable all: 0x1 = 0x1)
+#_advanced
+#_hex
+server_cert_failure_message = integer(min=0, max=1, default=1)
+
 [vnc]
 
 support_cursor_pseudo_encoding = boolean(default=True)

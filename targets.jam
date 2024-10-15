@@ -53,6 +53,7 @@ exe rdpproxy :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/core/mainloop.o
   <library>src/core/pid_file.o
   <library>src/core/session.o
@@ -230,6 +231,7 @@ exe headlessclient :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -554,6 +556,7 @@ test-run tests/acl/module_manager/test_create_module_rdp :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -663,6 +666,7 @@ test-run tests/acl/test_license_api :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -1079,6 +1083,7 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -1152,6 +1157,7 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -1225,6 +1231,7 @@ test-run tests/client_mods/test_rdp_client_wab :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -2131,6 +2138,7 @@ test-run tests/front/test_front :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -3815,6 +3823,7 @@ test-run tests/mod/rdp/test_rdp :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -3877,6 +3886,7 @@ test-run tests/mod/rdp/test_rdp_negociation_data :
   <library>src/core/channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/mod/rdp/channels/sespro_channel_params.o
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
@@ -3965,11 +3975,13 @@ test-run tests/mod/vnc/test_vnc :
 :
   <library>app_path_test.o
   <library>crypto
+  <library>openssl
   <library>png
   <library>src/RAIL/client_execute.o
   <library>src/core/RDP/rdp_pointer.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/graphic_api.o
   <library>src/gdi/screen_functions.o
   <library>src/gdi/text_metrics.o
@@ -3983,10 +3995,12 @@ test-run tests/mod/vnc/test_vnc :
   <library>src/mod/vnc/encoder/rre.o
   <library>src/mod/vnc/encoder/zrle.o
   <library>src/mod/vnc/vnc.o
+  <library>src/system/linux/system/tls_check_certificate.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/d3des.o
+  <library>src/utils/fileutils.o
   <library>src/utils/hexdump.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
@@ -5008,6 +5022,7 @@ obj src/core/check_files.o : $(REDEMPTION_SRC_PATH)/core/check_files.cpp ;
 obj src/core/dynamic_channels_authorizations.o : $(REDEMPTION_SRC_PATH)/core/dynamic_channels_authorizations.cpp ;
 obj src/core/error.o : $(REDEMPTION_SRC_PATH)/core/error.cpp : $(BOOST_STACKTRACE_CXXFLAGS) ;
 obj src/core/font.o : $(REDEMPTION_SRC_PATH)/core/font.cpp ;
+obj src/core/log_certificate_status.o : $(REDEMPTION_SRC_PATH)/core/log_certificate_status.cpp ;
 obj src/core/mainloop.o : $(REDEMPTION_SRC_PATH)/core/mainloop.cpp ;
 obj src/core/pid_file.o : $(REDEMPTION_SRC_PATH)/core/pid_file.cpp ;
 obj src/core/session.o : $(REDEMPTION_SRC_PATH)/core/session.cpp ;
@@ -6115,6 +6130,7 @@ explicit
   src/core/dynamic_channels_authorizations.o
   src/core/error.o
   src/core/font.o
+  src/core/log_certificate_status.o
   src/core/mainloop.o
   src/core/pid_file.o
   src/core/session.o

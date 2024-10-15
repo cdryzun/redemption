@@ -23,11 +23,10 @@
 
 #pragma once
 
-#include "core/server_notifier_api.hpp"
 #include "core/app_path.hpp"
 #include "utils/log.hpp"
 
-#include "transport/transport.hpp" // Transport::TlsResult
+#include "transport/transport.hpp" // Transport::TlsResult, Transport::CertificateChecker
 
 #include "cxx/diagnostic.hpp"
 
@@ -321,20 +320,20 @@ private:
 
 public:
     Transport::TlsResult certificate_external_validation(
-        ServerNotifier& server_notifier,
+        Transport::CertificateChecker certificate_chercker,
         const char* ip_address,
         int port)
     {
         // local scope for exception and destruction
         std::unique_ptr px509 = std::exchange(this->cert_external_validation_wait_ctx, nullptr);
-        switch (server_notifier.server_cert_callback(*px509, ip_address, port))
+        switch (certificate_chercker(px509.get(), ip_address, port))
         {
-            case CertificateResult::wait:
+            case CertificateResult::Wait:
                 this->cert_external_validation_wait_ctx = std::move(px509);
                 return Transport::TlsResult::WaitExternalEvent;
-            case CertificateResult::valid:
+            case CertificateResult::Valid:
                 return this->final_check_certificate(*px509);
-            case CertificateResult::invalid:
+            case CertificateResult::Invalid:
                 LOG(LOG_WARNING, "server_cert_callback() failed");
                 return Transport::TlsResult::Fail;
         }
@@ -343,7 +342,7 @@ public:
     }
 
     Transport::TlsResult check_certificate(
-        ServerNotifier& server_notifier,
+        Transport::CertificateChecker certificate_chercker,
         const char* ip_address,
         int port,
         bool anon_tls)
@@ -383,22 +382,19 @@ public:
         // presented by the peer.
 
         X509 * px509 = SSL_get_peer_certificate(this->allocated_ssl);
-        if (!px509) {
-            LOG(LOG_WARNING, "SSL_get_peer_certificate() failed");
-            server_notifier.server_cert_status(ServerNotifier::Status::CertError, strerror(errno));
-            return Transport::TlsResult::Fail;
-        }
+        LOG_IF(!px509, LOG_WARNING, "SSL_get_peer_certificate() failed");
 
+        // TODO use SSL_get0_peer_certificate and remove X509UniquePtr call
         X509UniquePtr x509_uptr{px509};
 
-        switch (server_notifier.server_cert_callback(*px509, ip_address, port))
+        switch (certificate_chercker(px509, ip_address, port))
         {
-            case CertificateResult::wait:
+            case CertificateResult::Wait:
                 this->cert_external_validation_wait_ctx = std::move(x509_uptr);
                 return Transport::TlsResult::WaitExternalEvent;
-            case CertificateResult::valid:
+            case CertificateResult::Valid:
                 return this->final_check_certificate(*px509);
-            case CertificateResult::invalid:
+            case CertificateResult::Invalid:
                 LOG(LOG_WARNING, "server_cert_callback() failed");
                 return Transport::TlsResult::Fail;
         }

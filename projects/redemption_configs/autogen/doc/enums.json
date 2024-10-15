@@ -212,7 +212,7 @@
     }
   ]
 }, {
-  "name": "ServerNotification",
+  "name": "ServerCertNotification",
   "category": "flags",
   "nameWhenDescription": true,
   "values": [

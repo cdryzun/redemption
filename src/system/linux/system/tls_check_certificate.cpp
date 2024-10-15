@@ -22,7 +22,6 @@
 
 #include "core/error.hpp"
 #include "system/tls_check_certificate.hpp"
-#include "core/server_notifier_api.hpp"
 #include "utils/file.hpp"
 #include "utils/fileutils.hpp"
 #include "utils/log.hpp"
@@ -157,14 +156,22 @@ private:
 [[nodiscard]] bool tls_check_certificate(
     X509& x509,
     bool server_cert_store,
-    bool ensure_server_certificate_match,
-    bool ensure_server_certificate_exists,
-    ServerNotifier& server_notifier,
+    ServerCertCheck server_cert_check,
+    BasicFunction<void(CertificateStatus status, std::string_view error_msg)> certificate_checker,
     const char* certif_path,
+    const char* protocol,
     const char* ip_address,
     int port)
 {
     TLSCheckCertificateResource resource;
+
+    const bool ensure_server_certificate_match
+      = server_cert_check == ServerCertCheck::fails_if_no_match_or_missing
+     || server_cert_check == ServerCertCheck::fails_if_no_match_and_succeed_if_no_know;
+
+    const bool ensure_server_certificate_exists
+      = server_cert_check == ServerCertCheck::fails_if_no_match_or_missing
+     || server_cert_check == ServerCertCheck::succeed_if_exists_and_fails_if_missing;
 
     bool bad_certificate_path = false;
     error_type checking_exception = NO_ERROR;
@@ -176,15 +183,15 @@ private:
         LOG(LOG_WARNING, "Failed to create certificate directory: %s ", certif_path);
         bad_certificate_path = true;
 
-        server_notifier.server_cert_status(ServerNotifier::Status::CertError, strerror(errnum));
+        certificate_checker(CertificateStatus::CertError, strerror(errnum));
         checking_exception = ERR_TRANSPORT_TLS_CERTIFICATE_INACCESSIBLE;
     }
 
     char filename[1024];
 
     // generates the name of certificate file associated with RDP target
-    snprintf(filename, sizeof(filename) - 1, "%s/rdp,%s,%d,X509.pem",
-        certif_path, ip_address, port);
+    snprintf(filename, sizeof(filename) - 1, "%s/%s,%s,%d,X509.pem",
+        certif_path, protocol, ip_address, port);
     filename[sizeof(filename) - 1] = '\0';
     LOG(LOG_INFO, "certificate file is: '%s'", filename);
 
@@ -198,7 +205,7 @@ private:
             default: {
                 // failed to open stored certificate file
                 LOG(LOG_WARNING, "Failed to open stored certificate: \"%s\"", filename);
-                server_notifier.server_cert_status(ServerNotifier::Status::CertError, strerror(errnum));
+                certificate_checker(CertificateStatus::CertError, strerror(errnum));
                 checking_exception = ERR_TRANSPORT_TLS_CERTIFICATE_INACCESSIBLE;
             }
             break;
@@ -206,7 +213,7 @@ private:
             {
                 LOG(LOG_WARNING, "There's no stored certificate: \"%s\"", filename);
                 if (ensure_server_certificate_exists) {
-                    server_notifier.server_cert_status(ServerNotifier::Status::CertFailure);
+                    certificate_checker(CertificateStatus::CertFailure, {});
                     checking_exception = ERR_TRANSPORT_TLS_CERTIFICATE_MISSED;
                 }
             }
@@ -221,7 +228,7 @@ private:
             if (!px509Existing) {
                 // failed to read stored certificate file
                 LOG(LOG_WARNING, "Failed to read stored certificate: \"%s\"", filename);
-                server_notifier.server_cert_status(ServerNotifier::Status::CertError, strerror(errnum));
+                certificate_checker(CertificateStatus::CertError, strerror(errnum));
                 checking_exception = ERR_TRANSPORT_TLS_CERTIFICATE_CORRUPTED;
             }
             else {
@@ -271,7 +278,7 @@ private:
                             fingerprint_existing, issuer,
                             subject, fingerprint);
                         if (ensure_server_certificate_match) {
-                            server_notifier.server_cert_status(ServerNotifier::Status::CertFailure);
+                            certificate_checker(CertificateStatus::CertFailure, {});
                             checking_exception = ERR_TRANSPORT_TLS_CERTIFICATE_CHANGED;
                         }
                         certificate_check_success = false;
@@ -279,7 +286,7 @@ private:
                 }
 
                 if (certificate_check_success) {
-                    server_notifier.server_cert_status(ServerNotifier::Status::CertSuccess);
+                    certificate_checker(CertificateStatus::CertSuccess, {});
                 }
             }
         }
@@ -296,14 +303,14 @@ private:
                 PEM_write_X509(fp.get(), &x509);
                 fp.close();
                 LOG(LOG_INFO, "Dumped X509 peer certificate");
-                server_notifier.server_cert_status(ServerNotifier::Status::CertCreate);
+                certificate_checker(CertificateStatus::CertCreate, {});
             }
             else {
                 LOG(LOG_WARNING, "Failed to dump X509 peer certificate");
             }
         }
 
-        server_notifier.server_cert_status(ServerNotifier::Status::AccessAllowed);
+        certificate_checker(CertificateStatus::AccessAllowed, {});
 
         // SSL_get_verify_result();
 

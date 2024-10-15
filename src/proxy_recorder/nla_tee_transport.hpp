@@ -39,9 +39,12 @@ struct NlaTeeTransport : Transport
     , is_server(type == Type::Server)
     {}
 
-    TlsResult enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls) override
+    TlsResult enable_client_tls(
+        CertificateChecker certificate_checker,
+        TlsConfig const& tls_config, AnonymousTls anonymous_tls
+    ) override
     {
-        return this->trans.enable_client_tls(server_notifier, tls_config, anonymous_tls);
+        return this->trans.enable_client_tls(certificate_checker, tls_config, anonymous_tls);
     }
 
     [[nodiscard]] u8_array_view get_public_key() const override

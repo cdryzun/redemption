@@ -204,11 +204,11 @@ template<> struct acl_and_spec_type<cfg::session_probe::pause_if_session_is_disc
 template<> struct acl_and_spec_type<cfg::session_probe::monitor_own_resources_consumption> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_cert_store> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_cert_check> { using type = ServerCertCheck; };
-template<> struct acl_and_spec_type<cfg::server_cert::server_access_allowed_message> { using type = ServerNotification; };
-template<> struct acl_and_spec_type<cfg::server_cert::server_cert_create_message> { using type = ServerNotification; };
-template<> struct acl_and_spec_type<cfg::server_cert::server_cert_success_message> { using type = ServerNotification; };
-template<> struct acl_and_spec_type<cfg::server_cert::server_cert_failure_message> { using type = ServerNotification; };
-template<> struct acl_and_spec_type<cfg::server_cert::error_message> { using type = ServerNotification; };
+template<> struct acl_and_spec_type<cfg::server_cert::server_access_allowed_message> { using type = ServerCertNotification; };
+template<> struct acl_and_spec_type<cfg::server_cert::server_cert_create_message> { using type = ServerCertNotification; };
+template<> struct acl_and_spec_type<cfg::server_cert::server_cert_success_message> { using type = ServerCertNotification; };
+template<> struct acl_and_spec_type<cfg::server_cert::server_cert_failure_message> { using type = ServerCertNotification; };
+template<> struct acl_and_spec_type<cfg::server_cert::error_message> { using type = ServerCertNotification; };
 template<> struct acl_and_spec_type<cfg::server_cert::enable_external_validation> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::server_cert::external_cert> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::server_cert::external_response> { using type = std::string; };

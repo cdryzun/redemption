@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "acl/auth_api.hpp"
 #include "acl/license_api.hpp"
 
 #include "core/RDP/gcc/userdata/cs_monitor.hpp"
@@ -32,18 +33,15 @@
 #include "core/RDP/logon.hpp"
 #include "core/RDP/nego.hpp"
 #include "core/channel_names.hpp"
-#include "core/server_notifier_api.hpp"
 #include "core/channels_authorizations.hpp"
+#include "core/server_cert_params.hpp"
 #include "gdi/screen_info.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
 #include "mod/rdp/rdp_negociation_data.hpp"
 #include "utils/crypto/ssl_lib.hpp"
-#include "utils/basic_function.hpp"
-#include "acl/auth_api.hpp"
 #include "keyboard/keylayout.hpp"
 
 #include <vector>
-#include <memory>
 #include <array>
 
 class ChannelsAuthorizations;
@@ -70,40 +68,6 @@ public:
         CHANNEL_JOIN_CONFIRM,
         GET_LICENSE,
         TERMINATED,
-    };
-
-private:
-    class RDPServerNotifier : public ServerNotifier
-    {
-    public:
-        explicit RDPServerNotifier(
-            SessionLogApi& session_log,
-            bool server_cert_store,
-            ServerCertCheck server_cert_check,
-            std::string&& certif_path,
-            ServerNotification server_access_allowed_message,
-            ServerNotification server_cert_create_message,
-            ServerNotification server_cert_success_message,
-            ServerNotification server_cert_failure_message,
-            ServerNotification server_cert_error_message,
-            RDPVerbose verbose
-        ) noexcept;
-
-        void server_cert_status(Status status, std::string_view error_msg = {}) override;
-
-        CertificateResult server_cert_callback(X509& certificate, const char* ip_address, int port) override;
-
-    private:
-        friend class RdpNegociation;
-        BasicFunction<CertificateResult(X509&)> certificate_callback;
-
-        const ServerCertCheck server_cert_check;
-        std::string certif_path;
-        const bool server_cert_store;
-        const std::array<ServerNotification, 5> server_status_messages;
-
-        const RDPVerbose verbose;
-        SessionLogApi& session_log;
     };
 
 private:
@@ -141,7 +105,16 @@ private:
     const ClientTimeZone client_time_zone;
     Random& gen;
     const RDPVerbose verbose;
-    RDPServerNotifier server_notifier;
+
+    struct CertificateCheckerParams
+    {
+        SessionLogApi& session_log;
+        std::string certif_path;
+        ServerCertParams server_cert;
+        BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker;
+    };
+    CertificateCheckerParams cert_checker_params;
+
     RdpNego nego;
 
     const uint32_t desktop_physical_width;
@@ -228,12 +201,11 @@ public:
         LicenseApi& license_store,
         bool has_managed_drive,
         bool convert_remoteapp_to_desktop,
-        const TlsConfig & tls_config
+        const TlsConfig & tls_config,
+        BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker
     );
 
     void set_program(char const* program, char const* directory) noexcept;
-
-    void set_cert_callback(BasicFunction<CertificateResult(X509&)> callback);
 
     void start_negociation();
     bool recv_data(TpduBuffer& buf);

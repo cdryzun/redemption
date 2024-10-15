@@ -27,6 +27,8 @@ struct BasicFunction<R(Args...)>
 {
     using raw_function_pointer = R(*)(void* /*d*/, Args... /*args*/);
 
+    BasicFunction() = delete;
+
     BasicFunction(BasicFunction &&) noexcept = default;
     BasicFunction(BasicFunction const&) noexcept = default;
 
@@ -44,8 +46,12 @@ struct BasicFunction<R(Args...)>
         return [](void* /*d*/, Args... /*args*/) { return R(); };
     }
 
-    BasicFunction(NullFunction, raw_function_pointer fn = make_raw_function_pointer()) noexcept
+    BasicFunction(NullFunction, raw_function_pointer fn) noexcept
         : fn_ptr(fn)
+    {}
+
+    BasicFunction(NullFunction) noexcept
+        : BasicFunction(NullFunction(), make_raw_function_pointer())
     {}
 
     BasicFunction(NullFunctionWithDefaultResult) noexcept

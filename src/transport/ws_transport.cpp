@@ -167,7 +167,7 @@ void WsTransport::do_send(const uint8_t * const buffer, size_t const len)
 }
 
 WsTransport::TlsResult WsTransport::enable_client_tls(
-    ServerNotifier& /*server_notifier*/,
+    CertificateChecker /*certificate_checker*/,
     TlsConfig const& /*tls_config*/,
     AnonymousTls /*anonymous_tls*/)
 {

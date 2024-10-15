@@ -26,6 +26,7 @@ Author(s): Jonathan Poelen
 #include "utils/timebase.hpp"
 
 #include <memory>
+#include <string_view>
 
 class ClientExecute;
 class FrontAPI;
@@ -34,6 +35,8 @@ class AuthApi;
 class SessionLogApi;
 class KeyLayout;
 class Random;
+class ServerCertParams;
+class TlsConfig;
 
 namespace gdi
 {
@@ -65,5 +68,9 @@ std::unique_ptr<mod_api> new_mod_vnc(
     bool send_alt_ksym,
     bool cursor_pseudo_encoding_supported,
     ClientExecute* rail_client_execute,
-    VNCVerbose verbose
+    VNCVerbose verbose,
+    TlsConfig const& tls_config,
+    std::string_view force_authentication_method,
+    ServerCertParams const& server_cert_params,
+    std::string_view device_id
 );

@@ -36,7 +36,6 @@ class rdpClientNTLM;
 #ifndef __EMSCRIPTEN__
 class rdpCredsspClientKerberos;
 #endif
-class ServerNotifier;
 class Random;
 class TimeBase;
 class InStream;
@@ -156,18 +155,20 @@ public:
         return this->username;
     }
 
+    using CertificateChecker = Transport::CertificateChecker;
+
     /// \return false if terminal state
     [[nodiscard]]
-    bool recv_next_data(TpduBuffer& buf, Transport& trans, ServerNotifier& notifier);
+    bool recv_next_data(TpduBuffer& buf, Transport& trans, CertificateChecker certificate_checker);
 
 private:
     State fallback_to_tls(OutTransport trans);
 
-    State recv_connection_confirm(OutTransport trans, InStream x224_stream, ServerNotifier& notifier);
+    State recv_connection_confirm(OutTransport trans, InStream x224_stream, CertificateChecker certificate_checker);
 
-    State activate_ssl_tls(OutTransport trans, ServerNotifier& notifier) const;
+    State activate_ssl_tls(OutTransport trans, CertificateChecker certificate_checker) const;
 
-    State activate_ssl_hybrid(OutTransport trans, ServerNotifier& notifier);
+    State activate_ssl_hybrid(OutTransport trans, CertificateChecker certificate_checker);
 
     State recv_credssp(OutTransport trans, bytes_view in_data);
 };

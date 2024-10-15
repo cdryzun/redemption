@@ -22,18 +22,20 @@
 
 #pragma once
 
-#include <string>
+#include "configs/autogen/enums.hpp"
+#include "utils/basic_function.hpp"
+#include "core/certificate_enums.hpp"
 
-#include <openssl/ossl_typ.h>
+#include <string_view>
 
-class ServerNotifier;
+#include <openssl/types.h>
 
 [[nodiscard]] bool tls_check_certificate(
     X509& x509,
     bool server_cert_store,
-    bool ensure_server_certificate_match,
-    bool ensure_server_certificate_exists,
-    ServerNotifier& server_notifier,
+    ServerCertCheck server_cert_check,
+    BasicFunction<void(CertificateStatus status, std::string_view error_msg)> certificate_checker,
     const char* certif_path,
+    const char* protocol,
     const char* ip_address,
     int port);

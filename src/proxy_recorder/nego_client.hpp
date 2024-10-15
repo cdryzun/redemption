@@ -56,8 +56,8 @@ public:
         this->nego.send_negotiation_request(this->trans);
     }
 
-    bool recv_next_data(TpduBuffer& tpdu_buffer, ServerNotifier& notifier)
+    bool recv_next_data(TpduBuffer& tpdu_buffer, Transport::CertificateChecker certificate_checker)
     {
-        return this->nego.recv_next_data(tpdu_buffer, this->trans, notifier);
+        return this->nego.recv_next_data(tpdu_buffer, this->trans, certificate_checker);
     }
 };

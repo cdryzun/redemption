@@ -24,6 +24,7 @@
 
 #include "mod/rdp/rdp_negociation.hpp"
 #include "core/log_id.hpp"
+#include "core/log_certificate_status.hpp"
 #include "core/app_path.hpp"
 #include "core/RDP/autoreconnect.hpp"
 #include "core/RDP/tpdu_buffer.hpp"
@@ -41,9 +42,10 @@
 #include "core/channel_list.hpp"
 #include "core/client_info.hpp"
 #include "core/front_api.hpp"
+#include "core/channels_authorizations.hpp"
 #include "acl/auth_api.hpp"
 #include "mod/rdp/rdp_params.hpp"
-#include "core/channels_authorizations.hpp"
+#include "system/tls_check_certificate.hpp"
 #include "utils/random.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/sugar/unique_fd.hpp"
@@ -51,114 +53,7 @@
 #include "utils/strutils.hpp"
 #include "utils/sugar/zstring_view.hpp"
 
-#include "system/tls_check_certificate.hpp"
-
 #include <cstring>
-
-
-RdpNegociation::RDPServerNotifier::RDPServerNotifier(
-    SessionLogApi& session_log,
-    bool server_cert_store,
-    ServerCertCheck server_cert_check,
-    std::string&& certif_path,
-    ServerNotification server_access_allowed_message,
-    ServerNotification server_cert_create_message,
-    ServerNotification server_cert_success_message,
-    ServerNotification server_cert_failure_message,
-    ServerNotification server_cert_error_message,
-    RDPVerbose verbose
-) noexcept
-: certificate_callback(NullFunctionWithDefaultResult())
-, server_cert_check(server_cert_check)
-, certif_path(std::move(certif_path))
-, server_cert_store(server_cert_store)
-, server_status_messages([&]{
-    std::array<ServerNotification, 5> a;
-    a[underlying_cast(Status::AccessAllowed)] = server_access_allowed_message;
-    a[underlying_cast(Status::CertCreate)] = server_cert_create_message;
-    a[underlying_cast(Status::CertSuccess)] = server_cert_success_message;
-    a[underlying_cast(Status::CertFailure)] = server_cert_failure_message;
-    a[underlying_cast(Status::CertError)] = server_cert_error_message;
-    return a;
-}())
-, verbose(verbose)
-, session_log(session_log)
-{}
-
-namespace
-{
-    static constexpr auto server_cert_status_datas = []{
-        using Status = ServerNotifier::Status;
-        struct P { LogId id; zstring_view msg; };
-        std::array<P, 5> a {};
-        a[underlying_cast(Status::AccessAllowed)] = {
-            LogId::CERTIFICATE_CHECK_SUCCESS,
-            "Connection to server allowed"_zv,
-        };
-        a[underlying_cast(Status::CertCreate)] = {
-            LogId::SERVER_CERTIFICATE_NEW,
-            "New X.509 certificate created"_zv,
-        };
-        a[underlying_cast(Status::CertSuccess)] = {
-            LogId::SERVER_CERTIFICATE_MATCH_SUCCESS,
-            "X.509 server certificate match"_zv,
-        };
-        a[underlying_cast(Status::CertFailure)] = {
-            LogId::SERVER_CERTIFICATE_MATCH_FAILURE,
-            "X.509 server certificate match failure"_zv,
-        };
-        a[underlying_cast(Status::CertError)] = {
-            LogId::SERVER_CERTIFICATE_ERROR,
-            "X.509 server certificate internal error: "_zv,
-        };
-        return a;
-    }();
-}
-
-void RdpNegociation::RDPServerNotifier::server_cert_status(Status status, std::string_view error_msg)
-{
-    auto notification_type = this->server_status_messages[underlying_cast(status)];
-    auto data = server_cert_status_datas[underlying_cast(status)];
-    if (bool(notification_type & ServerNotification::SIEM)) {
-        chars_view msg = data.msg;
-        std::string tmp;
-        if (status == Status::CertError && !error_msg.empty()) {
-            str_assign(tmp, msg, error_msg);
-            msg = tmp;
-        }
-        this->session_log.log6(data.id, {KVLog("description"_av, msg)});
-    }
-    LOG_IF(bool(this->verbose & RDPVerbose::basic_trace),
-        LOG_INFO, "%s%.*s", data.msg, int(error_msg.size()), error_msg.data());
-}
-
-CertificateResult RdpNegociation::RDPServerNotifier::server_cert_callback(
-    X509& certificate, const char* ip_address, int port)
-{
-    if (this->certificate_callback) {
-        return this->certificate_callback(certificate);
-    }
-
-    const bool ensure_server_certificate_match =
-        (server_cert_check == ServerCertCheck::fails_if_no_match_or_missing)
-        ||(server_cert_check == ServerCertCheck::fails_if_no_match_and_succeed_if_no_know);
-
-    const bool ensure_server_certificate_exists =
-        (server_cert_check == ServerCertCheck::fails_if_no_match_or_missing)
-        ||(server_cert_check == ServerCertCheck::succeed_if_exists_and_fails_if_missing);
-
-    return tls_check_certificate(
-        certificate,
-        server_cert_store,
-        ensure_server_certificate_match,
-        ensure_server_certificate_exists,
-        *this,
-        certif_path.c_str(),
-        ip_address,
-        port)
-      ? CertificateResult::valid
-      : CertificateResult::invalid;
-}
 
 RdpNegociation::RdpNegociation(
     const ChannelsAuthorizations& channels_authorizations,
@@ -180,7 +75,8 @@ RdpNegociation::RdpNegociation(
     LicenseApi& license_store,
     bool has_managed_drive,
     bool convert_remoteapp_to_desktop,
-    const TlsConfig & tls_config
+    const TlsConfig & tls_config,
+    BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker
     )
     : mod_channel_list(mod_channel_list)
     , channels_authorizations(channels_authorizations)
@@ -207,18 +103,12 @@ RdpNegociation::RdpNegociation(
     , client_time_zone(info.client_time_zone)
     , gen(gen)
     , verbose(mod_rdp_params.verbose /*| (RDPVerbose::security|RDPVerbose::basic_trace)*/)
-    , server_notifier(
-        session_log,
-        mod_rdp_params.server_cert_store,
-        mod_rdp_params.server_cert_check,
-        str_concat(app_path(AppPath::Certif), '/', mod_rdp_params.device_id),
-        mod_rdp_params.server_access_allowed_message,
-        mod_rdp_params.server_cert_create_message,
-        mod_rdp_params.server_cert_success_message,
-        mod_rdp_params.server_cert_failure_message,
-        mod_rdp_params.server_cert_error_message,
-        mod_rdp_params.verbose
-    )
+    , cert_checker_params{
+        .session_log = session_log,
+        .certif_path = str_concat(app_path(AppPath::Certif), '/', mod_rdp_params.device_id),
+        .server_cert = mod_rdp_params.server_cert_params,
+        .external_certificate_checker = external_certificate_checker
+    }
     , nego(
         mod_rdp_params.target_user, mod_rdp_params.target_host,
         mod_rdp_params.enable_nla, mod_rdp_params.enable_krb,
@@ -347,11 +237,6 @@ void RdpNegociation::set_program(char const* program, char const* directory) noe
     utils::strlcpy(this->directory, directory);
 }
 
-void RdpNegociation::set_cert_callback(BasicFunction<CertificateResult(X509&)> callback)
-{
-    this->server_notifier.certificate_callback = std::move(callback);
-}
-
 void RdpNegociation::start_negociation()
 {
     this->nego.send_negotiation_request(this->trans);
@@ -367,7 +252,39 @@ bool RdpNegociation::recv_data(TpduBuffer& buf)
 
     if (this->state == State::NEGO)
     {
-        bool const run = this->nego.recv_next_data(buf, this->trans, this->server_notifier);
+        auto certificate_checker = [this](X509* certificate, char const* addr, int port) {
+            auto cert_log = [this](CertificateStatus status, std::string_view error_msg) {
+                log_certificate_status(
+                    this->cert_checker_params.session_log, status, error_msg,
+                    bool(this->verbose & RDPVerbose::negotiation),
+                    this->cert_checker_params.server_cert.notifications
+                );
+            };
+
+            if (!certificate) {
+                cert_log(CertificateStatus::CertError, "no certificate");
+                return CertificateResult::Invalid;
+            }
+
+            if (this->cert_checker_params.external_certificate_checker) {
+                return this->cert_checker_params.external_certificate_checker(*certificate);
+            }
+
+            return tls_check_certificate(
+                *certificate,
+                this->cert_checker_params.server_cert.store,
+                this->cert_checker_params.server_cert.check,
+                cert_log,
+                this->cert_checker_params.certif_path.c_str(),
+                "rdp",
+                addr,
+                port
+            )
+                ? CertificateResult::Valid
+                : CertificateResult::Invalid;
+        };
+
+        bool const run = this->nego.recv_next_data(buf, this->trans, certificate_checker);
 
         if (not run) {
             this->send_connectInitialPDUwithGccConferenceCreateRequest();

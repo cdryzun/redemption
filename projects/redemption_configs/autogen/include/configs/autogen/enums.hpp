@@ -256,41 +256,41 @@ template<> struct is_valid_enum_value<ColorDepth>
 
 };
 
-enum class ServerNotification : uint8_t
+enum class ServerCertNotification : uint8_t
 {
     nobody = 0,
     // message sent to SIEM
     SIEM = 1,
 };
 
-template<> struct is_valid_enum_value<ServerNotification>
+template<> struct is_valid_enum_value<ServerCertNotification>
 {
     constexpr static bool is_valid(uint64_t n) { return n <= 1; }
 };
 
-inline ServerNotification operator | (ServerNotification x, ServerNotification y)
+inline ServerCertNotification operator | (ServerCertNotification x, ServerCertNotification y)
 {
-    return static_cast<ServerNotification>(
+    return static_cast<ServerCertNotification>(
         static_cast<uint8_t>(x) | static_cast<uint8_t>(y)
     );
 }
 
-inline ServerNotification operator & (ServerNotification x, ServerNotification y)
+inline ServerCertNotification operator & (ServerCertNotification x, ServerCertNotification y)
 {
-    return static_cast<ServerNotification>(
+    return static_cast<ServerCertNotification>(
         static_cast<uint8_t>(x) & static_cast<uint8_t>(y)
     );
 }
 
-inline ServerNotification operator ~ (ServerNotification x)
+inline ServerCertNotification operator ~ (ServerCertNotification x)
 {
-    return static_cast<ServerNotification>(
+    return static_cast<ServerCertNotification>(
         ~static_cast<uint8_t>(x) & 1
     );
 }
 
-inline ServerNotification & operator |= (ServerNotification & x, ServerNotification y) { return x = x | y; }
-inline ServerNotification & operator &= (ServerNotification & x, ServerNotification y) { return x = x & y; }
+inline ServerCertNotification & operator |= (ServerCertNotification & x, ServerCertNotification y) { return x = x | y; }
+inline ServerCertNotification & operator &= (ServerCertNotification & x, ServerCertNotification y) { return x = x & y; }
 
 // Behavior of certificates check.
 // System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.

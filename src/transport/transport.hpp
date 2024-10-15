@@ -8,17 +8,23 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "cxx/cxx.hpp"
 #include "core/error.hpp"
+#include "core/certificate_enums.hpp"
 #include "utils/invalid_socket.hpp"
 #include "utils/log.hpp"
 #include "utils/sugar/noncopyable.hpp"
 #include "utils/sugar/bytes_view.hpp"
 #include "utils/sugar/buffer_view.hpp"
+#include "utils/basic_function.hpp"
 
 #include <cstdint>
 #include <string>
 
+#ifndef __EMSCRIPTEN__
+#  include <openssl/types.h>
+#else
+  struct X509 {};
+#endif
 
-class ServerNotifier;
 
 struct TlsConfig
 {
@@ -44,12 +50,17 @@ public:
 
     virtual ~Transport() = default;
 
+    using CertificateCheckerSignature = CertificateResult(X509*, const char* ip_address, int port);
+    using CertificateChecker = BasicFunction<CertificateCheckerSignature>;
+
     enum class [[nodiscard]] TlsResult : uint8_t { Ok, Fail, Want, WaitExternalEvent, };
 
-    virtual TlsResult enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls)
+    virtual TlsResult enable_client_tls(
+        CertificateChecker certificate_checker,
+        TlsConfig const& tls_config, AnonymousTls anonymous_tls)
     {
         // default enable_tls do nothing
-        (void)server_notifier;
+        (void)certificate_checker;
         (void)tls_config;
         (void)anonymous_tls;
         return TlsResult::Fail;
@@ -215,9 +226,11 @@ struct InTransport
         return this->t.partial_read(buffer, len);
     }
 
-    Transport::TlsResult enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls)
+    Transport::TlsResult enable_client_tls(
+        Transport::CertificateChecker certificate_checker,
+        TlsConfig const& tls_config, AnonymousTls anonymous_tls)
     {
-        return this->t.enable_client_tls(server_notifier, tls_config, anonymous_tls);
+        return this->t.enable_client_tls(certificate_checker, tls_config, anonymous_tls);
     }
 
     Transport::TlsResult enable_server_tls(const char * certificate_password, TlsConfig const& tls_config)
@@ -268,9 +281,11 @@ struct OutTransport
         this->t.send(buffer);
     }
 
-    Transport::TlsResult enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls)
+    Transport::TlsResult enable_client_tls(
+        Transport::CertificateChecker certificate_checker,
+        TlsConfig const& tls_config, AnonymousTls anonymous_tls)
     {
-        return this->t.enable_client_tls(server_notifier, tls_config, anonymous_tls);
+        return this->t.enable_client_tls(certificate_checker, tls_config, anonymous_tls);
     }
 
     Transport::TlsResult enable_server_tls(const char * certificate_password, TlsConfig const& tls_config)

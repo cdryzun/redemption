@@ -47,6 +47,7 @@ constant main_qt_client_redemption :
   <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
+  <library>src/core/log_certificate_status.o
   <library>src/gdi/clip_from_cmd.o
   <library>src/gdi/draw_utils.o
   <library>src/gdi/graphic_api.o
@@ -316,6 +317,7 @@ obj src/core/channels_authorizations.o : $(REDEMPTION_SRC_PATH)/core/channels_au
 obj src/core/dynamic_channels_authorizations.o : $(REDEMPTION_SRC_PATH)/core/dynamic_channels_authorizations.cpp ;
 obj src/core/error.o : $(REDEMPTION_SRC_PATH)/core/error.cpp : $(BOOST_STACKTRACE_CXXFLAGS) ;
 obj src/core/font.o : $(REDEMPTION_SRC_PATH)/core/font.cpp ;
+obj src/core/log_certificate_status.o : $(REDEMPTION_SRC_PATH)/core/log_certificate_status.cpp ;
 obj src/gdi/clip_from_cmd.o : $(REDEMPTION_SRC_PATH)/gdi/clip_from_cmd.cpp ;
 obj src/gdi/draw_utils.o : $(REDEMPTION_SRC_PATH)/gdi/draw_utils.cpp ;
 obj src/gdi/graphic_api.o : $(REDEMPTION_SRC_PATH)/gdi/graphic_api.cpp ;
@@ -427,6 +429,7 @@ explicit
   src/core/dynamic_channels_authorizations.o
   src/core/error.o
   src/core/font.o
+  src/core/log_certificate_status.o
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o

@@ -137,6 +137,14 @@ cp_spec = {
     'all_target_mod': {
         ('all_target_mod:tcp_user_timeout', 'tcp_user_timeout', 0),
     },
+    'server_cert': {
+        ('server_cert:server_cert_store', 'server_cert_store', True),
+        ('server_cert:server_cert_check', 'server_cert_check', 1),
+        ('server_cert:server_access_allowed_message', 'server_access_allowed_message', 0),
+        ('server_cert:server_cert_create_message', 'server_cert_create_message', 1),
+        ('server_cert:server_cert_success_message', 'server_cert_success_message', 0),
+        ('server_cert:server_cert_failure_message', 'server_cert_failure_message', 1),
+    },
     'vnc': {
         ('mod_vnc:support_cursor_pseudo_encoding', 'support_cursor_pseudo_encoding', True),
         ('mod_vnc:server_is_macos', 'server_is_macos', False),

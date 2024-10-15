@@ -53,7 +53,9 @@ protected:
 
     void do_send(const uint8_t * const buffer, size_t len) override;
 
-    TlsResult enable_client_tls(ServerNotifier& server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls) override;
+    TlsResult enable_client_tls(
+        CertificateChecker certificate_checker,
+        TlsConfig const& tls_config, AnonymousTls anonymous_tls) override;
 
 private:
     class D;

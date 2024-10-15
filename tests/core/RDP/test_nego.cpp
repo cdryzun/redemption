@@ -24,7 +24,6 @@
 #include "utils/timebase.hpp"
 #include "core/RDP/nego.hpp"
 #include "core/RDP/tpdu_buffer.hpp"
-#include "core/server_notifier_api.hpp"
 #include "test_only/transport/test_transport.hpp"
 
 #include "test_only/lcg_random.hpp"
@@ -110,7 +109,6 @@ RED_AUTO_TEST_CASE(TestNego)
     LCGRandom rand;
     TimeBase time_base{MonotonicTimePoint{167426s + 178586us}, {}};
 
-    NullServerNotifier null_server_notifier;
     std::string extra_message;
     Language lang = Language::en;
     RdpNego nego(
@@ -128,7 +126,7 @@ RED_AUTO_TEST_CASE(TestNego)
 
     nego.send_negotiation_request(logtrans);
 
-    for (int i = 0; nego.recv_next_data(buf, logtrans, null_server_notifier); ++i){
+    for (int i = 0; nego.recv_next_data(buf, logtrans, NullFunctionWithDefaultResult()); ++i){
         RED_REQUIRE_LT(i, 1000);
     }
 

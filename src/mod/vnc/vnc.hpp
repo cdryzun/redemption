@@ -29,6 +29,7 @@
 #include "core/buf64k.hpp"
 #include "core/channel_list.hpp"
 #include "core/front_api.hpp"
+#include "core/server_cert_params.hpp"
 #include "core/RDP/clipboard.hpp"
 #include "core/RDP/orders/RDPOrdersSecondaryColorCache.hpp"
 
@@ -78,29 +79,26 @@ class mod_vnc : public mod_api
 public:
 
     /** @brief transport for VNC */
-    class VncTransport {
+    class VncTransport
+    {
     public:
         VncTransport(mod_vnc & mod, Transport & t)
         : m_trans(t)
         , m_mod(mod)
-        {
-        }
+        {}
 
-        void send(byte_ptr buffer, size_t len) {
+        void send(byte_ptr buffer, size_t len)
+        {
             send(bytes_view(buffer, len));
         }
 
         void send(bytes_view buffer);
 
-        Transport::TlsResult enable_client_tls(ServerNotifier & server_notifier, TlsConfig const& tls_config, AnonymousTls anonymous_tls) {
-            return m_trans.enable_client_tls(server_notifier, tls_config, anonymous_tls);
-        }
-
         int get_fd() const {
             return m_trans.get_fd();
         }
 
-        Transport &getTransport() const { return m_trans; }
+        Transport &get_transport() const { return m_trans; }
 
     private:
         Transport & m_trans;
@@ -274,8 +272,6 @@ private:
 
     SessionLogApi& session_log;
 
-    TlsConfig tls_config;
-
     /** @brief type of VNC authentication */
     enum VncAuthType : int32_t {
         VNC_AUTH_INVALID     = 0,
@@ -303,6 +299,14 @@ private:
 
     const bool cursor_pseudo_encoding_supported;
 
+    struct TlsParams
+    {
+        std::string certif_path;
+        ServerCertParams server_cert;
+        TlsConfig tls_config;
+    };
+    TlsParams tls_params;
+
 public:
     mod_vnc( Transport & t
            , Random & rand
@@ -329,6 +333,8 @@ public:
            , SessionLogApi& session_log
            , TlsConfig const& tls_config
            , std::string_view force_authentication_method
+           , ServerCertParams const& server_cert_params
+           , std::string_view device_id
     );
 
     ~mod_vnc();

@@ -32,6 +32,7 @@
 #include "utils/ascii.hpp"
 #include "utils/parse_primary_drawing_orders.hpp"
 #include "mod/file_validator_service.hpp"
+#include "mod/load_server_cert_params.hpp"
 #include "mod/rdp/params/rdp_session_probe_params.hpp"
 #include "mod/rdp/params/rdp_application_params.hpp"
 #include "mod/rdp/rdp.hpp"
@@ -613,13 +614,7 @@ ModPack create_mod_rdp(
     mod_rdp_params.rdp_compression = ini.get<cfg::mod_rdp::rdp_compression>();
     mod_rdp_params.disconnect_on_logon_user_change = ini.get<cfg::mod_rdp::disconnect_on_logon_user_change>();
     mod_rdp_params.open_session_timeout = ini.get<cfg::mod_rdp::open_session_timeout>();
-    mod_rdp_params.server_cert_store = ini.get<cfg::server_cert::server_cert_store>();
-    mod_rdp_params.server_cert_check = ini.get<cfg::server_cert::server_cert_check>();
-    mod_rdp_params.server_access_allowed_message = ini.get<cfg::server_cert::server_access_allowed_message>();
-    mod_rdp_params.server_cert_create_message = ini.get<cfg::server_cert::server_cert_create_message>();
-    mod_rdp_params.server_cert_success_message = ini.get<cfg::server_cert::server_cert_success_message>();
-    mod_rdp_params.server_cert_failure_message = ini.get<cfg::server_cert::server_cert_failure_message>();
-    mod_rdp_params.server_cert_error_message = ini.get<cfg::server_cert::error_message>();
+    mod_rdp_params.server_cert_params = load_server_cert_params(ini);
     mod_rdp_params.enable_server_cert_external_validation = ini.get<cfg::server_cert::enable_external_validation>();
     mod_rdp_params.hide_client_name = ini.get<cfg::mod_rdp::hide_client_name>();
     mod_rdp_params.enable_persistent_disk_bitmap_cache = ini.get<cfg::mod_rdp::persistent_disk_bitmap_cache>();

@@ -140,7 +140,8 @@ sys_lib_prefix = [
         linkflags=['<library>ffmpeg'],
         cxxflags=['$(FFMPEG_CXXFLAGS)'])),
     ('openssl/', Dep(
-        linkflags=['<library>crypto'])),
+        linkflags=['<library>crypto']),
+     ('openssl/types.h',)),
 ]
 
 user_lib_assoc = dict((

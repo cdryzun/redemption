@@ -498,15 +498,15 @@ parse_error parse_from_cfg(ColorDepth & x, ::configs::spec_type<std::string> /*t
 
 zstring_view assign_zbuf_from_cfg(
     writable_chars_view zbuf,
-    cfg_s_type<ServerNotification> /*type*/,
-    ServerNotification x
+    cfg_s_type<ServerCertNotification> /*type*/,
+    ServerCertNotification x
 ){
     auto r = std::to_chars(zbuf.begin(), zbuf.end(), static_cast<uint8_t>(x));
     *r.ptr = '\0';
     return zstring_view::from_null_terminated({zbuf.data(), r.ptr});
 }
 
-parse_error parse_from_cfg(ServerNotification & x, ::configs::spec_type<ServerNotification> /*type*/, bytes_view value)
+parse_error parse_from_cfg(ServerCertNotification & x, ::configs::spec_type<ServerCertNotification> /*type*/, bytes_view value)
 {
     using ul = uint8_t;
 
@@ -519,7 +519,7 @@ parse_error parse_from_cfg(ServerNotification & x, ::configs::spec_type<ServerNo
         return err;
     }
 
-    x = static_cast<ServerNotification>(xi);
+    x = static_cast<ServerCertNotification>(xi);
     return no_parse_error;
 }
 

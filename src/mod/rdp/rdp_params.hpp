@@ -25,6 +25,7 @@
 #include "core/RDP/capabilities/order.hpp"
 #include "core/RDP/windows_execute_shell_params.hpp"
 #include "core/channel_names.hpp"
+#include "core/server_cert_params.hpp"
 #include "keyboard/kbdtypes.hpp"
 #include "mod/rdp/channels/validator_params.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
@@ -106,13 +107,7 @@ struct ModRDPParams
     std::chrono::seconds open_session_timeout {};
     bool                 disconnect_on_logon_user_change = false;
 
-    bool               server_cert_store = true;
-    ServerCertCheck    server_cert_check = ServerCertCheck::fails_if_no_match_and_succeed_if_no_know;
-    ServerNotification server_access_allowed_message = ServerNotification::SIEM;
-    ServerNotification server_cert_create_message = ServerNotification::SIEM;
-    ServerNotification server_cert_success_message = ServerNotification::SIEM;
-    ServerNotification server_cert_failure_message = ServerNotification::SIEM;
-    ServerNotification server_cert_error_message = ServerNotification::SIEM;
+    ServerCertParams server_cert_params;
 
     bool enable_server_cert_external_validation = false;
 
@@ -369,13 +364,13 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%s",     yes_or_no,             disconnect_on_logon_user_change);
         RDP_PARAMS_LOG("%u",     from_sec,              open_session_timeout);
 
-        RDP_PARAMS_LOG("%s",     yes_or_no,             server_cert_store);
-        RDP_PARAMS_LOG("%u",     static_cast<unsigned>, server_cert_check);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_access_allowed_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_create_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_success_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_failure_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_error_message);
+        RDP_PARAMS_LOG("%s",     yes_or_no,             server_cert_params.store);
+        RDP_PARAMS_LOG("%u",     static_cast<unsigned>, server_cert_params.check);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.access_allowed_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.create_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.success_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.failure_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.error_message);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             hide_client_name);
 

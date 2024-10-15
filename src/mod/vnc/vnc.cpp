@@ -25,16 +25,18 @@
 #include "mod/vnc/dsm.hpp"
 #include "mod/vnc/newline_convert.hpp"
 #include "core/log_id.hpp"
+#include "core/log_certificate_status.hpp"
 #include "core/RDP/rdp_pointer.hpp"
-#include "core/server_notifier_api.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/RDP/clipboard/format_list_serialize.hpp"
+#include "core/app_path.hpp"
 #include "gdi/screen_functions.hpp"
 #include "RAIL/client_execute.hpp"
 #include "utils/sugar/chars_to_int.hpp"
 #include "utils/d3des.hpp"
 #include "utils/diffiehellman.hpp"
 #include "utils/hexdump.hpp"
+#include "system/tls_check_certificate.hpp"
 
 using namespace std::literals::chrono_literals;
 
@@ -55,7 +57,7 @@ void mod_vnc::VncTransport::send(bytes_view buffer)
 mod_vnc::VncBuf64k::size_type
 mod_vnc::VncBuf64k::read_from(mod_vnc::VncTransport vncTrans)
 {
-    Transport & trans = vncTrans.getTransport();
+    Transport & trans = vncTrans.get_transport();
 
     const size_type read_len = Buf64k::read_from(trans);
 
@@ -92,6 +94,8 @@ mod_vnc::mod_vnc( Transport & t
            , SessionLogApi& session_log
            , TlsConfig const& tls_config
            , std::string_view force_authentication_method
+           , ServerCertParams const& server_cert_params
+           , std::string_view device_id
            )
     : front(front)
     , t(VncTransport(*this, t))
@@ -117,9 +121,14 @@ mod_vnc::mod_vnc( Transport & t
 #ifndef __EMSCRIPTEN__
     , session_log(session_log)
 #endif
-    , tls_config(tls_config)
     , choosenAuth(VNC_AUTH_INVALID)
     , cursor_pseudo_encoding_supported(cursor_pseudo_encoding_supported)
+
+    , tls_params{
+        .certif_path = str_concat(app_path(AppPath::Certif), '/', device_id),
+        .server_cert = server_cert_params,
+        .tls_config = tls_config
+    }
     , server_data_buf(*this)
     , tlsSwitch(false)
     , frame_buffer_update_ctx(this->zd, verbose)
@@ -542,9 +551,35 @@ bool mod_vnc::doTlsSwitch()
         ? AnonymousTls::Yes
         : AnonymousTls::No;
 
-    NullServerNotifier notifier;
+    auto certificate_checker = [this](X509* certificate, char const* addr, int port) {
+        auto cert_log = [this](CertificateStatus status, std::string_view error_msg) {
+            log_certificate_status(
+                this->session_log, status, error_msg,
+                bool(this->verbose & VNCVerbose::connection),
+                this->tls_params.server_cert.notifications
+            );
+        };
 
-    switch (this->t.enable_client_tls(notifier, tls_config, anonymous_tls)) {
+        if (!certificate) {
+            cert_log(CertificateStatus::CertError, "no certificate");
+            return CertificateResult::Invalid;
+        }
+
+        return tls_check_certificate(
+            *certificate,
+            this->tls_params.server_cert.store,
+            this->tls_params.server_cert.check,
+            cert_log,
+            this->tls_params.certif_path.c_str(),
+            "vnc",
+            addr,
+            port
+        )
+            ? CertificateResult::Valid
+            : CertificateResult::Invalid;
+    };
+
+    switch (this->t.get_transport().enable_client_tls(certificate_checker, this->tls_params.tls_config, anonymous_tls)) {
         case Transport::TlsResult::WaitExternalEvent:
         case Transport::TlsResult::Want:
             return false;

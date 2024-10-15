@@ -2216,6 +2216,7 @@
       "description": "Keep known server certificates on Bastion",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2227,6 +2228,7 @@
       "description": "Behavior of certificates check.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "ServerCertCheck"
@@ -2239,10 +2241,11 @@
       "description": "Warn if check allow connexion to server.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
-      "subtype": "ServerNotification"
+      "subtype": "ServerCertNotification"
     },
     {
       "section": "server_cert",
@@ -2252,10 +2255,11 @@
       "description": "Warn that new server certificate file was created.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
-      "subtype": "ServerNotification"
+      "subtype": "ServerCertNotification"
     },
     {
       "section": "server_cert",
@@ -2265,10 +2269,11 @@
       "description": "Warn that server certificate file was successfully checked.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
-      "subtype": "ServerNotification"
+      "subtype": "ServerCertNotification"
     },
     {
       "section": "server_cert",
@@ -2278,10 +2283,11 @@
       "description": "Warn that server certificate file checking failed.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
-      "subtype": "ServerNotification"
+      "subtype": "ServerCertNotification"
     },
     {
       "section": "server_cert",
@@ -2290,7 +2296,7 @@
       "value": 1,
       "description": "Warn that server certificate check raised some internal error.",
       "iniOnly": true,
-      "subtype": "ServerNotification"
+      "subtype": "ServerCertNotification"
     },
     {
       "section": "server_cert",

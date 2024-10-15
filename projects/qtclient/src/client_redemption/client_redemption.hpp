@@ -376,6 +376,16 @@ public:
         try {
             this->_callback.init();
 
+            TlsConfig tls_config{
+                .min_level = this->config.tls_client_params_data.tls_min_level,
+                .max_level = this->config.tls_client_params_data.tls_max_level,
+                .cipher_list = this->config.tls_client_params_data.cipher_string,
+                // TODO .tls_1_3_ciphersuites
+                // TODO .key_exchange_groups
+                // TODO .enable_legacy_server_connect
+                .show_common_cipher_list = this->config.tls_client_params_data.show_common_cipher_list,
+            };
+
             switch (this->config.mod_state) {
             case ClientRedemptionConfig::MOD_RDP:
             case ClientRedemptionConfig::MOD_RDP_REMOTE_APP:
@@ -417,15 +427,6 @@ public:
                         this->config.info.screen_info.height,
                         this->config.rDPRemoteAppConfig);
                 }
-
-                TlsConfig tls_config{
-                    .min_level = this->config.tls_client_params_data.tls_min_level,
-                    .max_level = this->config.tls_client_params_data.tls_max_level,
-                    .cipher_list = this->config.tls_client_params_data.cipher_string,
-                    // TODO .tls_1_3_ciphersuites
-                    // TODO .key_exchange_groups
-                    .show_common_cipher_list = this->config.tls_client_params_data.show_common_cipher_list,
-                };
 
                 const ChannelsAuthorizations channels_authorizations("*"_zv, ""_zv);
 
@@ -483,6 +484,10 @@ public:
                   , true                                    // support Cursor Pseudo-encoding
                   , nullptr
                   , VNCVerbose()
+                  , tls_config
+                  , std::string_view{} // TODO force_authentication_method
+                  , ServerCertParams{} // TODO server_cert_params
+                  , "device_id"
                 );
                 break;
             }

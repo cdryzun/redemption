@@ -31,7 +31,6 @@
 #include "core/RDP/mcs.hpp"
 #include "core/RDP/tpdu_buffer.hpp"
 #include "core/listen.hpp"
-#include "core/server_notifier_api.hpp"
 #include "proxy_recorder/extract_user_domain.hpp"
 #include "transport/recorder_transport.hpp"
 #include "transport/socket_transport.hpp"
