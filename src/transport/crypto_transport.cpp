@@ -20,8 +20,6 @@
 
 #include "transport/crypto_transport.hpp"
 
-#include <iostream>
-
 #include "capture/cryptofile.hpp"
 #include "transport/mwrm_reader.hpp"
 #include "transport/file_transport.hpp"
