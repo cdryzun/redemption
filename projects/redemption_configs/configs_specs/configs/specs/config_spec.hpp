@@ -814,7 +814,7 @@ _.section("all_target_mod", [&]
     _.member(MemberInfo{
         .name = "tcp_user_timeout",
         .value = value<types::range<std::chrono::milliseconds, 0, 3'600'000>>(),
-        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc = "This parameter allows you to specify max timeout before a TCP connection is aborted. If the option value is specified as 0, TCP will use the system default.",
     });
 });

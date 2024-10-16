@@ -679,6 +679,7 @@
       "displayName": "TCP user timeout",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",

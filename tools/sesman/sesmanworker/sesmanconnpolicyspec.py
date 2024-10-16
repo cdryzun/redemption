@@ -129,6 +129,9 @@ cp_spec = {
     'session': {
         ('globals:inactivity_timeout', 'inactivity_timeout', 0),
     },
+    'all_target_mod': {
+        ('all_target_mod:tcp_user_timeout', 'tcp_user_timeout', 0),
+    },
     'vnc': {
         ('mod_vnc:support_cursor_pseudo_encoding', 'support_cursor_pseudo_encoding', True),
         ('mod_vnc:server_is_macos', 'server_is_macos', False),
