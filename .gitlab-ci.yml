@@ -24,6 +24,12 @@ build-analyze-image:
 
 branch-pages:
   stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^maintenance_bastion_/
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "future"
+      when: on_success
+    - when: never
   image: ${NEXUS_WAB_PROXIES_URL}/${IMAGE_REDEMPTION_ANALYZE}
   variables:
     GITLAB_REMOTE: ci
@@ -46,18 +52,15 @@ branch-pages:
     - if git commit -m "Update page from ${CI_COMMIT_BRANCH} ${CI_COMMIT_SHORT_SHA}"; then
     -   git push "${GITLAB_REMOTE}" "${GIT_BRANCH}"
     - fi
-  only:
-    - future
-    - maintenance_bastion_11.0
-    - maintenance_bastion_12.0
-    - maintenance_bastion_13.0
 
 
 build-analyze:
   stage: build
   needs: []
-  except:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   image: ${NEXUS_WAB_PROXIES_URL}/${IMAGE_REDEMPTION_ANALYZE}
@@ -80,6 +83,12 @@ build-analyze:
 sonarqube-check:
   stage: build
   needs: [build-analyze]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "future"
+      when: on_success
+    - when: never
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
@@ -94,6 +103,3 @@ sonarqube-check:
   script:
     - sonar-scanner
   allow_failure: true
-  only:
-    - merge_requests
-    - future
