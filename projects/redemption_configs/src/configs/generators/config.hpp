@@ -421,28 +421,78 @@ enum class PrefixType : uint8_t
     ForceDisable,
 };
 
-// for implicitly convert std::string_view to std::string
-struct Description : std::string
+inline void check_policy(std::initializer_list<DestSpecFile> dest_files)
 {
-    using std::string::operator=;
+    auto policy_types = DestSpecFile();
+    for (auto dest_file : dest_files) {
+        if (!contains_conn_policy(dest_file)) {
+            throw std::runtime_error("connection policy value without name");
+        }
+        if (bool(policy_types & dest_file)) {
+            const auto mask = (policy_types & dest_file);
+#define DECL(name) bool(mask & DestSpecFile::name) ? " (" #name ")"sv : ""sv
+            throw std::runtime_error(
+                str_concat("duplicate connection policy value"sv,
+                           DECL(vnc), DECL(rdp), DECL(rdp_sogisces_1_3_2030))
+            );
+#undef DECL
+        }
+        policy_types |= dest_file;
+    }
+}
+
+// for implicitly convert std::string_view to std::string
+struct Description
+{
+    struct ConnPolicy
+    {
+        DestSpecFile policy_types;
+        std::string desc;
+    };
+
+    std::string general_desc;
+    std::vector<ConnPolicy> specific_descs;
 
     Description() = default;
 
-    Description(char const* str)
-    : std::string(str)
+    template<class... ConnPolicy>
+    Description(char const* str, ConnPolicy&&... conn_policy)
+    : Description(1, str, static_cast<ConnPolicy&&>(conn_policy)...)
     {}
 
-    Description(std::string_view str)
-    : std::string(str)
+    template<class... ConnPolicy>
+    Description(std::string_view str, ConnPolicy&&... conn_policy)
+    : Description(1, str, static_cast<ConnPolicy&&>(conn_policy)...)
     {}
 
-    Description(std::string const& str)
-    : std::string(str)
+    template<class... ConnPolicy>
+    Description(std::string const& str, ConnPolicy&&... conn_policy)
+    : Description(1, str, static_cast<ConnPolicy&&>(conn_policy)...)
     {}
 
-    Description(std::string&& str) noexcept
-    : std::string(std::move(str))
+    template<class... ConnPolicy>
+    Description(std::string&& str, ConnPolicy&&... conn_policy)
+    : Description(1, std::move(str), static_cast<ConnPolicy&&>(conn_policy)...)
     {}
+
+    std::string const* find_desc_for_policy(DestSpecFile policy_type) const
+    {
+        for (auto const& connpolicy : specific_descs) {
+            if (bool(connpolicy.policy_types & policy_type)) {
+                return &connpolicy.desc;
+            }
+        }
+        return nullptr;
+    }
+
+private:
+    template<class S, class... ConnPolicy>
+    Description(int, S&& str, ConnPolicy&&... conn_policy) noexcept
+    : general_desc(std::move(str))
+    {
+        check_policy({conn_policy.policy_types...});
+        (..., specific_descs.push_back(conn_policy));
+    }
 };
 
 struct MemberInfo
@@ -1564,13 +1614,13 @@ inline ValueAsStrings compute_integer_enum_as_strings(uint64_t value, type_enume
 template<class T>
 struct ConnectionPolicyValue
 {
-    DestSpecFile policy_type;
+    DestSpecFile policy_types;
     T value;
     bool forced;
 
     ConnectionPolicyValue<T> always()
     {
-        return {policy_type, static_cast<T&&>(value), true};
+        return {policy_types, static_cast<T&&>(value), true};
     }
 };
 
@@ -1609,26 +1659,6 @@ ConnectionPolicyValue<minify_type_t<T>> vnc_policy_value(T&& value)
     return {DestSpecFile::vnc, static_cast<T&&>(value), false};
 }
 
-inline void check_policy(std::initializer_list<DestSpecFile> dest_files)
-{
-    auto policy_type = DestSpecFile();
-    for (auto dest_file : dest_files) {
-        if (!contains_conn_policy(dest_file)) {
-            throw std::runtime_error("connection policy value without name");
-        }
-        if (bool(policy_type & dest_file)) {
-            const auto mask = (policy_type & dest_file);
-#define DECL(name) bool(mask & DestSpecFile::name) ? " (" #name ")"sv : ""sv
-            throw std::runtime_error(
-                str_concat("duplicate connection policy value"sv,
-                           DECL(vnc), DECL(rdp), DECL(rdp_sogisces_1_3_2030))
-            );
-#undef DECL
-        }
-        policy_type |= dest_file;
-    }
-}
-
 inline DataAsStrings::ConnectionPolicy make_connpolicy_value(
     DestSpecFile dest_file, ValueAsStrings&& value_as_string, bool forced)
 {
@@ -1649,13 +1679,13 @@ struct EnumAsString
     {
         static_assert(std::is_enum_v<Enum>);
 
-        check_policy({conn_policy_value.policy_type...});
+        check_policy({conn_policy_value.policy_types...});
 
         auto& e = tenums.get_enum<Enum>();
         auto ret = compute_string_enum_as_strings(safe_int(underlying_cast(value)), e);
 
         (..., (ret.values.connection_policies.push_back(make_connpolicy_value(
-            conn_policy_value.policy_type,
+            conn_policy_value.policy_types,
             compute_string_enum_as_strings(
                 safe_int(underlying_cast(Enum{conn_policy_value.value})),
                 e
@@ -1677,13 +1707,13 @@ struct ValueFromEnum
     {
         static_assert(std::is_enum_v<Enum>);
 
-        check_policy({conn_policy_value.policy_type...});
+        check_policy({conn_policy_value.policy_types...});
 
         auto& e = tenums.get_enum<Enum>();
         auto ret = compute_integer_enum_as_strings(safe_int(underlying_cast(value)), e);
 
         (..., (ret.values.connection_policies.push_back(make_connpolicy_value(
-            conn_policy_value.policy_type,
+            conn_policy_value.policy_types,
             compute_integer_enum_as_strings(
                 safe_int(underlying_cast(Enum{conn_policy_value.value})),
                 e
@@ -1705,12 +1735,12 @@ ValueAsStrings value(U const& value = T(), TConnPolicy const&... conn_policy_val
     using ty = std::conditional_t<std::is_void_v<T> && std::is_same_v<U, bool>, bool, T>;
     static_assert(!std::is_void_v<ty>, "T not specified");
 
-    check_policy({conn_policy_value.policy_type...});
+    check_policy({conn_policy_value.policy_types...});
 
     auto ret = compute_value_as_strings(type_<ty>(), static_cast<minify_type_t<U> const&>(value));
 
     (..., (ret.values.connection_policies.push_back(make_connpolicy_value(
-        conn_policy_value.policy_type,
+        conn_policy_value.policy_types,
         compute_value_as_strings(type_<ty>(), conn_policy_value.value),
         conn_policy_value.forced
     ))));
@@ -2173,8 +2203,41 @@ public:
         cpp.start_indexes.emplace_back(cpp.authid_policies.size());
     }
 
+    // check whether value or desc policy is specified, but not in spec info
+    void check_connpolicy_integrity(MemberInfo const& mem_info)
+    {
+        DestSpecFile policy_types {};
+        for (auto const& connpolicy : mem_info.value.values.connection_policies) {
+            policy_types |= connpolicy.dest_file;
+        }
+
+        for (auto dest_file : conn_policies) {
+            // not in connpolicy
+            if (!bool(dest_file & mem_info.spec.dest)) {
+                // but value specified
+                if (bool(dest_file & policy_types)) {
+                    throw std::runtime_error(str_concat(
+                        "Connpolicy value is specified, but not in spec (for '",
+                        mem_info.name.all,
+                        "')"
+                    ));
+                }
+                // but desc specified
+                if (mem_info.desc.find_desc_for_policy(dest_file)) {
+                    throw std::runtime_error(str_concat(
+                        "Connpolicy description is specified, but not in spec (for '",
+                        mem_info.name.all,
+                        "')"
+                    ));
+                }
+            }
+        }
+    }
+
     void evaluate_member(Section const& section_info, MemberInfo const& mem_info, ConfigInfo const& conf)
     {
+        check_connpolicy_integrity(mem_info);
+
         std::string spec_desc {};
         std::string ini_desc {};
 
@@ -2183,14 +2246,7 @@ public:
 
         Names const& names = mem_info.name;
 
-        {
-            std::string_view desc = mem_info.desc;
-            // trim right
-            while (!desc.empty() && (desc.back() == ' ' || desc.back() == '\n')) {
-                desc.remove_suffix(1);
-            }
-            desc_ref_replacer.init(desc, section_info, mem_info, conf);
-        }
+        desc_ref_replacer.init(mem_info.desc.general_desc, section_info, mem_info, conf);
 
         bool const has_spec = mem_info.spec.has_spec();
         bool const has_ini = mem_info.spec.has_ini();
@@ -2325,14 +2381,18 @@ public:
         //
         // ini and spec
         //
-        auto push_ini_or_spec_desc = [&](Appender appender, bool is_spec){
+        auto push_ini_or_spec_desc = [&](Appender appender, bool is_spec, DescRefReplacer::String* mem_desc = nullptr){
             auto marker = Marker{appender.str};
 
             if (mem_info.tags.test(Tag::Workaround)) {
                 appender(workaround_message);
             }
 
-            appender.add_paragraph(is_spec ? spec_mem_desc.sv() : ini_mem_desc.sv());
+            appender.add_paragraph(
+                mem_desc ? mem_desc->sv()
+              : is_spec ? spec_mem_desc.sv()
+              : ini_mem_desc.sv()
+            );
 
             appender(is_spec ? spec_desc : ini_desc);
             auto const& note = is_spec ? mem_info.value.spec_note : mem_info.value.ini_note;
@@ -2419,11 +2479,12 @@ public:
             add_comment(acl_diag.buffer, marker.cut(), "    "sv);
         }
 
+
         //
         // json
         //
         {
-            str_append(json_values,
+            Appender{json_values}(
                 json_values.empty() ? ""sv : ","sv,
                 "\n    {"
                 "\n      \"section\": \""sv, section.names.all, "\","
@@ -2432,18 +2493,17 @@ public:
                 "\n      \"value\": "sv, mem_info.value.values.json, ","
                 "\n      \"description\": \""sv
             );
-            json_quoted(json_values, desc_ref_replacer.replace_refs(
-                true, [&](std::string& s, Section const& section, MemberInfo const& mem, bool no_suffix){
-                    s += "<code>"sv;
-                    if (has_global_spec || has_connpolicy) {
-                        spec_desc_replacer(s, section, mem, no_suffix);
-                    }
-                    else {
-                        ini_desc_replacer(s, section, mem, no_suffix);
-                    }
-                    s += "</code>"sv;
+            auto json_replacer = [&](std::string& s, Section const& section, MemberInfo const& mem, bool no_suffix){
+                s += "<code>"sv;
+                if (has_global_spec || has_connpolicy) {
+                    spec_desc_replacer(s, section, mem, no_suffix);
                 }
-            ).sv());
+                else {
+                    ini_desc_replacer(s, section, mem, no_suffix);
+                }
+                s += "</code>"sv;
+            };
+            json_quoted(json_values, desc_ref_replacer.replace_refs(true, json_replacer).sv());
             json_values += '"';
 
             std::string const* rdp_value = &mem_info.value.values.json;
@@ -2452,7 +2512,7 @@ public:
             if (!mem_info.value.values.connection_policies.empty()) {
                 json_values += ",\n      \"connpolicyValues\": "sv;
                 char c = '{';
-                for (auto& connpolicy : mem_info.value.values.connection_policies) {
+                for (auto const& connpolicy : mem_info.value.values.connection_policies) {
                     for (auto dest_file : conn_policies) {
                         if (!bool(dest_file & connpolicy.dest_file)) {
                             continue;
@@ -2463,7 +2523,23 @@ public:
                         if (bool(dest_file & DestSpecFile::rdp_sogisces_1_3_2030)) {
                             rdp_sogis_value = &connpolicy.json;
                         }
-                        str_append(json_values, c, "\n        \""sv, dest_file_to_filename(dest_file), "\": ", connpolicy.json);
+                        Appender{json_values}(
+                            c, "\n        \""sv,
+                            dest_file_to_filename(dest_file),
+                            "\": {\"value\": "sv, connpolicy.json, ", \"forced\": "sv,
+                            connpolicy.forced ? "true"sv : "false"sv
+                        );
+                        if (auto* specific_desc = mem_info.desc.find_desc_for_policy(dest_file)) {
+                            DescRefReplacer desc_policy;
+                            desc_policy.init(*specific_desc, section_info, mem_info, conf);
+                            json_values += ", \"description\": \""sv;
+                            json_quoted(
+                                json_values,
+                                desc_policy.replace_refs(true, json_replacer).sv()
+                            );
+                            json_values += '"';
+                        }
+                        json_values += "}"sv;
                         c = ',';
                     }
                 }
@@ -2538,12 +2614,7 @@ public:
 
             std::string spec_str;
             spec_str.reserve(128);
-
-            auto appender = Appender{spec_str};
-            push_ini_or_spec_desc(appender, true);
-            appender(member_name, " = "sv,
-                     mem_info.value.prefix_spec_type,
-                     "default="sv);
+            push_ini_or_spec_desc(Appender{spec_str}, true);
 
             std::string_view section_name = connpolicy_section_name(mem_info, section_names);
 
@@ -2563,8 +2634,42 @@ public:
                     continue;
                 }
 
+                bool forced = false;
+
+                // acl <-> proxy mapping (forced value)
+                if (!bool(mem_info.spec.attributes & SpecAttributes::external)) {
+                    for (auto& connpolicy : mem_info.value.values.connection_policies) {
+                        auto const dest_map = (conn_policies_acl_map_mask & connpolicy.dest_file);
+                        if (bool(dest_file & connpolicy.dest_file) && connpolicy.forced) {
+                            str_append(policy.acl_map[dest_map].hidden_values,
+                                "    '"sv, acl_name, "': "sv, connpolicy.py, ",\n"sv);
+                            forced = true;
+                            break;
+                        }
+                    }
+                }
+
+                // forced values arre hidden (not in spec)
+                if (forced) {
+                    continue;
+                }
+
                 auto& content = policy.spec_file_map[dest_file][section_name];
-                content += spec_str;
+                if (auto* specific_desc = mem_info.desc.find_desc_for_policy(dest_file)) {
+                    DescRefReplacer desc_policy;
+                    desc_policy.init(*specific_desc, section_info, mem_info, conf);
+                    if (auto* enumeration = mem_info.value.enumeration) {
+                        desc_policy.set_desc_if_empty(enumeration->desc);
+                    }
+                    auto mem_desc = desc_policy.replace_refs(true, spec_desc_replacer);
+                    std::string spec_str;
+                    spec_str.reserve(128);
+                    push_ini_or_spec_desc(Appender{spec_str}, true, &mem_desc);
+                    content += spec_str;
+                }
+                else {
+                    content += spec_str;
+                }
 
                 std::string const* py_value = nullptr;
                 std::string const* all_value = &mem_info.value.values.py;
@@ -2583,22 +2688,16 @@ public:
                     py_value = all_value;
                 }
 
-                content += *py_value;
-                content += ")\n\n"sv;
+                Appender{content}(
+                    member_name, " = "sv,
+                    mem_info.value.prefix_spec_type,
+                    "default="sv, *py_value, ")\n\n"sv
+                );
 
-                // acl <-> proxy mapping
                 if (!bool(mem_info.spec.attributes & SpecAttributes::external)) {
                     str_append(policy.acl_map[dest_file].sections[section_name],
                         "        ('"sv, acl_name, "', '"sv, member_name, "', "sv, *py_value, "),\n"sv
                     );
-
-                    for (auto& connpolicy : mem_info.value.values.connection_policies) {
-                        auto const dest_map = (conn_policies_acl_map_mask & connpolicy.dest_file);
-                        if (bool(dest_file & connpolicy.dest_file) && connpolicy.forced) {
-                            str_append(policy.acl_map[dest_map].hidden_values,
-                                "    '"sv, acl_name, "': "sv, connpolicy.py, ",\n"sv);
-                        }
-                    }
                 }
             }
         }
@@ -2787,6 +2886,11 @@ private:
             buf.clear();
             replacements.clear();
 
+            // trim right
+            while (!str.empty() && (str.back() == ' ' || str.back() == '\n')) {
+                str.remove_suffix(1);
+            }
+
             std::string_view::size_type pos = 0;
             while ((pos = str.find(sref, pos)) != std::string_view::npos) {
                 auto len = add_replacement(str, pos, section_info, mem_info, conf);
@@ -2934,6 +3038,63 @@ private:
     };
 
     DescRefReplacer desc_ref_replacer;
+
+    struct DescRefReplacers
+    {
+        DescRefReplacer general;
+        DescRefReplacer vnc;
+        DescRefReplacer rdp;
+        DescRefReplacer rdp_sogisces_1_3_2030;
+        DestSpecFile policy_types;
+
+        void init(Description const& desc, Section const& section_info, MemberInfo const& mem_info, ConfigInfo const& conf)
+        {
+            general.init(desc.general_desc, section_info, mem_info, conf);
+
+            policy_types = DestSpecFile();
+
+            struct D { DestSpecFile type; DescRefReplacer& ref; };
+            for (auto const& connpolicy : desc.specific_descs) {
+                apply_policies([&](DestSpecFile type, DescRefReplacer& ref){
+                    policy_types |= connpolicy.policy_types;
+                    auto s = bool(connpolicy.policy_types & type) ? connpolicy.desc : ""sv;
+                    ref.init(s, section_info, mem_info, conf);
+                });
+            }
+        }
+
+        void set_desc_if_empty(std::string_view str)
+        {
+            general.set_desc_if_empty(str);
+            apply_on_activated_policies([&](DescRefReplacer& ref){
+                ref.set_desc_if_empty(str);
+            });
+        }
+
+    private:
+        template<class F>
+        void apply_policies(F f)
+        {
+            struct D { DestSpecFile type; DescRefReplacer& ref; };
+            for (D d : {
+                D{DestSpecFile::vnc, vnc},
+                D{DestSpecFile::rdp, rdp},
+                D{DestSpecFile::rdp_sogisces_1_3_2030, rdp_sogisces_1_3_2030},
+            }) {
+                f(d.type, d.ref);
+            }
+        }
+
+        template<class F>
+        void apply_on_activated_policies(F f)
+        {
+            apply_policies([&](DestSpecFile type, DescRefReplacer& ref){
+                if (bool(policy_types & type)) {
+                    f(ref);
+                }
+            });
+        }
+    };
 };
 
 

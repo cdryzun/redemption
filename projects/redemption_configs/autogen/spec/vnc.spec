@@ -101,6 +101,17 @@ show_common_cipher_list = boolean(default=False)
 #_advanced
 force_authentication_method = string(default="")
 
+[capture]
+
+# Disable keyboard log:
+# &nbsp; &nbsp;   0x0: none
+# &nbsp; &nbsp;   0x1: disable keyboard log in session log
+# &nbsp; &nbsp;   0x2: disable keyboard log in recorded sessions<br/>
+# Note: values can be added (disable all: 0x1 + 0x2 = 0x3)
+#_advanced
+#_hex
+disable_keyboard_log = integer(min=0, max=3, default=3)
+
 [vnc_over_ssh]
 
 enable = boolean(default=False)

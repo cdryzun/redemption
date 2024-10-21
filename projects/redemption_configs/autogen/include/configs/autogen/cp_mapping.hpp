@@ -150,7 +150,11 @@ cp_spec = {
         ('mod_vnc:show_common_cipher_list', 'show_common_cipher_list', False),
         ('mod_vnc:force_authentication_method', 'force_authentication_method', ""),
     },
+    'capture': {
+        ('capture:disable_keyboard_log', 'disable_keyboard_log', 3),
+    },
 }, {
+    'session_log:keyboard_input_masking_level': 0,
 }),
 }
 )xxxyyyzzz"

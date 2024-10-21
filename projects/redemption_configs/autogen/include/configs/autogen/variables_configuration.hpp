@@ -3197,7 +3197,7 @@ namespace cfg
     };
 
     /// Show keyboard input event in meta file <br/>
-    /// (Please see also [session_log]keyboard_input_masking_level) <br/>
+    /// (Please see also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP) <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct audit::enable_keyboard_log {

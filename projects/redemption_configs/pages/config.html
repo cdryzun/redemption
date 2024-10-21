@@ -26,6 +26,10 @@ td, th {
   padding: .2em .5em;
 }
 
+del {
+  color: #aaa;
+}
+
 .enumInt > tbody > tr > td:first-child {
   text-align: right;
 }
@@ -97,6 +101,11 @@ h2 > a, h3 > a {
 }
 .type-info-default {
   color: #5faf5f;
+}
+.type-info-forced {
+  color: #e83f4f;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 .type-info-connpolicy-special {
   color: #5f5faf;
@@ -621,9 +630,20 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
     for (const option of sectionData.options) {
       let value = option.value;
       let rdp_sogisces = '';
+      let defaultValueType = 'default';
+      let connpolicyDesc = undefined;
+      let delBefore = '';
+      let delAfter = '';
       if (isConnpolicy && option.connpolicyValues) {
         if (prefix in option.connpolicyValues) {
-          value = option.connpolicyValues[prefix];
+          let connValue = option.connpolicyValues[prefix];
+          value = connValue.value;
+          connpolicyDesc = connValue.description;
+          if (connValue.forced) {
+            defaultValueType = 'forced';
+            delBefore = '<del>';
+            delAfter = '</del>';
+          }
         }
 
         if (prefix === 'rdp' && 'rdp-sogisces_1.3_2030' in option.connpolicyValues) {
@@ -641,14 +661,16 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
       const tags = makeTagList(option.tags);
       const listChar = `<span class="advanced-mode-${option.advanced ? 'advanced' : 'normal'}-marker">–</span>`;
       htmlMenuFragments.push(
-        `<a class="menu-item ${classes}" href="#${optId}">${listChar} ${option.displayName}${tags}</a>`
+        `<a class="menu-item ${classes}" href="#${optId}">${listChar} ${delBefore}${option.displayName}${delAfter}${tags}</a>`
       );
 
 
       let [type, description, extraDescription, humanValue, defaultValue]
         = makeInfoSpec(enumDatas, option, value);
 
-      description = description
+      description = (connpolicyDesc !== undefined)
+        ? refOptionFormatting(htmlEscape(connpolicyDesc))
+        : description
         ? refOptionFormatting(htmlEscape(description))
         : '<i>No description</i>';
 
@@ -659,8 +681,8 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
 
       htmlBodyFragments.push(`
         <article class="option ${classes}" id="${optId}">
-          <h3><a href="#${optId}">${sectionPrefix}<span class="section-prefix">[${realSectionName}]</span> ${option.displayName}</a>${tags}</h3>
-          <p class="type-info">type: ${type} ${optSep} ${option.advanced ? `advanced ${optSep} ` : ''}<span class="type-info-default">default</span>: <code>${defaultValue}</code>${humanValue}${rdp_sogisces}</p>
+          <h3><a href="#${optId}">${sectionPrefix}<span class="section-prefix">[${realSectionName}]</span> ${delBefore}${option.displayName}${delAfter}</a>${tags}</h3>
+          <p class="type-info">type: ${type} ${optSep} ${option.advanced ? `advanced ${optSep} ` : ''}<span class="type-info-${defaultValueType}">${defaultValueType}</span>: <code>${defaultValue}</code>${humanValue}${rdp_sogisces}</p>
           <p class="description">${description.replaceAll('\n', '</p><p class="description">')}</p>
           ${extraDescription}
           ${history}

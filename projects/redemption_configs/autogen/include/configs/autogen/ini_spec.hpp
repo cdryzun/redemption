@@ -446,7 +446,7 @@ wrm_compression_algorithm = option(0, 1, 2, default=1)
 [audit]
 
 # Show keyboard input event in meta file
-# (Please see also "Keyboard input masking level" option (in "session_log" section of "Connection Policy" configuration))
+# (Please see also "Keyboard input masking level" option (in "session_log" section of "Connection Policy" configuration) for RDP and "Disable keyboard log" option (in "capture" section of "Connection Policy" configuration) for VNC and RDP)
 #_advanced
 enable_keyboard_log = boolean(default=True)
 

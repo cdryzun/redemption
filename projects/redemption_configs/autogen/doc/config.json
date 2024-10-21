@@ -775,7 +775,7 @@
       "value": true,
       "description": "When <code>\"Enable NLA\"</code> is selected, this option instructs the Bastion to use Kerberos as its initial method.",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": true
+        "rdp-sogisces_1.3_2030": {"value": true, "forced": false}
       },
       "displayName": "Enable Kerberos",
       "rdp": true,
@@ -790,7 +790,7 @@
       "value": false,
       "description": "When both <code>\"Enable NLA\"</code> and <code>\"Enable Kerberos\"</code> are selected, this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": false
+        "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
       "displayName": "Allow NLA NTLM fallback",
       "rdp": true,
@@ -805,7 +805,7 @@
       "value": false,
       "description": "Allow TLS only fallback if NLA authentication fail.\n(if <code>\"Enable NLA\" option</code> is disabled, this value is ignored).",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": false
+        "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
       "displayName": "Allow TLS only fallback",
       "rdp": true,
@@ -820,7 +820,7 @@
       "value": false,
       "description": "Allow Standard RDP Security (Legacy) fallback if TLS connection fail.",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": false
+        "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
       "displayName": "Allow RDP legacy fallback",
       "rdp": true,
@@ -836,7 +836,7 @@
       "value": 2,
       "description": "Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": 2
+        "rdp-sogisces_1.3_2030": {"value": 2, "forced": false}
       },
       "displayName": "TLS min level",
       "rdp": true,
@@ -851,7 +851,7 @@
       "value": 0,
       "description": "Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": 0
+        "rdp-sogisces_1.3_2030": {"value": 0, "forced": false}
       },
       "displayName": "TLS max level",
       "rdp": true,
@@ -866,7 +866,7 @@
       "value": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256",
       "description": "TLSv1.2 and below additional ciphers supported.\nEmpty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.\nThe format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256"
+        "rdp-sogisces_1.3_2030": {"value": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256", "forced": false}
       },
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
@@ -893,7 +893,7 @@
       "value": "",
       "description": "Configure the available TLSv1.3 ciphersuites.\nEmpty to apply system-wide configuration.\nThe format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
+        "rdp-sogisces_1.3_2030": {"value": "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256", "forced": false}
       },
       "tags": ["SOG-IS"],
       "displayName": "TLS 1.3 cipher suites",
@@ -909,7 +909,7 @@
       "value": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192",
       "description": "Configure the supported key exchange groups.\nEmpty to apply system-wide configuration.\nThe format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192"
+        "rdp-sogisces_1.3_2030": {"value": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192", "forced": false}
       },
       "displayName": "TLS key exchange groups",
       "rdp": true,
@@ -1583,8 +1583,8 @@
       "value": false,
       "description": "",
       "connpolicyValues": {
-        "rdp": true,
-        "rdp-sogisces_1.3_2030": true
+        "rdp": {"value": true, "forced": false},
+        "rdp-sogisces_1.3_2030": {"value": true, "forced": false}
       },
       "displayName": "Enable Session Probe",
       "rdp": true,
@@ -2520,8 +2520,12 @@
       "type": "enum",
       "value": 2,
       "description": "Classification of input data is performed using Session Probe.\nWithout Session Probe, all the texts entered are considered unidentified.",
+      "connpolicyValues": {
+        "vnc": {"value": 0, "forced": true}
+      },
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "KeyboardInputMaskingLevel"
@@ -2649,8 +2653,12 @@
       "type": "enum",
       "value": 0,
       "description": "Disable keyboard log:\n(Please see also <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>)",
+      "connpolicyValues": {
+        "vnc": {"value": 3, "forced": false, "description": "Disable keyboard log:"}
+      },
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2718,7 +2726,7 @@
       "name": "enable_keyboard_log",
       "type": "bool",
       "value": true,
-      "description": "Show keyboard input event in meta file\n(Please see also <code>\"Keyboard input masking level\" option (in \"session_log\" section of \"Connection Policy\" configuration)</code>)",
+      "description": "Show keyboard input event in meta file\n(Please see also <code>\"Keyboard input masking level\" option (in \"session_log\" section of \"Connection Policy\" configuration)</code> for RDP and <code>\"Disable keyboard log\" option (in \"capture\" section of \"Connection Policy\" configuration)</code> for VNC and RDP)",
       "globalSpec": true,
       "advanced": true
     },

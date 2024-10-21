@@ -109,6 +109,7 @@ using cfg_generators::rdp_general_policy_value;
 using cfg_generators::rdp_sogisces_1_3_2030_policy_value;
 using cfg_generators::vnc_policy_value;
 using cfg_generators::MemberInfo;
+using cfg_generators::Description;
 using spec::proxy_to_acl;
 using spec::acl_to_proxy;
 using spec::acl_rw;
@@ -539,8 +540,10 @@ _.section("session_log", [&]
 
     _.member(MemberInfo{
         .name = "keyboard_input_masking_level",
-        .value = from_enum(KeyboardInputMaskingLevel::password_and_unidentified),
-        .spec = connpolicy(rdp, loggable),
+        .value = from_enum(KeyboardInputMaskingLevel::password_and_unidentified,
+            // see capture::disable_keyboard_log
+            vnc_policy_value(KeyboardInputMaskingLevel::unmasked).always()),
+        .spec = connpolicy(rdp | vnc, loggable),
         .desc = "Classification of input data is performed using Session Probe.\n"
         "Without Session Probe, all the texts entered are considered unidentified.",
     });
@@ -2608,11 +2611,17 @@ _.section("capture", [&]
 
     _.member(MemberInfo{
         .name = "disable_keyboard_log",
-        .value = from_enum(KeyboardLogFlags::none),
-        .spec = connpolicy(rdp, loggable, spec::advanced),
-        .desc =
+        .value = from_enum(KeyboardLogFlags::none,
+            // see session_log::keyboard_input_masking_level
+            vnc_policy_value(KeyboardLogFlags::session_log | KeyboardLogFlags::wrm)),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
+        .desc = {
             "Disable keyboard log:\n"
-            "(Please see also :REF:[session_log]:keyboard_input_masking_level)"
+            "(Please see also :REF:[session_log]:keyboard_input_masking_level)",
+            Description::ConnPolicy{vnc,
+                "Disable keyboard log:"
+            },
+        }
     });
 
     _.member(MemberInfo{
@@ -2666,7 +2675,7 @@ _.section("audit", [&]
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
             "Show keyboard input event in meta file\n"
-            "(Please see also :REF:[session_log]:keyboard_input_masking_level)"
+            "(Please see also :REF:[session_log]:keyboard_input_masking_level for RDP and :REF:[capture]:disable_keyboard_log for VNC and RDP)"
     });
 
     _.member(MemberInfo{

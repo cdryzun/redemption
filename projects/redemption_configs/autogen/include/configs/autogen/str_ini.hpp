@@ -1474,7 +1474,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 [audit]
 
 # Show keyboard input event in meta file
-# (Please see also [session_log]keyboard_input_masking_level)
+# (Please see also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP)
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #enable_keyboard_log = 1
