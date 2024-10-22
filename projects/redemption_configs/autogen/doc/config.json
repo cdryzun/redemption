@@ -2654,7 +2654,7 @@
       "value": 0,
       "description": "Disable keyboard log:\n(Please see also <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>)",
       "connpolicyValues": {
-        "vnc": {"value": 3, "forced": false, "description": "Disable keyboard log:"}
+        "vnc": {"value": 3, "forced": false, "description": "⚠ Logs may contain passwords.\n\nDisable keyboard log:"}
       },
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,

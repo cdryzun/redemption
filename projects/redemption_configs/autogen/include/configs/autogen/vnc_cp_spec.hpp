@@ -107,6 +107,7 @@ force_authentication_method = string(default="")
 
 [capture]
 
+# ⚠ Logs may contain passwords.<br/>
 # Disable keyboard log:
 # &nbsp; &nbsp;   0x0: none
 # &nbsp; &nbsp;   0x1: disable keyboard log in session log

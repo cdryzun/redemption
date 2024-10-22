@@ -2619,6 +2619,7 @@ _.section("capture", [&]
             "Disable keyboard log:\n"
             "(Please see also :REF:[session_log]:keyboard_input_masking_level)",
             Description::ConnPolicy{vnc,
+                "⚠ Logs may contain passwords.\n\n"
                 "Disable keyboard log:"
             },
         }
