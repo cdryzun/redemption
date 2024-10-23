@@ -1007,6 +1007,18 @@
     },
     {
       "section": "mod_rdp",
+      "name": "force_display_resolution",
+      "type": "ScreenResolution",
+      "value": "",
+      "description": "Forces the screen size of an RDP target.\nThis option is ignored when the value is 0x0 or empty.",
+      "rdp": true,
+      "rdp_sogisces_1_3_2030": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "mod_rdp",
       "name": "fast_path",
       "type": "bool",
       "value": true,

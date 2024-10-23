@@ -30,6 +30,7 @@
 #include "utils/hexadecimal_string_to_buffer.hpp"
 #include "utils/colors.hpp"
 #include "utils/file_permissions.hpp"
+#include "utils/screen_resolution.hpp"
 #include "utils/ascii.hpp"
 #include "configs/parsers/parse_performance_flags.hpp"
 
@@ -135,6 +136,21 @@ zstring_view assign_zbuf_from_cfg(
     std::chrono::duration<T, Ratio> const & x
 ) {
     return assign_zbuf_from_cfg(zbuf, cfg_s_type<T>{}, x.count());
+}
+
+inline zstring_view assign_zbuf_from_cfg(
+    writable_chars_view zbuf,
+    cfg_s_type<ScreenResolution> /*type*/,
+    ScreenResolution const & resolution
+) {
+    assert(zbuf.data());
+    auto r1 = std::to_chars(zbuf.begin(), zbuf.end(), resolution.width);
+    assert(r1.ec == std::errc());
+    *r1.ptr = 'x';
+    auto r2 = std::to_chars(r1.ptr + 1, zbuf.end(), resolution.height);
+    assert(r2.ec == std::errc());
+    *r2.ptr = '\0';
+    return zstring_view::from_null_terminated(zbuf.data(), std::size_t(r2.ptr - zbuf.data()));
 }
 //@}
 
@@ -416,7 +432,7 @@ inline parse_error parse_from_cfg(
     uint32_t mode = 0;
 
     parse_error parsing_error{
-        "Cannot parse file permission because it's not an octal number (i.e. 0*[0-7]{1,3}) or a symbolic mode format (i.e. [ugoa]*[+-=][rwx]*)"
+        "cannot parse file permission, expected an octal number (i.e. 0*[0-7]{1,3}) or a symbolic mode format (i.e. [ugoa]*[+-=][rwx]*)"
     };
 
     if (value.empty()) {
@@ -546,6 +562,35 @@ inline parse_error parse_from_cfg(
             return no_parse_error;
         }
     }
+}
+
+inline parse_error parse_from_cfg(
+    ScreenResolution& x, ::configs::spec_type<ScreenResolution> /*type*/,
+    bytes_view value)
+{
+    ScreenResolution resolution{};
+
+    parse_error parsing_error{
+        "cannot parse screen resolution, expected {width}x{height} (e.g. 800x600)"
+    };
+
+    if (!value.empty()) {
+        auto chars = value.as_chars();
+        char const* p = chars.begin();
+        char const* e = chars.end();
+
+        auto r1 = std::from_chars(p, e, resolution.width, 10);
+        if (r1.ec != std::errc() || r1.ptr == e || (*r1.ptr != 'x' && *r1.ptr != 'X')) {
+            return parsing_error;
+        }
+        auto r2 = std::from_chars(r1.ptr+1, e, resolution.height, 10);
+        if (r2.ec != std::errc() || r2.ptr != e) {
+            return parsing_error;
+        }
+    }
+
+    x = resolution;
+    return no_parse_error;
 }
 
 inline parse_error parse_from_cfg(

@@ -40,6 +40,7 @@
 #include "core/app_path.hpp"
 #include "core/RDP/rdp_performance_flags.hpp"
 #include "utils/file_permissions.hpp"
+#include "utils/screen_resolution.hpp"
 #include <string>
 #include <chrono>
 #include <vector>

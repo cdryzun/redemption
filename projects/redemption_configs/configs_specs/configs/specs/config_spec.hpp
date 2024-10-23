@@ -34,6 +34,7 @@
 #include "utils/theme.hpp"
 #include "utils/colors.hpp"
 #include "utils/file_permissions.hpp"
+#include "utils/screen_resolution.hpp"
 
 #include <chrono>
 #include <vector>
@@ -1096,6 +1097,15 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .desc =
             "List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.\n"
             "An explicit name will have higher priority than '*' in :REF::allowed_dynamic_channels."
+    });
+
+    _.member(MemberInfo{
+        .name = "force_display_resolution",
+        .value = value<ScreenResolution>(),
+        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .desc =
+            "Forces the screen size of an RDP target.\n"
+            "This option is ignored when the value is 0x0 or empty.",
     });
 
     // TODO remove ?

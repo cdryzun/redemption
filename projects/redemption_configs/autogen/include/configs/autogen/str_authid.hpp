@@ -45,6 +45,7 @@ namespace configs
         "mod_rdp:denied_channels"_zv,
         "mod_rdp:allowed_dynamic_channels"_zv,
         "mod_rdp:denied_dynamic_channels"_zv,
+        "mod_rdp:force_display_resolution"_zv,
         "mod_rdp:server_redirection_support"_zv,
         "mod_rdp:load_balance_info"_zv,
         "mod_rdp:proxy_managed_drives"_zv,

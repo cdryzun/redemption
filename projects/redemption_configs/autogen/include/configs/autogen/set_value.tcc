@@ -731,6 +731,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "force_display_resolution"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_rdp::force_display_resolution&>(this->variables).value,
+                ::configs::spec_type<ScreenResolution>{},
+                value
+            );
+        }
         else if (key == "fast_path"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),

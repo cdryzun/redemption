@@ -110,6 +110,7 @@ namespace cfg
         struct denied_channels;
         struct allowed_dynamic_channels;
         struct denied_dynamic_channels;
+        struct force_display_resolution;
         struct fast_path;
         struct server_redirection_support;
         struct load_balance_info;

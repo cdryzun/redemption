@@ -748,6 +748,13 @@ ModPack create_mod_rdp(
         rail_client_execute.reset(false);
     }
 
+    if (auto const& resolution = ini.get<cfg::mod_rdp::force_display_resolution>()
+      ; resolution.is_valid()
+    ) {
+        client_info.screen_info.width  = resolution.width;
+        client_info.screen_info.height = resolution.height;
+    }
+
     // ================== FileValidator ============================
     auto & vp = mod_rdp_params.validator_params;
     vp.log_if_accepted = ini.get<cfg::file_verification::log_if_accepted>();

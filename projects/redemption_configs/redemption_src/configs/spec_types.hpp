@@ -41,7 +41,6 @@ namespace spec_types
     class fixed_string;
     template<class T> class list;
     using ip = std::string;
-    struct file_permission;
 
     template<class T>
     struct underlying_type_for_range

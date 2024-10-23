@@ -20,6 +20,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/file_permissions.hpp"
 
 #include "utils/file_permissions.hpp"
+#include "utils/screen_resolution.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 #include "utils/sugar/bounded_array_view.hpp"
 #include "utils/sugar/cast.hpp"
@@ -374,6 +375,26 @@ inline DataAsStrings file_permission_value_to_strings(unsigned permissions)
         .py = str_concat('"', std::string_view(p, len), '"'),
         .ini = std::string(p, len),
         .cpp = std::string(d.data(), len + 1),
+    };
+}
+
+inline DataAsStrings screen_resolution_value_to_strings(ScreenResolution resolution)
+{
+    if (!resolution.is_valid()) {
+        return {
+            .py = "\"\""s,
+            .ini = {},
+            .cpp = {},
+        };
+    }
+
+    auto w = int_to_decimal_chars(resolution.width);
+    auto h = int_to_decimal_chars(resolution.height);
+
+    return {
+        .py = str_concat('"', w.sv(), 'x', h.sv(), '"'),
+        .ini = str_concat(w.sv(), 'x', h.sv()),
+        .cpp = str_concat(w.sv(), ", "sv, h.sv()),
     };
 }
 
@@ -1178,6 +1199,16 @@ ValueAsStrings compute_value_as_strings(type_<T>, V const& value)
             .spec_str_buffer_size = integral_buffer_size_v<uint16_t>,
             .values = file_permission_value_to_strings(value),
             .spec_note = "in octal or symbolic mode format (as chmod Linux command)"s,
+        };
+    }
+    else if constexpr (std::is_same_v<T, ScreenResolution>) {
+        return ValueAsStrings{
+            .prefix_spec_type = "string("s,
+            .cpp_type = "ScreenResolution"s,
+            .json_type = "ScreenResolution"sv,
+            .spec_str_buffer_size = integral_buffer_size_v<uint16_t> * 2 + 1,
+            .values = screen_resolution_value_to_strings(value),
+            .spec_note = "in {width}x{height} format (e.g. 800x600)"s,
         };
     }
     else if constexpr (std::is_base_of_v<impl::unsigned_base, T>) {

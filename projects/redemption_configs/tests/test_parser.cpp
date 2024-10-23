@@ -66,6 +66,16 @@ namespace
     };
 }
 
+static std::ostream& operator<<(std::ostream& out, ScreenResolution const& resolution)
+{
+    return out << resolution.width << 'x' << resolution.height;
+}
+
+static bool operator==(ScreenResolution const& a, ScreenResolution const& b)
+{
+    return a.width == b.width && a.height == b.height;
+}
+
 RED_AUTO_TEST_CASE(TestEnumParser)
 {
     char zbuffer[1024];
@@ -399,6 +409,27 @@ RED_AUTO_TEST_CASE(TestOtherParser)
         RED_CHECK(no_parse_error != parse_from_cfg(perms, stype, ","_zv));
         RED_CHECK(no_parse_error != parse_from_cfg(perms, stype, "z"_zv));
         RED_CHECK(no_parse_error != parse_from_cfg(perms, stype, "8"_zv));
+    }
+
+    // ScreenResolution
+    {
+        ScreenResolution resolution{1, 2};
+        configs::spec_type<ScreenResolution> stype;
+
+        RED_CHECK(no_parse_error == parse_from_cfg(resolution, stype, ""_zv));
+        RED_CHECK((ScreenResolution{0, 0}) == resolution);
+        RED_CHECK(no_parse_error == parse_from_cfg(resolution, stype, "1x1"_zv));
+        RED_CHECK((ScreenResolution{1, 1}) == resolution);
+        RED_CHECK(no_parse_error == parse_from_cfg(resolution, stype, "0x0"_zv));
+        RED_CHECK((ScreenResolution{0, 0}) == resolution);
+        RED_CHECK(no_parse_error == parse_from_cfg(resolution, stype, "1280x1080"_zv));
+        RED_CHECK((ScreenResolution{1280, 1080}) == resolution);
+        RED_CHECK(no_parse_error == parse_from_cfg(resolution, stype, "1020X940"_zv));
+        RED_CHECK((ScreenResolution{1020, 940}) == resolution);
+
+        RED_CHECK(no_parse_error != parse_from_cfg(resolution, stype, "1280"_zv));
+        RED_CHECK(no_parse_error != parse_from_cfg(resolution, stype, "1280x"_zv));
+        RED_CHECK(no_parse_error != parse_from_cfg(resolution, stype, "1280x1080x"_zv));
     }
 
     // fixed_binary
