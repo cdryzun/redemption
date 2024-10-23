@@ -173,39 +173,37 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
         left + (this->cx() - this->connection_closed_label.cx()) / 2, top + y);
     y += this->connection_closed_label.cy();
 
-    // this->separator.set_wh(600, 2);
-    // this->separator.set_xy(left + (this->cx() - 600) / 2, top + y + 3);
-    this->separator.set_wh(std::max(600, width / 3 * 2), 2);
+    const bool is_short_screen = (width < 600);
+
+    this->separator.set_wh(is_short_screen ? width : std::max(600, width / 3 * 2), 2);
     this->separator.set_xy(left + (this->cx() - this->separator.cx()) / 2, top + y + 3);
     y += 30;
+
+    const uint16_t dx = is_short_screen ? 0 : (width - this->separator.cx()) / 2;
 
     uint16_t x = 0;
 
     if (!this->username_value.get_text().empty()) {
         dim = this->username_label.get_optimal_dim();
         this->username_label.set_wh(dim);
-        this->username_label.set_xy(left + (width - this->separator.cx()) / 2,
-            this->username_label.y());
+        this->username_label.set_xy(left + dx, this->username_label.y());
         x = std::max<uint16_t>(this->username_label.cx(), x);
 
         dim = this->target_label.get_optimal_dim();
         this->target_label.set_wh(dim);
-        this->target_label.set_xy(left + (width - this->separator.cx()) / 2,
-            this->target_label.y());
+        this->target_label.set_xy(left + dx, this->target_label.y());
         x = std::max<uint16_t>(this->target_label.cx(), x);
     }
 
     dim = this->diagnostic_label.get_optimal_dim();
     this->diagnostic_label.set_wh(dim);
-    this->diagnostic_label.set_xy(left + (width - this->separator.cx()) / 2,
-        this->diagnostic_label.y());
+    this->diagnostic_label.set_xy(left + dx, this->diagnostic_label.y());
     x = std::max<uint16_t>(this->diagnostic_label.cx(), x);
 
     if (this->showtimer) {
         dim = this->timeleft_label.get_optimal_dim();
         this->timeleft_label.set_wh(dim);
-        this->timeleft_label.set_xy(left + (width - this->separator.cx()) / 2,
-            this->timeleft_label.y());
+        this->timeleft_label.set_xy(left + dx, this->timeleft_label.y());
         x = std::max<uint16_t>(this->timeleft_label.cx(), x);
     }
 
@@ -231,19 +229,20 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     this->diagnostic_label.set_xy(this->diagnostic_label.x(), top + y);
 
+    const bool short_diag = this->diagnostic_label.cx() > this->cx() - (x + 10)
+                         || width < 400;
+
     this->diagnostic_value.set_text(gdi::MultiLineTextMetrics(
         this->font, this->diagnostic_text,
-        (this->diagnostic_label.cx() > this->cx() - (x + 10))
-            ? this->separator.cx()
-            : this->separator.cx() - x)
-    );
+        short_diag ? this->cx() : this->separator.cx() - x
+    ));
     dim = this->diagnostic_value.get_optimal_dim();
     this->diagnostic_value.set_wh(dim);
 
-    if (this->diagnostic_label.cx() > this->cx() - (x + 10)) {
+    if (short_diag) {
         y += this->diagnostic_label.cy() + 10;
 
-        this->diagnostic_value.set_xy(x + this->diagnostic_label.x(), top + y);
+        this->diagnostic_value.set_xy(0, top + y);
         y += this->diagnostic_value.cy() + 20;
     }
     else {
