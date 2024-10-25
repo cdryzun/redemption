@@ -57,14 +57,14 @@ RdpNego::RdpNego(
 : tls(true)
 , nla(nla)
 , nla_ntlm_fallback(nla_ntlm)
-, tls_only_fallback(tls_only)
-, rdp_legacy_fallback(rdp_legacy)
+, tls_only(tls_only)
+, rdp_legacy(rdp_legacy)
 , krb(nla && krb)
 , restricted_admin_mode(admin_mode)
 , selected_protocol(RdpNegoProtocols::None)
 , enabled_protocols(
-      (this->rdp_legacy_fallback ? RdpNegoProtocols::Rdp : 0)
-    | (this->tls ? RdpNegoProtocols::Tls : 0)
+      (this->rdp_legacy ? RdpNegoProtocols::Rdp : 0)
+    | (this->tls_only ? RdpNegoProtocols::Tls : 0)
     | (this->nla ? RdpNegoProtocols::Nla : 0))
 , username(username)
 , target_host(target_host)
@@ -78,12 +78,14 @@ RdpNego::RdpNego(
 , tls_config(tls_config)
 , verbose(verbose)
 {
-    LOG(LOG_INFO, "RdpNego: TLS=%s NLA=%s Legacy=%s adminMode=%s",
+    LOG(LOG_INFO, "RdpNego: TLS=%s NLA=%s adminMode=%s",
         ((this->enabled_protocols & RdpNegoProtocols::Tls) ? "Enabled" : "Disabled"),
         ((this->enabled_protocols & RdpNegoProtocols::Nla) ? "Enabled" : "Disabled"),
-        ((this->enabled_protocols & RdpNegoProtocols::Rdp) ? "Enabled" : "Disabled"),
         (this->restricted_admin_mode ? "Enabled" : "Disabled")
         );
+    if (this->enabled_protocols & RdpNegoProtocols::Rdp) {
+        LOG(LOG_INFO, "RdpNego: Legacy=Enabled");
+    }
 
     if (this->restricted_admin_mode
         && !(this->enabled_protocols & RdpNegoProtocols::Nla)) {
@@ -305,9 +307,14 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
     X224::CC_TPDU_Recv x224(x224_stream);
 
     if (x224.rdp_neg_type == X224::RDP_NEG_NONE) {
-        this->enabled_protocols = RdpNegoProtocols::Rdp;
-        LOG(LOG_INFO, "RdpNego::recv_connection_confirm done (legacy, no TLS)");
-        return State::Final;
+        if (this->rdp_legacy){
+            this->enabled_protocols = RdpNegoProtocols::Rdp;
+            LOG(LOG_INFO, "RdpNego::recv_connection_confirm done (legacy, no TLS)");
+            return State::Final;
+        } else {
+            LOG(LOG_ERR, "RDP Legacy only not allowed.");
+            throw Error(ERR_NEGO_RDP_LEGACY_FORBIDDEN);
+        }
     }
 
     this->selected_protocol = x224.rdp_neg_code;
@@ -322,14 +329,24 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
 
         if (x224.rdp_neg_code == X224::PROTOCOL_TLS)
         {
-            LOG(LOG_INFO, "activating TLS");
-            return this->activate_ssl_tls(trans, certificate_checker);
+            if (this->tls_only) {
+                LOG(LOG_INFO, "activating TLS");
+                return this->activate_ssl_tls(trans, certificate_checker);
+            } else {
+                LOG(LOG_ERR, "TLS only not allowed.");
+                throw Error(ERR_NEGO_SSL_ONLY_FORBIDDEN);
+            }
         }
 
         if (x224.rdp_neg_code == X224::PROTOCOL_RDP)
         {
-            LOG(LOG_INFO, "activating RDP Legacy");
-            return State::Final;
+            if (this->rdp_legacy){
+                LOG(LOG_INFO, "activating RDP Legacy");
+                return State::Final;
+            } else {
+                LOG(LOG_ERR, "RDP Legacy only not allowed.");
+                throw Error(ERR_NEGO_RDP_LEGACY_FORBIDDEN);
+            }
         }
     }
     else if (x224.rdp_neg_type == X224::RDP_NEG_FAILURE)
@@ -361,7 +378,7 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
 
         if (x224.rdp_neg_code == X224::SSL_NOT_ALLOWED_BY_SERVER
             || x224.rdp_neg_code == X224::SSL_CERT_NOT_ON_SERVER) {
-            if (!this->rdp_legacy_fallback) {
+            if (!this->rdp_legacy) {
                 LOG(LOG_ERR, "Can't activate SSL. RDP Legacy only not allowed.");
                 throw Error(ERR_NEGO_SSL_REQUIRED);
             }
@@ -536,7 +553,7 @@ RdpNego::State RdpNego::fallback_to_tls(OutTransport trans)
     }
     else {
         LOG(LOG_INFO, "Can't activate NLA");
-        if (!this->tls_only_fallback) {
+        if (!this->tls_only) {
             LOG(LOG_ERR, "NLA failed. TLS only not allowed");
             if (this->krb_state) {
                 throw Error(ERR_NEGO_KRB_REQUIRED);

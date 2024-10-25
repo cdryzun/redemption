@@ -64,20 +64,23 @@ disabled_orders = string(default="27")
 #_display_name=Enable NLA
 enable_nla = boolean(default=True)
 
-# When "Enable NLA" is selected, this option instructs the Bastion to use Kerberos as its initial method.
+# When "Enable NLA" is selected:
+# Enabling this option instructs the Bastion to use Kerberos as its initial method.
+# Disabling this option instructs the Bastion to only use NTLM.
 #_display_name=Enable Kerberos
 enable_kerberos = boolean(default=True)
 
-# When both "Enable NLA" and "Enable Kerberos" are selected, this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.
+# When both "Enable NLA" and "Enable Kerberos" are selected:
+# Enabling this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.
+# Disabling this option instructs the Bastion to only use Kerberos.
 #_display_name=Allow NLA NTLM fallback
 allow_nla_ntlm_fallback = boolean(default=False)
 
-# Allow TLS only fallback if NLA authentication fail.
-# (if "Enable NLA" option is disabled, this value is ignored).
+# Allow TLS only.
 #_display_name=Allow TLS only fallback
 allow_tls_only_fallback = boolean(default=False)
 
-# Allow Standard RDP Security (Legacy) fallback if TLS connection fail.
+# Allow Standard RDP Security (Legacy).
 #_advanced
 #_display_name=Allow RDP legacy fallback
 allow_rdp_legacy_fallback = boolean(default=False)

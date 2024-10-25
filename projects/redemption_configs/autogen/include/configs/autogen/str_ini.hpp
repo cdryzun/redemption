@@ -381,26 +381,29 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:enable_nla)
 #enable_nla = 1
 
-# When [mod_rdp]enable_nla is selected, this option instructs the Bastion to use Kerberos as its initial method.
+# When [mod_rdp]enable_nla is selected:
+# Enabling this option instructs the Bastion to use Kerberos as its initial method.
+# Disabling this option instructs the Bastion to only use NTLM.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable Kerberos
 # (acl config: proxy ⇐ mod_rdp:enable_kerberos)
 #enable_kerberos = 1
 
-# When both [mod_rdp]enable_nla and [mod_rdp]enable_kerberos are selected, this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.
+# When both [mod_rdp]enable_nla and [mod_rdp]enable_kerberos are selected:
+# Enabling this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.
+# Disabling this option instructs the Bastion to only use Kerberos.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Allow NLA NTLM fallback
 # (acl config: proxy ⇐ mod_rdp:allow_nla_ntlm_fallback)
 #allow_nla_ntlm_fallback = 0
 
-# Allow TLS only fallback if NLA authentication fail.
-# (if [mod_rdp]enable_nla is disabled, this value is ignored).
+# Allow TLS only.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Allow TLS only fallback
 # (acl config: proxy ⇐ mod_rdp:allow_tls_only_fallback)
 #allow_tls_only_fallback = 0
 
-# Allow Standard RDP Security (Legacy) fallback if TLS connection fail.
+# Allow Standard RDP Security (Legacy).
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Allow RDP legacy fallback

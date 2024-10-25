@@ -51,8 +51,8 @@ public:
     const bool tls;
     const bool nla;
     const bool nla_ntlm_fallback;
-    const bool tls_only_fallback;
-    const bool rdp_legacy_fallback;
+    const bool tls_only;
+    const bool rdp_legacy;
 
 private:
     const bool krb;

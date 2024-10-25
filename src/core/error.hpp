@@ -140,6 +140,8 @@
     f(ERR_NEGO_KRB_REQUIRED)                                 \
     f(ERR_NEGO_NLA_REQUIRED)                                 \
     f(ERR_NEGO_SSL_REQUIRED)                                 \
+    f(ERR_NEGO_SSL_ONLY_FORBIDDEN)                           \
+    f(ERR_NEGO_RDP_LEGACY_FORBIDDEN)                         \
                                                              \
     fv(ERR_WRM, 20000)                                       \
     fv(ERR_WRM_INVALID_INIT_CRYPT, 20012)                    \

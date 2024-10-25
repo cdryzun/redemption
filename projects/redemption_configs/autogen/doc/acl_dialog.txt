@@ -62,14 +62,17 @@ cfg::mod_rdp::disabled_orders ⇐ mod_rdp:disabled_orders   [std::string]
 cfg::mod_rdp::enable_nla ⇐ mod_rdp:enable_nla   [bool]
     Enable NLA authentication in secondary target.
 cfg::mod_rdp::enable_kerberos ⇐ mod_rdp:enable_kerberos   [bool]
-    When [mod_rdp]enable_nla is selected, this option instructs the Bastion to use Kerberos as its initial method.
+    When [mod_rdp]enable_nla is selected:
+    Enabling this option instructs the Bastion to use Kerberos as its initial method.
+    Disabling this option instructs the Bastion to only use NTLM.
 cfg::mod_rdp::allow_nla_ntlm_fallback ⇐ mod_rdp:allow_nla_ntlm_fallback   [bool]
-    When both [mod_rdp]enable_nla and [mod_rdp]enable_kerberos are selected, this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.
+    When both [mod_rdp]enable_nla and [mod_rdp]enable_kerberos are selected:
+    Enabling this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.
+    Disabling this option instructs the Bastion to only use Kerberos.
 cfg::mod_rdp::allow_tls_only_fallback ⇐ mod_rdp:allow_tls_only_fallback   [bool]
-    Allow TLS only fallback if NLA authentication fail.
-    (if [mod_rdp]enable_nla is disabled, this value is ignored).
+    Allow TLS only.
 cfg::mod_rdp::allow_rdp_legacy_fallback ⇐ mod_rdp:allow_rdp_legacy_fallback   [bool]
-    Allow Standard RDP Security (Legacy) fallback if TLS connection fail.
+    Allow Standard RDP Security (Legacy).
 cfg::mod_rdp::tls_min_level ⇐ mod_rdp:tls_min_level   [uint32_t]
     Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
 cfg::mod_rdp::tls_max_level ⇐ mod_rdp:tls_max_level   [uint32_t]

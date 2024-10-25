@@ -116,8 +116,8 @@ RED_AUTO_TEST_CASE(TestNego)
         true,  // enable nla
         false,  // enable krb
         false,  // allow nla ntlm fallback
-        false, // allow tls only fallback
-        false,  // allow rdp legacy fallback
+        true, // allow tls only
+        false,  // allow rdp legacy
         false,  // admin mode
         rand, time_base, extra_message, lang, TlsConfig{}, RdpNego::Verbose());
     nego.set_identity(user, pass, domain, host);

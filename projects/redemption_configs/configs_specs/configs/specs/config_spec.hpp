@@ -913,8 +913,10 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = value(true, rdp_sogisces_1_3_2030_policy_value(true)),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "When :REF:NOSUFFIX:[mod_rdp]:enable_nla is selected, this option"
-            " instructs the Bastion to use Kerberos as its initial method."
+            "When :REF:NOSUFFIX:[mod_rdp]:enable_nla is selected:\n"
+            "Enabling this option instructs the Bastion to use Kerberos"
+            " as its initial method.\n"
+            "Disabling this option instructs the Bastion to only use NTLM.\n"
     });
 
     _.member(MemberInfo{
@@ -923,24 +925,24 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .spec = connpolicy(rdp, loggable),
         .desc =
             "When both :REF:NOSUFFIX:[mod_rdp]:enable_nla and"
-            " :REF:NOSUFFIX:[mod_rdp]:enable_kerberos are selected,"
-            " this option instructs the Bastion to use Kerberos first"
-            " and, if necessary, NTLM as a backup.",
+            " :REF:NOSUFFIX:[mod_rdp]:enable_kerberos are selected:\n"
+            "Enabling this option instructs the Bastion to use Kerberos first"
+            " and, if necessary, NTLM as a backup.\n"
+            "Disabling this option instructs the Bastion to only use Kerberos.",
     });
 
     _.member(MemberInfo{
         .name = "allow_tls_only_fallback",
         .value = value<bool>(false, rdp_sogisces_1_3_2030_policy_value(false)),
         .spec = connpolicy(rdp, loggable),
-        .desc = "Allow TLS only fallback if NLA authentication fail.\n"
-        "(if :REF:[mod_rdp]:enable_nla is disabled, this value is ignored).",
+        .desc = "Allow TLS only."
     });
 
     _.member(MemberInfo{
         .name = "allow_rdp_legacy_fallback",
         .value = value<bool>(false, rdp_sogisces_1_3_2030_policy_value(false)),
         .spec = connpolicy(rdp, loggable, spec::advanced),
-        .desc = "Allow Standard RDP Security (Legacy) fallback if TLS connection fail.",
+        .desc = "Allow Standard RDP Security (Legacy).",
     });
 
     _.member(MemberInfo{

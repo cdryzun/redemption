@@ -905,7 +905,9 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// When [mod_rdp]enable_nla is selected, this option instructs the Bastion to use Kerberos as its initial method. <br/>
+    /// When [mod_rdp]enable_nla is selected: <br/>
+    /// Enabling this option instructs the Bastion to use Kerberos as its initial method. <br/>
+    /// Disabling this option instructs the Bastion to only use NTLM. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:enable_kerberos <br/>
@@ -920,7 +922,9 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// When both [mod_rdp]enable_nla and [mod_rdp]enable_kerberos are selected, this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup. <br/>
+    /// When both [mod_rdp]enable_nla and [mod_rdp]enable_kerberos are selected: <br/>
+    /// Enabling this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup. <br/>
+    /// Disabling this option instructs the Bastion to only use Kerberos. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:allow_nla_ntlm_fallback <br/>
@@ -935,8 +939,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Allow TLS only fallback if NLA authentication fail. <br/>
-    /// (if [mod_rdp]enable_nla is disabled, this value is ignored). <br/>
+    /// Allow TLS only. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:allow_tls_only_fallback <br/>
@@ -951,7 +954,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Allow Standard RDP Security (Legacy) fallback if TLS connection fail. <br/>
+    /// Allow Standard RDP Security (Legacy). <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:allow_rdp_legacy_fallback <br/>

@@ -773,7 +773,7 @@
       "name": "enable_kerberos",
       "type": "bool",
       "value": true,
-      "description": "When <code>\"Enable NLA\"</code> is selected, this option instructs the Bastion to use Kerberos as its initial method.",
+      "description": "When <code>\"Enable NLA\"</code> is selected:\nEnabling this option instructs the Bastion to use Kerberos as its initial method.\nDisabling this option instructs the Bastion to only use NTLM.",
       "connpolicyValues": {
         "rdp-sogisces_1.3_2030": {"value": true, "forced": false}
       },
@@ -788,7 +788,7 @@
       "name": "allow_nla_ntlm_fallback",
       "type": "bool",
       "value": false,
-      "description": "When both <code>\"Enable NLA\"</code> and <code>\"Enable Kerberos\"</code> are selected, this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.",
+      "description": "When both <code>\"Enable NLA\"</code> and <code>\"Enable Kerberos\"</code> are selected:\nEnabling this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.\nDisabling this option instructs the Bastion to only use Kerberos.",
       "connpolicyValues": {
         "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
@@ -803,7 +803,7 @@
       "name": "allow_tls_only_fallback",
       "type": "bool",
       "value": false,
-      "description": "Allow TLS only fallback if NLA authentication fail.\n(if <code>\"Enable NLA\" option</code> is disabled, this value is ignored).",
+      "description": "Allow TLS only.",
       "connpolicyValues": {
         "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
@@ -818,7 +818,7 @@
       "name": "allow_rdp_legacy_fallback",
       "type": "bool",
       "value": false,
-      "description": "Allow Standard RDP Security (Legacy) fallback if TLS connection fail.",
+      "description": "Allow Standard RDP Security (Legacy).",
       "connpolicyValues": {
         "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
