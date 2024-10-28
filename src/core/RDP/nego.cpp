@@ -61,7 +61,7 @@ RdpNego::RdpNego(
 , rdp_legacy(rdp_legacy)
 , krb(nla && krb)
 , restricted_admin_mode(admin_mode)
-, selected_protocol(RdpNegoProtocols::None)
+, selected_protocol(X224::PROTOCOL_RDP)
 , enabled_protocols(
       (this->rdp_legacy ? RdpNegoProtocols::Rdp : 0)
     | (this->tls_only ? RdpNegoProtocols::Tls : 0)
@@ -306,24 +306,12 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
 
     X224::CC_TPDU_Recv x224(x224_stream);
 
-    if (x224.rdp_neg_type == X224::RDP_NEG_NONE) {
-        if (this->rdp_legacy){
-            this->enabled_protocols = RdpNegoProtocols::Rdp;
-            LOG(LOG_INFO, "RdpNego::recv_connection_confirm done (legacy, no TLS)");
-            return State::Final;
-        } else {
-            LOG(LOG_ERR, "RDP Legacy only not allowed.");
-            throw Error(ERR_NEGO_RDP_LEGACY_FORBIDDEN);
-        }
-    }
-
-    this->selected_protocol = x224.rdp_neg_code;
-
     if (x224.rdp_neg_type == X224::RDP_NEG_RSP)
     {
         if (x224.rdp_neg_code == X224::PROTOCOL_HYBRID)
         {
             LOG(LOG_INFO, "activating TLS (HYBRID)");
+            this->selected_protocol = x224.rdp_neg_code;
             return this->activate_ssl_hybrid(trans, certificate_checker);
         }
 
@@ -331,25 +319,29 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
         {
             if (this->tls_only) {
                 LOG(LOG_INFO, "activating TLS");
+                this->selected_protocol = x224.rdp_neg_code;
                 return this->activate_ssl_tls(trans, certificate_checker);
             } else {
                 LOG(LOG_ERR, "TLS only not allowed.");
                 throw Error(ERR_NEGO_SSL_ONLY_FORBIDDEN);
             }
         }
-
-        if (x224.rdp_neg_code == X224::PROTOCOL_RDP)
-        {
-            if (this->rdp_legacy){
-                LOG(LOG_INFO, "activating RDP Legacy");
-                return State::Final;
-            } else {
-                LOG(LOG_ERR, "RDP Legacy only not allowed.");
-                throw Error(ERR_NEGO_RDP_LEGACY_FORBIDDEN);
-            }
+    }
+    if ((x224.rdp_neg_type == X224::RDP_NEG_RSP
+         && x224.rdp_neg_code == X224::PROTOCOL_RDP)
+        || x224.rdp_neg_type == X224::RDP_NEG_NONE)
+    {
+        if (this->rdp_legacy){
+            LOG(LOG_INFO, "activating RDP Legacy");
+            this->enabled_protocols = RdpNegoProtocols::Rdp;
+            this->selected_protocol = X224::PROTOCOL_RDP;
+            return State::Final;
+        } else {
+            LOG(LOG_ERR, "RDP Legacy only not allowed.");
+            throw Error(ERR_NEGO_RDP_LEGACY_FORBIDDEN);
         }
     }
-    else if (x224.rdp_neg_type == X224::RDP_NEG_FAILURE)
+    if (x224.rdp_neg_type == X224::RDP_NEG_FAILURE)
     {
         if (x224.rdp_neg_code == X224::HYBRID_REQUIRED_BY_SERVER)
         {
@@ -395,8 +387,9 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
         }
     }
 
-    LOG_IF(bool(this->verbose & Verbose::negotiation), LOG_INFO, "RdpNego::recv_connection_confirm done");
-    return State::Final;
+    LOG(LOG_ERR, "RdpNego::recv_connection_confirm: Invalid response");
+    // Error if not cases above => not supported
+    throw Error(ERR_NEGO_INCONSISTENT_FLAGS);
 }
 
 static bool enable_client_tls(OutTransport trans, RdpNego::CertificateChecker certificate_checker, TlsConfig const& tls_config)

@@ -64,7 +64,7 @@ private:
     bool nla_tried = false;
 
 public:
-    uint32_t selected_protocol;
+    uint32_t selected_protocol = 0;
 
 private:
     uint32_t enabled_protocols;

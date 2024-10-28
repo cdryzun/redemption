@@ -2247,6 +2247,8 @@ private:
                     case ERR_NEGO_KRB_REQUIRED:
                     case ERR_NEGO_NLA_REQUIRED:
                     case ERR_NEGO_SSL_REQUIRED:
+                    case ERR_NEGO_SSL_ONLY_FORBIDDEN:
+                    case ERR_NEGO_RDP_LEGACY_FORBIDDEN:
                         throw error;
                     default: break;
                     }
