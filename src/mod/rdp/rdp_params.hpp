@@ -189,8 +189,8 @@ struct ModRDPParams
 
     struct DynamicChannelsParams
     {
-        zstring_view allowed_channels = "*"_zv;
-        zstring_view denied_channels  = ""_zv;
+        std::string allowed_channels = "*";
+        std::string denied_channels  = "";
     };
 
     DynamicChannelsParams dynamic_channels_params;
@@ -441,8 +441,8 @@ struct ModRDPParams
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             use_license_store);
 
-        RDP_PARAMS_LOG("%s",     s_or_none,             dynamic_channels_params.allowed_channels);
-        RDP_PARAMS_LOG("%s",     s_or_none,             dynamic_channels_params.denied_channels);
+        RDP_PARAMS_LOG("%s",     RDP_PARAMS_LOG_GET,    dynamic_channels_params.allowed_channels);
+        RDP_PARAMS_LOG("%s",     RDP_PARAMS_LOG_GET,    dynamic_channels_params.denied_channels);
 
         RDP_PARAMS_LOG("%u",     static_cast<unsigned>, save_session_info_pdu);
 

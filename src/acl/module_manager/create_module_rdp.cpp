@@ -748,6 +748,8 @@ ModPack create_mod_rdp(
     ) {
         client_info.screen_info.width  = resolution.width;
         client_info.screen_info.height = resolution.height;
+        // prevent the change of resolution during the session
+        mod_rdp_params.dynamic_channels_params.denied_channels += ",Microsoft::Windows::RDS::DisplayControl";
     }
 
     // ================== FileValidator ============================
