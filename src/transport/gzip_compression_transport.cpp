@@ -89,6 +89,10 @@ Transport::Read GZipCompressionInTransport::do_atomic_read(uint8_t * buffer, siz
                 }
 
                 const size_t compressed_data_length = compressed_data.in_uint32_le();
+                if (compressed_data_length > sizeof(this->compressed_data_buf)) {
+                    LOG(LOG_ERR, "GZipCompressionInTransport: read a corrumpted data (request %zu bytes)", compressed_data_length);
+                    throw Error(ERR_TRANSPORT_READ_FAILED);
+                }
                 this->source_transport.recv_boom(this->compressed_data_buf, compressed_data_length);
                 this->compression_stream.avail_in = compressed_data_length;
                 this->compression_stream.next_in  = this->compressed_data_buf;
