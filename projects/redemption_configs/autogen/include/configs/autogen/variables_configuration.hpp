@@ -1166,6 +1166,7 @@ namespace cfg
         type value {  };
     };
     /// Forces the screen size of an RDP target. <br/>
+    /// The format is {width}x{height}, e.g. 800x600. <br/>
     /// This option is ignored when the value is 0x0 or empty. <br/>
     /// type: ScreenResolution <br/>
     /// connpolicy -> proxy <br/>

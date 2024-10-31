@@ -1104,9 +1104,10 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     _.member(MemberInfo{
         .name = "force_display_resolution",
         .value = value<ScreenResolution>(),
-        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .spec = connpolicy(rdp, loggable),
         .desc =
             "Forces the screen size of an RDP target.\n"
+            "The format is {width}x{height}, e.g. 800x600.\n"
             "This option is ignored when the value is 0x0 or empty.",
     });
 

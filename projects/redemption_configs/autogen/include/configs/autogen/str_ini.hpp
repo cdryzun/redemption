@@ -497,9 +497,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 #denied_dynamic_channels = 
 
 # Forces the screen size of an RDP target.
+# The format is {width}x{height}, e.g. 800x600.
 # This option is ignored when the value is 0x0 or empty.
 # (in {width}x{height} format (e.g. 800x600))
-#_advanced
 # (acl config: proxy ⇐ mod_rdp:force_display_resolution)
 #force_display_resolution = 
 
