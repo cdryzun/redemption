@@ -1019,7 +1019,8 @@ static inline int replay(
                 in_wrm_trans.next();
             }
 
-            LOG(LOG_INFO, "player begin_capture = %ld", capture_times.begin_cap.count());
+            LOG(LOG_INFO, "player begin_capture = %ld, end_capture = %ld",
+                capture_times.begin_cap.count(), capture_times.end_cap.count());
             FileToGraphic player(
                 in_wrm_trans,
                 rp.play_video_with_corrupted_bitmap,
@@ -1049,7 +1050,7 @@ static inline int replay(
                     ? progress_start_time
                     : MonotonicTimePoint();
 
-                const auto video_stop_time = (capture_times.begin_cap != 0s)
+                const auto video_stop_time = (capture_times.end_cap != 0s)
                     ? progress_stop_time
                     : MonotonicTimePoint::max();
 
