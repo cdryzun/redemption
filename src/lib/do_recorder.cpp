@@ -778,11 +778,12 @@ struct OutStatisticField
 inline
 static void show_statistics(
     FileToGraphic::Statistics const & statistics,
-    uint64_t total_wrm_file_len, unsigned count_wrm_file)
+    uint64_t total_wrm_file_len, std::size_t count_wrm_file)
 {
     using Stat = FileToGraphic::Statistics::Order;
     int const count_field_len = fiels_size(statistics, &Stat::count);
     int const total_field_len = fiels_size(statistics, &Stat::total_len);
+    auto const ratio = static_cast<double>(statistics.total_read_len) / static_cast<double>(total_wrm_file_len);
 
     auto f = [=](Stat const & stat){
       return OutStatisticField{count_field_len, total_field_len, stat};
@@ -791,7 +792,7 @@ static void show_statistics(
     std::cout
     << "\nCount wrm file        : " << count_wrm_file
     << "\nTotal wrm files size  : " << total_wrm_file_len << " bytes"
-    << "\nTotal orders size     : " << statistics.total_read_len << " bytes. Ratio : x" << (statistics.total_read_len / double(total_wrm_file_len))
+    << "\nTotal orders size     : " << statistics.total_read_len << " bytes. Ratio : x" << ratio
     << "\nInternal orders size  : " << statistics.internal_order_read_len << " bytes"
     << "\n"
     << "\nDstBlt                : " << f(statistics.DstBlt)
@@ -995,8 +996,8 @@ static inline int replay(
 
     std::chrono::seconds begin_record = wrm_lines.front().start_time;
     std::chrono::seconds end_record   = wrm_lines.back().stop_time;
-    unsigned count_wrm_file = wrm_lines.size();
-    // TODO wrm_lines.size() ?
+    const auto count_wrm_file = wrm_lines.size();
+    // TODO always 0...
     uint64_t total_wrm_file_len = 0;
 
     int result = -1;
