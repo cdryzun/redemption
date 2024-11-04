@@ -31,6 +31,14 @@
 
 #include <sys/stat.h>
 
+/**
+ * License file name format:
+ *  license_index_v0 = 0x{version_in_8_hex_digits}_{scope}_{company_name}_{product_id}
+ *  license_index_v1 = 0.0.0.0_0x{version_in_8_hex_digits}_{scope}_{company_name}_{product_id}
+ *  license_index = license_index_v0 | license_index_v1
+ *  license_index = license_index.replace(' ', '-')
+ *  {license_path}/{client_name}/{license_index}
+ */
 class FileSystemLicenseStore : public LicenseApi
 {
 public:
@@ -39,7 +47,11 @@ public:
     {}
 
     // The functions shall return empty bytes_view to indicate the error.
-    bytes_view get_license_v1(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, std::array<uint8_t, LIC::LICENSE_HWID_SIZE>& hwid, writable_bytes_view out, bool enable_log) override
+    bytes_view get_license_v1(
+        char const* client_name, uint32_t version, char const* scope,
+        char const* company_name, char const* product_id,
+        writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
+        writable_bytes_view out, bool enable_log) override
     {
         char license_index[2048] = {};
         ::snprintf(license_index, sizeof(license_index) - 1, "0.0.0.0_0x%08X_%s_%s_%s", version, scope, company_name, product_id);
@@ -53,9 +65,9 @@ public:
         filename[sizeof(filename) - 1] = '\0';
 
         if (unique_fd ufd{::open(filename, O_RDONLY)}) {
-            size_t number_of_bytes_read = ::read(ufd.fd(), hwid.data(), hwid.size());
-            if (number_of_bytes_read != sizeof(hwid)) {
-                LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v1: license file truncated (1) : expected %zu, got %zu", sizeof(hwid), number_of_bytes_read);
+            ssize_t number_of_bytes_read = ::read(ufd.fd(), hwid.data(), hwid.size());
+            if (number_of_bytes_read != hwid.size()) {
+                LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v1: license file truncated (1) : expected %zu, got %zu", hwid.size(), number_of_bytes_read);
             }
             else {
                 uint32_t license_size = 0;
@@ -87,7 +99,10 @@ public:
     }
 
     // The functions shall return empty bytes_view to indicate the error.
-    bytes_view get_license_v0(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, writable_bytes_view out, bool enable_log) override
+    bytes_view get_license_v0(
+        char const* client_name, uint32_t version, char const* scope,
+        char const* company_name, char const* product_id,
+        writable_bytes_view out, bool enable_log) override
     {
         char license_index[2048] = {};
         ::snprintf(license_index, sizeof(license_index) - 1, "0x%08X_%s_%s_%s", version, scope, company_name, product_id);
@@ -102,7 +117,7 @@ public:
 
         if (unique_fd ufd{::open(filename, O_RDONLY)}) {
             uint32_t license_size = 0;
-            size_t number_of_bytes_read = ::read(ufd.fd(), &license_size, sizeof(license_size));
+            ssize_t number_of_bytes_read = ::read(ufd.fd(), &license_size, sizeof(license_size));
             if (number_of_bytes_read != sizeof(license_size)) {
                 LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v0: license file truncated (1) : expected %zu, got %zu", sizeof(license_size), number_of_bytes_read);
             }
@@ -128,7 +143,11 @@ public:
         return bytes_view { out.data(), 0 };
     }
 
-    bool put_license(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, std::array<uint8_t, LIC::LICENSE_HWID_SIZE> const& hwid, bytes_view in, bool enable_log) override
+    bool put_license(
+        char const* client_name, uint32_t version, char const* scope,
+        char const* company_name, char const* product_id,
+        sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
+        bytes_view in, bool enable_log) override
     {
         char license_index[2048] = {};
         ::snprintf(license_index, sizeof(license_index) - 1, "0.0.0.0_0x%08X_%s_%s_%s", version, scope, company_name, product_id);

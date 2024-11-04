@@ -228,5 +228,5 @@ private:
     void send_data_request(uint16_t channelId, WriterData... writer_data);
     void send_client_info_pdu();
 
-    static void get_hwid_by_client_name(std::array<uint8_t, LIC::LICENSE_HWID_SIZE>& hwid_out, static_string<HOST_NAME_MAX> const& client_name);
+    void init_hwid_by_client_name();
 };

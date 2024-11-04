@@ -52,6 +52,7 @@
 #include "utils/sugar/multisz.hpp"
 #include "utils/strutils.hpp"
 #include "utils/sugar/zstring_view.hpp"
+#include "utils/sugar/bounded_bytes_view.hpp"
 
 #include <cstring>
 
@@ -1216,7 +1217,7 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
                                 ::char_ptr_cast(SvrLicReq.ScopeList.ScopeArray[i].blobData.data()),
                                 ::char_ptr_cast(CompanyNameU8),
                                 ::char_ptr_cast(ProductIdU8),
-                                this->hwid,
+                                make_writable_sized_array_view(this->hwid),
                                 writable_bytes_view(this->lic_layer_license_data, sizeof(lic_layer_license_data)),
                                 bool(this->verbose & RDPVerbose::license)
                             );
@@ -1237,7 +1238,7 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
                             );
                             if (not out.empty())
                             {
-                                this->get_hwid_by_client_name(this->hwid, this->logon_info.hostname());
+                                this->init_hwid_by_client_name();
                                 this->has_hwid = true;
                             }
                         }
@@ -1328,7 +1329,7 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
 
                 if (!this->has_hwid)
                 {
-                    this->get_hwid_by_client_name(this->hwid, this->logon_info.hostname());
+                    this->init_hwid_by_client_name();
                     this->has_hwid = true;
                 }
 
@@ -1586,15 +1587,17 @@ RdpNegociationResult const& RdpNegociation::get_result() const noexcept
     return this->negociation_result;
 }
 
-void RdpNegociation::get_hwid_by_client_name(std::array<uint8_t, LIC::LICENSE_HWID_SIZE>& hwid_out,
-    static_string<HOST_NAME_MAX> const& client_name)
+void RdpNegociation::init_hwid_by_client_name()
 {
+    // assure fixed size
+    writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> buffer = make_writable_sized_array_view(this->hwid);
     /* Generate a signature for a buffer of token and HWID */
-    OutStream os({hwid_out.data(), hwid_out.size()});
+    OutStream os(buffer);
 
     os.out_uint32_le(2);
 
     std::size_t const pktlen = LIC::LICENSE_HWID_SIZE - 4;
+    bytes_view const client_name = this->logon_info.hostname();
     std::size_t const slen = std::min(pktlen, client_name.size());
     os.out_copy_bytes(client_name.data(), slen);
     os.out_clear_bytes(pktlen - slen);

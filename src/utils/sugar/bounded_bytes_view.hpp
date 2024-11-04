@@ -113,8 +113,8 @@ struct bounded_bytes_view : bounded_array_view<uint8_t, AtLeast, AtMost>
     template<class T, std::size_t n>
     bounded_bytes_view & operator=(T(&)[n]) = delete;
 
-    bounded_bytes_view(bounded_chars_view av) noexcept /*NOLINT*/
-    : bounded_u8_array_view(byte_ptr_cast(av.data()), av.size())
+    bounded_bytes_view(bounded_chars_view av) noexcept
+    : bounded_u8_array_view(bounded_u8_array_view::assumed(byte_ptr_cast(av.data()), av.size()))
     {}
 
     template<class U, typename std::enable_if<
