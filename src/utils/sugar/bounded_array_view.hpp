@@ -1432,7 +1432,7 @@ make_sized_array_view(writable_sized_array_view<T, Size> av) noexcept
 }
 
 template<class Cont,
-    class AV = decltype(writable_bounded_array_view{std::declval<Cont&>()}),
+    class AV = decltype(bounded_array_view{std::declval<Cont&>()}),
     class = std::enable_if_t<AV::at_least == AV::at_most>
 >
 constexpr AV make_sized_array_view(Cont& cont)
