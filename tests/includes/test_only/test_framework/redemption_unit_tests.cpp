@@ -113,81 +113,67 @@ namespace redemption_unit_test_
         return out;
     }
 
-    namespace
-    {
-#ifdef __clang__
-        constexpr std::size_t start_type_name = 42;
-        constexpr std::size_t end_type_name = 1;
-
-        constexpr std::size_t prefix_value_name = 56;
-        constexpr char end_value_name = '>';
-#elif defined(__GNUC__)
-        constexpr std::size_t start_type_name = 47;
-        constexpr std::size_t end_type_name = 35;
-
-        [[maybe_unused]] constexpr std::size_t prefix_value_name = 97;
-        [[maybe_unused]] constexpr char end_value_name = ';';
-#endif
-    }
-
-    ::chars_view Enum::get_type_name(::chars_view s) noexcept
-    {
-        return {s.data() + start_type_name, s.size() - start_type_name - end_type_name};
-    }
-
-    ::chars_view Enum::get_value_name(
-        long long x, ::chars_view name,
+    Enum::Enum(
+        long long x, ::chars_view proto, bool is_signed,
         ::chars_view s0, ::chars_view s1, ::chars_view s2,
         ::chars_view s3, ::chars_view s4, ::chars_view s5,
         ::chars_view s6, ::chars_view s7, ::chars_view s8,
         ::chars_view s9) noexcept
+    : x(x)
+    , is_signed(is_signed)
     {
-        std::string_view s;
+        (void)proto;
+
 #if defined(__clang__) || (defined(__GNUC__) && __GNUC__ >= 9)
-        auto to_sv = [](chars_view av){ return std::string_view{av.data(), av.size()}; };
+        chars_view s;
         switch (x)
         {
-            case 0: s = to_sv(s0); break;
-            case 1: s = to_sv(s1); break;
-            case 2: s = to_sv(s2); break;
-            case 3: s = to_sv(s3); break;
-            case 4: s = to_sv(s4); break;
-            case 5: s = to_sv(s5); break;
-            case 6: s = to_sv(s6); break;
-            case 7: s = to_sv(s7); break;
-            case 8: s = to_sv(s8); break;
-            case 9: s = to_sv(s9); break;
+            case 0: s = s0; break;
+            case 1: s = s1; break;
+            case 2: s = s2; break;
+            case 3: s = s3; break;
+            case 4: s = s4; break;
+            case 5: s = s5; break;
+            case 6: s = s6; break;
+            case 7: s = s7; break;
+            case 8: s = s8; break;
+            case 9: s = s9; break;
             default:
-                return {};
+                return;
         }
 
-        s.remove_prefix(prefix_value_name);
+        // clang-18:
+        //  proto = "redemption_unit_test_::Enum::Enum(E) [E = FileContentsError]"
+        //  s = "static ::chars_view redemption_unit_test_::EnumValue<FileContentsError, FileContentsError::None>::str() [E = FileContentsError, value = FileContentsError::None]"
 
-#ifdef __clang__
-        if ('0' <= s[0] && s[0] <= '9')
+        // gcc-13:
+        //  proto = "redemption_unit_test_::Enum::Enum(E) [with E = FileContentsError; <template-parameter-1-2> = void]"
+        //  s = "static chars_view redemption_unit_test_::EnumValue<E, value>::str() [with E = FileContentsError; E value = FileContentsError::Open; chars_view = array_view<char>]"
+
+# ifdef __clang__
+        std::size_t suffix_len = 1;
+# elif defined(__GNUC__)
+        std::size_t suffix_len = 32;
+# endif
+
+        auto end = s.end() - suffix_len;
+        auto it = end - 1;
+        while (*it != ' ') {
+            --it;
+        }
+        ++it;
+        this->value_name = {it, end};
+        // Enum::value / Enum{123} / Enum(123)
+        while (*it != ':' && *it != '{' && *it != '(') {
+            ++it;
+        }
+        this->name = {this->value_name.begin(), it};
+
 #else
-        if ('(' == s[name.size()])
-#endif
-        {
-            return {};
-        }
-
-        s.remove_prefix(name.size());
-        auto pos = s.find(end_value_name, name.size() + 2);
-        if (pos != std::string_view::npos) {
-            s.remove_suffix(s.size() - pos);
-        }
-        else {
-            s = {};
-        }
-#else
-        (void)x;
-        (void)name;
         (void)s0; (void)s1; (void)s2; (void)s3; (void)s4;
         (void)s5; (void)s6; (void)s7; (void)s8; (void)s9;
+        return;
 #endif
-
-        return s;
     }
 } // namespace redemption_unit_test_
 

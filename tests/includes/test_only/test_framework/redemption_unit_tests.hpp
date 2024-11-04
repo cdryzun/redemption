@@ -330,10 +330,10 @@ namespace redemption_unit_test_
     {
         template<class E, class = std::enable_if_t<std::is_enum<E>::value>>
         Enum(E e) noexcept
-        : name(get_type_name(cstr_array_view(__PRETTY_FUNCTION__)))
-        , value_name(
-            get_value_name(static_cast<long long>(e),
-            this->name,
+        : Enum(
+            static_cast<long long>(e),
+            cstr_array_view(__PRETTY_FUNCTION__),
+            std::is_signed_v<std::underlying_type_t<E>>,
             EnumValue<E, E(0)>::str(),
             EnumValue<E, E(1)>::str(),
             EnumValue<E, E(2)>::str(),
@@ -343,25 +343,23 @@ namespace redemption_unit_test_
             EnumValue<E, E(6)>::str(),
             EnumValue<E, E(7)>::str(),
             EnumValue<E, E(8)>::str(),
-            EnumValue<E, E(9)>::str()))
-        , x(static_cast<long long>(e))
-        , is_signed(std::is_signed_v<std::underlying_type_t<E>>)
+            EnumValue<E, E(9)>::str()
+        )
         {}
-
-        static ::chars_view get_type_name(::chars_view s) noexcept;
-
-        static ::chars_view get_value_name(
-            long long x, ::chars_view name,
-            ::chars_view s0, ::chars_view s1, ::chars_view s2,
-            ::chars_view s3, ::chars_view s4, ::chars_view s5,
-            ::chars_view s6, ::chars_view s7, ::chars_view s8,
-            ::chars_view s9
-        ) noexcept;
 
         ::chars_view name;
         ::chars_view value_name;
         long long x;
         bool is_signed;
+
+    private:
+        Enum(
+            long long x, ::chars_view proto, bool is_signed,
+            ::chars_view s0, ::chars_view s1, ::chars_view s2,
+            ::chars_view s3, ::chars_view s4, ::chars_view s5,
+            ::chars_view s6, ::chars_view s7, ::chars_view s8,
+            ::chars_view s9
+        ) noexcept;
     };
 
     struct BytesView
