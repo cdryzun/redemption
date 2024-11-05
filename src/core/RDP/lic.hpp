@@ -831,8 +831,7 @@ namespace LIC
             }
         }
 
-        ProductInfo.CompanyName = bytes_view(stream.get_current(), cbCompanyName);
-        stream.in_skip_bytes(cbCompanyName);
+        ProductInfo.CompanyName = stream.in_skip_bytes(cbCompanyName);
 
         uint32_t const cbProductId = stream.in_uint32_le();
 
@@ -845,8 +844,7 @@ namespace LIC
             }
         }
 
-        ProductInfo.ProductId = bytes_view(stream.get_current(), cbProductId);
-        stream.in_skip_bytes(cbProductId);
+        ProductInfo.ProductId = stream.in_skip_bytes(cbProductId);
 
         return ProductInfo;
     }
@@ -917,8 +915,7 @@ namespace LIC
             }
         }
 
-        LicBinBlob.blobData = bytes_view(stream.get_current(), wBlobLen);
-        stream.in_skip_bytes(wBlobLen);
+        LicBinBlob.blobData = stream.in_skip_bytes(wBlobLen);
 
         return LicBinBlob;
     }

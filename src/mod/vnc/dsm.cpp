@@ -334,8 +334,7 @@ bool UltraDSM::handleChallenge(InStream &instream, uint16_t &challengeLen, uint8
         return false;
     }
 
-    InStream s({instream.get_current(), challengeLen});
-    instream.in_skip_bytes(challengeLen);
+    InStream s(instream.in_skip_bytes(challengeLen));
 
     passphraseused = instream.in_uint8();
 

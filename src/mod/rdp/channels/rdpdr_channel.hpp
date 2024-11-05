@@ -536,9 +536,7 @@ class FileSystemVirtualChannel final : public BaseVirtualChannel
                             - this->remaining_device_announce_request_header_stream.get_offset();
 
                         this->remaining_device_announce_request_header_stream.out_copy_bytes(
-                            chunk.get_current(), needed_data_length);
-
-                        chunk.in_skip_bytes(needed_data_length);
+                            chunk.in_skip_bytes(needed_data_length));
 
                         remaining_device_announce_request_header_stream_in = InStream(
                             this->remaining_device_announce_request_header_stream.get_produced_bytes());
@@ -696,10 +694,7 @@ class FileSystemVirtualChannel final : public BaseVirtualChannel
                             chunk.in_remain());
 
                     this->current_device_announce_stream.out_copy_bytes(
-                        chunk.get_current(), length_of_device_data_can_be_processed);
-
-                    chunk.in_skip_bytes(
-                        length_of_device_data_can_be_processed);
+                        chunk.in_skip_bytes(length_of_device_data_can_be_processed));
                     this->length_of_remaining_device_data_to_be_processed -=
                         length_of_device_data_can_be_processed;
 
