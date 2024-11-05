@@ -1204,36 +1204,42 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
                 memcpy(this->lic_layer_license_key, keyblock.get_LicensingEncryptionKey(), 16);
 
                 if (this->use_license_store) {
-                    uint8_t CompanyNameU8[4096] {};
-                    ::UTF16toUTF8_buf(SvrLicReq.ProductInfo.CompanyName, writable_bytes_view{CompanyNameU8, sizeof(CompanyNameU8)});
-
-                    uint8_t ProductIdU8[4096] {};
-                    ::UTF16toUTF8_buf(SvrLicReq.ProductInfo.ProductId, writable_bytes_view{ProductIdU8, sizeof(ProductIdU8)});
+                    uint8_t CompanyNameU8[4096];
+                    uint8_t ProductIdU8[4096];
 
                     for (uint32_t i = 0; i < SvrLicReq.ScopeList.ScopeCount; ++i) {
+                        LicenseApi::LicenseInfo license_info {
+                            .version = SvrLicReq.ProductInfo.dwVersion,
+                            .client_name = logon_info.client_name_is_hidden()
+                                ? "localhost"_av
+                                : chars_view{logon_info.hostname()},
+                            .scope = SvrLicReq.ScopeList.ScopeArray[i].blobData.as_chars(),
+                            .company_name = UTF16toUTF8_buf(
+                                    SvrLicReq.ProductInfo.CompanyName,
+                                    make_writable_array_view(CompanyNameU8)
+                                ).as_chars(),
+                            .product_id = UTF16toUTF8_buf(
+                                    SvrLicReq.ProductInfo.ProductId,
+                                    make_writable_array_view(ProductIdU8)
+                                ).as_chars(),
+                        };
+
                         bytes_view out = this->license_store.get_license_v1(
-                                logon_info.client_name_is_hidden() ? "localhost" : logon_info.hostname().c_str(),
-                                SvrLicReq.ProductInfo.dwVersion,
-                                ::char_ptr_cast(SvrLicReq.ScopeList.ScopeArray[i].blobData.data()),
-                                ::char_ptr_cast(CompanyNameU8),
-                                ::char_ptr_cast(ProductIdU8),
-                                make_writable_sized_array_view(this->hwid),
-                                writable_bytes_view(this->lic_layer_license_data, sizeof(lic_layer_license_data)),
-                                bool(this->verbose & RDPVerbose::license)
-                            );
+                            license_info,
+                            make_writable_sized_array_view(this->hwid),
+                            make_writable_array_view(this->lic_layer_license_data),
+                            bool(this->verbose & RDPVerbose::license)
+                        );
                         if (not out.empty())
                         {
                             this->has_hwid = true;
                         }
                         else
                         {
+                            license_info.client_name = this->real_client_name;
                             out = this->license_store.get_license_v0(
-                                this->real_client_name.c_str(),
-                                SvrLicReq.ProductInfo.dwVersion,
-                                ::char_ptr_cast(SvrLicReq.ScopeList.ScopeArray[i].blobData.data()),
-                                ::char_ptr_cast(CompanyNameU8),
-                                ::char_ptr_cast(ProductIdU8),
-                                writable_bytes_view(this->lic_layer_license_data, sizeof(lic_layer_license_data)),
+                                license_info,
+                                make_writable_array_view(this->lic_layer_license_data),
                                 bool(this->verbose & RDPVerbose::license)
                             );
                             if (not out.empty())
@@ -1384,22 +1390,29 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
                 bool license_saved = false;
 
                 if (this->use_license_store) {
-                    uint8_t CompanyNameU8[4096] {};
-                    ::UTF16toUTF8_buf(bytes_view(lic.licenseInfo.pbCompanyName, lic.licenseInfo.cbCompanyName), writable_bytes_view{CompanyNameU8, sizeof(CompanyNameU8)});
-
-                    uint8_t ProductIdU8[4096] {};
-                    ::UTF16toUTF8_buf(bytes_view(lic.licenseInfo.pbProductId, lic.licenseInfo.cbProductId), writable_bytes_view{ProductIdU8, sizeof(ProductIdU8)});
+                    uint8_t CompanyNameU8[4096];
+                    uint8_t ProductIdU8[4096];
 
                     license_saved = this->license_store.put_license(
-                            logon_info.client_name_is_hidden() ? "localhost" : logon_info.hostname().c_str(),
-                            lic.licenseInfo.dwVersion,
-                            ::char_ptr_cast(lic.licenseInfo.pbScope),
-                            ::char_ptr_cast(CompanyNameU8),
-                            ::char_ptr_cast(ProductIdU8),
-                            this->hwid,
-                            bytes_view(lic.licenseInfo.pbLicenseInfo, lic.licenseInfo.cbLicenseInfo),
-                            bool(this->verbose & RDPVerbose::license)
-                        );
+                        {
+                            .version = lic.licenseInfo.dwVersion,
+                            .client_name = logon_info.client_name_is_hidden()
+                                ? "localhost"_av
+                                : chars_view{logon_info.hostname()},
+                            .scope = bytes_view{lic.licenseInfo.pbScope, lic.licenseInfo.cbScope}.as_chars(),
+                            .company_name = UTF16toUTF8_buf(
+                                    bytes_view(lic.licenseInfo.pbCompanyName, lic.licenseInfo.cbCompanyName),
+                                    make_writable_array_view(CompanyNameU8)
+                                ).as_chars(),
+                            .product_id = UTF16toUTF8_buf(
+                                    bytes_view(lic.licenseInfo.pbProductId, lic.licenseInfo.cbProductId),
+                                    make_writable_array_view(ProductIdU8)
+                                ).as_chars(),
+                        },
+                        this->hwid,
+                        bytes_view(lic.licenseInfo.pbLicenseInfo, lic.licenseInfo.cbLicenseInfo),
+                        bool(this->verbose & RDPVerbose::license)
+                    );
                 }
 
                 if (!license_saved) {

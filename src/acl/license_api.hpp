@@ -27,24 +27,29 @@
 
 struct LicenseApi : noncopyable
 {
+    struct LicenseInfo
+    {
+        uint32_t version;
+        chars_view client_name;
+        chars_view scope;
+        chars_view company_name;
+        chars_view product_id;
+    };
+
     virtual ~LicenseApi() = default;
 
     // The functions shall return empty bytes_view to indicate the error.
     virtual bytes_view get_license_v1(
-        char const* client_name, uint32_t version, char const* scope,
-        char const* company_name, char const* product_id,
+        LicenseInfo license_info,
         writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
         writable_bytes_view out, bool enable_log) = 0;
 
     // The functions shall return empty bytes_view to indicate the error.
     virtual bytes_view get_license_v0(
-        char const* client_name, uint32_t version, char const* scope,
-        char const* company_name, char const* product_id,
-        writable_bytes_view out, bool enable_log) = 0;
+        LicenseInfo license_info, writable_bytes_view out, bool enable_log) = 0;
 
     virtual bool put_license(
-        char const* client_name, uint32_t version, char const* scope,
-        char const* company_name, char const* product_id,
+        LicenseInfo license_info,
         sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
         bytes_view in, bool enable_log) = 0;
 };
@@ -52,47 +57,34 @@ struct LicenseApi : noncopyable
 struct NullLicenseStore : LicenseApi
 {
     bytes_view get_license_v1(
-        char const* client_name, uint32_t version, char const* scope,
-        char const* company_name, char const* product_id, writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
+        LicenseInfo license_info, writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
         writable_bytes_view out, bool enable_log) override
     {
-        (void)client_name;
-        (void)version;
-        (void)scope;
-        (void)company_name;
-        (void)product_id;
+        (void)license_info;
         (void)hwid;
+        (void)out;
         (void)enable_log;
 
-        return bytes_view(out.data(), 0);
+        return {};
     }
 
     bytes_view get_license_v0(
-        char const* client_name, uint32_t version, char const* scope,
-        char const* company_name, char const* product_id,
+        LicenseInfo license_info,
         writable_bytes_view out, bool enable_log) override
     {
-        (void)client_name;
-        (void)version;
-        (void)scope;
-        (void)company_name;
-        (void)product_id;
+        (void)license_info;
+        (void)out;
         (void)enable_log;
 
-        return bytes_view(out.data(), 0);
+        return {};
     }
 
     bool put_license(
-        char const* client_name, uint32_t version, char const* scope,
-        char const* company_name, char const* product_id,
+        LicenseInfo license_info,
         sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
         bytes_view in, bool enable_log) override
     {
-        (void)client_name;
-        (void)version;
-        (void)scope;
-        (void)company_name;
-        (void)product_id;
+        (void)license_info;
         (void)hwid;
         (void)in;
         (void)enable_log;

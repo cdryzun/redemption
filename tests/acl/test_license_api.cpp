@@ -275,7 +275,7 @@ RED_AUTO_TEST_CASE(TestWithoutExistingLicense)
             class CaptureLicenseStore : public NullLicenseStore
             {
             public:
-                bool put_license(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
+                bool put_license(LicenseInfo license_info, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
                 {
                     (void)enable_log;
 
@@ -322,15 +322,15 @@ RED_AUTO_TEST_CASE(TestWithoutExistingLicense)
                     expected_hwid(hwid),
                     expected_license_data(license_data) {}
 
-                bool put_license(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
+                bool put_license(LicenseInfo license_info, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
                 {
                     (void)enable_log;
 
-                    RED_CHECK_EQ(client_name,  this->expected_client_name);
-                    RED_CHECK_EQ(version,      this->expected_version);
-                    RED_CHECK_EQ(scope,        this->expected_scope);
-                    RED_CHECK_EQ(company_name, this->expected_company_name);
-                    RED_CHECK_EQ(product_id,   this->expected_product_id);
+                    RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
+                    RED_CHECK_EQ(license_info.version,      this->expected_version);
+                    RED_CHECK_EQ(license_info.scope,        this->expected_scope);
+                    RED_CHECK_EQ(license_info.company_name, this->expected_company_name);
+                    RED_CHECK_EQ(license_info.product_id,   this->expected_product_id);
 
                     RED_REQUIRE_EQ(hwid.size(), this->expected_hwid.size());
 
@@ -410,15 +410,15 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
                     expected_hwid(hwid),
                     expected_license_data(license_data) {}
 
-                bytes_view get_license_v1(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, writable_bytes_view out, bool enable_log) override
+                bytes_view get_license_v1(LicenseInfo license_info, writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, writable_bytes_view out, bool enable_log) override
                 {
                     (void)enable_log;
 
-                    RED_CHECK_EQ(client_name,  this->expected_client_name);
-                    RED_CHECK_EQ(version,      this->expected_version);
-                    RED_CHECK_EQ(scope,        this->expected_scope);
-                    RED_CHECK_EQ(company_name, this->expected_company_name);
-                    RED_CHECK_EQ(product_id,   this->expected_product_id);
+                    RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
+                    RED_CHECK_EQ(license_info.version,      this->expected_version);
+                    RED_CHECK_EQ(license_info.scope,        this->expected_scope);
+                    RED_CHECK_EQ(license_info.company_name, this->expected_company_name);
+                    RED_CHECK_EQ(license_info.product_id,   this->expected_product_id);
 
                     ::memcpy(hwid.data(), this->expected_hwid.data(), hwid.size());
 
@@ -432,15 +432,15 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
                 }
 
                 // The functions shall return empty bytes_view to indicate the error.
-                bytes_view get_license_v0(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, writable_bytes_view out, bool enable_log) override
+                bytes_view get_license_v0(LicenseInfo license_info, writable_bytes_view out, bool enable_log) override
                 {
                     (void)enable_log;
 
-                    RED_CHECK_EQ(client_name,  this->expected_client_name);
-                    RED_CHECK_EQ(version,      this->expected_version);
-                    RED_CHECK_EQ(scope,        this->expected_scope);
-                    RED_CHECK_EQ(company_name, this->expected_company_name);
-                    RED_CHECK_EQ(product_id,   this->expected_product_id);
+                    RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
+                    RED_CHECK_EQ(license_info.version,      this->expected_version);
+                    RED_CHECK_EQ(license_info.scope,        this->expected_scope);
+                    RED_CHECK_EQ(license_info.company_name, this->expected_company_name);
+                    RED_CHECK_EQ(license_info.product_id,   this->expected_product_id);
 
                     RED_REQUIRE_GE(out.size(), this->expected_license_data.size());
 
@@ -451,17 +451,17 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
                     return bytes_view { out.data(), effective_license_size };
                 }
 
-                bool put_license(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
+                bool put_license(LicenseInfo license_info, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
                 {
                     (void)enable_log;
                     (void)hwid;
                     (void)in;
 
-                    RED_CHECK_EQ(client_name,  this->expected_client_name);
-                    RED_CHECK_EQ(version,      this->expected_version);
-                    RED_CHECK_EQ(scope,        this->expected_scope);
-                    RED_CHECK_EQ(company_name, this->expected_company_name);
-                    RED_CHECK_EQ(product_id,   this->expected_product_id);
+                    RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
+                    RED_CHECK_EQ(license_info.version,      this->expected_version);
+                    RED_CHECK_EQ(license_info.scope,        this->expected_scope);
+                    RED_CHECK_EQ(license_info.company_name, this->expected_company_name);
+                    RED_CHECK_EQ(license_info.product_id,   this->expected_product_id);
 
                     return true;
                 }
