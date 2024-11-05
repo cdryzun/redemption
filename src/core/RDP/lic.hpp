@@ -925,8 +925,6 @@ namespace LIC
 
     struct ScopeList_
     {
-        uint32_t ScopeCount;
-
         std::vector<LicensingBinaryBlob> ScopeArray;
 
         size_t str(char * buffer, size_t sz) const
@@ -934,13 +932,13 @@ namespace LIC
             size_t lg = snprintf(
                 buffer,
                 sz,
-                "ScopeList(ScopeCount=%u",
-                this->ScopeCount);
+                "ScopeList(ScopeCount=%zu",
+                this->ScopeArray.size());
             if (lg >= sz){
                 return sz;
             }
 
-            for (uint32_t i = 0; i < this->ScopeCount; ++i)
+            for (auto const& scope : this->ScopeArray)
             {
                 lg += snprintf(
                     buffer + lg,
@@ -950,7 +948,7 @@ namespace LIC
                     return sz;
                 }
 
-                lg += this->ScopeArray[i].str(buffer + lg, sz - lg);
+                lg += scope.str(buffer + lg, sz - lg);
                 if (lg >= sz){
                     return sz;
                 }
@@ -981,9 +979,9 @@ namespace LIC
             }
         }
 
-        ScopeList.ScopeCount = stream.in_uint32_le();
+        auto const ScopeCount = stream.in_uint32_le();
 
-        for (uint32_t i = 0; i < ScopeList.ScopeCount; ++i)
+        for (uint32_t i = 0; i < ScopeCount; ++i)
         {
             ScopeList.ScopeArray.emplace_back(LicensingBinaryBlob_Receiver(stream));
         }

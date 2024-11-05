@@ -1207,13 +1207,15 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
                     uint8_t CompanyNameU8[4096];
                     uint8_t ProductIdU8[4096];
 
-                    for (uint32_t i = 0; i < SvrLicReq.ScopeList.ScopeCount; ++i) {
+                    auto const client_name = logon_info.client_name_is_hidden()
+                        ? "localhost"_av
+                        : chars_view{logon_info.hostname()};
+
+                    for (auto const& scope : SvrLicReq.ScopeList.ScopeArray) {
                         LicenseApi::LicenseInfo license_info {
                             .version = SvrLicReq.ProductInfo.dwVersion,
-                            .client_name = logon_info.client_name_is_hidden()
-                                ? "localhost"_av
-                                : chars_view{logon_info.hostname()},
-                            .scope = SvrLicReq.ScopeList.ScopeArray[i].blobData.as_chars(),
+                            .client_name = client_name,
+                            .scope = scope.blobData.as_chars(),
                             .company_name = UTF16toUTF8_buf(
                                     SvrLicReq.ProductInfo.CompanyName,
                                     make_writable_array_view(CompanyNameU8)
