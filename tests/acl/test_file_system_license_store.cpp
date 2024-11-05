@@ -14,17 +14,19 @@ SPDX-License-Identifier: GPL-2.0-or-later
 namespace
 {
     uint32_t version = 3;
-    char const* scope = "Scope";
-    char const* company_name = "Company";
-    char const* product_id = "ID";
-    char const* client_name = "Client";
+    // '/' is removed
+    char const* scope = "Scope /1";
+    char const* company_name = "Company /2";
+    char const* product_id = "ID /3";
+    // ' ' is replaced with '-'
+    char const* client_name = "Client /4";
 }
 
 RED_AUTO_TEST_CASE_WD(TestLicenseStoreV1, wd)
 {
     FileSystemLicenseStore license_store(wd.dirname());
-    auto subdir1 = wd.create_subdirectory(client_name);
-    auto license_file_name_v1 = subdir1.add_file("0.0.0.0_0x00000003_Scope_Company_ID");
+    auto subdir1 = wd.create_subdirectory("Client 4");
+    auto license_file_name_v1 = subdir1.add_file("0.0.0.0_0x00000003_Scope-1_Company-2_ID-3");
 
     std::array<char, LIC::LICENSE_HWID_SIZE> hwid;
     uint8_t raw_buffer[128];
@@ -61,8 +63,8 @@ RED_AUTO_TEST_CASE_WD(TestLicenseStoreV1, wd)
 RED_AUTO_TEST_CASE_WD(TestLicenseStoreV0, wd)
 {
     FileSystemLicenseStore license_store(wd.dirname());
-    auto subdir1 = wd.create_subdirectory(client_name);
-    auto license_file_name_v0 = subdir1.add_file("0x00000003_Scope_Company_ID");
+    auto subdir1 = wd.create_subdirectory("Client 4");
+    auto license_file_name_v0 = subdir1.add_file("0x00000003_Scope-1_Company-2_ID-3");
 
     uint8_t raw_buffer[128];
     auto out_buffer = make_writable_array_view(raw_buffer);
