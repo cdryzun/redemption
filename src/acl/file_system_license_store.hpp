@@ -155,6 +155,10 @@ public:
             return false;
         };
 
+        /*
+         * create directory
+         */
+
         PathMaker path_maker;
         if (!path_maker.push_dir(license_path, license_info.client_name)) {
             return truncated_error();
@@ -165,6 +169,10 @@ public:
             return false;
         }
 
+        /*
+         * add filename in path
+         */
+
         if (!path_maker.push_filename("0.0.0.0_", license_info)) {
             return truncated_error();
         }
@@ -172,6 +180,10 @@ public:
         LOG_IF(enable_log, LOG_INFO, "FileSystemLicenseStore::put_license(): LicenseIndex=\"%s\"", path_maker.start_filename);
 
         auto end_filename = path_maker.it;
+
+        /*
+         * add template in path
+         */
 
         if (!path_maker.push_template()) {
             return truncated_error();
@@ -186,22 +198,32 @@ public:
             return false;
         };
 
+        /*
+         * open temporary file
+         */
+
         int fd = ::mkostemps(path_maker.path, 4, O_CREAT | O_WRONLY);
         if (fd == -1) {
             return io_error("Failed to open (temporary) license file for writing!");
         }
         unique_fd ufd{fd};
 
-        if (hwid.size() != ::write(ufd.fd(), hwid.data(), hwid.size())) {
-            return io_error("Failed to write (temporary) license file!");
-        }
+        /*
+         * write license (hwid:[u8], license_size:u32, license_data:[u8])
+         */
 
         uint32_t const license_size = in.size();
-        if (sizeof(license_size) != ::write(ufd.fd(), &license_size, sizeof(license_size))
+
+        if (hwid.size() != ::write(ufd.fd(), hwid.data(), hwid.size())
+         || sizeof(license_size) != ::write(ufd.fd(), &license_size, sizeof(license_size))
          || license_size != ::write(ufd.fd(), in.data(), in.size())
         ) {
             return io_error("Failed to write (temporary) license file size!");
         }
+
+        /*
+         * rename temporary file
+         */
 
         char newpath[PATH_MAX];
         *byte_copy(newpath, {path_maker.path, end_filename}) = '\0';
@@ -238,6 +260,8 @@ private:
         char* it = path;
         char* start_filename = path;
 
+        // push "{license_path}/{client_name}/"
+        // remove '/' and replace "." / ".." filename for client_name
         bool push_dir(chars_view license_path, chars_view client_name)
         {
             std::size_t const inserted_chars = 10; // '/', '\0' and others
@@ -265,6 +289,8 @@ private:
             return true;
         }
 
+        // push "{prefix}0x{version:08X}_{scope}_{company_name}_{product_id}"
+        // and remove '/'
         bool push_filename(char const* prefix, LicenseInfo const& license_info)
         {
             auto remaining = static_cast<std::size_t>(std::end(path) - it) - 1;
@@ -286,6 +312,7 @@ private:
             return true;
         }
 
+        // push "-XXXXXX.tmp" for mkostemps
         bool push_template()
         {
             auto templ = "-XXXXXX.tmp"_av;
