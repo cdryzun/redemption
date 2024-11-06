@@ -83,14 +83,16 @@ struct writable_bytes_view : writable_array_view<uint8_t>
     template<class U, typename std::enable_if<
       std::is_constructible<writable_array_view<uint8_t>, U&&>::value, bool
     >::type = 1>
-    explicit constexpr writable_bytes_view(U && a) noexcept /*NOLINT*/
+    explicit(!detail::is_writable_view_v<U>)
+    constexpr writable_bytes_view(U && a) noexcept /*NOLINT*/
     : writable_array_view(a)
     {}
 
     template<class U, typename std::enable_if<
       std::is_constructible<writable_array_view<char>, U&&>::value, bool
     >::type = 1>
-    explicit constexpr writable_bytes_view(U && a) noexcept /*NOLINT*/
+    explicit(!detail::is_writable_view_v<U>)
+    constexpr writable_bytes_view(U && a) noexcept /*NOLINT*/
     : writable_bytes_view(writable_array_view<char>(a))
     {}
 
@@ -104,6 +106,12 @@ struct writable_bytes_view : writable_array_view<uint8_t>
     { return writable_array_view<char>{this->as_charp(), this->size()}; }
     [[nodiscard]]          array_view<char> as_chars() const noexcept { return {this->as_charp(), this->size()}; }
 };
+
+namespace detail
+{
+    template<>
+    inline constexpr bool is_writable_view_v<writable_bytes_view> = true;
+} // namespace detail
 
 /**
  * \c array_view on constant \c uint8_t* and \c char*

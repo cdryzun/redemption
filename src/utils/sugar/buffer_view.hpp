@@ -50,6 +50,13 @@ struct writable_buffer_view : writable_bytes_view
     {}
 };
 
+namespace detail
+{
+    template<>
+    inline constexpr bool is_writable_view_v<writable_buffer_view> = true;
+} // namespace detail
+
+
 /**
  * \c bytes_view on \c uint8_t*, \c char*, \c uint8_t[n], \c char[n]
  */

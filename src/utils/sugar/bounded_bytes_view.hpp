@@ -57,14 +57,16 @@ struct writable_bounded_bytes_view : writable_bounded_array_view<uint8_t, AtLeas
     template<class U, typename std::enable_if<
       std::is_constructible<writable_bounded_u8_array_view, U&&>::value, bool
     >::type = 1>
-    explicit constexpr writable_bounded_bytes_view(U && a) noexcept /*NOLINT*/
+    explicit(!detail::is_writable_view_v<U>)
+    constexpr writable_bounded_bytes_view(U && a) noexcept /*NOLINT*/
     : writable_bounded_u8_array_view(a)
     {}
 
     template<class U, typename std::enable_if<
       std::is_constructible<writable_bounded_chars_view, U&&>::value, bool
     >::type = 1>
-    explicit constexpr writable_bounded_bytes_view(U && a) noexcept /*NOLINT*/
+    explicit(!detail::is_writable_view_v<U>)
+    constexpr writable_bounded_bytes_view(U && a) noexcept /*NOLINT*/
     : writable_bounded_bytes_view(writable_bounded_chars_view(a))
     {}
 
@@ -89,6 +91,12 @@ template<class T, class Bounds = sequence_to_size_bounds_t<T>>
 writable_bounded_bytes_view(T&&) -> writable_bounded_bytes_view<
     Bounds::at_least, Bounds::at_most
 >;
+
+namespace detail
+{
+    template<std::size_t AtLeast, std::size_t AtMost>
+    inline constexpr bool is_writable_view_v<writable_bounded_bytes_view<AtLeast, AtMost>> = true;
+} // namespace detail
 
 
 /**

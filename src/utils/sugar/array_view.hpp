@@ -83,6 +83,18 @@ namespace detail
     {
         return true;
     }
+
+    template<class T>
+    inline constexpr bool is_writable_view_v = false;
+
+    template<class T>
+    inline constexpr bool is_writable_view_v<T&> = is_writable_view_v<T>;
+
+    template<class T>
+    inline constexpr bool is_writable_view_v<T&&> = is_writable_view_v<T>;
+
+    template<class T>
+    inline constexpr bool is_writable_view_v<const T> = is_writable_view_v<T>;
 } // namespace detail
 
 template<class T>
@@ -284,7 +296,7 @@ struct writable_array_view
         *static_cast<pointer*>(nullptr) = utils::data(std::declval<U&&>()),
         *static_cast<size_type*>(nullptr) = utils::size(std::declval<U&&>())
     )>::type>
-    explicit constexpr writable_array_view(U && x) /*NOLINT(bugprone-forwarding-reference-overload)*/
+    explicit(!detail::is_writable_view_v<U>) constexpr writable_array_view(U && x) /*NOLINT(bugprone-forwarding-reference-overload)*/
     noexcept(noexcept((void(utils::data(static_cast<U&&>(x))), utils::size(static_cast<U&&>(x)))))
     : p(utils::data(static_cast<U&&>(x)))
     , sz(utils::size(static_cast<U&&>(x)))
@@ -498,6 +510,13 @@ private:
 
 template<class T>
 writable_array_view(T&&) -> writable_array_view<detail::value_type_from_seq_t<T&&>>;
+
+
+namespace detail
+{
+    template<class T>
+    inline constexpr bool is_writable_view_v<writable_array_view<T>> = true;
+} // namespace detail
 
 
 template<class T>

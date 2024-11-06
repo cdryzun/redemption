@@ -669,7 +669,7 @@ public:
             ))
         >
     >
-    explicit constexpr writable_bounded_array_view(C&& a)
+    explicit(!detail::is_writable_view_v<C>) constexpr writable_bounded_array_view(C&& a)
         noexcept(noexcept(writable_array_view<T>(static_cast<C&&>(a))))
     : _array(utils::data(static_cast<C&&>(a)), utils::size(static_cast<C&&>(a)))
     {}
@@ -703,6 +703,12 @@ public:
     constexpr size_type size() const noexcept
     {
         return _array.size();
+    }
+
+    [[nodiscard]]
+    static constexpr size_type capacity() noexcept requires(AtLeast == AtMost)
+    {
+        return AtLeast;
     }
 
     [[nodiscard]]
@@ -1214,6 +1220,10 @@ writable_bounded_array_view(T&&) -> writable_bounded_array_view<
 
 namespace detail
 {
+    template<class T, std::size_t AtLeast, std::size_t AtMost>
+    inline constexpr bool is_writable_view_v<writable_bounded_array_view<T, AtLeast, AtMost>> = true;
+
+
     template<class T, std::size_t AtLeast, std::size_t AtMost>
     struct sequence_to_size_bounds_impl<bounded_array_view<T, AtLeast, AtMost>>
     {

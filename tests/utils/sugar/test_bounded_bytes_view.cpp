@@ -94,4 +94,7 @@ RED_AUTO_TEST_CASE(TestBytesT)
     [](writable_sized_bytes_view<2> /*dummy*/){}(ba);
     [](sized_bytes_view<2> /*dummy*/){}(ba);
     [](sized_bytes_view<2> /*dummy*/){}(cba);
+
+    writable_bounded_bytes_view bav = make_writable_sized_array_view(ua);
+    [](writable_bytes_view) {}(bav);
 }
