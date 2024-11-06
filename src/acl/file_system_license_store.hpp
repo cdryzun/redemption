@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <string>
 #include <cstring>
+#include <bit>
 
 #include <sys/stat.h>
 
@@ -56,49 +57,10 @@ public:
         writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
         writable_bytes_view out, bool enable_log) override
     {
-        auto truncated_error = [&]{
-            log_truncate_error(license_info, "get_license_v1", license_filename_prefix_v1);
-            return bytes_view{};
-        };
-
-        PathMaker path_maker;
-        if (!path_maker.push_dir(license_path, license_info.client_name)
-         || !path_maker.push_filename(license_filename_prefix_v1, license_info)
-        ) {
-            return truncated_error();
-        }
-
-        LOG_IF(enable_log, LOG_INFO, "FileSystemLicenseStore::get_license_v1(): LicenseIndex=\"%s\"", path_maker.start_filename);
-
-        if (unique_fd ufd{::open(path_maker.path, O_RDONLY)}) {
-            ssize_t number_of_bytes_read = ::read(ufd.fd(), hwid.data(), hwid.size());
-            if (number_of_bytes_read != hwid.size()) {
-                LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v1: license file truncated (1) : expected %zu, got %zu", hwid.size(), number_of_bytes_read);
-            }
-            else {
-                uint32_t license_size = 0;
-                number_of_bytes_read = ::read(ufd.fd(), &license_size, sizeof(license_size));
-                if (number_of_bytes_read != sizeof(license_size)) {
-                    LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v1: license file truncated (2) : expected %zu, got %zu", sizeof(license_size), number_of_bytes_read);
-                }
-                else if (out.size() >= license_size) {
-                    number_of_bytes_read = ::read(ufd.fd(), out.data(), license_size);
-                    if (number_of_bytes_read != license_size) {
-                        LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v1: license file truncated (3) : expected %u, got %zu", license_size, number_of_bytes_read);
-                    }
-                    else {
-                        LOG(LOG_INFO, "FileSystemLicenseStore::get_license_v1: LicenseSize=%u", license_size);
-
-                        return bytes_view { out.data(), license_size };
-                    }
-                }
-            }
-        }
-        else {
-            LOG(LOG_WARNING, "FileSystemLicenseStore::get_license_v1: Failed to open license file! Path=\"%s\" errno=%s(%d)", path_maker.path, strerror(errno), errno);
-        }
-
-        return bytes_view { out.data(), 0 };
+        return get_license_impl(
+            "get_license_v1", license_filename_prefix_v1, true,
+            license_info, hwid, out, enable_log
+        );
     }
 
     // The functions shall return empty bytes_view to indicate the error.
@@ -106,43 +68,12 @@ public:
         LicenseInfo license_info,
         writable_bytes_view out, bool enable_log) override
     {
-        auto truncated_error = [&]{
-            log_truncate_error(license_info, "get_license_v0", license_filename_prefix_v0);
-            return bytes_view{};
-        };
-
-        PathMaker path_maker;
-        if (!path_maker.push_dir(license_path, license_info.client_name)
-         || !path_maker.push_filename(license_filename_prefix_v0, license_info)
-        ) {
-            return truncated_error();
-        }
-
-        LOG_IF(enable_log, LOG_INFO, "FileSystemLicenseStore::put_license(): LicenseIndex=\"%s\"", path_maker.start_filename);
-
-        if (unique_fd ufd{::open(path_maker.path, O_RDONLY)}) {
-            uint32_t license_size = 0;
-            ssize_t number_of_bytes_read = ::read(ufd.fd(), &license_size, sizeof(license_size));
-            if (number_of_bytes_read != sizeof(license_size)) {
-                LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v0: license file truncated (1) : expected %zu, got %zu", sizeof(license_size), number_of_bytes_read);
-            }
-            else if (out.size() >= license_size) {
-                number_of_bytes_read = ::read(ufd.fd(), out.data(), license_size);
-                if (number_of_bytes_read != license_size) {
-                    LOG(LOG_ERR, "FileSystemLicenseStore::get_license_v0: license file truncated (2) : expected %u, got %zu", license_size, number_of_bytes_read);
-                }
-                else {
-                    LOG(LOG_INFO, "FileSystemLicenseStore::get_license_v0: LicenseSize=%u", license_size);
-
-                    return bytes_view { out.data(), license_size };
-                }
-            }
-        }
-        else {
-            LOG(LOG_WARNING, "FileSystemLicenseStore::get_license_v0: Failed to open license file! Path=\"%s\" errno=%s(%d)", path_maker.path, strerror(errno), errno);
-        }
-
-        return bytes_view { out.data(), 0 };
+        char hwid_buffer[LIC::LICENSE_HWID_SIZE];
+        auto hwid = make_writable_bounded_array_view(hwid_buffer);
+        return get_license_impl(
+            "get_license_v0", license_filename_prefix_v0, false,
+            license_info, hwid, out, enable_log
+        );
     }
 
     bool put_license(
@@ -239,6 +170,56 @@ public:
 private:
     std::string license_path;
 
+    // The functions shall return empty bytes_view to indicate the error.
+    bytes_view get_license_impl(
+        char const* funcname, char const* prefix, bool read_hwid,
+        LicenseInfo const& license_info,
+        writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
+        writable_bytes_view out, bool enable_log)
+    {
+        auto truncated_error = [&]{
+            log_truncate_error(license_info, funcname, prefix);
+            return bytes_view{};
+        };
+
+        PathMaker path_maker;
+        if (!path_maker.push_dir(license_path, license_info.client_name)
+         || !path_maker.push_filename(prefix, license_info)
+        ) {
+            return truncated_error();
+        }
+
+        LOG_IF(enable_log, LOG_INFO, "FileSystemLicenseStore::%s(): LicenseIndex=\"%s\"", funcname, path_maker.start_filename);
+
+        Reader reader{path_maker.path};
+        if (reader.ufd.is_open()) {
+            using license_size_t = uint32_t;
+            char license_size_buffer[sizeof(license_size_t)];
+            if ((!read_hwid || reader.read(hwid))
+             && reader.read(make_writable_array_view(license_size_buffer))
+            ) {
+                uint32_t license_size = std::bit_cast<license_size_t>(license_size_buffer);
+                if (out.size() >= license_size) {
+                    auto result_buffer = out.first(license_size);
+                    if (reader.read(result_buffer)) {
+                        return result_buffer;
+                    }
+                }
+                else {
+                    LOG(LOG_ERR, "FileSystemLicenseStore::%s: license file output too short: expected %u, got %zu", funcname, license_size, out.size());
+                    return bytes_view{};
+                }
+            }
+
+            LOG(LOG_ERR, "FileSystemLicenseStore::%s: license file truncated: expected %lu, got %zu", funcname, reader.number_of_bytes_requested, reader.number_of_bytes_read);
+        }
+        else {
+            LOG(LOG_WARNING, "FileSystemLicenseStore::%s: Failed to open license file! Path=\"%s\" errno=%s(%d)", funcname, path_maker.path, strerror(errno), errno);
+        }
+
+        return bytes_view{};
+    }
+
     void log_truncate_error(LicenseInfo const& license_info, char const* funcname, char const* prefix)
     {
         LOG(LOG_ERR, "FileSystemLicenseStore::%s: filename for Licence truncated: %s/%.*s/%s0x%08X_%.*s_%.*s_%.*s",
@@ -252,6 +233,24 @@ private:
             static_cast<int>(license_info.product_id.size()), license_info.product_id.data()
         );
     }
+
+    struct Reader
+    {
+        Reader(char const* filename)
+          : ufd{::open(filename, O_RDONLY)}
+        {}
+
+        inline bool read(writable_bytes_view data) noexcept
+        {
+            number_of_bytes_requested = data.size();
+            number_of_bytes_read = ::read(ufd.fd(), data.data(), data.size());
+            return static_cast<ssize_t>(data.size()) == number_of_bytes_read;
+        }
+
+        unique_fd ufd;
+        size_t number_of_bytes_requested;
+        ssize_t number_of_bytes_read;
+    };
 
     struct PathMaker
     {
