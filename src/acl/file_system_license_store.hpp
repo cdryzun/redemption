@@ -229,7 +229,6 @@ public:
         *byte_copy(newpath, {path_maker.path, end_filename}) = '\0';
         if (-1 == rename(path_maker.path, newpath)) {
             io_error("Failed to rename the (temporary) license file!");
-            *end_filename = '-';
             unlink(path_maker.path);
             return false;
         }
