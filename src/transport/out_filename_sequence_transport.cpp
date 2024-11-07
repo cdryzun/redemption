@@ -29,8 +29,7 @@ OutFilenameSequenceTransport::FilenameGenerator::FilenameGenerator(
     const char * const prefix,
     const char * const filename,
     const char * const extension)
-: last_filename(nullptr)
-, last_num(-1u)
+: last_num(-1u)
 {
     int len = snprintf(this->filename_gen, sizeof(this->filename_gen), "%s%s-", prefix, filename);
     if (len <= 0
@@ -46,20 +45,14 @@ OutFilenameSequenceTransport::FilenameGenerator::FilenameGenerator(
 
 const char * OutFilenameSequenceTransport::FilenameGenerator::get(unsigned count) const
 {
-    if (count == this->last_num && this->last_filename) {
-        return this->last_filename;
+    if (count == this->last_num) {
+        return this->filename_gen;
     }
 
     snprintf( this->filename_gen + this->filename_suffix_pos
             , sizeof(this->filename_gen) - this->filename_suffix_pos
             , "%06u%s", count, this->extension);
     return this->filename_gen;
-}
-
-void OutFilenameSequenceTransport::FilenameGenerator::set_last_filename(unsigned num, const char * name)
-{
-    this->last_num = num;
-    this->last_filename = name;
 }
 
 
@@ -73,7 +66,6 @@ OutFilenameSequenceTransport::OutFilenameSequenceTransport(
 , buf_(invalid_fd(), std::move(notify_error))
 , file_permissions_(file_permissions)
 {
-    this->current_filename_[0] = 0;
 }
 
 char const* OutFilenameSequenceTransport::seqgen(unsigned i) const noexcept
@@ -121,8 +113,8 @@ int OutFilenameSequenceTransport::do_next()
 {
     if (this->buf_.is_open()) {
         this->buf_.close();
-        // LOG(LOG_INFO, "pngcapture: \"%s\" -> \"%s\".", this->current_filename_, this->rename_to);
-        return this->rename_filename() ? 0 : 1;
+        ++this->num_file_;
+        return 0;
     }
 
     return 1;
@@ -131,40 +123,10 @@ int OutFilenameSequenceTransport::do_next()
 void OutFilenameSequenceTransport::open_filename()
 {
     const char * filename = this->filegen_.get(this->num_file_);
-    snprintf(this->current_filename_, sizeof(this->current_filename_),
-                "%sred-XXXXXX.tmp", filename);
-    const int fd = ::mkostemps(this->current_filename_, 4, O_WRONLY | O_CREAT);
+    const auto mode = file_permissions_.permissions_as_uint();
+    const int fd = ::open(filename, O_WRONLY | O_CREAT | O_TRUNC, mode);
     if (fd < 0) {
         throw Error(ERR_TRANSPORT_OPEN_FAILED, errno);
     }
-    // LOG(LOG_INFO, "pngcapture=%s", this->current_filename_);
-    // TODO PERF used fchmod
-    if (chmod(this->current_filename_, file_permissions_.permissions_as_uint()) == -1) {
-        LOG( LOG_ERR, "can't set file %s mod to u+r, g+r : %s [%d]"
-            , this->current_filename_, strerror(errno), errno);
-    }
-    this->filegen_.set_last_filename(this->num_file_, this->current_filename_);
     this->buf_.open(unique_fd{fd});
-}
-
-const char * OutFilenameSequenceTransport::rename_filename()
-{
-    this->filegen_.set_last_filename(-1u, "");
-    const char * filename = this->filegen_.get(this->num_file_);
-    this->filegen_.set_last_filename(this->num_file_, this->current_filename_);
-
-    const int res = ::rename(this->current_filename_, filename);
-    // LOG( LOG_INFO, "renaming file \"%s\" to \"%s\""
-    //    , this->current_filename_, filename);
-    if (res < 0) {
-        LOG( LOG_ERR, "renaming file \"%s\" -> \"%s\" failed error=%d : %s"
-            , this->current_filename_, filename, errno, strerror(errno));
-        return nullptr;
-    }
-
-    this->current_filename_[0] = 0;
-    ++this->num_file_;
-    this->filegen_.set_last_filename(-1u, "");
-
-    return filename;
 }

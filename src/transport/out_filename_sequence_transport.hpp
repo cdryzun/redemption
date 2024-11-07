@@ -52,8 +52,6 @@ private:
         char         extension[12];
         mutable char filename_gen[2070];
         std::size_t  filename_suffix_pos;
-
-        const char * last_filename;
         unsigned     last_num;
 
     public:
@@ -66,8 +64,6 @@ private:
             const char * const extension);
 
         const char * get(unsigned count) const;
-
-        void set_last_filename(unsigned num, const char * name);
     };
 
     void do_send(const uint8_t * data, size_t len) override;
@@ -76,9 +72,6 @@ private:
     int do_next();
     void open_filename();
 
-    const char * rename_filename();
-
-    char current_filename_[1024];
     FilenameGenerator filegen_;
     OutFileTransport buf_;
     FilePermissions file_permissions_;

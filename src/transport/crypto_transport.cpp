@@ -663,10 +663,7 @@ OutCryptoTransport::OutCryptoTransport(
 , out_file(invalid_fd(), std::move(notify_error))
 , cctx(cctx)
 , rnd(rnd)
-{
-    this->tmpname[0] = 0;
-    this->finalname[0] = 0;
-}
+{}
 
 OutCryptoTransport::~OutCryptoTransport()
 {
@@ -709,47 +706,30 @@ bool OutCryptoTransport::is_open() const
     return this->out_file.is_open();
 }
 
-void OutCryptoTransport::open(const char * const finalname, const char * const hash_filename, FilePermissions file_permissions, bytes_view derivator)
+void OutCryptoTransport::open(std::string&& finalname, std::string&& hash_filename, FilePermissions file_permissions, bytes_view derivator)
 {
     // This should avoid double open, we do not want that
     if (this->is_open()){
-        LOG(LOG_ERR, "OutCryptoTransport::open (double open error) %s", finalname);
+        LOG(LOG_ERR, "OutCryptoTransport::open: double open error: %s", finalname);
         throw Error(ERR_TRANSPORT_OPEN_FAILED);
     }
-    // also ensure pathes are not to long, we will copy them in the object
-    if (strlen(finalname) >= 2047-15){
-        LOG(LOG_ERR, "OutCryptoTransport::open finalname oversize");
-        throw Error(ERR_TRANSPORT_OPEN_FAILED);
-    }
+
     // basic compare filename
-    if (0 == strcmp(finalname, hash_filename)){
-        LOG(LOG_ERR, "OutCryptoTransport::open finalname and hash_filename are same");
+    if (finalname == hash_filename){
+        LOG(LOG_ERR, "OutCryptoTransport::open: finalname and hash_filename are same");
         throw Error(ERR_TRANSPORT_OPEN_FAILED);
     }
-    snprintf(this->tmpname, sizeof(this->tmpname), "%sred-XXXXXX.tmp", finalname);
-    this->out_file.open(unique_fd(::mkostemps(this->tmpname, 4, O_WRONLY | O_CREAT)));
-    if (not this->is_open()){
-        int const err = errno;
-        LOG(LOG_ERR, "OutCryptoTransport::open : open failed (%s -> %s): %s", this->tmpname, finalname, strerror(errno));
-        throw Error(ERR_TRANSPORT_OPEN_FAILED, err);
-    }
-    if (chmod(this->tmpname, file_permissions.permissions_as_uint()) == -1) {
-        int const err = errno;
 
-        LOG( LOG_ERR, "can't set file %s mod to %o : %s [%d]"
-            , this->tmpname
-            , file_permissions.permissions_as_uint()
-            , strerror(err)
-            , err);
-        LOG(LOG_INFO, "OutCryptoTransport::open : chmod failed (%s -> %s)", this->tmpname, finalname);
+    auto const mode = file_permissions.permissions_as_uint();
+    this->out_file.open(unique_fd(finalname.c_str(), O_WRONLY | O_CREAT | O_EXCL, mode));
+    if (not this->out_file.is_open()){
+        int const err = errno;
+        LOG(LOG_ERR, "OutCryptoTransport::open: open failed (%s): %s", finalname, strerror(err));
         throw Error(ERR_TRANSPORT_OPEN_FAILED, err);
     }
 
-    if (!utils::strbcpy(this->finalname, finalname)) {
-        LOG(LOG_ERR, "OutCryptoTransport::open finalname too long");
-        throw Error(ERR_TRANSPORT_OPEN_FAILED);
-    }
-    this->hash_filename = hash_filename;
+    this->finalname = std::move(finalname);
+    this->hash_filename = std::move(hash_filename);
     this->derivator.assign(derivator.begin(), derivator.end());
 
     ocrypto::Result res = this->encrypter.open(derivator);
@@ -757,11 +737,12 @@ void OutCryptoTransport::open(const char * const finalname, const char * const h
 }
 
 // derivator implicitly basename(finalname)
-void OutCryptoTransport::open(const char * finalname, const char * const hash_filename, FilePermissions file_permissions)
+void OutCryptoTransport::open(std::string&& finalname, std::string&& hash_filename, FilePermissions file_permissions)
 {
     size_t base_len = 0;
-    const char * base = basename_len(finalname, base_len);
-    this->open(finalname, hash_filename, file_permissions, {base, base_len});
+    const char * base = basename_len(finalname.c_str(), base_len);
+    const auto derivator = bytes_view{base, base_len};
+    this->open(std::move(finalname), std::move(hash_filename), file_permissions, derivator);
 }
 
 void OutCryptoTransport::close(HashArray & qhash, HashArray & fhash)
@@ -779,15 +760,6 @@ void OutCryptoTransport::close(HashArray & qhash, HashArray & fhash)
     const ocrypto::Result res = this->encrypter.close(qhash, fhash);
     this->out_file.send(res.buf);
     this->out_file.close();
-    if (this->tmpname[0] != 0){
-        if (::rename(this->tmpname, this->finalname) < 0) {
-            int const err = errno;
-            LOG(LOG_ERR, "OutCryptoTransport::close Renaming file \"%s\" -> \"%s\" failed, errno=%d : %s"
-                , this->tmpname, this->finalname, err, strerror(err));
-            throw Error(ERR_TRANSPORT_WRITE_FAILED, err);
-        }
-        this->tmpname[0] = 0;
-    }
     this->create_hash_file(qhash, fhash);
 }
 
@@ -821,6 +793,7 @@ void OutCryptoTransport::create_hash_file(HashArray const & qhash, HashArray con
 
     unique_fd open_file = open_hash();
 
+    // error -> create subdirectory then re-open
     if(!open_file.is_open() && errno == ENOENT) {
         std::string dir_path = this->hash_filename.substr(0, this->hash_filename.find_last_of('/'));
         if (!dir_path.empty()) {
@@ -837,7 +810,7 @@ void OutCryptoTransport::create_hash_file(HashArray const & qhash, HashArray con
     }
 
     struct stat stat;
-    if (-1 == ::stat(this->finalname, &stat)) {
+    if (-1 == ::stat(this->finalname.c_str(), &stat)) {
         int const err = errno;
         LOG(LOG_ERR, "Failed writing signature to hash file %s [err %d]",
             this->hash_filename, err);
@@ -857,7 +830,7 @@ void OutCryptoTransport::create_hash_file(HashArray const & qhash, HashArray con
         char extension[256] = {};
 
         canonical_path(
-            this->finalname,
+            this->finalname.c_str(),
             path, sizeof(path),
             basename, sizeof(basename),
             extension, sizeof(extension)
@@ -885,7 +858,7 @@ void OutCryptoTransport::create_hash_file(HashArray const & qhash, HashArray con
 void OutCryptoTransport::do_send(const uint8_t * data, size_t len)
 {
     if (not this->out_file.is_open()){
-        LOG(LOG_ERR, "OutCryptoTransport::do_send failed: file not opened (%s->%s)", this->tmpname, this->finalname);
+        LOG(LOG_ERR, "OutCryptoTransport::do_send failed: file not opened (%s)", this->finalname);
         throw Error(ERR_TRANSPORT_WRITE_FAILED);
     }
     send_data(data, len, this->encrypter, this->out_file);
@@ -895,9 +868,7 @@ bool OutCryptoTransport::cancel()
 {
     if (this->is_open()) {
         this->out_file.close();
-        if (this->tmpname[0] != 0){
-            return ::remove(this->tmpname) == 0;
-        }
+        return ::remove(this->finalname.c_str()) == 0;
     }
     return true;
 }

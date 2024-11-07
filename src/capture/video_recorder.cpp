@@ -93,39 +93,23 @@ namespace
     struct VideoRecorderOutputFile
     {
         explicit VideoRecorderOutputFile(
-            std::string_view filename,
+            char const* filename,
             FilePermissions file_permissions,
             AclReportApi * acl_report)
-        : tmp_filename(str_concat(filename, "red-XXXXXX.tmp"_av))
-        , fd{[
-            acl_report,
-            tmp_filename = this->tmp_filename.data(),
-            mode = file_permissions.permissions_as_uint()
-        ]{
-            int fd = ::mkostemps(tmp_filename, 4, O_WRONLY | O_CREAT);
+        : fd{[acl_report, filename, mode = file_permissions.permissions_as_uint()]{
+            int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, mode);
             if (fd == -1) {
                 int const errnum = errno;
-                LOG( LOG_ERR, "can't open temporary file %s : %s [%d]"
-                   , tmp_filename, strerror(errnum), errnum);
+                LOG( LOG_ERR, "can't open file %s: %s [%d]"
+                   , filename, strerror(errnum), errnum);
                 video_transport_acl_report(acl_report, errnum);
-                throw Error(ERR_TRANSPORT_OPEN_FAILED, errnum);
-            }
-
-            if (fchmod(fd, mode) == -1) {
-                int const errnum = errno;
-                LOG( LOG_ERR, "can't set file %s mod to u+r, g+r : %s [%d]"
-                   , tmp_filename, strerror(errnum), errnum);
-                ::close(fd);
-                unlink(tmp_filename);
                 throw Error(ERR_TRANSPORT_OPEN_FAILED, errnum);
             }
 
             return unique_fd{fd};
         }()}
         , acl_report(acl_report)
-        , final_filename(filename)
         {
-            ::unlink(this->final_filename.c_str());
         }
 
         int write(uint8_t const* buf, int buf_size)
@@ -190,12 +174,6 @@ namespace
         {
             this->send_remaining_buffer();
             this->fd.close();
-
-            if (::rename(this->tmp_filename.c_str(), this->final_filename.c_str()) < 0) {
-                int const errnum = errno;
-                LOG( LOG_ERR, "renaming file \"%s\" -> \"%s\" failed errno=%d : %s"
-                   , this->tmp_filename, this->final_filename, errnum, strerror(errnum));
-            }
         }
 
     private:
@@ -224,12 +202,10 @@ namespace
 
         static const int buffer_capacity = 1024*256;
 
-        std::string tmp_filename;
         unique_fd fd;
         int buffer_len = 0;
         std::unique_ptr<uint8_t[]> buffer{new uint8_t[buffer_capacity]} /*NOLINT*/;
         AclReportApi * acl_report;
-        std::string final_filename;
     };
 } // anonymous namespace
 
@@ -258,7 +234,7 @@ struct video_recorder::D
     std::unique_ptr<uint8_t, default_av_free> custom_io_buffer;
     AVIOContext* custom_io_context = nullptr;
 
-    D(std::string_view filename, FilePermissions file_permissions, AclReportApi * acl_report)
+    D(char const* filename, FilePermissions file_permissions, AclReportApi * acl_report)
     : out_file(filename, file_permissions, acl_report)
     , dst_frame(av_frame_alloc())
     , pkt(av_packet_alloc())

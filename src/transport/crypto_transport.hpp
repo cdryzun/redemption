@@ -174,7 +174,7 @@ public:
         FileTransport::ErrorNotifier notify_error
     ) noexcept;
 
-    [[nodiscard]] const char * get_finalname() const noexcept { return this->finalname; }
+    [[nodiscard]] const char * get_finalname() const noexcept { return this->finalname.c_str(); }
 
     ~OutCryptoTransport();
 
@@ -183,10 +183,10 @@ public:
 
     [[nodiscard]] bool is_open() const;
 
-    void open(const char * const finalname, const char * const hash_filename, FilePermissions file_permissions, bytes_view derivator);
+    void open(std::string&& finalname, std::string&& hash_filename, FilePermissions file_permissions, bytes_view derivator);
 
     // derivator implicitly basename(finalname)
-    void open(const char * finalname, const char * const hash_filename, FilePermissions file_permissions);
+    void open(std::string&& finalname, std::string&& hash_filename, FilePermissions file_permissions);
 
     void close(HashArray & qhash, HashArray & fhash);
 
@@ -199,8 +199,7 @@ public:
 private:
     ocrypto encrypter;
     OutFileTransport out_file;
-    char tmpname[2048];
-    char finalname[2048];
+    std::string finalname;
     std::string hash_filename;
     CryptoContext & cctx;
     Random & rnd;
