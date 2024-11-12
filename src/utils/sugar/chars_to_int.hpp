@@ -268,7 +268,7 @@ constexpr chars_view remove_hexadecimal_prefix(chars_view av) noexcept;
 template<class View, class = decltype(chars_view(std::declval<View>()))>
 constexpr auto remove_hexadecimal_prefix(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return remove_hexadecimal_prefix(av.c_str());
     }
     else {
@@ -603,7 +603,7 @@ constexpr chars_to_int_result<Int> decimal_chars_to_int(chars_view av, Int& valu
 template<class Int, class View, class>
 constexpr chars_to_int_result<Int> decimal_chars_to_int(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return decimal_chars_to_int<Int>(av.c_str());
     }
     else {
@@ -614,7 +614,7 @@ constexpr chars_to_int_result<Int> decimal_chars_to_int(View&& av) noexcept
 template<class Int, class View, class>
 constexpr chars_to_int_result<Int> decimal_chars_to_int(View&& av, Int& value) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return decimal_chars_to_int<Int>(av.c_str(), value);
     }
     else {
@@ -639,7 +639,7 @@ constexpr std::from_chars_result from_decimal_chars(chars_view av, Int& value) n
 template<class Int, class View, class>
 constexpr std::from_chars_result from_decimal_chars(View&& av, Int& value) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return from_decimal_chars<Int>(av.c_str(), value);
     }
     else {
@@ -672,7 +672,7 @@ constexpr parsed_chars_to_int_result<Int> parse_decimal_chars(chars_view av) noe
 template<class Int, class View, class>
 constexpr parsed_chars_to_int_result<Int> parse_decimal_chars(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return parse_decimal_chars<Int>(av.c_str());
     }
     else {
@@ -699,7 +699,7 @@ constexpr Int parse_decimal_chars_or(chars_view av, Int default_value) noexcept
 template<class Int, class View, class>
 constexpr Int parse_decimal_chars_or(View&& av, Int default_value) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return parse_decimal_chars_or(av.c_str(), default_value);
     }
     else {
@@ -710,7 +710,7 @@ constexpr Int parse_decimal_chars_or(View&& av, Int default_value) noexcept
 template<class View, class>
 constexpr auto unchecked_decimal_chars_to_int(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return unchecked_decimal_chars_to_int(av.c_str());
     }
     else {
@@ -777,7 +777,7 @@ constexpr chars_to_int_result<UInt> hexadecimal_chars_to_int(chars_view av, UInt
 template<class UInt, class View, class>
 constexpr chars_to_int_result<UInt> hexadecimal_chars_to_int(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return hexadecimal_chars_to_int<UInt>(av.c_str());
     }
     else {
@@ -788,7 +788,7 @@ constexpr chars_to_int_result<UInt> hexadecimal_chars_to_int(View&& av) noexcept
 template<class UInt, class View, class>
 constexpr chars_to_int_result<UInt> hexadecimal_chars_to_int(View&& av, UInt& value) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return hexadecimal_chars_to_int<UInt>(av.c_str(), value);
     }
     else {
@@ -813,7 +813,7 @@ constexpr std::from_chars_result from_hexadecimal_chars(chars_view av, UInt& val
 template<class UInt, class View, class>
 constexpr std::from_chars_result from_hexadecimal_chars(View&& av, UInt& value) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return from_hexadecimal_chars(av.c_str(), value);
     }
     else {
@@ -846,7 +846,7 @@ constexpr parsed_chars_to_int_result<UInt> parse_hexadecimal_chars(chars_view av
 template<class UInt, class View, class>
 constexpr parsed_chars_to_int_result<UInt> parse_hexadecimal_chars(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return parse_hexadecimal_chars<UInt>(av.c_str());
     }
     else {
@@ -873,7 +873,7 @@ constexpr UInt parse_hexadecimal_chars_or(chars_view av, UInt default_value) noe
 template<class UInt, class View, class>
 constexpr UInt parse_hexadecimal_chars_or(View&& av, UInt default_value) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return parse_hexadecimal_chars_or(av.c_str(), default_value);
     }
     else {
@@ -894,7 +894,7 @@ constexpr chars_view remove_hexadecimal_prefix(chars_view av) noexcept
 template<class View, class>
 constexpr auto unchecked_hexadecimal_chars_without_prefix_to_int(View&& av) noexcept
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return unchecked_hexadecimal_chars_without_prefix_to_int(av.c_str());
     }
     else {
@@ -996,7 +996,7 @@ constexpr chars_to_int_result<Int> string_to_int(chars_view av)
 template<class Int, class View, class>
 constexpr chars_to_int_result<Int> string_to_int(View&& av)
 {
-    if constexpr (is_null_terminated_v<std::decay_t<View>>) {
+    if constexpr (is_null_terminated_v<std::remove_reference_t<View>>) {
         return string_to_int<Int>(av.c_str());
     }
     else {

@@ -52,7 +52,7 @@ struct zstring_view
     {}
 
     template<class String,
-        class = std::enable_if_t<is_null_terminated_v<std::decay_t<String>>>>
+        class = std::enable_if_t<is_null_terminated_v<std::remove_reference_t<String>>>>
     zstring_view(String&& s) noexcept(noexcept(s.c_str()) && noexcept(s.size()))
     : s(s.c_str())
     , len(s.size())

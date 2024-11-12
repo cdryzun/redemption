@@ -26,5 +26,14 @@ Author(s): Proxies Team
 template<class T>
 inline constexpr bool is_null_terminated_v = false;
 
+template<class T>
+inline constexpr bool is_null_terminated_v<const T> = is_null_terminated_v<T>;
+
+template<class T>
+inline constexpr bool is_null_terminated_v<volatile T> = is_null_terminated_v<T>;
+
+template<class T>
+inline constexpr bool is_null_terminated_v<const volatile T> = is_null_terminated_v<T>;
+
 template<>
 inline constexpr bool is_null_terminated_v<std::string> = false;
