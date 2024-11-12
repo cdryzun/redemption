@@ -504,9 +504,7 @@ inline char* int_to_fixed_hexadecimal_lower_chars(char* out, T n) noexcept
 
 
 template<>
-struct is_null_terminated<int_to_zchars_result>
-: std::true_type
-{};
+inline constexpr bool is_null_terminated_v<int_to_zchars_result> = true;
 
 namespace detail
 {

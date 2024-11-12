@@ -24,14 +24,7 @@ Author(s): Proxies Team
 #include <string>
 
 template<class T>
-struct is_null_terminated
-: std::false_type
-{};
+inline constexpr bool is_null_terminated_v = false;
 
 template<>
-struct is_null_terminated<std::string>
-: std::true_type
-{};
-
-template<class T>
-constexpr bool is_null_terminated_v = is_null_terminated<T>::value;
+inline constexpr bool is_null_terminated_v<std::string> = false;

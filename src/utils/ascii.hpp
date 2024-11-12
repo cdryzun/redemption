@@ -317,9 +317,7 @@ struct TaggedZStringArray : TaggedString<Tag, static_string<N>>
 };
 
 template<class Tag, std::size_t N>
-struct is_null_terminated<TaggedZStringArray<Tag, N>>
-: std::true_type
-{};
+inline constexpr bool is_null_terminated_v<TaggedZStringArray<Tag, N>> = true;
 
 namespace detail
 {

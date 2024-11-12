@@ -141,9 +141,7 @@ private:
 
 
 template<>
-struct is_null_terminated<zstring_view>
-: std::true_type
-{};
+inline constexpr bool is_null_terminated_v<zstring_view> = true;
 
 
 inline constexpr bool operator==(zstring_view const& lhs, zstring_view const& rhs) noexcept

@@ -166,7 +166,7 @@ struct static_string
         using AV = decltype(av);
         static_assert(AV::at_most <= N);
 
-        constexpr bool is_zstr = is_null_terminated<C>::value;
+        constexpr bool is_zstr = is_null_terminated_v<C>;
 
         m_len = checked_int(av.size());
 
@@ -296,9 +296,7 @@ inline void static_str_assign(static_string<N>& str, Strings const&... strs);
 
 
 template<std::size_t N>
-struct is_null_terminated<static_string<N>>
-: std::true_type
-{};
+inline constexpr bool is_null_terminated_v<static_string<N>> = true;
 
 namespace detail
 {
