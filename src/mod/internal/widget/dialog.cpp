@@ -67,18 +67,21 @@ WidgetDialogBase::WidgetDialogBase(
     this->add_widget(this->separator);
     this->add_widget(this->dialog);
 
+    auto focused = HasFocus::Yes;
+
     if (link) {
-        this->add_widget(link->label);
-        this->add_widget(link->copy);
         this->add_widget(link->show);
+        this->add_widget(link->label);
+        this->add_widget(link->copy, focused);
+        focused = HasFocus::No;
     }
 
     if (this->challenge) {
-        this->add_widget(*this->challenge, HasFocus::Yes);
+        this->add_widget(*this->challenge, focused);
         this->add_widget(this->ok, HasFocus::No);
     }
     else {
-        this->add_widget(this->ok, HasFocus::Yes);
+        this->add_widget(this->ok, focused);
     }
 
 
@@ -175,16 +178,27 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
 
         y += 5;
 
-        dim = this->link->label.get_optimal_dim();
-        this->link->label.set_wh(dim);
-        this->link->label.set_xy(this->separator.x() + WIDGET_MULTILINE_BORDER_X, y);
+        const auto label_dim = this->link->label.get_optimal_dim();
+        const auto button_dim = this->link->copy.get_optimal_dim();
+        const auto msg_dim = this->link->copied_msg.get_optimal_dim();
+        const int dy = std::max(label_dim.h, button_dim.h);
+        const int label_dy = (dy - label_dim.h) / 2;
+        const int button_dy = (dy - button_dim.h) / 2;
 
-        dim = this->link->copy.get_optimal_dim();
-        this->link->copy.set_wh(dim);
-        this->link->copy.set_xy(this->link->label.x() + this->link->label.cx(), y);
+        this->link->label.set_wh(label_dim);
+        this->link->label.set_xy(this->separator.x() + WIDGET_MULTILINE_BORDER_X, y + label_dy);
 
-        y            += this->link->label.cy() + 10;
-        total_height += this->link->label.cy() + 10;
+        this->link->copy.set_wh(button_dim);
+        this->link->copy.set_xy(this->link->label.x() + label_dim.w + 2, y + button_dy);
+
+        y            += dy + 10;
+        total_height += dy + 10;
+
+        this->link->copied_msg.set_wh(msg_dim);
+        this->link->copied_msg.set_xy(left + (width - msg_dim.w) / 2, y + button_dy);
+
+        y            += msg_dim.h + 10;
+        total_height += msg_dim.h + 10;
 
         y += 5;
     }
@@ -206,6 +220,9 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     total_height += this->ok.cy();
 
     this->move_children_xy(0, (height - total_height) / 2);
+    if (this->link) {
+        this->link->copied_msg.move_xy(0, (height - total_height) / 2);
+    }
 
     dim = this->img.get_optimal_dim();
     this->img.set_wh(dim);
@@ -254,6 +271,16 @@ void WidgetDialogBase::rdp_input_scancode(KbdFlags flags, Scancode scancode, uin
     }
     REDEMPTION_DIAGNOSTIC_POP()
 }
+
+void WidgetDialogBase::show_copied_msg()
+{
+    if (this->link && !this->link->msg_showed) {
+        this->link->msg_showed = true;
+        this->add_widget(this->link->copied_msg);
+        this->link->copied_msg.rdp_input_invalidate(this->link->copied_msg.get_rect());
+    }
+}
+
 
 
 WidgetDialog::WidgetDialog(
@@ -311,18 +338,23 @@ WidgetDialogWithCopyableLink::WidgetDialogWithCopyableLink(
     gdi::GraphicApi & drawable, Rect widget_rect, Events events,
     chars_view caption, chars_view text,
     chars_view link_value, chars_view link_label,
-    chars_view ok_text,
+    chars_view copied_msg_label, chars_view ok_text,
     Font const & font, Theme const & theme, CopyPaste & copy_paste
 )
 : WidgetDialogBase::WidgetLink{
-    .label = WidgetLabel(drawable, link_label, theme.global.fgcolor, theme.global.bgcolor, font),
     .show = WidgetVerticalScrollText(drawable, link_value,
                 theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
                 font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y),
+    .copied_msg = WidgetLabel(drawable, copied_msg_label, theme.global.fgcolor, theme.global.bgcolor, font),
+    .label = WidgetLabel(drawable, link_label, theme.global.fgcolor, theme.global.bgcolor, font),
     .copy = WidgetDelegatedCopy(
-        drawable, [this]{ this->copy_paste.copy(this->show.get_text()); },
+        drawable, [this]{
+            this->copy_paste.copy(this->show.get_text());
+            this->show_copied_msg();
+            this->next_focus();
+        },
         theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, font, 2, 2, WidgetDelegatedCopy::MouseButton::Both)
+        theme.global.focus_color, font)
 }
 , WidgetDialogBase(
     drawable, widget_rect,

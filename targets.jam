@@ -2914,8 +2914,11 @@ test-run tests/mod/internal/widget/test_delegated_copy :
   <library>src/gdi/graphic_api.o
   <library>src/gdi/text_metrics.o
   <library>src/keyboard/keymap.o
+  <library>src/mod/internal/copy_paste.o
+  <library>src/mod/internal/widget/button.o
   <library>src/mod/internal/widget/composite.o
   <library>src/mod/internal/widget/delegated_copy.o
+  <library>src/mod/internal/widget/label.o
   <library>src/mod/internal/widget/multiline.o
   <library>src/mod/internal/widget/screen.o
   <library>src/mod/internal/widget/tooltip.o

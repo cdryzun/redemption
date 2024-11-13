@@ -212,6 +212,9 @@ namespace trkeys
     TR_KV(accepted, "I accept");
     TR_KV(refused, "I decline");
 
+    // ModuleName::link_confirm / WidgetDialogWithCopyableLink
+    TR_KV(link_copied, "The link is copied.");
+
 #undef TR_KV
 #undef TR_KV_FMT
 } // namespace trkeys

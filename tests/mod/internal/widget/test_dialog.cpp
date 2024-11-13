@@ -126,7 +126,7 @@ struct TestWidgetDialogWithCopyableLinkCtx
     : drawable{w, h}
     , flat_dialog(
         drawable, {0, 0, w, h}, {onsubmit, oncancel},
-        caption, text, "value"_av, "name"_av, "Ok"_av, global_font_deja_vu_14(),
+        caption, text, "value"_av, "name"_av, "copied"_av, "Ok"_av, global_font_deja_vu_14(),
         []{
             Theme colors;
             colors.global.bgcolor = NamedBGRColor::BG_BLUE;
@@ -411,13 +411,13 @@ RED_AUTO_TEST_CASE(EventWidgetDialogWithCopyableLinkOkLink)
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_2.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_4.png");
 
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1, x, y);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_1.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_3.png");
 
     // link click
 
@@ -453,18 +453,18 @@ RED_AUTO_TEST_CASE(EventWidgetDialogWithCopyableLinkOkLink)
     x = ctx.flat_dialog.link->copy.x() + ctx.flat_dialog.link->copy.cx() / 2 ;
     y = ctx.flat_dialog.link->copy.y() + ctx.flat_dialog.link->copy.cy() / 2 ;
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
-    ctx.copy_paste.paste(pasted);
-    RED_CHECK(pasted.str == "value"_av);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
 
     ctx.flat_dialog.rdp_input_invalidate(ctx.flat_dialog.get_rect());
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_1.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_2.png");
 
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1, x, y);
+    ctx.copy_paste.paste(pasted);
+    RED_CHECK(pasted.str == "value"_av);
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_1.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_link_5.png");
 
     // exit
 

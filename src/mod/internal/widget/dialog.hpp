@@ -38,9 +38,11 @@ class WidgetDialogBase : public WidgetComposite
 public:
     struct WidgetLink
     {
-        WidgetLabel label;
         WidgetVerticalScrollText show;
+        WidgetLabel copied_msg;
+        WidgetLabel label;
         WidgetDelegatedCopy copy;
+        bool msg_showed = false;
     };
 
     struct Events
@@ -63,6 +65,9 @@ public:
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height);
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
+
+protected:
+    void show_copied_msg();
 
 private:
     WidgetEventNotifier onctrl_shift;
@@ -131,7 +136,7 @@ public:
         gdi::GraphicApi & drawable, Rect widget_rect, Events events,
         chars_view caption, chars_view text,
         chars_view link_value, chars_view link_label,
-        chars_view ok_text,
+        chars_view copied_msg_label, chars_view ok_text,
         Font const & font, Theme const & theme, CopyPaste & copy_paste);
 
 private:

@@ -23,24 +23,24 @@
 #include "core/font.hpp"
 #include "mod/internal/widget/delegated_copy.hpp"
 #include "gdi/draw_utils.hpp"
-#include "gdi/text_metrics.hpp"
-#include "utils/sugar/cast.hpp"
-#include "utils/utf.hpp"
+
+
+namespace
+{
+    constexpr int XTEXT = 5;
+    constexpr int YTEXT = 3;
+    constexpr int BORDER_WIDTH = 2;
+}
+
 
 WidgetDelegatedCopy::WidgetDelegatedCopy(
-    gdi::GraphicApi & drawable, WidgetEventNotifier onclick,
-    Color fgcolor, Color bgcolor, Color activecolor,
-    Font const & font, int xicon, int yicon, MouseButton copy_buttons
+    gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
+    Color fgcolor, Color bgcolor, Color activecolor, Font const & font
 )
-    : Widget(drawable, Focusable::No)
-    , onclick(onclick)
-    , bg_color(bgcolor)
-    , fg_color(fgcolor)
-    , active_color(activecolor)
-    , optimal_glyph_dim(get_optimal_dim(font, xicon, yicon))
-    , x_icon(xicon)
-    , y_icon(yicon)
-    , copy_buttons(copy_buttons)
+    : WidgetButton(
+        drawable, ""_av, onsubmit, fgcolor, bgcolor,
+        activecolor, BORDER_WIDTH, font, XTEXT, YTEXT)
+    , optimal_glyph_dim(get_optimal_dim(font))
 {
 }
 
@@ -50,30 +50,38 @@ void WidgetDelegatedCopy::rdp_input_invalidate(Rect clip)
 
     if (!rect_intersect.isempty()) {
         this->draw(
-            clip, this->get_rect(), this->drawable,
-            this->fg_color, this->bg_color, this->x_icon, this->y_icon
+            clip, this->get_rect(), this->drawable, this->has_focus,
+            this->fg_color, this->bg_color, this->focus_color,
+            this->state
         );
     }
 }
 
 void WidgetDelegatedCopy::draw(
-    Rect clip, Rect rect, gdi::GraphicApi & drawable,
-    Color fg, Color bg, int xicon, int yicon)
+    Rect clip, Rect rect, gdi::GraphicApi & drawable, bool has_focus,
+    Color fg, Color bg, Color focus_color, State state)
 {
     const auto color_ctx = gdi::ColorCtx::depth24();
 
-    drawable.draw(RDPOpaqueRect(rect, bg), clip, color_ctx);
+    drawable.draw(RDPOpaqueRect(rect, has_focus ? focus_color : bg), clip, color_ctx);
+
+    gdi_draw_border(drawable, fg, rect.x, rect.y, rect.cx, rect.cy, BORDER_WIDTH, clip, color_ctx);
+
+    rect.x += BORDER_WIDTH + XTEXT;
+    rect.y += BORDER_WIDTH + YTEXT;
+    rect.cx -= (BORDER_WIDTH + XTEXT) * 2;
+    rect.cy -= (BORDER_WIDTH + YTEXT) * 2;
+
+    if (state == State::Pressed) {
+        rect.x++;
+        rect.y++;
+    }
+
+    gdi_draw_border(drawable, fg, rect.x, rect.y, rect.cx, rect.cy, 1, clip, color_ctx);
 
     auto drawRect = [&](int16_t x, int16_t y, uint16_t w, uint16_t h){
         drawable.draw(RDPOpaqueRect(Rect(x, y, w, h), fg), clip, color_ctx);
     };
-
-    rect.x += xicon;
-    rect.y += yicon;
-    rect.cx -= xicon * 2;
-    rect.cy -= yicon * 2;
-
-    gdi_draw_border(drawable, fg, rect.x, rect.y + 1, rect.cx, rect.cy - 1, 1, clip, color_ctx);
 
     // clip
     const int16_t d = ((rect.cx - 2) / 4) + /* border=*/1;
@@ -87,49 +95,11 @@ Dimension WidgetDelegatedCopy::get_optimal_dim() const
     return this->optimal_glyph_dim;
 }
 
-Dimension WidgetDelegatedCopy::get_optimal_dim(Font const & font, int xicon, int yicon)
+Dimension WidgetDelegatedCopy::get_optimal_dim(Font const & font)
 {
     auto const& glyph = font.item('E').view;
     return Dimension{
-        checked_int{glyph.width + 4 + xicon * 2},
-        checked_int{glyph.height + 3 + yicon * 2},
+        checked_int{glyph.width + 4 + (BORDER_WIDTH + XTEXT) * 2},
+        checked_int{glyph.height + 3 + (BORDER_WIDTH + YTEXT) * 2},
     };
-}
-
-void WidgetDelegatedCopy::set_color(Color bg_color, Color fg_color)
-{
-    this->bg_color = bg_color;
-    this->fg_color = fg_color;
-}
-
-static bool operator&(WidgetDelegatedCopy::MouseButton a,
-                      WidgetDelegatedCopy::MouseButton b)
-{
-    return underlying_cast(a) & underlying_cast(b);
-}
-
-void WidgetDelegatedCopy::rdp_input_mouse(uint16_t device_flags, uint16_t /*x*/, uint16_t /*y*/)
-{
-    uint32_t mouse_match = (
-      ((this->copy_buttons & MouseButton::Left)  ? MOUSE_FLAG_BUTTON1 : 0)
-    | ((this->copy_buttons & MouseButton::Right) ? MOUSE_FLAG_BUTTON2 : 0)
-    );
-    if ((device_flags & mouse_match)
-     && (device_flags & MOUSE_FLAG_DOWN)
-     && !this->is_active
-    ) {
-        this->draw(
-            this->get_rect(), this->get_rect(), this->drawable,
-            this->active_color, this->bg_color, this->x_icon, this->y_icon
-        );
-        this->is_active = true;
-        this->onclick();
-    }
-    else if ((device_flags & mouse_match) && this->is_active) {
-        this->draw(
-            this->get_rect(), this->get_rect(), this->drawable,
-            this->fg_color, this->bg_color, this->x_icon, this->y_icon
-        );
-        this->is_active = false;
-    }
 }

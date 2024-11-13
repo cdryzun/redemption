@@ -138,7 +138,9 @@ WidgetDialogWithCopyableLinkMod::WidgetDialogWithCopyableLinkMod(
                 this->set_mod_signal(BACK_EVENT_NEXT);
             }
         },
-        caption, message, link_value, link_label, TR(trkeys::OK, language(vars)),
+        caption, message, link_value, link_label,
+        TR(trkeys::link_copied, language(vars)),
+        TR(trkeys::OK, language(vars)),
         font, theme, copy_paste)
     , vars(vars)
 {

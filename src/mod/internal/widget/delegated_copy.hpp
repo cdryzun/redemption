@@ -20,54 +20,28 @@ Author(s): Proxies Team
 
 #pragma once
 
-#include "mod/internal/widget/widget.hpp"
-#include "mod/internal/widget/event_notifier.hpp"
+#include "mod/internal/widget/button.hpp"
 
 
 class Font;
 
-class WidgetDelegatedCopy : public Widget
+class WidgetDelegatedCopy : public WidgetButton
 {
 public:
-    enum class MouseButton : uint8_t
-    {
-        Right = 1 << 0,
-        Left  = 1 << 1,
-        Both  = Right | Left,
-    };
-
     WidgetDelegatedCopy(
-        gdi::GraphicApi & drawable, WidgetEventNotifier onclick,
-        Color fgcolor, Color bgcolor, Color activecolor,
-        Font const & font, int xicon, int yicon,
-        MouseButton copy_buttons);
+        gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
+        Color fgcolor, Color bgcolor, Color activecolor, Font const & font);
 
     Dimension get_optimal_dim() const override;
 
-    static Dimension get_optimal_dim(Font const & font, int xicon, int yicon);
-
-    void set_color(Color bg_color, Color fg_color) override;
-
-    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
+    static Dimension get_optimal_dim(Font const & font);
 
     void rdp_input_invalidate(Rect clip) override;
 
     static void draw(
-        Rect clip, Rect rect, gdi::GraphicApi & drawable,
-        Color fg, Color bg, int xicon, int yicon);
+        Rect clip, Rect rect, gdi::GraphicApi & drawable, bool has_focus,
+        Color fg, Color bg, Color focus_color, State state);
 
 private:
-    WidgetEventNotifier onclick;
-
-    Color bg_color;
-    Color fg_color;
-    Color active_color;
-
     Dimension optimal_glyph_dim;
-    int x_icon;
-    int y_icon;
-
-    MouseButton copy_buttons;
-
-    bool is_active = false;
 };
