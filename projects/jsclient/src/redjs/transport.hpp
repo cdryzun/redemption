@@ -35,7 +35,8 @@ namespace redjs
 struct Transport : ::Transport
 {
     TlsResult enable_client_tls(
-        ServerNotifier& server_notifier, const TlsConfig & tls_config, AnonymousTls anonymous_tls) override;
+        CertificateChecker certificate_checker,
+        const TlsConfig & tls_config, AnonymousTls anonymous_tls) override;
 
     size_t do_partial_read(uint8_t * data, size_t len) override;
 
