@@ -211,7 +211,7 @@ private:
                 }
             }
 
-            LOG(LOG_ERR, "FileSystemLicenseStore::%s: license file truncated: expected %lu, got %zu", funcname, reader.number_of_bytes_requested, reader.number_of_bytes_read);
+            LOG(LOG_ERR, "FileSystemLicenseStore::%s: license file truncated: expected %zu, got %zd", funcname, reader.number_of_bytes_requested, reader.number_of_bytes_read);
         }
         else {
             LOG(LOG_WARNING, "FileSystemLicenseStore::%s: Failed to open license file! Path=\"%s\" errno=%s(%d)", funcname, path_maker.path, strerror(errno), errno);
