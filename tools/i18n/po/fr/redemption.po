@@ -529,12 +529,12 @@ msgstr ""
 
 #: src/utils/trkeys.hpp:219
 msgid "URL Redirection"
-msgstr ""
+msgstr "Redirection d'URL"
 
 #: src/utils/trkeys.hpp:220
 msgid "Copy to clipboard: "
-msgstr ""
+msgstr "Copier dans le presse-papier: "
 
 #: src/utils/trkeys.hpp:221
 msgid "The link is copied."
-msgstr ""
+msgstr "Le lien est copié."
