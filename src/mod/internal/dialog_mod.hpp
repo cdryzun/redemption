@@ -111,7 +111,7 @@ public:
         gdi::GraphicApi & drawable,
         uint16_t width, uint16_t height,
         Rect const widget_rect, chars_view caption, chars_view message,
-        chars_view link_value, chars_view link_label,
+        chars_view link_value, chars_view link_label, chars_view copied_msg_label,
         ClientExecute & rail_client_execute,
         Font const& font, Theme const& theme, CopyPaste& copy_paste);
 

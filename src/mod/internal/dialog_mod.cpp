@@ -121,7 +121,7 @@ WidgetDialogWithCopyableLinkMod::WidgetDialogWithCopyableLinkMod(
     gdi::GraphicApi & drawable,
     uint16_t width, uint16_t height,
     Rect const widget_rect, chars_view caption, chars_view message,
-    chars_view link_value, chars_view link_label,
+    chars_view link_value, chars_view link_label, chars_view copied_msg_label,
     ClientExecute & rail_client_execute,
     Font const& font, Theme const& theme, CopyPaste& copy_paste
 )
@@ -138,8 +138,7 @@ WidgetDialogWithCopyableLinkMod::WidgetDialogWithCopyableLinkMod(
                 this->set_mod_signal(BACK_EVENT_NEXT);
             }
         },
-        caption, message, link_value, link_label,
-        TR(trkeys::link_copied, language(vars)),
+        caption, message, link_value, link_label, copied_msg_label,
         TR(trkeys::OK, language(vars)),
         font, theme, copy_paste)
     , vars(vars)

@@ -358,7 +358,7 @@ void ModFactory::create_valid_message_mod()
 {
     chars_view ok_text = TR(trkeys::accepted, language(this->ini));
     chars_view cancel = TR(trkeys::refused, language(this->ini));
-    chars_view caption = "Information"_av;
+    chars_view caption = TR(trkeys::information, language(this->ini));
     auto mod_pack = Impl::create_dialog(*this, ok_text, cancel, caption);
     Impl::set_mod(*this, ModuleName::valid, mod_pack, false);
 }
@@ -367,14 +367,14 @@ void ModFactory::create_display_message_mod()
 {
     chars_view ok_text = TR(trkeys::OK, language(this->ini));
     chars_view cancel = nullptr;
-    chars_view caption = "Information"_av;
+    chars_view caption = TR(trkeys::information, language(this->ini));
     auto mod_pack = Impl::create_dialog(*this, ok_text, cancel, caption);
     Impl::set_mod(*this, ModuleName::confirm, mod_pack, false);
 }
 
 void ModFactory::create_dialog_challenge_mod()
 {
-    chars_view caption = "Challenge"_av;
+    chars_view caption = TR(trkeys::challenge, language(this->ini));
     const auto challenge = this->ini.get<cfg::context::authentication_challenge>()
         ? DialogWithChallengeMod::ChallengeOpt::Echo
         : DialogWithChallengeMod::ChallengeOpt::Hide;
@@ -398,18 +398,17 @@ void ModFactory::create_dialog_challenge_mod()
 
 void ModFactory::create_display_link_mod()
 {
-    chars_view caption = "URL Redirection"_av;
-    chars_view link_label = "Copy to clipboard: "_av;
     auto new_mod = new WidgetDialogWithCopyableLinkMod(
         this->ini,
         this->graphics,
         this->client_info.screen_info.width,
         this->client_info.screen_info.height,
         this->rail_client_execute.adjust_rect(this->client_info.get_widget_rect()),
-        caption,
+        TR(trkeys::link_caption, language(ini)),
         this->ini.get<cfg::context::message>(),
         this->ini.get<cfg::context::display_link>(),
-        link_label,
+        TR(trkeys::link_label, language(ini)),
+        TR(trkeys::link_copied, language(ini)),
         this->rail_client_execute,
         this->glyphs,
         this->theme,
