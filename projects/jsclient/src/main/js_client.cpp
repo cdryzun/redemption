@@ -383,7 +383,11 @@ public:
         rdp_params.allow_tls_only      = false;
         rdp_params.allow_rdp_legacy    = true;
         rdp_params.enable_nla          = false;
-        rdp_params.server_cert_check   = ServerCertCheck::always_succeed;
+        rdp_params.server_cert_params  = {
+            .store = false,
+            .check = ServerCertCheck::always_succeed,
+            .notifications = {},
+        };
         rdp_params.ignore_auth_channel = true;
 
         set_if(config, "enableFastPath", rdp_params.enable_fastpath);
