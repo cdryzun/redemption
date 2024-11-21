@@ -647,34 +647,7 @@ void KeymapSym::_update_keymap() noexcept
 
 KeymapSym::Keys KeymapSym::utf16_to_keysyms(KbdFlags flag, uint16_t utf16) noexcept
 {
-    auto is_surrogate = [](uint16_t uc) noexcept { return (uc - 0xd800u) < 2048u; };
-    auto is_high_surrogate = [](uint16_t uc) noexcept { return (uc & 0xfffffc00) == 0xd800; };
-    auto is_low_surrogate = [](uint16_t uc) noexcept { return (uc & 0xfffffc00) == 0xdc00; };
-    auto surrogate_to_utf32 = [](uint32_t high, uint32_t low) noexcept { return (high << 10) + low - 0x35fdc00; };
-
-    const auto unicode = [&]() -> uint32_t {
-        if (REDEMPTION_UNLIKELY(previous_unicode16_)) {
-            if (is_low_surrogate(utf16)) {
-                auto uc = surrogate_to_utf32(previous_unicode16_, utf16);
-                previous_unicode16_ = 0;
-                return uc;
-            }
-            // else {
-            //     // error
-            // }
-            previous_unicode16_ = 0;
-        }
-
-        if (!is_surrogate(utf16)) {
-            return utf16;
-        }
-
-        if (is_high_surrogate(utf16)) {
-            previous_unicode16_ = utf16;
-        }
-
-        return 0;
-    }();
+    const auto unicode = unicode32_decoder.convert(utf16);
 
     Keys keys;
 

@@ -24,6 +24,7 @@
 
 #include "keyboard/key_mod_flags.hpp"
 #include "keyboard/keymap.hpp"
+#include "utils/utf.hpp"
 
 #include <array>
 
@@ -101,7 +102,7 @@ private:
     KeyLayout::DKeyTable dkeys_ {};
     kbdtypes::KeyModFlags mods_ {};
 
-    uint16_t previous_unicode16_ {};
+    Utf16ToUnicodeConverter unicode32_decoder {};
 
     uint8_t imods_ {};
 

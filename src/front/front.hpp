@@ -215,6 +215,7 @@ private:
 
         std::unique_ptr<CaptureCtx> _capture_ctx;
     };
+    Utf16ToUnicodeConverter unicode16_to_unicode32_converter;
     PrivCapture capture;
     SessionUpdateBuffer session_update_buffer;
 
@@ -5386,11 +5387,21 @@ public:
         }
     }
 
-    void input_event_unicode(RdpInput::KbdFlags flag, uint16_t unicode, Callback & cb)
+    void input_event_unicode(RdpInput::KbdFlags flag, uint16_t utf16, Callback & cb)
     {
         if (this->state == FRONT_UP_AND_RUNNING) {
             if (this->sharing_ctx.has_input()) {
-                cb.rdp_input_unicode(flag, unicode);
+                bool send_to_mod = true;
+                if (this->capture && !bool(flag & RdpInput::KbdFlags::Release)) {
+                    if (auto const uc = unicode16_to_unicode32_converter.convert(utf16)) {
+                        auto const now = this->events_guard.get_monotonic_time();
+                        send_to_mod = this->capture->kbd_input(now, uc);
+                    }
+                }
+
+                if (send_to_mod) {
+                    cb.rdp_input_unicode(flag, utf16);
+                }
             }
             this->update_activity();
         }

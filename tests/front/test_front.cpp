@@ -385,7 +385,18 @@ std::string uniA(FrontCtx& front_ctx)
     return mod.events();
 }
 
+std::string uniRocket(FrontCtx& front_ctx)
+{
+    auto& mod = front_ctx.mod;
+    front_ctx.front.input_event_unicode(KbdFlags::NoFlags, 0xD83D, mod);
+    front_ctx.front.input_event_unicode(KbdFlags::NoFlags, 0xDE80, mod);
+    front_ctx.front.input_event_unicode(KbdFlags::Release, 0xD83D, mod);
+    front_ctx.front.input_event_unicode(KbdFlags::Release, 0xDE80, mod);
+    return mod.events();
+}
+
 inline constexpr auto uniA_av = "{KbdFlags=0x0000, Unicode=0x0061}, {KbdFlags=0x8000, Unicode=0x0061}"_av;
+inline constexpr auto uniRocket_av = "{KbdFlags=0x0000, Unicode=0xD83D}, {KbdFlags=0x0000, Unicode=0xDE80}, {KbdFlags=0x8000, Unicode=0xD83D}, {KbdFlags=0x8000, Unicode=0xDE80}"_av;
 inline constexpr auto no_unis = ""_av;
 
 
@@ -520,6 +531,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
         RED_CHECK(keyA(user) == keyA_av);
         RED_CHECK(uniA(guest) == no_unis);
         RED_CHECK(uniA(user) == uniA_av);
+        RED_CHECK(uniRocket(guest) == no_unis);
+        RED_CHECK(uniRocket(user) == uniRocket_av);
         RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
         RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
         RED_CHECK(mouse(guest) == no_mouse);
@@ -532,6 +545,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             RED_CHECK(keyA(user) == keyA_av);
             RED_CHECK(uniA(guest) == no_unis);
             RED_CHECK(uniA(user) == uniA_av);
+            RED_CHECK(uniRocket(guest) == no_unis);
+            RED_CHECK(uniRocket(user) == uniRocket_av);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
             RED_CHECK(mouse(guest) == no_mouse);
@@ -545,6 +560,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             RED_CHECK(keyA(user) == keyA_av);
             RED_CHECK(uniA(guest) == no_unis);
             RED_CHECK(uniA(user) == uniA_av);
+            RED_CHECK(uniRocket(guest) == no_unis);
+            RED_CHECK(uniRocket(user) == uniRocket_av);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
             RED_CHECK(mouse(guest) == no_mouse);
@@ -559,6 +576,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             RED_CHECK(keyA(user) == keyA_av);
             RED_CHECK(uniA(guest) == no_unis);
             RED_CHECK(uniA(user) == uniA_av);
+            RED_CHECK(uniRocket(guest) == no_unis);
+            RED_CHECK(uniRocket(user) == uniRocket_av);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
             RED_CHECK(mouse(guest) == no_mouse);
@@ -573,6 +592,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
         RED_CHECK(keyA(user) == no_keys);
         RED_CHECK(uniA(guest) == uniA_av);
         RED_CHECK(uniA(user) == no_unis);
+        RED_CHECK(uniRocket(guest) == uniRocket_av);
+        RED_CHECK(uniRocket(user) == no_unis);
         RED_CHECK(locks(guest, KeyLocks::CapsLock) == lock_caps);
         RED_CHECK(locks(user, KeyLocks::ScrollLock) == no_locks);
         RED_CHECK(mouse(guest) == mouse_pos);
@@ -585,6 +606,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             RED_CHECK(keyA(user) == no_keys);
             RED_CHECK(uniA(guest) == uniA_av);
             RED_CHECK(uniA(user) == no_unis);
+            RED_CHECK(uniRocket(guest) == uniRocket_av);
+            RED_CHECK(uniRocket(user) == no_unis);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == lock_caps);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == no_locks);
             RED_CHECK(mouse(guest) == mouse_pos);
@@ -598,6 +621,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             RED_CHECK(keyA(user) == no_keys);
             RED_CHECK(uniA(guest) == uniA_av);
             RED_CHECK(uniA(user) == no_unis);
+            RED_CHECK(uniRocket(guest) == uniRocket_av);
+            RED_CHECK(uniRocket(user) == no_unis);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == lock_caps);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == no_locks);
             RED_CHECK(mouse(guest) == mouse_pos);
@@ -611,6 +636,8 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             RED_CHECK(keyA(user) == no_keys);
             RED_CHECK(uniA(guest) == uniA_av);
             RED_CHECK(uniA(user) == no_unis);
+            RED_CHECK(uniRocket(guest) == uniRocket_av);
+            RED_CHECK(uniRocket(user) == no_unis);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == lock_caps);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == no_locks);
             RED_CHECK(mouse(guest) == mouse_pos);
@@ -684,6 +711,7 @@ sharing_test(ini, true, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod& 
             "SESSION_INVITE_GUEST_DISCONNECTION guest=\"guest-1\" duration=\"00:00:00\"\n"_av);
         RED_CHECK(keyA(user) == keyA_av);
         RED_CHECK(uniA(user) == uniA_av);
+        RED_CHECK(uniRocket(user) == uniRocket_av);
         RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
         RED_CHECK(mouse(user) == mouse_pos);
     }
@@ -705,6 +733,8 @@ sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod&
         RED_CHECK(keyA(user) == keyA_av);
         RED_CHECK(uniA(guest) == no_unis);
         RED_CHECK(uniA(user) == uniA_av);
+        RED_CHECK(uniRocket(guest) == no_unis);
+        RED_CHECK(uniRocket(user) == uniRocket_av);
         RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
         RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
         RED_CHECK(mouse(guest) == no_mouse);
@@ -717,6 +747,8 @@ sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod&
             RED_CHECK(keyA(user) == keyA_av);
             RED_CHECK(uniA(guest) == no_unis);
             RED_CHECK(uniA(user) == uniA_av);
+            RED_CHECK(uniRocket(guest) == no_unis);
+            RED_CHECK(uniRocket(user) == uniRocket_av);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
             RED_CHECK(mouse(guest) == no_mouse);
@@ -730,6 +762,8 @@ sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod&
             RED_CHECK(keyA(user) == keyA_av);
             RED_CHECK(uniA(guest) == no_unis);
             RED_CHECK(uniA(user) == uniA_av);
+            RED_CHECK(uniRocket(guest) == no_unis);
+            RED_CHECK(uniRocket(user) == uniRocket_av);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
             RED_CHECK(mouse(guest) == no_mouse);
@@ -744,6 +778,8 @@ sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod&
             RED_CHECK(keyA(user) == keyA_av);
             RED_CHECK(uniA(guest) == no_unis);
             RED_CHECK(uniA(user) == uniA_av);
+            RED_CHECK(uniRocket(guest) == no_unis);
+            RED_CHECK(uniRocket(user) == uniRocket_av);
             RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
             RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
             RED_CHECK(mouse(guest) == no_mouse);
@@ -758,6 +794,8 @@ sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod&
         RED_CHECK(keyA(user) == keyA_av);
         RED_CHECK(uniA(guest) == no_unis);
         RED_CHECK(uniA(user) == uniA_av);
+        RED_CHECK(uniRocket(guest) == no_unis);
+        RED_CHECK(uniRocket(user) == uniRocket_av);
         RED_CHECK(locks(guest, KeyLocks::CapsLock) == no_locks);
         RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
         RED_CHECK(mouse(guest) == no_mouse);
@@ -825,6 +863,7 @@ sharing_test(ini, false, [](FrontCtx& user, FrontCtx& guest, AccumulateInputMod&
             "SESSION_INVITE_GUEST_DISCONNECTION guest=\"guest-1\" duration=\"00:00:00\"\n"_av);
         RED_CHECK(keyA(user) == keyA_av);
         RED_CHECK(uniA(user) == uniA_av);
+        RED_CHECK(uniRocket(user) == uniRocket_av);
         RED_CHECK(locks(user, KeyLocks::ScrollLock) == lock_scroll);
         RED_CHECK(mouse(user) == mouse_pos);
     }

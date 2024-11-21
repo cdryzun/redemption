@@ -535,3 +535,50 @@ private:
     uint8_t const* p;
     uint8_t const* end_ptr;
 };
+
+struct Utf16ToUnicodeConverter
+{
+    /// \return an unicode decoded character or 0.
+    uint32_t convert(uint16_t utf16) noexcept
+    {
+        auto is_surrogate = [](uint16_t uc) noexcept { return (uc - 0xd800u) < 2048u; };
+        auto is_high_surrogate = [](uint16_t uc) noexcept { return (uc & 0xfffffc00) == 0xd800; };
+        auto is_low_surrogate = [](uint16_t uc) noexcept { return (uc & 0xfffffc00) == 0xdc00; };
+        auto surrogate_to_utf32 = [](uint32_t high, uint32_t low) noexcept { return (high << 10) + low - 0x35fdc00; };
+
+        if (REDEMPTION_UNLIKELY(previous_unicode16)) {
+            if (is_low_surrogate(utf16)) {
+                auto uc = surrogate_to_utf32(previous_unicode16, utf16);
+                previous_unicode16 = 0;
+                return uc;
+            }
+            // else {
+            //     // invalid
+            // }
+            previous_unicode16 = 0;
+        }
+
+        if (!is_surrogate(utf16)) {
+            return utf16;
+        }
+
+        if (is_high_surrogate(utf16)) {
+            previous_unicode16 = utf16;
+        }
+
+        return 0;
+    }
+
+    uint16_t previous_codepoint() const noexcept
+    {
+        return previous_unicode16;
+    }
+
+    void clear() noexcept
+    {
+        previous_unicode16 = 0;
+    }
+
+private:
+    uint16_t previous_unicode16 = 0;
+};

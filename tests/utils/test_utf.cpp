@@ -593,3 +593,30 @@ RED_AUTO_TEST_CASE(Test_utf8_read_on_char)
     RED_CHECK(utf8_read_char("\xF0\xAA"_av) == "?\xF0\xAA[FFFD]"_av);
     RED_CHECK(utf8_read_char("\xF0\xAAX"_av) == "?\xF0\xAAX[FFFD]"_av);
 }
+
+RED_AUTO_TEST_CASE(Test_utf16_to_unicode32)
+{
+    Utf16ToUnicodeConverter decoder;
+    RED_CHECK(decoder.convert('a') == 'a');
+    RED_CHECK(decoder.previous_codepoint() == 0);
+
+    RED_CHECK(decoder.convert(0x80) == 0x80);
+    RED_CHECK(decoder.previous_codepoint() == 0);
+
+    // 🚀 (rocket)
+    RED_CHECK(decoder.convert(0xd83d) == 0);
+    RED_CHECK(decoder.previous_codepoint() == 0xd83d);
+    RED_CHECK(decoder.convert(0xde80) == 0x1F680);
+    RED_CHECK(decoder.previous_codepoint() == 0);
+
+    // invalid (2 surrogage low)
+    RED_CHECK(decoder.convert(0xd83d) == 0);
+    RED_CHECK(decoder.previous_codepoint() == 0xd83d);
+    RED_CHECK(decoder.convert(0xd83d) == 0);
+    RED_CHECK(decoder.previous_codepoint() == 0xd83d);
+    decoder.clear();
+
+    // invalid (2 surrogage high)
+    RED_CHECK(decoder.convert(0xde80) == 0);
+    RED_CHECK(decoder.previous_codepoint() == 0);
+}
