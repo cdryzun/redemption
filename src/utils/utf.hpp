@@ -172,10 +172,6 @@ std::size_t UTF16toUTF8(const uint16_t * utf16_source, std::size_t utf16_len, ui
 
 // Return number of UTF8 bytes used to encode UTF32 input
 // do not write trailing 0
-std::size_t UTF32toUTF8(const uint8_t * utf32_source, std::size_t utf32_len, uint8_t * utf8_target, std::size_t target_len) noexcept;
-
-// Return number of UTF8 bytes used to encode UTF32 input
-// do not write trailing 0
 std::size_t UTF32toUTF8(uint32_t utf32_char, uint8_t * utf8_target, std::size_t target_len) noexcept;
 
 size_t UTF8CharNbBytes(const uint8_t * source) noexcept;

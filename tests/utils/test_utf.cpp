@@ -161,10 +161,18 @@ RED_AUTO_TEST_CASE(TestUTF8_UTF16_witch_CrLf)
 
 RED_AUTO_TEST_CASE(TestUTF32toUTF8) {
     uint8_t buf[5]{};
-    RED_REQUIRE_EQUAL(1u, UTF32toUTF8(byte_ptr_cast("a\0\0\0"), 1, buf, 5));
-    RED_REQUIRE_EQUAL('a', buf[0]);
+
     RED_REQUIRE_EQUAL(1u, UTF32toUTF8('a', buf, 4));
     RED_REQUIRE_EQUAL('a', buf[0]);
+
+    RED_REQUIRE_EQUAL(2u, UTF32toUTF8(0xBF, buf, 4));
+    RED_REQUIRE_EQUAL("¿"_av, bytes_view(buf, 2));
+
+    RED_REQUIRE_EQUAL(3u, UTF32toUTF8(0x20AC, buf, 4));
+    RED_REQUIRE_EQUAL("€"_av, bytes_view(buf, 3));
+
+    RED_REQUIRE_EQUAL(4u, UTF32toUTF8(0x1F680, buf, 4));
+    RED_REQUIRE_EQUAL("🚀"_av, bytes_view(buf, 4));
 }
 
 RED_AUTO_TEST_CASE(TestUTF8toUnicodeIterator) {

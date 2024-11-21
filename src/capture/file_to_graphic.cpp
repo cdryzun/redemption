@@ -520,11 +520,11 @@ void FileToGraphic::interpret_order()
                 }
 
                 if (REDEMPTION_UNLIKELY(bool(this->verbose & Verbose::timestamp))) {
-                    for (auto data = input.data(), end = data + input.size()/4*4; data != end; data += 4) {
-                        uint8_t key8[6];
-                        const size_t len = UTF32toUTF8(data, 4/4, key8, sizeof(key8)-1);
+                    InStream in_stream(input);
+                    while (in_stream.in_remain()) {
+                        uint8_t key8[5];
+                        const size_t len = UTF32toUTF8(in_stream.in_uint32_le(), key8, sizeof(key8)-1);
                         key8[len] = 0;
-
                         LOG(LOG_INFO, "TIMESTAMP keyboard '%s'", key8);
                     }
                 }

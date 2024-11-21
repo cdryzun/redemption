@@ -540,78 +540,52 @@ size_t UTF16toUTF8(const uint16_t * utf16_source, size_t utf16_len, uint8_t * ut
 
 // Return number of UTF8 bytes used to encode UTF32 input
 // do not write trailing 0
-size_t UTF32toUTF8(const uint8_t * utf32_source, size_t utf32_len, uint8_t * utf8_target, size_t target_len) noexcept
-{
-    size_t i_t = 0;
-    size_t i_s = 0;
-    for (size_t i = 0 ; i < utf32_len ; i++){
-        uint8_t lo = utf32_source[i_s];
-        uint8_t hi = utf32_source[i_s+1];
-        if (lo == 0 && hi == 0){
-            if ((i_t + 1) > target_len) { break; }
-            utf8_target[i_t] = 0;
-            i_t++;
-            break;
-        }
-        i_s += 4;
-
-        if (hi & 0xF8){
-            // 3 bytes
-            if ((i_t + 3) > target_len) { break; }
-            utf8_target[i_t] = 0xE0 | ((hi >> 4) & 0x0F);
-            utf8_target[i_t + 1] = 0x80 | ((hi & 0x0F) << 2) | (lo >> 6);
-            utf8_target[i_t + 2] = 0x80 | (lo & 0x3F);
-            i_t += 3;
-        }
-        else if (hi || (lo & 0x80)) {
-            // 2 bytes
-            if ((i_t + 2) > target_len) { break; }
-            utf8_target[i_t] = 0xC0 | ((hi << 2) & 0x1C) | ((lo >> 6) & 3);
-            utf8_target[i_t + 1] = 0x80 | (lo & 0x3F);
-            i_t += 2;
-        }
-        else {
-            if ((i_t + 1) > target_len) { break; }
-            utf8_target[i_t] = lo;
-            i_t++;
-        }
-    }
-    return i_t;
-}
-
-// Return number of UTF8 bytes used to encode UTF32 input
-// do not write trailing 0
 size_t UTF32toUTF8(uint32_t utf32_char, uint8_t * utf8_target, size_t target_len) noexcept
 {
     size_t i_t = 0;
-    uint8_t lo = (utf32_char & 0xffu);
-    uint8_t hi = (utf32_char & 0xff00u) >> 8;
-    if (lo == 0 && hi == 0){
-        if ((i_t + 1) > target_len) { return i_t; }
-        utf8_target[i_t] = 0;
-        i_t++;
+
+    using u8 = uint8_t;
+
+    // 1 byte (0bbb·bbbb)
+    if (utf32_char <= 0x7F) {
+        if (i_t + 1 <= target_len) {
+            utf8_target[i_t++] = static_cast<u8>(utf32_char);
+        }
         return i_t;
     }
 
-    if (hi & 0xF8){
-        // 3 bytes
-        if ((i_t + 3) > target_len) { return i_t; }
-        utf8_target[i_t] = 0xE0 | ((hi >> 4) & 0x0F);
-        utf8_target[i_t + 1] = 0x80 | ((hi & 0x0F) << 2) | (lo >> 6);
-        utf8_target[i_t + 2] = 0x80 | (lo & 0x3F);
-        i_t += 3;
+    // 2 bytes (110b·bbbb 10bb·bbbb)
+    if (utf32_char <= 0x7FF) {
+        if (i_t + 2 <= target_len) {
+            utf8_target[i_t++] = static_cast<u8>(0b1100'0000u | (utf32_char >> 6));
+            utf8_target[i_t++] = static_cast<u8>(0b1000'0000u | (utf32_char & 0b11'1111));
+        }
+        return i_t;
     }
-    else if (hi || (lo & 0x80)) {
-        // 2 bytes
-        if ((i_t + 2) > target_len) { return i_t; }
-        utf8_target[i_t] = 0xC0 | ((hi << 2) & 0x1C) | ((lo >> 6) & 3);
-        utf8_target[i_t + 1] = 0x80 | (lo & 0x3F);
-        i_t += 2;
+
+    // 3 bytes (1110·bbbb 10bb·bbbb 10bb·bbbb)
+    if (utf32_char <= 0xFFFF) {
+        if (i_t + 3 <= target_len) {
+            utf8_target[i_t++] = static_cast<u8>(0b1110'0000u | ( utf32_char >> 12));
+            utf8_target[i_t++] = static_cast<u8>(0b1000'0000u | ((utf32_char >> 6) & 0b1'1111));
+            utf8_target[i_t++] = static_cast<u8>(0b1000'0000u | ( utf32_char       & 0b11'1111));
+        }
+        return i_t;
     }
-    else {
-        if ((i_t + 1) > target_len) { return i_t; }
-        utf8_target[i_t] = lo;
-        i_t++;
+
+    // 4 bytes (1111·0bbb 10bb·bbbb 10bb·bbbb 10bb·bbbb)
+    if (utf32_char <= 0x10FFFF) {
+        if (i_t + 4 <= target_len) {
+            utf8_target[i_t++] = static_cast<u8>(0b1111'0000u | ( utf32_char >> 18));
+            utf8_target[i_t++] = static_cast<u8>(0b1000'0000u | ((utf32_char >> 12) & 0b11'1111));
+            utf8_target[i_t++] = static_cast<u8>(0b1000'0000u | ((utf32_char >> 6 ) & 0b11'1111));
+            utf8_target[i_t++] = static_cast<u8>(0b1000'0000u | ( utf32_char        & 0b11'1111));
+        }
+        return i_t;
+    }
+
+    if (i_t + 1 <= target_len) {
+        utf8_target[i_t++] = utf32_char & 0xff;
     }
     return i_t;
 }
