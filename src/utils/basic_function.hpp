@@ -11,7 +11,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include <cstring>
 
 
-template<class... Args>
+template<class Sig>
 struct BasicFunction;
 
 struct NullFunction

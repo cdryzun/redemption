@@ -39,6 +39,11 @@ struct chars_to_int_result
     {
         return x.ec == y.ec && x.val == y.val && x.ptr == y.ptr;
     }
+
+    constexpr operator bool() const noexcept
+    {
+        return ec == std::errc();
+    }
 };
 
 template<class Int>

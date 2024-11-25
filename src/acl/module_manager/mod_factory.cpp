@@ -162,12 +162,9 @@ struct ModFactory::Impl
 
     static ModPack create_close_mod(ModFactory& self, bool back_to_selector)
     {
-        zstring_view message = self.err_msg_ctx.get_msg();
+        zstring_view message = self.err_msg_ctx.get_translated_msg(language(self.ini));
         if (message.empty()) {
             message = TR(trkeys::connection_ended, language(self.ini));
-        }
-        else if (!self.err_msg_ctx.is_translated()) {
-            message = TR(TrKey{message}, language(self.ini));
         }
 
         auto new_mod = new CloseMod(

@@ -5,7 +5,10 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
+#include "configs/autogen/enums.hpp" // Language
 #include "utils/trkey.hpp"
+#include "utils/sugar/zstring_view.hpp"
+#include "utils/translation.hpp"
 
 
 class ErrorMessageCtx
@@ -17,42 +20,42 @@ public:
 
     void set_msg(TrKey k)
     {
-        trkey = k;
+        tr_index = static_cast<int>(k.index);
         translated_msg.clear();
     }
 
     void set_msg(zstring_view msg)
     {
+        tr_index = -1;
         translated_msg = msg;
-        trkey.translation = {};
     }
 
     void set_msg(std::string&& msg)
     {
+        tr_index = -1;
         translated_msg = std::move(msg);
-        trkey.translation = {};
     }
 
     void clear()
     {
-        trkey.translation = {};
+        tr_index = -1;
         translated_msg.clear();
-    }
-
-    bool is_translated() const
-    {
-        return trkey.translation.empty();
     }
 
     zstring_view get_msg() const
     {
-        if (!trkey.translation.empty()) {
-            return trkey.translation;
+        return get_translated_msg(Language::en);
+    }
+
+    zstring_view get_translated_msg(Language lang) const
+    {
+        if (tr_index < 0) {
+            return translated_msg;
         }
-        return translated_msg;
+        return TR(TrKey{static_cast<unsigned>(tr_index)}, lang);
     }
 
 private:
-    TrKey trkey;
+    int tr_index = -1;
     std::string translated_msg;
 };
