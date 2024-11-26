@@ -61,7 +61,7 @@ struct TestWidgetSelectorCtx
             .onctrl_shift = WidgetEventNotifier(),
         },
         "1"_av, "1"_av, nullptr, params, global_font_deja_vu_14(), Theme(),
-        Language::en, has_target_helpicon)
+        MsgTranslationCatalog::default_catalog(), has_target_helpicon)
     {}
 
     void add_devices()

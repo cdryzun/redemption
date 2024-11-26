@@ -79,7 +79,8 @@ struct DialogChallengeModContextTest : DialogModContextTestBase
     DialogChallengeModContextTest(DialogWithChallengeMod::ChallengeOpt has_challenge)
     : d(ini, front.gd(), front, screen_info.width, screen_info.height,
         Rect(0, 0, 799, 599), "Title"_av, "Hello, World"_av,
-        client_execute, global_font(), theme, copy_paste, has_challenge)
+        client_execute, global_font(), theme, copy_paste,
+        MsgTranslationCatalog::default_catalog(), has_challenge)
     {
         mod = &d;
     }

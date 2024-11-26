@@ -339,6 +339,12 @@ public:
     }
 
     [[nodiscard]]
+    static constexpr size_type fized_size() noexcept requires(AtLeast == AtMost)
+    {
+        return AtLeast;
+    }
+
+    [[nodiscard]]
     constexpr bool empty() const noexcept
     {
         return !size();

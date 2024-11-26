@@ -58,7 +58,8 @@ struct TestLoginModCtx
             return ini;
         }(), event_manager.get_events(), "user"_av, "pass"_av, front.gd(), front,
         screen_info.width, screen_info.height,
-        Rect(0, 0, 799, 599), client_execute, global_font(), theme, copy_paste)
+        Rect(0, 0, 799, 599), client_execute, global_font(), theme, copy_paste,
+        MsgTranslationCatalog::default_catalog())
     {
     }
 };

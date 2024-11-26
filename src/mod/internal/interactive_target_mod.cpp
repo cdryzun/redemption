@@ -29,7 +29,7 @@ InteractiveTargetMod::InteractiveTargetMod(
     gdi::GraphicApi & drawable,
     FrontAPI & front, uint16_t width, uint16_t height, Rect const widget_rect,
     ClientExecute & rail_client_execute, Font const& font, Theme const& theme,
-    CopyPaste& copy_paste)
+    CopyPaste& copy_paste, Translator tr)
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, &copy_paste)
     , ask_device(vars.is_asked<cfg::context::target_host>())
     , ask_login(vars.is_asked<cfg::globals::target_user>())
@@ -45,10 +45,10 @@ InteractiveTargetMod::InteractiveTargetMod(
         },
         this->ask_device, this->ask_login, this->ask_password,
         theme,
-        TR(trkeys::target_info_required, language(vars)),
-        TR(trkeys::device, language(vars)), vars.get<cfg::globals::target_device>(),
-        TR(trkeys::login, language(vars)), vars.get<cfg::globals::target_user>(),
-        TR(trkeys::password, language(vars)),
+        tr(trkeys::target_info_required),
+        tr(trkeys::device), vars.get<cfg::globals::target_device>(),
+        tr(trkeys::login), vars.get<cfg::globals::target_user>(),
+        tr(trkeys::password),
         font, &this->language_button)
     , vars(vars)
 {

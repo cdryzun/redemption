@@ -33,28 +33,28 @@ WidgetWabClose::WidgetWabClose(
     Events events, std::string diagnostic_text,
     chars_view username, chars_view target,
     bool showtimer, Font const & font, Theme const & theme,
-    Language lang, bool back_to_selector)
+    Translator tr, bool back_to_selector)
 : WidgetComposite(drawable, Focusable::Yes)
 , oncancel(events.oncancel)
-, connection_closed_label(drawable, TR(trkeys::connection_closed, lang),
+, connection_closed_label(drawable, tr(trkeys::connection_closed),
                           theme.global.fgcolor, theme.global.bgcolor, font)
 , separator(drawable, theme.global.separator_color)
-, username_label(drawable, TR(trkeys::wab_close_username, lang),
+, username_label(drawable, tr(trkeys::wab_close_username),
                  theme.global.fgcolor, theme.global.bgcolor, font)
 , username_value(drawable, username,
                  theme.global.fgcolor, theme.global.bgcolor, font)
-, target_label(drawable, TR(trkeys::wab_close_target, lang),
+, target_label(drawable, tr(trkeys::wab_close_target),
                theme.global.fgcolor, theme.global.bgcolor, font)
 , target_value(drawable, target,
                theme.global.fgcolor, theme.global.bgcolor, font)
-, diagnostic_label(drawable, TR(trkeys::wab_close_diagnostic, lang),
+, diagnostic_label(drawable, tr(trkeys::wab_close_diagnostic),
                    theme.global.fgcolor, theme.global.bgcolor, font)
 , diagnostic_value(drawable, theme.global.fgcolor, theme.global.bgcolor, font)
-, timeleft_label(drawable, TR(trkeys::wab_close_timeleft, lang),
+, timeleft_label(drawable, tr(trkeys::wab_close_timeleft),
                 theme.global.fgcolor, theme.global.bgcolor, font)
 , timeleft_value(drawable, ""_av,
                  theme.global.fgcolor, theme.global.bgcolor, font)
-, cancel(drawable, TR(trkeys::close, lang),
+, cancel(drawable, tr(trkeys::close),
          events.oncancel,
          theme.global.fgcolor, theme.global.bgcolor,
          theme.global.focus_color, 2, font, 6, 2)
@@ -63,7 +63,7 @@ WidgetWabClose::WidgetWabClose(
       app_path(AppPath::LoginWabBlue),
       theme.global.bgcolor)
 , prev_time(0)
-, lang(lang)
+, tr(tr)
 , showtimer(showtimer)
 , font(font)
 , back_to_selector_ctx{
@@ -108,7 +108,7 @@ WidgetWabClose::WidgetWabClose(
 std::unique_ptr<WidgetButton> WidgetWabClose::make_back_to_selector()
 {
     return std::make_unique<WidgetButton>(
-        drawable, TR(trkeys::back_selector, lang),
+        drawable, tr(trkeys::back_selector),
         back_to_selector_ctx.onback_to_selector,
         back_to_selector_ctx.fgcolor,
         back_to_selector_ctx.bgcolor,
@@ -305,10 +305,10 @@ std::chrono::seconds WidgetWabClose::refresh_timeleft(std::chrono::seconds remai
             buff, sizeof(buff), "%ld %s%s %s. ",
             tl,
             seconds
-                ? TR(trkeys::second, this->lang).c_str()
-                : TR(trkeys::minute, this->lang).c_str(),
+                ? tr(trkeys::second).c_str()
+                : tr(trkeys::minute).c_str(),
             (tl <= 1) ? "" : "s",
-            TR(trkeys::before_closing, this->lang).c_str()
+            tr(trkeys::before_closing).c_str()
         );
 
         Rect old = this->timeleft_value.get_rect();

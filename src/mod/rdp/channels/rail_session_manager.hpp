@@ -54,7 +54,7 @@ class RemoteProgramsSessionManager final
     gdi::GraphicApi & front;
     mod_api  & mod;
 
-    Language lang;
+    Translator tr;
 
     Font  const & font;
     Theme theme;
@@ -139,7 +139,7 @@ public:
 
     explicit RemoteProgramsSessionManager(
         EventContainer & events,
-        gdi::GraphicApi& front, mod_api& mod, Language lang,
+        gdi::GraphicApi& front, mod_api& mod, Translator translator,
         Font const & font, Theme const & theme,
         char const * session_probe_window_title,
         not_null_ptr<ClientExecute> rail_client_execute,
@@ -147,7 +147,7 @@ public:
         RDPVerbose verbose)
     : front(front)
     , mod(mod)
-    , lang(lang)
+    , tr(translator)
     , font(font)
     , theme(theme)
     , verbose(verbose)
@@ -618,7 +618,7 @@ private:
             this->drawable->draw(order, rect, gdi::ColorCtx::depth24());
         }
 
-        auto msg = TR(trkeys::starting_remoteapp, this->lang);
+        auto msg = this->tr(trkeys::starting_remoteapp);
         gdi::TextMetrics tm(this->font, msg);
         gdi::server_draw_text(*this->drawable,
                               this->font,
@@ -650,12 +650,14 @@ private:
             this->drawable->draw(order, rect, gdi::ColorCtx::depth24());
         }
 
-        const gdi::TextMetrics tm_msg(this->font, TR(trkeys::closing_remoteapp, this->lang));
+        const auto close_msg = this->tr(trkeys::closing_remoteapp);
+        const gdi::TextMetrics tm_msg(this->font, close_msg);
 
         const int xtext = 6;
         const int ytext = 2;
 
-        const Dimension dim_button = WidgetButton::get_optimal_dim(2, this->font, TR(trkeys::disconnect_now, this->lang), xtext, ytext);
+        const auto disconnect_msg = this->tr(trkeys::disconnect_now);
+        const Dimension dim_button = WidgetButton::get_optimal_dim(2, this->font, disconnect_msg, xtext, ytext);
 
         const uint32_t interspace = 60;
 
@@ -667,7 +669,7 @@ private:
                               this->font,
                               this->protected_rect.x + (this->protected_rect.cx - tm_msg.width) / 2,
                               ypos,
-                              TR(trkeys::closing_remoteapp, this->lang),
+                              close_msg,
                               encode_color24()(this->theme.global.fgcolor),
                               encode_color24()(this->theme.global.bgcolor),
                               gdi::ColorCtx::depth24(),
@@ -686,7 +688,7 @@ private:
                                *this->drawable,
                                false,   // logo
                                true,    // has_focus
-                               TR(trkeys::disconnect_now, this->lang),
+                               disconnect_msg,
                                this->theme.global.fgcolor,
                                this->theme.global.bgcolor,
                                this->theme.global.focus_color,

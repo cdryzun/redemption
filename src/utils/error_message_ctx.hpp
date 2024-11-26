@@ -5,10 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include "configs/autogen/enums.hpp" // Language
 #include "utils/trkey.hpp"
 #include "utils/sugar/zstring_view.hpp"
-#include "utils/translation.hpp"
 
 
 class ErrorMessageCtx
@@ -42,17 +40,13 @@ public:
         translated_msg.clear();
     }
 
-    zstring_view get_msg() const
-    {
-        return get_translated_msg(Language::en);
-    }
-
-    zstring_view get_translated_msg(Language lang) const
+    template<class F>
+    decltype(auto) visit_msg(F&& f) const
     {
         if (tr_index < 0) {
-            return translated_msg;
+            return f(zstring_view(translated_msg));
         }
-        return TR(TrKey{static_cast<unsigned>(tr_index)}, lang);
+        return f(TrKey{static_cast<unsigned>(tr_index)});
     }
 
 private:

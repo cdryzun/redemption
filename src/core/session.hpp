@@ -22,6 +22,7 @@
 
 #include "utils/sugar/unique_fd.hpp"
 #include "utils/monotonic_clock.hpp"
+#include "utils/translation.hpp"
 
 class Inifile;
 class PidFile;
@@ -32,6 +33,7 @@ void session_start_tls(unique_fd sck,
                        Inifile& ini,
                        PidFile& pid_file,
                        Font const& font,
+                       TranslationCatalogsRef translation_catalogss,
                        bool prevent_early_log);
 
 void session_start_ws(unique_fd sck,
@@ -39,6 +41,7 @@ void session_start_ws(unique_fd sck,
                       Inifile& ini,
                       PidFile& pid_file,
                       Font const& font,
+                      TranslationCatalogsRef translation_catalogss,
                       bool prevent_early_log);
 
 void session_start_wss(unique_fd sck,
@@ -46,4 +49,5 @@ void session_start_wss(unique_fd sck,
                        Inifile& ini,
                        PidFile& pid_file,
                        Font const& font,
+                       TranslationCatalogsRef translation_catalogss,
                        bool prevent_early_log);

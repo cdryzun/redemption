@@ -217,7 +217,7 @@ public:
         uninit_checked<const char*> real_alternate_shell;
         uninit_checked<const char*> real_working_dir;
 
-        uninit_checked<Language> lang;
+        Translator translator = MsgTranslationCatalog::default_catalog();
 
         uninit_checked<bool> bogus_refresh_rect_ex;
 
@@ -247,7 +247,7 @@ public:
     , param_front_height(params.front_height)
     , param_real_alternate_shell(params.real_alternate_shell)
     , param_real_working_dir(params.real_working_dir)
-    , tr(params.lang)
+    , tr(params.translator)
     , param_bogus_refresh_rect_ex(params.bogus_refresh_rect_ex)
     , param_show_maximized(params.show_maximized)
     , param_disconnect_session_instead_of_logoff_session(params.disconnect_session_instead_of_logoff_session)
@@ -1245,13 +1245,10 @@ private:
                     KVLog("app_name"_av, parameters[1]),
                 });
 
-                char message[4096];
-
-                this->tr.fmt(message, sizeof(message),
-                    trkeys::process_interrupted_security_policies,
-                    int(parameters[1].size()), parameters[1].data());
-
-                this->callbacks.display_osd_message(message);
+                this->callbacks.display_osd_message(Translator::FmtMsg<4096>(
+                    tr, trkeys::process_interrupted_security_policies,
+                    int(parameters[1].size()), parameters[1].data()
+                ).to_sv());
 
                 return;
             }
@@ -1303,13 +1300,10 @@ private:
                             );
                         }
                         else {
-                            char message[4096];
-
-                            this->tr.fmt(message, sizeof(message),
-                                trkeys::process_interrupted_security_policies,
-                                int(parameters[1].size()), parameters[1].data());
-
-                            this->callbacks.display_osd_message(message);
+                            this->callbacks.display_osd_message(Translator::FmtMsg<4096>(
+                                tr, trkeys::process_interrupted_security_policies,
+                                int(parameters[1].size()), parameters[1].data()
+                            ).to_sv());
                         }
                     }
                 }
@@ -1358,13 +1352,10 @@ private:
                             );
                         }
                         else {
-                            char message[4096];
-
-                            this->tr.fmt(message, sizeof(message),
-                                trkeys::process_interrupted_security_policies,
-                                int(parameters[1].size()), parameters[1].data());
-
-                            this->callbacks.display_osd_message(message);
+                            this->callbacks.display_osd_message(Translator::FmtMsg<4096>(
+                                tr, trkeys::process_interrupted_security_policies,
+                                int(parameters[1].size()), parameters[1].data()
+                            ).to_sv());
                         }
                     }
                 }
@@ -1389,14 +1380,10 @@ private:
                 });
 
                 if (deny) {
-                    char message[4096];
-
-                    int slen = this->tr.fmt(message, sizeof(message),
-                        trkeys::account_manipulation_blocked_security_policies,
-                        int(parameters[3].size()), parameters[3].data());
-                    std::size_t len = (slen <= -1) ? sizeof(message) : std::size_t(slen);
-
-                    this->callbacks.display_osd_message(std::string_view(message, len));
+                    this->callbacks.display_osd_message(Translator::FmtMsg<4096>(
+                        tr, trkeys::account_manipulation_blocked_security_policies,
+                        int(parameters[3].size()), parameters[3].data()
+                    ).to_sv());
                 }
 
                 return;

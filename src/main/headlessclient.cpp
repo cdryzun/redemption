@@ -43,6 +43,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/static_string.hpp"
 #include "utils/uninit_buffer.hpp"
 #include "utils/key_qvalue_pairs.hpp"
+#include "utils/sugar/overload.hpp"
+#include "utils/translation.hpp"
 #include "system/urandom.hpp"
 
 
@@ -271,7 +273,8 @@ int main(int argc, char const** argv)
                 ? create_mod_rdp(
                     gd, osd, redir_info, ini, front, client_info, rail_client_execute,
                     kbdtypes::KeyLocks(), glyph, theme, event_container, session_log,
-                    err_msg_ctx, file_system_license_store, random, cctx,
+                    err_msg_ctx, MsgTranslationCatalog::default_catalog(),
+                    file_system_license_store, random, cctx,
                     server_auto_reconnect_packet,
                     std::exchange(perform_automatic_reconnection, PerformAutomaticReconnection::No),
                     maybe_make_transport_record
@@ -363,7 +366,11 @@ int main(int argc, char const** argv)
         }
         catch (Error const& e) {
             LOG(LOG_ERR, "Headless Client: Exception raised = %s !", e.errmsg());
-            if (auto msg = err_msg_ctx.get_msg(); !msg.empty()) {
+            auto const msg = err_msg_ctx.visit_msg(overload{
+                [](zstring_view s) { return s; },
+                [](TrKey k) { return MsgTranslationCatalog::default_catalog().msgid(k); },
+            });
+            if (!msg.empty()) {
                 LOG(LOG_ERR, "Headless Client: msg: %s", msg);
             }
             err_msg_ctx.clear();

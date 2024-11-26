@@ -84,7 +84,7 @@ public:
                    chars_view number_of_page,
                    WidgetButton * extra_button,
                    WidgetSelectorParams const & selector_params,
-                   Font const & font, Theme const & theme, Language lang,
+                   Font const & font, Theme const & theme, Translator tr,
                    bool has_target_helpicon = false);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height);

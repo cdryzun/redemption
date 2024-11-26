@@ -135,8 +135,6 @@ struct ModRDPParams
 
     DriveParams drive_params;
 
-    Language lang = Language::en;
-
     bool allow_using_multiple_monitors = false;
     bool bogus_monitor_layout_treatment = false;
     bool allow_scale_factor = false;
@@ -385,15 +383,6 @@ struct ModRDPParams
 
         RDP_PARAMS_LOG("%s",     s_or_none,             drive_params.proxy_managed_drives);
         RDP_PARAMS_LOG("%s",     s_or_none,             drive_params.proxy_managed_prefix);
-
-        auto to_lang = [](Language lang) {
-            switch (lang) {
-                case Language::en: return "EN";
-                case Language::fr: return "FR";
-            }
-            return "<unknown>";
-        };
-        RDP_PARAMS_LOG("%s",     to_lang,               lang);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             allow_using_multiple_monitors);
         RDP_PARAMS_LOG("%s",     yes_or_no,             bogus_monitor_layout_treatment);

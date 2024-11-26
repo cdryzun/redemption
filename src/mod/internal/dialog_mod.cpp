@@ -85,8 +85,8 @@ DialogWithChallengeMod::DialogWithChallengeMod(
     gdi::GraphicApi & drawable,
     FrontAPI & front, uint16_t width, uint16_t height,
     Rect const widget_rect, chars_view caption, chars_view message,
-    ClientExecute & rail_client_execute,
-    Font const& font, Theme const& theme, CopyPaste& copy_paste,
+    ClientExecute & rail_client_execute, Font const& font,
+    Theme const& theme, CopyPaste& copy_paste, Translator tr,
     ChallengeOpt challenge
 )
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, &copy_paste)
@@ -108,7 +108,7 @@ DialogWithChallengeMod::DialogWithChallengeMod(
         },
         caption, message,
         &this->language_button,
-        TR(trkeys::OK, language(vars)),
+        tr(trkeys::OK),
         font, theme, copy_paste, challenge)
     , vars(vars)
 {
@@ -122,8 +122,8 @@ WidgetDialogWithCopyableLinkMod::WidgetDialogWithCopyableLinkMod(
     uint16_t width, uint16_t height,
     Rect const widget_rect, chars_view caption, chars_view message,
     chars_view link_value, chars_view link_label, chars_view copied_msg_label,
-    ClientExecute & rail_client_execute,
-    Font const& font, Theme const& theme, CopyPaste& copy_paste
+    ClientExecute & rail_client_execute, Font const& font, Theme const& theme,
+    CopyPaste& copy_paste, Translator tr
 )
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, &copy_paste)
     , dialog_widget(
@@ -139,7 +139,7 @@ WidgetDialogWithCopyableLinkMod::WidgetDialogWithCopyableLinkMod(
             }
         },
         caption, message, link_value, link_label, copied_msg_label,
-        TR(trkeys::OK, language(vars)),
+        tr(trkeys::OK),
         font, theme, copy_paste)
     , vars(vars)
 {

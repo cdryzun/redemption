@@ -63,7 +63,6 @@ private:
 
 using DialogWithChallengeModVariables = vcfg::variables<
     vcfg::var<cfg::context::password,                       vcfg::accessmode::set>,
-    vcfg::var<cfg::translation::language,                   vcfg::accessmode::get>,
     vcfg::var<cfg::internal_mod::keyboard_layout_proposals, vcfg::accessmode::get>
 >;
 
@@ -78,8 +77,8 @@ public:
         gdi::GraphicApi & drawable,
         FrontAPI & front, uint16_t width, uint16_t height,
         Rect const widget_rect, chars_view caption, chars_view message,
-        ClientExecute & rail_client_execute,
-        Font const& font, Theme const& theme, CopyPaste& copy_paste,
+        ClientExecute & rail_client_execute, Font const& font,
+        Theme const& theme, CopyPaste& copy_paste, Translator tr,
         ChallengeOpt challenge);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height) override
@@ -98,8 +97,7 @@ private:
 
 
 using WidgetDialogWithCopyableLinkModVariables = vcfg::variables<
-    vcfg::var<cfg::context::display_message, vcfg::accessmode::set>,
-    vcfg::var<cfg::translation::language,    vcfg::accessmode::get>
+    vcfg::var<cfg::context::display_message, vcfg::accessmode::set>
 >;
 
 
@@ -112,8 +110,8 @@ public:
         uint16_t width, uint16_t height,
         Rect const widget_rect, chars_view caption, chars_view message,
         chars_view link_value, chars_view link_label, chars_view copied_msg_label,
-        ClientExecute & rail_client_execute,
-        Font const& font, Theme const& theme, CopyPaste& copy_paste);
+        ClientExecute & rail_client_execute, Font const& font, Theme const& theme,
+        CopyPaste& copy_paste, Translator tr);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height) override
     {

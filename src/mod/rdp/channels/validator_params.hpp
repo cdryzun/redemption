@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "configs/autogen/enums.hpp" // Language
+#include "utils/translation.hpp"
 
 #include <string>
 #include <chrono>
@@ -42,5 +42,6 @@ struct ValidatorParams
 
     uint64_t max_file_size_rejected = 1024*1024*1024;
     std::chrono::seconds osd_delay = std::chrono::seconds(5);
-    Language lang = Language::en;
+
+    Translator translator = MsgTranslationCatalog::default_catalog();
 };

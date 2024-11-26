@@ -49,7 +49,7 @@ public:
                    Events events, std::string diagnostic_text,
                    chars_view username, chars_view target,
                    bool showtimer, Font const & font, Theme const & theme,
-                   Language lang, bool back_to_selector = false); /*NOLINT*/
+                   Translator tr, bool back_to_selector = false); /*NOLINT*/
 
     /// \return updated area
     Rect set_back_to_selector(bool back_to_selector);
@@ -93,7 +93,7 @@ private:
 
     long prev_time;
 
-    Language lang;
+    Translator tr;
 
     bool showtimer;
 

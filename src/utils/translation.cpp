@@ -8,13 +8,13 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/sugar/scope_exit.hpp"
 #include "utils/log.hpp"
 #include "utils/gettext.hpp"
-#include "utils/msg_translation_catalog.hpp"
 #include "utils/strutils.hpp"
 #include "utils/log.hpp"
 #include "core/app_path.hpp"
 
 #include <string_view>
 
+#include <cassert>
 #include <cerrno>
 #include <cstring>
 
@@ -26,6 +26,28 @@ using namespace std::string_view_literals;
 namespace
 {
 
+constexpr MsgTranslationCatalog::Plurals make_plurals(zstring_view msg) noexcept
+{
+    MsgTranslationCatalog::Plurals ret{};
+    for (auto& s : ret.plurals) {
+        s = msg;
+    }
+    return ret;
+}
+
+#define TR_KV(name, msg) make_plurals(msg ""_zv),
+#define TR_KV_FMT TR_KV
+
+inline constexpr MsgTranslationCatalog msgid_catalog {
+    GettextPlural::constexpr_t(),
+    {
+        #include "utils/trkeys_def.hpp"
+    }
+};
+
+#undef TR_KV
+#undef TR_KV_FMT
+
 void log_read_file_err(char const* filename, char const* ctx)
 {
     int errnum = errno;
@@ -35,9 +57,9 @@ void log_read_file_err(char const* filename, char const* ctx)
 
 unsigned find_msgid_index(std::string_view msgid)
 {
-    for (auto& s : default_msg_translation_catalog.msgstrs) {
-        if (s.msgs[0].to_sv() == msgid) {
-            return checked_int(&s - default_msg_translation_catalog.msgstrs.begin());
+    for (auto& s : msgid_catalog.msgstrs) {
+        if (s.plurals[0].to_sv() == msgid) {
+            return checked_int(&s - msgid_catalog.msgstrs.begin());
         }
     }
     return -1u;
@@ -58,7 +80,7 @@ void push_msg(
     // fast searching (when the next index is the next msgid)
     if (last_index + 1 < MsgTranslationCatalog::translation_count) {
         ++last_index;
-        if (default_msg_translation_catalog.msgstrs[last_index].msgs[0].to_sv() == msgid) {
+        if (msgid_catalog.msgstrs[last_index].plurals[0].to_sv() == msgid) {
             idx = last_index;
         }
     }
@@ -78,7 +100,7 @@ void push_msg(
      * Init Plurals
      */
 
-    auto& av = catalog.msgstrs[idx].msgs;
+    auto& av = catalog.msgstrs[idx].plurals;
     auto* p = std::begin(av);
     auto* pend = std::end(av);
     while (msgs_it.has_value()) {
@@ -100,6 +122,20 @@ void push_msg(
 
 } // anonymous namespace
 
+TranslationCatalogs::TranslationCatalogs() noexcept
+    : m_catalogs{
+        msgid_catalog,
+        msgid_catalog,
+    }
+{
+    // check that m_catalogs is full initialized
+    assert(m_catalogs[std::size(m_catalogs)-1u].msgstrs[0].plurals[0].to_sv() == m_catalogs[0].msgstrs[0].plurals[0].to_sv());
+}
+
+const MsgTranslationCatalog & MsgTranslationCatalog::default_catalog() noexcept
+{
+    return msgid_catalog;
+}
 
 void MsgTranslationCatalog::init_from_file(
     const char* filename,
@@ -187,28 +223,7 @@ void MsgTranslationCatalog::init_from_file(
     }
 }
 
-namespace
+zstring_view Translator::operator()(TrKey k) const noexcept
 {
-    TranslationCatalogs catalogs;
-    bool loaded_catalogs[2] {};
-}
-
-zstring_view Translation::translate(TrKey k) const
-{
-    if (!loaded_catalogs[underlying_cast(lang)]) [[unlikely]] {
-        chars_view str_lang = "en"_av;
-        switch (lang) {
-        case Language::fr:
-            str_lang = "fr"_av;
-            break;
-        case Language::en:
-            break;
-        }
-
-        loaded_catalogs[underlying_cast(lang)] = true;
-        catalogs.read_file(lang, str_concat(app_path(AppPath::Share), "/locale/"_av, str_lang, "/LC_MESSAGES/redemption.mo"_av).c_str());
-    }
-
-    auto const catalog = catalogs.catalogs()[underlying_cast(lang)];
-    return catalog.msgstrs[k.index].msgs[0];
+    return catalog->msgstrs[k.index].plurals[0];
 }

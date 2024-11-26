@@ -46,7 +46,7 @@ public:
         gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
         Events events, chars_view caption, chars_view text,
         WidgetButton * extra_button,
-        Font const & font, Theme const & theme, Language lang,
+        Font const & font, Theme const & theme, Translator tr,
         bool showform = false, unsigned flags = WidgetForm::NONE,
         std::chrono::minutes duration_max = std::chrono::minutes::zero()); /*NOLINT*/
 

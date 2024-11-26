@@ -46,6 +46,7 @@
 #include "utils/to_timeval.hpp"
 #include "utils/error_message_ctx.hpp"
 #include "utils/trkeys.hpp"
+#include "utils/sugar/overload.hpp"
 #include "system/urandom.hpp"
 
 #include <cassert>
@@ -65,6 +66,17 @@ using namespace std::chrono_literals;
 
 namespace
 {
+
+Language login_language(Inifile const& ini)
+{
+    switch (ini.get<cfg::translation::login_language>())
+    {
+        case LoginLanguage::Auto: break;
+        case LoginLanguage::EN: return ::Language::en;
+        case LoginLanguage::FR: return ::Language::fr;
+    }
+    return ini.get<cfg::translation::language>();
+}
 
 struct FinalSocketTransport final : ::SocketTransport
 {
@@ -856,7 +868,8 @@ private:
         SocketTransport& front_trans,
         SessionFront& front,
         GuestCtx& guest_ctx,
-        ModFactory& mod_factory
+        ModFactory& mod_factory,
+        TranslationCatalogsRef translation_catalogs
     )
     {
         LOG_IF(bool(this->verbose & SessionVerbose::Trace),
@@ -1059,6 +1072,10 @@ private:
                         return updated_fields.has<Field>();
                     };
 
+                    if (has_field(cfg::translation::language())) {
+                        mod_factory.set_translator(translation_catalogs[this->ini.get<cfg::translation::language>()]);
+                    }
+
                     if (has_field(cfg::context::session_id())) {
                         this->pid_file.rename(this->ini.get<cfg::context::session_id>());
                     }
@@ -1098,7 +1115,7 @@ private:
                         if (ini.get<cfg::client::enable_osd_4_eyes>()
                          && rt_status == Capture::RTDisplayResult::Enabled
                         ) {
-                            zstring_view msg = TR(trkeys::enable_rt_display, language(ini));
+                            zstring_view msg = mod_factory.tr(trkeys::enable_rt_display);
                             mod_factory.display_osd_message(msg.to_sv());
                         }
                     }
@@ -1245,13 +1262,12 @@ private:
                          && mod_factory.mod().is_up_and_running()
                         ) {
                             loop_state = LoopState::UpdateOsd;
-                            auto lang = language(ini);
                             mod_factory.display_osd_message(str_concat(
                                 int_to_decimal_chars(minutes.count()),
                                 ' ',
-                                TR(trkeys::minute, lang),
+                                mod_factory.tr(trkeys::minute),
                                 (minutes.count() > 1) ? "s " : " ",
-                                TR(trkeys::before_closing, lang)
+                                mod_factory.tr(trkeys::before_closing)
                             ));
                         }
                     });
@@ -1356,7 +1372,7 @@ private:
 
                         if (local_err.extra_msg) {
                             ini.set<cfg::context::close_box_extra_message>(
-                                TR(*local_err.extra_msg, language(ini))
+                                mod_factory.tr(*local_err.extra_msg)
                             );
                         }
 
@@ -1482,7 +1498,11 @@ private:
     }
 
 public:
-    Session(SocketTransport&& front_trans, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, bool prevent_early_log)
+    Session(
+        SocketTransport&& front_trans, MonotonicTimePoint sck_start_time,
+        Inifile& ini, PidFile& pid_file, Font const& font,
+        TranslationCatalogsRef translation_catalogs, bool prevent_early_log
+    )
     : ini(ini)
     , pid_file(pid_file)
     , verbose(safe_cast<SessionVerbose>(ini.get<cfg::debug::session>()))
@@ -1497,6 +1517,13 @@ public:
         SessionFront front(event_manager.get_events(), acl_reporter, front_trans, rnd, ini, cctx);
 
         ErrorMessageCtx err_msg_ctx;
+        auto const log_translation = translation_catalogs[Language::en];
+        auto log_disconnection = [&]{
+            log_siem::disconnection(err_msg_ctx.visit_msg(overload{
+                [](zstring_view s) { return s; },
+                log_translation,
+            }));
+        };
 
         int auth_sck = INVALID_SOCKET;
 
@@ -1556,7 +1583,7 @@ public:
         ) {
             // silent message for localhost or probe IPs for watchdog
             if (!prevent_early_log) {
-                log_siem::disconnection(err_msg_ctx.get_msg());
+                log_disconnection();
             }
 
             return ;
@@ -1568,7 +1595,8 @@ public:
             ModFactory mod_factory(
                 event_manager.get_events(), event_manager.get_time_base(),
                 front.get_client_info(), front, front, front.get_palette(),
-                font, ini, front.keymap, rnd, cctx, err_msg_ctx);
+                font, ini, front.keymap, rnd, cctx, err_msg_ctx,
+                translation_catalogs[login_language(ini)], log_translation);
 
             GuestCtx guest_ctx;
 
@@ -1578,7 +1606,7 @@ public:
                 end_loop = this->main_loop(
                     auth_sck, acl_reporter, event_manager, err_msg_ctx, cctx, rnd,
                     front_trans, front, guest_ctx,
-                    mod_factory
+                    mod_factory, translation_catalogs
                 );
             }
 
@@ -1618,7 +1646,7 @@ public:
         if (!ini.is_asked<cfg::globals::host>()) {
             LOG(LOG_INFO, "Client Session Disconnected");
         }
-        log_siem::disconnection(err_msg_ctx.get_msg());
+        log_disconnection();
 
         front.must_be_stop_capture();
     }
@@ -1630,8 +1658,9 @@ template<class SocketType, class... Args>
 void session_start_sck(
     SocketTransport::Name name, unique_fd&& sck,
     MonotonicTimePoint sck_start_time, Inifile& ini,
-    PidFile& pid_file, Font const& font, bool prevent_early_log,
-    Args&&... args)
+    PidFile& pid_file, Font const& font,
+    TranslationCatalogsRef translation_catalogs,
+    bool prevent_early_log, Args&&... args)
 {
     fcntl(sck.fd(), F_SETFL, fcntl(sck.fd(), F_GETFL) | O_NONBLOCK);
 
@@ -1649,29 +1678,32 @@ void session_start_sck(
             ini.get<cfg::client::recv_timeout>(),
             static_cast<Args&&>(args)..., sck_verbosity | watchdog_verbosity
         ),
-        sck_start_time, ini, pid_file, font, prevent_early_log
+        sck_start_time, ini, pid_file, font, translation_catalogs, prevent_early_log
     );
 }
 
 } // anonymous namespace
 
-void session_start_tls(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, bool prevent_early_log)
+void session_start_tls(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, TranslationCatalogsRef translation_catalogs, bool prevent_early_log)
 {
     session_start_sck<FinalSocketTransport>(
-        "RDP Client"_sck_name, std::move(sck), sck_start_time, ini, pid_file, font, prevent_early_log);
+        "RDP Client"_sck_name, std::move(sck), sck_start_time, ini, pid_file, font,
+        translation_catalogs, prevent_early_log);
 }
 
-void session_start_ws(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, bool prevent_early_log)
+void session_start_ws(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, TranslationCatalogsRef translation_catalogs, bool prevent_early_log)
 {
     session_start_sck<WsTransport>(
-        "RDP Ws Client"_sck_name, std::move(sck), sck_start_time, ini, pid_file, font, prevent_early_log,
+        "RDP Ws Client"_sck_name, std::move(sck), sck_start_time, ini, pid_file, font,
+        translation_catalogs, prevent_early_log,
         WsTransport::UseTls::No, WsTransport::TlsOptions());
 }
 
-void session_start_wss(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, bool prevent_early_log)
+void session_start_wss(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile& ini, PidFile& pid_file, Font const& font, TranslationCatalogsRef translation_catalogs, bool prevent_early_log)
 {
     session_start_sck<WsTransport>(
-        "RDP Wss Client"_sck_name, std::move(sck), sck_start_time, ini, pid_file, font, prevent_early_log,
+        "RDP Wss Client"_sck_name, std::move(sck), sck_start_time, ini, pid_file, font,
+        translation_catalogs, prevent_early_log,
         WsTransport::UseTls::Yes, WsTransport::TlsOptions{
             ini.get<cfg::globals::certificate_password>(),
             TlsConfig{

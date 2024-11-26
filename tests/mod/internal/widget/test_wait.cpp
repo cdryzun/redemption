@@ -51,7 +51,7 @@ struct TestWidgetWaitCtx
             colors.global.bgcolor = NamedBGRColor::BG_BLUE;
             colors.global.fgcolor = NamedBGRColor::WHITE;
             return colors;
-        }(), Language::en, showform, flags)
+        }(), MsgTranslationCatalog::default_catalog(), showform, flags)
     {
         flat_dialog.rdp_input_invalidate(flat_dialog.get_rect());
     }

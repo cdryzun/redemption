@@ -36,7 +36,6 @@ using InteractiveTargetModVariables = vcfg::variables<
     vcfg::var<cfg::context::target_host,                vcfg::accessmode::is_asked | vcfg::accessmode::set>,
     vcfg::var<cfg::globals::target_device,              vcfg::accessmode::get>,
     vcfg::var<cfg::context::display_message,            vcfg::accessmode::set>,
-    vcfg::var<cfg::translation::language,               vcfg::accessmode::get>,
     vcfg::var<cfg::internal_mod::keyboard_layout_proposals, vcfg::accessmode::get>
 >;
 
@@ -49,7 +48,7 @@ public:
         gdi::GraphicApi & drawable,
         FrontAPI & front, uint16_t width, uint16_t height, Rect const widget_rect,
         ClientExecute & rail_client_execute, Font const& font, Theme const& theme,
-        CopyPaste& copy_paste);
+        CopyPaste& copy_paste, Translator tr);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height) override
     {

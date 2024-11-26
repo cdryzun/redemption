@@ -49,7 +49,7 @@ WidgetSelector::WidgetSelector(
     chars_view number_of_page,
     WidgetButton * extra_button,
     WidgetSelectorParams const & selector_params,
-    Font const & font, Theme const & theme, Language lang,
+    Font const & font, Theme const & theme, Translator tr,
     bool has_target_helpicon /* for unit test only */)
 : WidgetComposite(drawable, Focusable::Yes)
 , tooltip_shower(*this)
@@ -158,20 +158,20 @@ WidgetSelector::WidgetSelector(
             theme.global.fgcolor, theme.global.bgcolor,
             theme.global.focus_color, 2, font, 6, 2, true)
 //END WidgetPager
-, logout(drawable, TR(trkeys::logout, lang), events.oncancel,
+, logout(drawable, tr(trkeys::logout), events.oncancel,
          theme.global.fgcolor, theme.global.bgcolor,
          theme.global.focus_color, 2, font, 6, 2)
-, apply(drawable, TR(trkeys::filter, lang), events.onfilter,
+, apply(drawable, tr(trkeys::filter), events.onfilter,
         theme.global.fgcolor, theme.global.bgcolor,
         theme.global.focus_color, 2, font, 6, 2)
-, connect(drawable, TR(trkeys::connect, lang), events.onconnect,
+, connect(drawable, tr(trkeys::connect), events.onconnect,
           theme.global.fgcolor, theme.global.bgcolor,
           theme.global.focus_color, 2, font, 6, 2)
 // TODO button without notifier
 , target_helpicon(drawable, "?"_av, WidgetEventNotifier(),
                   theme.selector_label.fgcolor, theme.selector_label.bgcolor,
                   theme.global.focus_color, 1, font, 3, 0)
-, tr(lang)
+, tr(tr)
 , font(font)
 , left(left)
 , top(top)

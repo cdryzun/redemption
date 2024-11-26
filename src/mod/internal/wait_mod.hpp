@@ -35,8 +35,7 @@ using WaitModVariables = vcfg::variables<
     vcfg::var<cfg::context::duration,                   vcfg::accessmode::set>,
     vcfg::var<cfg::context::ticket,                     vcfg::accessmode::set>,
     vcfg::var<cfg::context::waitinforeturn,             vcfg::accessmode::set>,
-    vcfg::var<cfg::context::duration_max,               vcfg::accessmode::get>,
-    vcfg::var<cfg::translation::language,               vcfg::accessmode::get>
+    vcfg::var<cfg::context::duration_max,               vcfg::accessmode::get>
 >;
 
 
@@ -50,7 +49,8 @@ public:
         FrontAPI & front,
         uint16_t width, uint16_t height, Rect const widget_rect, chars_view caption,
         chars_view message, ClientExecute & rail_client_execute, Font const& font,
-        Theme const& theme, CopyPaste& copy_paste, bool showform = false, uint32_t flag = 0);
+        Theme const& theme, CopyPaste& copy_paste, Translator tr,
+        bool showform = false, uint32_t flag = 0);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height) override
     {

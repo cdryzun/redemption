@@ -54,7 +54,8 @@ struct TestInteractiveTargetModFixture
             return ini;
         }(),
         front.gd(), front, 800, 600, Rect(0, 0, 799, 599),
-        client_execute, global_font(), theme, copy_paste
+        client_execute, global_font(), theme, copy_paste,
+        MsgTranslationCatalog::default_catalog()
     };
 };
 

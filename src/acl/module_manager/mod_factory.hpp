@@ -9,6 +9,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "acl/mod_wrapper.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/theme.hpp"
+#include "utils/translation.hpp"
 #include "acl/file_system_license_store.hpp"
 #include "RAIL/client_execute.hpp"
 #include "configs/autogen/enums.hpp"
@@ -33,10 +34,27 @@ public:
                Keymap & keymap,
                Random & gen,
                CryptoContext & cctx,
-               ErrorMessageCtx & err_msg_ctx
+               ErrorMessageCtx & err_msg_ctx,
+               Translator translator,
+               Translator log_translation
     );
 
     ~ModFactory();
+
+    void set_translator(Translator translator) noexcept
+    {
+        mod_wrapper.set_translator(translator);
+    }
+
+    Translator get_translator() const noexcept
+    {
+        return mod_wrapper.get_translator();
+    }
+
+    zstring_view tr(TrKey k) const noexcept
+    {
+        return mod_wrapper.tr(k);
+    }
 
     RedirectionInfo& get_redir_info() noexcept
     {
@@ -147,6 +165,7 @@ private:
     Random & gen;
     CryptoContext & cctx;
     ErrorMessageCtx & err_msg_ctx;
+    Translator log_tr;
 
     std::unique_ptr<CopyPaste> copy_paste_ptr;
     std::array<uint8_t, 28> server_auto_reconnect_packet {};

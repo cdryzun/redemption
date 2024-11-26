@@ -43,6 +43,7 @@ class Random;
 class CryptoContext;
 class SessionLogApi;
 class ErrorMessageCtx;
+class Translator;
 class ClientInfo;
 class Transport;
 
@@ -106,6 +107,7 @@ ModPack create_mod_rdp(
     EventContainer& events,
     SessionLogApi& session_log,
     ErrorMessageCtx& err_msg_ctx,
+    Translator const& translator,
     LicenseApi & file_system_license_store,
     Random & gen,
     CryptoContext & cctx,

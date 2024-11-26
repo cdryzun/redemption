@@ -52,8 +52,8 @@ RdpNego::RdpNego(
     bool nla, const bool krb, const bool nla_ntlm,
     const bool tls_only, const bool rdp_legacy, bool admin_mode,
     Random & rand, const TimeBase & time_base,
-    std::string& extra_message, Language lang, TlsConfig const& tls_config,
-    const Verbose verbose)
+    std::string& extra_message, Translator translator,
+    TlsConfig const& tls_config, const Verbose verbose)
 : tls(true)
 , nla(nla)
 , nla_ntlm_fallback(nla_ntlm)
@@ -74,7 +74,7 @@ RdpNego::RdpNego(
 , time_base(time_base)
 , lb_info(nullptr)
 , extra_message(extra_message)
-, lang(lang)
+, tr(translator)
 , tls_config(tls_config)
 , verbose(verbose)
 {
@@ -348,7 +348,7 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
             LOG(LOG_INFO, "Enable NLA is probably required");
 
             if (!this->nla_tried) {
-                str_append(this->extra_message, " ", TR(trkeys::err_nla_required, this->lang));
+                str_append(this->extra_message, " ", this->tr(trkeys::err_nla_required));
             }
             trans.disconnect();
 
@@ -361,7 +361,7 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
             LOG(LOG_INFO, "Enable TLS is probably required");
 
             if (!this->tls) {
-                str_append(this->extra_message, " ", TR(trkeys::err_tls_required, this->lang));
+                str_append(this->extra_message, " ", this->tr(trkeys::err_tls_required));
             }
             trans.disconnect();
 
@@ -440,7 +440,7 @@ RdpNego::State RdpNego::activate_ssl_hybrid(OutTransport trans, CertificateCheck
                 this->user, this->current_password,/* nullptr,*/
                 this->restricted_admin_mode,
                 this->service_user, this->current_service_password, this->service_keytab_path,
-                this->rand, this->extra_message, this->lang,
+                this->rand, this->extra_message, this->tr,
                 bool(this->verbose & Verbose::credssp),
                 bool(this->verbose & Verbose::negotiation)
             );

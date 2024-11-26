@@ -31,6 +31,7 @@
 #include "utils/load_theme.hpp"
 #include "utils/log_siem.hpp"
 #include "utils/error_message_ctx.hpp"
+#include "utils/sugar/overload.hpp"
 #include "mod/null/null.hpp"
 #include "keyboard/keymap.hpp"
 #include "core/client_info.hpp"
@@ -58,6 +59,8 @@ namespace
     };
 
     inline NoMod no_mod;
+
+    constexpr auto zstring_identity = [](zstring_view s) { return s; };
 }
 
 ModFactory::ModFactory(
@@ -72,7 +75,9 @@ ModFactory::ModFactory(
     Keymap & keymap,
     Random & gen,
     CryptoContext & cctx,
-    ErrorMessageCtx & err_msg_ctx
+    ErrorMessageCtx & err_msg_ctx,
+    Translator translator,
+    Translator log_translation
 )
 : events(events)
 , client_info(client_info)
@@ -84,6 +89,7 @@ ModFactory::ModFactory(
 , gen(gen)
 , cctx(cctx)
 , err_msg_ctx(err_msg_ctx)
+, log_tr(log_translation)
 , file_system_license_store{ app_path(AppPath::License).to_string() }
 , rail_client_execute(
     time_base, graphics, front,
@@ -91,7 +97,7 @@ ModFactory::ModFactory(
     ini.get<cfg::debug::mod_internal>() & 1)
 , mod_wrapper(
     no_mod, time_base, palette, graphics,
-    client_info, glyphs, rail_client_execute, ini)
+    client_info, glyphs, rail_client_execute, ini, translator)
 {
     ::load_theme(theme, ini);
 
@@ -110,7 +116,8 @@ void ModFactory::disconnect()
     if (&mod() != &no_mod) {
         if (is_connected()) {
             auto const& sid = ini.get<cfg::context::session_id>();
-            log_siem::target_disconnection(err_msg_ctx.get_msg(), sid.c_str());
+            zstring_view message = err_msg_ctx.visit_msg(overload{zstring_identity, log_tr});
+            log_siem::target_disconnection(message, sid.c_str());
         }
 
         try {
@@ -162,9 +169,12 @@ struct ModFactory::Impl
 
     static ModPack create_close_mod(ModFactory& self, bool back_to_selector)
     {
-        zstring_view message = self.err_msg_ctx.get_translated_msg(language(self.ini));
+        zstring_view message = self.err_msg_ctx.visit_msg(overload{
+            zstring_identity,
+            [&](TrKey k) { return self.tr(k); },
+        });
         if (message.empty()) {
-            message = TR(trkeys::connection_ended, language(self.ini));
+            message = self.tr(trkeys::connection_ended);
         }
 
         auto new_mod = new CloseMod(
@@ -178,6 +188,7 @@ struct ModFactory::Impl
             self.rail_client_execute,
             self.glyphs,
             self.theme,
+            self.get_translator(),
             back_to_selector
         );
         return mod_pack_from_widget(new_mod);
@@ -313,7 +324,8 @@ void ModFactory::create_selector_mod()
         this->rail_client_execute,
         this->glyphs,
         this->theme,
-        Impl::copy_paste(*this)
+        Impl::copy_paste(*this),
+        this->get_translator()
     );
     Impl::set_mod(*this, ModuleName::selector, mod_pack_from_widget(new_mod), false);
 }
@@ -346,32 +358,33 @@ void ModFactory::create_interactive_target_mod()
         this->rail_client_execute,
         this->glyphs,
         this->theme,
-        Impl::copy_paste(*this)
+        Impl::copy_paste(*this),
+        this->get_translator()
     );
     Impl::set_mod(*this, ModuleName::interactive_target, mod_pack_from_widget(new_mod), false);
 }
 
 void ModFactory::create_valid_message_mod()
 {
-    chars_view ok_text = TR(trkeys::accepted, language(this->ini));
-    chars_view cancel = TR(trkeys::refused, language(this->ini));
-    chars_view caption = TR(trkeys::information, language(this->ini));
+    chars_view ok_text = tr(trkeys::accepted);
+    chars_view cancel = tr(trkeys::refused);
+    chars_view caption = tr(trkeys::information);
     auto mod_pack = Impl::create_dialog(*this, ok_text, cancel, caption);
     Impl::set_mod(*this, ModuleName::valid, mod_pack, false);
 }
 
 void ModFactory::create_display_message_mod()
 {
-    chars_view ok_text = TR(trkeys::OK, language(this->ini));
+    chars_view ok_text = tr(trkeys::OK);
     chars_view cancel = nullptr;
-    chars_view caption = TR(trkeys::information, language(this->ini));
+    chars_view caption = tr(trkeys::information);
     auto mod_pack = Impl::create_dialog(*this, ok_text, cancel, caption);
     Impl::set_mod(*this, ModuleName::confirm, mod_pack, false);
 }
 
 void ModFactory::create_dialog_challenge_mod()
 {
-    chars_view caption = TR(trkeys::challenge, language(this->ini));
+    chars_view caption = tr(trkeys::challenge);
     const auto challenge = this->ini.get<cfg::context::authentication_challenge>()
         ? DialogWithChallengeMod::ChallengeOpt::Echo
         : DialogWithChallengeMod::ChallengeOpt::Hide;
@@ -388,6 +401,7 @@ void ModFactory::create_dialog_challenge_mod()
         this->glyphs,
         this->theme,
         Impl::copy_paste(*this),
+        this->get_translator(),
         challenge
     );
     Impl::set_mod(*this, ModuleName::challenge, mod_pack_from_widget(new_mod), false);
@@ -401,15 +415,16 @@ void ModFactory::create_display_link_mod()
         this->client_info.screen_info.width,
         this->client_info.screen_info.height,
         this->rail_client_execute.adjust_rect(this->client_info.get_widget_rect()),
-        TR(trkeys::link_caption, language(ini)),
+        tr(trkeys::link_caption),
         this->ini.get<cfg::context::message>(),
         this->ini.get<cfg::context::display_link>(),
-        TR(trkeys::link_label, language(ini)),
-        TR(trkeys::link_copied, language(ini)),
+        tr(trkeys::link_label),
+        tr(trkeys::link_copied),
         this->rail_client_execute,
         this->glyphs,
         this->theme,
-        Impl::copy_paste(*this)
+        Impl::copy_paste(*this),
+        this->get_translator()
     );
     Impl::set_mod(*this, ModuleName::link_confirm, mod_pack_from_widget(new_mod), false);
 }
@@ -427,12 +442,13 @@ void ModFactory::create_wait_info_mod()
         this->client_info.screen_info.width,
         this->client_info.screen_info.height,
         this->rail_client_execute.adjust_rect(this->client_info.get_widget_rect()),
-        TR(trkeys::information, language(this->ini)),
+        tr(trkeys::information),
         this->ini.get<cfg::context::message>(),
         this->rail_client_execute,
         this->glyphs,
         this->theme,
         Impl::copy_paste(*this),
+        this->get_translator(),
         showform,
         flag
     );
@@ -442,7 +458,7 @@ void ModFactory::create_wait_info_mod()
 void ModFactory::create_transition_mod()
 {
     auto new_mod = new TransitionMod(
-        TR(trkeys::wait_msg, language(this->ini)),
+        tr(trkeys::wait_msg),
         this->graphics,
         this->client_info.screen_info.width,
         this->client_info.screen_info.height,
@@ -491,7 +507,8 @@ void ModFactory::create_login_mod()
         this->rail_client_execute,
         this->glyphs,
         this->theme,
-        Impl::copy_paste(*this)
+        Impl::copy_paste(*this),
+        this->get_translator()
     );
     Impl::set_mod(*this, ModuleName::waitinfo, mod_pack_from_widget(new_mod), false);
 }
@@ -513,7 +530,8 @@ void ModFactory::create_rdp_mod(
         this->glyphs, this->theme,
         this->events,
         session_log,
-        err_msg_ctx,
+        this->err_msg_ctx,
+        this->get_translator(),
         this->file_system_license_store,
         this->gen,
         this->cctx,

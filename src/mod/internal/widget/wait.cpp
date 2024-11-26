@@ -34,7 +34,7 @@ WidgetWait::WidgetWait(
     gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
     Events events, chars_view caption, chars_view text,
     WidgetButton * extra_button,
-    Font const & font, Theme const & theme, Language lang,
+    Font const & font, Theme const & theme, Translator tr,
     bool showform, unsigned flags, std::chrono::minutes duration_max
 )
     : WidgetComposite(drawable, Focusable::Yes)
@@ -47,11 +47,11 @@ WidgetWait::WidgetWait(
              theme.global.fgcolor, theme.global.bgcolor, font,
              WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
     , form(drawable, copy_paste, {events.onconfirm, events.onrefused},
-           font, theme, lang, flags & ~HIDE_BACK_TO_SELECTOR, duration_max)
-    , goselector(drawable, TR(trkeys::back_selector, lang), events.onaccept,
+           font, theme, tr, flags & ~HIDE_BACK_TO_SELECTOR, duration_max)
+    , goselector(drawable, tr(trkeys::back_selector), events.onaccept,
                  theme.global.fgcolor, theme.global.bgcolor,
                  theme.global.focus_color, 2, font, 6, 2)
-    , exit(drawable, TR(trkeys::exit, lang), events.onrefused,
+    , exit(drawable, tr(trkeys::exit), events.onrefused,
            theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color, 2, font,
            6, 2)
     , extra_button(extra_button)

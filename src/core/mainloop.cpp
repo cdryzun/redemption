@@ -34,6 +34,7 @@
 #include "utils/meminfo.hpp"
 #include "utils/monotonic_clock.hpp"
 #include "utils/sugar/chars_to_int.hpp"
+#include "utils/translation.hpp"
 
 #include "configs/config.hpp"
 
@@ -190,7 +191,8 @@ REDEMPTION_DIAGNOSTIC_POP()
 
     void session_server_start(
         int incoming_sck, bool forkable, unsigned uid, unsigned gid,
-        Inifile & ini, SocketType socket_type, Font const& font)
+        Inifile & ini, SocketType socket_type, Font const& font,
+        TranslationCatalogsRef translations)
     {
         union
         {
@@ -442,6 +444,7 @@ REDEMPTION_DIAGNOSTIC_POP()
                                          ini,
                                          pid_file,
                                          font,
+                                         translations,
                                          prevent_early_log);
                         break;
                     case SocketType::Wss:
@@ -454,6 +457,7 @@ REDEMPTION_DIAGNOSTIC_POP()
                                           ini,
                                           pid_file,
                                           font,
+                                          translations,
                                           prevent_early_log);
                         break;
                     case SocketType::Tls:
@@ -462,6 +466,7 @@ REDEMPTION_DIAGNOSTIC_POP()
                                           ini,
                                           pid_file,
                                           font,
+                                          translations,
                                           prevent_early_log);
                         break;
                 }
@@ -566,6 +571,12 @@ REDEMPTION_DIAGNOSTIC_POP()
             configuration_load(Inifile::ConfigurationHolder{ini}.as_ref(), inifile);
         }
     };
+
+    void init_translation(TranslationCatalogs& catalogs)
+    {
+        catalogs.init_language(Language::en, str_concat(app_path(AppPath::Share), "/locale/en/LC_MESSAGES/redemption.mo"_av).c_str());
+        catalogs.init_language(Language::fr, str_concat(app_path(AppPath::Share), "/locale/fr/LC_MESSAGES/redemption.mo"_av).c_str());
+    }
 } // anonymous namespace
 
 void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string config_filename, bool forkable)
@@ -590,6 +601,17 @@ void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string
     const FontData font_data(app_path(AppPath::DefaultFontFile));
     const Font& font = font_data.font();
 
+    TranslationCatalogs translation_catalogs;
+    init_translation(translation_catalogs);
+
+    auto start_server = [&](int sck, SocketType socket_type){
+        session_server_start(
+            sck, forkable, uid, gid, ini, socket_type, font,
+            translation_catalogs.catalogs()
+        );
+        return true;
+    };
+
     if (ini.get<cfg::websocket::enable_websocket>())
     {
         unique_fd sck2 = create_ws_server(
@@ -606,8 +628,7 @@ void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string
                     ? SocketType::Wss
                     : SocketType::Ws
                 : SocketType::Tls;
-            session_server_start(sck, forkable, uid, gid, ini, socket_type, font);
-            return true;
+            return start_server(sck, socket_type);
         });
     }
     else
@@ -615,8 +636,7 @@ void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string
         unique_server_loop(std::move(sck1), [&](int sck)
         {
             ini_reloader.check_and_reload_ini();
-            session_server_start(sck, forkable, uid, gid, ini, SocketType::Tls, font);
-            return true;
+            return start_server(sck, SocketType::Tls);
         });
     }
 }

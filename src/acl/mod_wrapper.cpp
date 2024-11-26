@@ -23,13 +23,14 @@ ModWrapper::ModWrapper(
     mod_api& mod, CRef<TimeBase> time_base, CRef<BGRPalette> palette,
     gdi::GraphicApi& graphics, CRef<ClientInfo> client_info,
     CRef<Font> glyphs, CRef<ClientExecute> rail_client_execute,
-    CRef<Inifile> ini)
+    CRef<Inifile> ini, Translator translator)
 : gfilter(graphics, static_cast<RdpInput&>(*this), Rect{})
 , enable_osd_display_remote_target(ini.get().get<cfg::globals::enable_osd_display_remote_target>())
 , client_info(client_info)
 , rail_client_execute(rail_client_execute)
 , palette(palette)
 , ini(ini)
+, translator(translator)
 , glyphs(glyphs)
 , modi(&mod)
 , time_base(time_base)
@@ -67,7 +68,7 @@ void ModWrapper::display_osd_message(std::string_view message, gdi::OsdMsgUrgenc
 
         str_assign(this->osd_message,
                    prefix, message, '\n',
-                   TR(trkeys::disable_osd, language(this->ini)));
+                   tr(trkeys::disable_osd));
         this->draw_osd_message(true);
     }
 }
@@ -165,7 +166,7 @@ void ModWrapper::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
                 using namespace std::chrono_literals;
                 if (elapsed_time < MonotonicTimePoint::duration(60s*60*24*366)) {
                     append_time_before_closing(
-                        msg, Translator(language(ini)),
+                        msg, get_translator(),
                         std::chrono::duration_cast<std::chrono::seconds>(elapsed_time)
                     );
                 }

@@ -486,7 +486,7 @@ public:
             }
 
             this->remote_programs_session_manager = std::make_unique<RemoteProgramsSessionManager>(
-                this->events, gd, mod_rdp, mod_rdp_params.lang,
+                this->events, gd, mod_rdp, mod_rdp_params.validator_params.translator,
                 mod_rdp_params.font, mod_rdp_params.theme, session_probe_window_title.c_str(),
                 mod_rdp_params.remote_app_params.rail_client_execute,
                 mod_rdp_params.remote_app_params.rail_disconnect_message_delay,
@@ -811,7 +811,8 @@ public:
         SessionProbeVariables vars,
         FrontAPI& front,
         ServerTransportContext stc,
-        rdp_api& rdp, const Language lang,
+        rdp_api& rdp,
+        Translator tr,
         const bool bogus_refresh_rect,
         const uint32_t monitor_count,
         GeneralCaps const & client_general_caps,
@@ -837,7 +838,7 @@ public:
         sp_vc_params.front_height = stc.negociation_result.front_height;
         sp_vc_params.real_alternate_shell = this->session_probe.channel_params.real_alternate_shell.c_str();
         sp_vc_params.real_working_dir = this->session_probe.channel_params.real_working_dir.c_str();
-        sp_vc_params.lang = lang;
+        sp_vc_params.translator = tr;
         sp_vc_params.bogus_refresh_rect_ex = (bogus_refresh_rect && monitor_count);
         sp_vc_params.show_maximized = !this->remote_app.enable_remote_program;
         sp_vc_params.disconnect_session_instead_of_logoff_session = this->remote_app.enable_remote_program;
@@ -1632,7 +1633,7 @@ public:
         const char (& client_name)[128],
         const uint32_t monitor_count,
         const bool bogus_refresh_rect,
-        const Language lang)
+        const Translator tr)
     {
         assert(this->session_probe.enable_session_probe);
         if (this->session_probe.session_probe_launcher){
@@ -1648,7 +1649,7 @@ public:
 
             if (!this->session_probe_virtual_channel) {
                 this->create_session_probe_virtual_channel(
-                    vars, front, stc, rdp, lang, bogus_refresh_rect,
+                    vars, front, stc, rdp, tr, bogus_refresh_rect,
                     monitor_count, client_general_caps, client_name);
             }
             this->session_probe_virtual_channel->set_session_probe_launcher(this->session_probe.session_probe_launcher.get());
@@ -1673,7 +1674,7 @@ public:
         {
             if (!this->session_probe_virtual_channel) {
                 this->create_session_probe_virtual_channel(
-                    vars, front, stc, rdp, lang, bogus_refresh_rect,
+                    vars, front, stc, rdp, tr, bogus_refresh_rect,
                     monitor_count, client_general_caps, client_name);
             }
 
@@ -1867,7 +1868,7 @@ class mod_rdp : public mod_api, public rdp_api, public sespro_api
 
     const bool bogus_refresh_rect;
 
-    Language lang;
+    Translator tr;
 
     bool already_upped_and_running = false;
 
@@ -2033,7 +2034,7 @@ public:
         , events_guard(events)
         , session_log(session_log)
         , bogus_refresh_rect(mod_rdp_params.bogus_refresh_rect)
-        , lang(mod_rdp_params.lang)
+        , tr(mod_rdp_params.validator_params.translator)
         , session_time_start(events.get_monotonic_time_since_epoch())
         , replace_null_pointer_by_default_pointer(mod_rdp_params.replace_null_pointer_by_default_pointer)
         , large_pointer_support(mod_rdp_params.large_pointer_support)
@@ -2318,31 +2319,31 @@ public:
         switch (rdp_nego_state) {
             case RdpNegociation::State::NEGO_INITIATE:
                 statestr = "RDP_NEGO_INITIATE";
-                statedescr = TR(trkeys::err_mod_rdp_nego, this->lang);
+                statedescr = tr(trkeys::err_mod_rdp_nego);
             break;
             case RdpNegociation::State::NEGO:
                 statestr = "RDP_NEGO";
-                statedescr = TR(trkeys::err_mod_rdp_nego, this->lang);
+                statedescr = tr(trkeys::err_mod_rdp_nego);
             break;
             case RdpNegociation::State::BASIC_SETTINGS_EXCHANGE:
                 statestr = "RDP_BASIC_SETTINGS_EXCHANGE";
-                statedescr = TR(trkeys::err_mod_rdp_basic_settings_exchange, this->lang);
+                statedescr = tr(trkeys::err_mod_rdp_basic_settings_exchange);
             break;
             case RdpNegociation::State::CHANNEL_CONNECTION_ATTACH_USER:
                 statestr = "RDP_CHANNEL_CONNECTION_ATTACH_USER";
-                statedescr = TR(trkeys::err_rdp_channel_connection, this->lang);
+                statedescr = tr(trkeys::err_rdp_channel_connection);
             break;
             case RdpNegociation::State::CHANNEL_JOIN_CONFIRM:
                 statestr = "RDP_CHANNEL_JOIN_CONFIRM";
-                statedescr = TR(trkeys::err_rdp_channel_connection, this->lang);
+                statedescr = tr(trkeys::err_rdp_channel_connection);
             break;
             case RdpNegociation::State::GET_LICENSE:
                 statestr = "RDP_GET_LICENSE";
-                statedescr = TR(trkeys::err_rdp_get_license, this->lang);
+                statedescr = tr(trkeys::err_rdp_get_license);
             break;
             case RdpNegociation::State::TERMINATED:
                 statestr = "RDP_TERMINATED";
-                statedescr = TR(trkeys::err_mod_rdp_nego, this->lang);
+                statedescr = tr(trkeys::err_mod_rdp_nego);
             break;
         }
 
@@ -2489,7 +2490,7 @@ private:
                         this->channels.create_session_probe_virtual_channel(
                             this->vars,
                             this->front, stc,
-                            *this, this->lang,
+                            *this, this->tr,
                             this->bogus_refresh_rect,
                             this->monitor_count,
                             this->client_general_caps,
@@ -3054,7 +3055,7 @@ public:
                     this->channels.create_session_probe_virtual_channel(
                         this->vars,
                         this->front, stc,
-                        *this, this->lang,
+                        *this, this->tr,
                         this->bogus_refresh_rect,
                         this->monitor_count,
                         this->client_general_caps,
@@ -3145,7 +3146,7 @@ public:
                                 if (error_info == ERRINFO_SERVER_DENIED_CONNECTION) {
                                     str_append(
                                         this->close_box_extra_message_ref, ' ',
-                                        TR(trkeys::err_server_denied_connection, this->lang)
+                                        tr(trkeys::err_server_denied_connection)
                                     );
                                 }
                             }
@@ -3273,7 +3274,7 @@ public:
                                         this->client_name,
                                         this->monitor_count,
                                         this->bogus_refresh_rect,
-                                        this->lang
+                                        this->tr
                                     );
                                 }
 #endif
@@ -3627,7 +3628,7 @@ public:
                  && DISCONNECTED != this->connection_finalization_state
                  && !this->already_upped_and_running
                 ) {
-                    const char * statedescr = TR(trkeys::err_mod_rdp_connected, this->lang);
+                    const char * statedescr = tr(trkeys::err_mod_rdp_connected);
                     str_append(
                         this->close_box_extra_message_ref,
                         ' ',

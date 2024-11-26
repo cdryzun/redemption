@@ -53,7 +53,8 @@ namespace
                          client_info_,
                          font_,
                          rail_client_execute_,
-                         ini_)
+                         ini_,
+                         MsgTranslationCatalog::default_catalog())
         {
             mod_wrapper_.set_mod(mod_, nullptr, true);
             ini_.set<cfg::globals::target_device>("127.0.0.1");

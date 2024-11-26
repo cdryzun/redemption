@@ -526,7 +526,7 @@ private:
     const std::string target_host;
     Random & rand;
     std::string& extra_message;
-    Language lang;
+    Translator tr;
     const bool credssp_verbose;
     const bool verbose;
 
@@ -605,7 +605,7 @@ private:
             if (this->ts_request.pubKeyAuth.empty()) {
                 // report_error
                 this->extra_message = " ";
-                this->extra_message.append(TR(trkeys::err_login_password, this->lang));
+                this->extra_message.append(this->tr(trkeys::err_login_password));
                 LOG(LOG_INFO, "Provided login/password is probably incorrect.");
             }
             LOG(LOG_ERR, "sspi_DecryptMessage failure: 0x%08X", status);
@@ -873,7 +873,7 @@ public:
                std::string_view service_keytab_path,
                Random & rand,
                std::string& extra_message,
-               Language lang,
+               Translator translator,
                const bool credssp_verbose,
                const bool verbose)
         : ts_request(6) // Credssp Version 6 Supported
@@ -881,7 +881,7 @@ public:
         , target_host(target_host)
         , rand(rand)
         , extra_message(extra_message)
-        , lang(lang)
+        , tr(translator)
         , credssp_verbose(credssp_verbose)
         , verbose(verbose)
         , trans(transport.get_transport())

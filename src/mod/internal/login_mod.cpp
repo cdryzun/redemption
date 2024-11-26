@@ -61,7 +61,7 @@ LoginMod::LoginMod(
     chars_view username, chars_view password,
     gdi::GraphicApi & drawable, FrontAPI & front, uint16_t width, uint16_t height,
     Rect const widget_rect, ClientExecute & rail_client_execute, Font const& font,
-    Theme const& theme, CopyPaste& copy_paste
+    Theme const& theme, CopyPaste& copy_paste, Translator tr
 )
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, &copy_paste)
     , events_guard(events)
@@ -106,14 +106,14 @@ LoginMod::LoginMod(
             },
             "Redemption " VERSION ""_av,
             login, password, target,
-            TR(trkeys::login, login_language(vars)),
-            TR(trkeys::password, login_language(vars)),
-            TR(trkeys::optional_target, login_language(vars)),
+            tr(trkeys::login),
+            tr(trkeys::password),
+            tr(trkeys::optional_target),
             vars.get<cfg::context::opt_message>(),
             vars.get<cfg::context::login_message>(),
             &this->language_button,
             vars.get<cfg::internal_mod::enable_target_field>(),
-            font, Translator(login_language(vars)), theme
+            font, tr, theme
         );
     }())
     , vars(vars)

@@ -171,28 +171,6 @@ public:
     }
 };
 
-template<class... Cfg>
-::Language language(variables<Cfg...> const & vars)
-{
-    return vars.template get<cfg::translation::language>();
-}
-
-template<class... Cfg>
-::Language login_language(variables<Cfg...> const & vars)
-{
-    switch (vars.template get<cfg::translation::login_language>())
-    {
-        case LoginLanguage::Auto: return language(vars);
-        case LoginLanguage::EN: return ::Language::en;
-        case LoginLanguage::FR: return ::Language::fr;
-    }
-
-    assert("Unknown LoginLanguage value");
-    return ::Language::en;
-}
-
 } // namespace vcfg
-
-using vcfg::language; /*NOLINT*/
 
 #endif

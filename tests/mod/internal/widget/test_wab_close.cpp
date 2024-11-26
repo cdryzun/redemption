@@ -43,7 +43,8 @@ struct TestWidgetCloseCtx
     : flat_wab_close(
         drawable, 0, 0, 800, 600, {oncancel, WidgetEventNotifier()},
         std::move(diagnostic_text), username, target,
-        showtimer, global_font_deja_vu_14(), theme, Language::en, false)
+        showtimer, global_font_deja_vu_14(), theme,
+        MsgTranslationCatalog::default_catalog(), false)
     {
         flat_wab_close.init_focus();
     }

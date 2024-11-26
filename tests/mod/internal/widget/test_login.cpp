@@ -59,7 +59,7 @@ struct TestWidgetLoginCtx
         caption, login, password, target,
         "Login"_av, "Password"_av, "Target"_av, ""_av,
         login_message, nullptr, enable_target_field, global_font_deja_vu_14(),
-        Translator{Language::en}, theme)
+        MsgTranslationCatalog::default_catalog(), theme)
     {}
 };
 

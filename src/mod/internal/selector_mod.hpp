@@ -48,7 +48,6 @@ using SelectorModVariables = vcfg::variables<
     vcfg::var<cfg::context::selector_proto_filter,      vcfg::accessmode::set>,
     vcfg::var<cfg::internal_mod::keyboard_layout_proposals, vcfg::accessmode::get>,
     vcfg::var<cfg::globals::host,                       vcfg::accessmode::get>,
-    vcfg::var<cfg::translation::language,               vcfg::accessmode::get>,
     vcfg::var<cfg::context::banner_type,                vcfg::accessmode::get>,
     vcfg::var<cfg::context::banner_message,             vcfg::accessmode::get | vcfg::accessmode::set>
 >;
@@ -62,7 +61,8 @@ public:
         gdi::OsdApi& osd,
         FrontAPI & front, uint16_t width, uint16_t height,
         Rect const widget_rect, ClientExecute & rail_client_execute,
-        Font const& font, Theme const& theme, CopyPaste& copy_paste);
+        Font const& font, Theme const& theme, CopyPaste& copy_paste,
+        Translator translator);
 
     void acl_update(AclFieldMask const& acl_fields) override;
 
@@ -75,6 +75,7 @@ private:
     void ask_page();
     void osd_banner_message();
 
+    Translator tr;
     SelectorModVariables ini;
 
     gdi::OsdApi& osd;

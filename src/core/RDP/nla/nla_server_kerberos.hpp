@@ -47,7 +47,7 @@ class rdpCredsspServerKerberos final
 
     writable_u8_array_view public_key;
     std::string& extra_message;
-    Language lang;
+    Translator tr;
     const bool credssp_verbose;
     const bool verbose;
 
@@ -652,12 +652,12 @@ public:
 public:
     rdpCredsspServerKerberos(writable_u8_array_view key,
                std::string& extra_message,
-               Language lang,
+               Translator translator,
                const bool credssp_verbose,
                const bool verbose)
         : public_key(key)
         , extra_message(extra_message)
-        , lang(lang)
+        , tr(translator)
         , credssp_verbose(credssp_verbose)
         , verbose(verbose)
     {
@@ -758,7 +758,7 @@ private:
             if (this->ts_request.pubKeyAuth.empty()) {
                 // report_error
                 this->extra_message = " ";
-                this->extra_message.append(TR(trkeys::err_login_password, this->lang));
+                this->extra_message.append(tr(trkeys::err_login_password));
                 LOG(LOG_INFO, "Provided login/password is probably incorrect.");
             }
             LOG(LOG_ERR, "DecryptMessage failure: 0x%08X", status);

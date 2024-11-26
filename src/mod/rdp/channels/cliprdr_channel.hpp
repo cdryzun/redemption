@@ -424,9 +424,9 @@ private:
     {
         EventContainer& events_container;
         gdi::OsdApi& osd_api;
+        Translator tr;
         const std::chrono::seconds delay;
         const bool enable_osd;
-        Language lang;
 
         enum class MsgType : bool { Nothing, WaitValidator };
 

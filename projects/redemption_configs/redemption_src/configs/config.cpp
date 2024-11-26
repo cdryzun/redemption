@@ -153,11 +153,6 @@ Inifile::FieldReference Inifile::get_acl_field_by_name(chars_view name) noexcept
     return {};
 }
 
-::Language language(Inifile const & ini)
-{
-    return ini.get<cfg::translation::language>();
-}
-
 void Inifile::initialize()
 {
     this->ask<cfg::context::target_password>();

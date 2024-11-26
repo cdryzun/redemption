@@ -92,7 +92,7 @@ private:
     #endif
 
     std::string& extra_message;
-    Language lang;
+    Translator tr;
 
     enum class [[nodiscard]] State
     {
@@ -123,8 +123,8 @@ public:
         bool nla, const bool krb, const bool nla_ntlm,
         const bool tls_only, const bool rdp_legacy, bool admin_mode,
         Random & rand, const TimeBase & time_base,
-        std::string& extra_message, Language lang, TlsConfig const& tls_config,
-        const Verbose verbose);
+        std::string& extra_message, Translator translator,
+        TlsConfig const& tls_config, const Verbose verbose);
 
     ~RdpNego();
 

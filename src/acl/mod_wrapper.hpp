@@ -13,6 +13,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "gdi/text_metrics.hpp"
 #include "utils/ref.hpp"
 #include "utils/timebase.hpp"
+#include "utils/translation.hpp"
 #include "utils/sugar/not_null_ptr.hpp"
 
 
@@ -31,7 +32,22 @@ public:
        mod_api& mod, CRef<TimeBase> time_base, CRef<BGRPalette> palette,
        gdi::GraphicApi& graphics, CRef<ClientInfo> client_info,
        CRef<Font> glyphs, CRef<ClientExecute> rail_client_execute,
-       CRef<Inifile> ini);
+       CRef<Inifile> ini, Translator tr);
+
+    void set_translator(Translator translator) noexcept
+    {
+        this->translator = translator;
+    }
+
+    Translator get_translator() const noexcept
+    {
+        return this->translator;
+    }
+
+    zstring_view tr(TrKey k) const noexcept
+    {
+        return translator(k);
+    }
 
     Callback& get_callback() noexcept
     {
@@ -150,6 +166,7 @@ private:
     windowing_api* winapi = nullptr;
 
     Inifile const& ini;
+    Translator translator;
 
     std::string osd_message;
 

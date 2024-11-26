@@ -30,11 +30,11 @@ WidgetForm::WidgetForm(
     gdi::GraphicApi & drawable, CopyPaste & copy_paste,
     int16_t left, int16_t top, int16_t width, int16_t height,
     Events events,
-    Font const & font, Theme const & theme, Language lang,
+    Font const & font, Theme const & theme, Translator tr,
     unsigned flags, std::chrono::minutes duration_max
 )
     : WidgetForm(drawable, copy_paste, events,
-                 font, theme, lang, flags, duration_max)
+                 font, theme, tr, flags, duration_max)
 {
     this->move_size_widget(left, top, width, height);
 }
@@ -42,7 +42,7 @@ WidgetForm::WidgetForm(
 WidgetForm::WidgetForm(
     gdi::GraphicApi & drawable, CopyPaste & copy_paste,
     Events events,
-    Font const & font, Theme const & theme, Language lang,
+    Font const & font, Theme const & theme, Translator tr,
     unsigned flags, std::chrono::minutes duration_max
 )
     : WidgetComposite(drawable, Focusable::Yes)
@@ -50,35 +50,35 @@ WidgetForm::WidgetForm(
     , warning_msg(drawable, ""_av,
                   theme.global.error_color, theme.global.bgcolor, font)
     , duration_label(drawable,
-                     TR((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration, lang),
+                     tr((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration),
                      theme.global.fgcolor, theme.global.bgcolor, font)
     , duration_edit(drawable, copy_paste, nullptr,
                     {[this]{ this->check_confirmation(); }},
                     theme.edit.fgcolor, theme.edit.bgcolor,
                     theme.edit.focus_color, font, 1, 1)
-    , duration_format(drawable, TR(trkeys::note_duration_format, lang),
+    , duration_format(drawable, tr(trkeys::note_duration_format),
                       theme.global.fgcolor, theme.global.bgcolor, font)
     , ticket_label(drawable,
-                   TR((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket, lang),
+                   tr((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket),
                    theme.global.fgcolor, theme.global.bgcolor, font)
     , ticket_edit(drawable, copy_paste, nullptr,
                   {[this]{ this->check_confirmation(); }},
                   theme.edit.fgcolor, theme.edit.bgcolor,
                   theme.edit.focus_color, font, 1, 1)
     , comment_label(drawable,
-                    TR((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment, lang),
+                    tr((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment),
                     theme.global.fgcolor, theme.global.bgcolor, font)
     , comment_edit(drawable, copy_paste, nullptr,
                    {[this]{ this->check_confirmation(); }},
                    theme.edit.fgcolor, theme.edit.bgcolor,
                    theme.edit.focus_color, font, 1, 1)
-    , notes(drawable, TR(trkeys::note_required, lang),
+    , notes(drawable, tr(trkeys::note_required),
             theme.global.fgcolor, theme.global.bgcolor, font)
-    , confirm(drawable, TR(trkeys::confirm, lang),
+    , confirm(drawable, tr(trkeys::confirm),
               [this]{ return this->check_confirmation(); },
               theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
               2, font, 6, 2)
-    , tr(lang)
+    , tr(tr)
     , flags(flags)
     , duration_max(duration_max == 0min ? 60000min : duration_max)
     , warning_buffer()
@@ -208,9 +208,9 @@ namespace
 template<class T, class... Ts>
 void WidgetForm::set_warning_buffer(TrKeyFmt<T> k, Ts const&... xs)
 {
-    auto msg = make_writable_array_view(this->warning_buffer);
-    std::size_t n = tr.fmt(msg.data(), msg.size(), k, to_ctype(xs)...);
-    this->warning_msg.set_text({this->warning_buffer, n});
+    auto buffer = make_writable_array_view(this->warning_buffer);
+    auto msg = tr.fmt(buffer, k, to_ctype(xs)...);
+    this->warning_msg.set_text(msg);
 }
 
 namespace

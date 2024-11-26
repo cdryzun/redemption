@@ -22,7 +22,9 @@ Author(s): Jonathan Poelen
 
 template<class ...Fn>
 struct overload : Fn...
-{};
+{
+    using Fn::operator()...;
+};
 
 template<class ...Fn>
 overload(Fn...) -> overload<Fn...>;

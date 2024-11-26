@@ -541,6 +541,7 @@ ModPack create_mod_rdp(
     EventContainer& events,
     SessionLogApi& session_log,
     ErrorMessageCtx& err_msg_ctx,
+    Translator const& translator,
     LicenseApi & file_system_license_store,
     Random & gen,
     CryptoContext & cctx,
@@ -632,8 +633,6 @@ ModPack create_mod_rdp(
 
     mod_rdp_params.drive_params.proxy_managed_drives   = ini.get<cfg::mod_rdp::proxy_managed_drives>().c_str();
     mod_rdp_params.drive_params.proxy_managed_prefix   = app_path(AppPath::DriveRedirection);
-
-    mod_rdp_params.lang                                = language(ini);
 
     mod_rdp_params.allow_using_multiple_monitors       = ini.get<cfg::client::allow_using_multiple_monitors>();
     mod_rdp_params.bogus_monitor_layout_treatment      = ini.get<cfg::mod_rdp::bogus_monitor_layout_treatment>();
@@ -766,7 +765,7 @@ ModPack create_mod_rdp(
     vp.block_invalid_text_down = ini.get<cfg::file_verification::block_invalid_clipboard_text_down>();
     vp.up_target_name = ini.get<cfg::file_verification::enable_up>() ? "up" : "";
     vp.down_target_name = ini.get<cfg::file_verification::enable_down>() ? "down" : "";
-    vp.lang = language(ini);
+    vp.translator = translator;
 
     bool enable_validator = ini.get<cfg::file_verification::enable_up>()
         || ini.get<cfg::file_verification::enable_down>();

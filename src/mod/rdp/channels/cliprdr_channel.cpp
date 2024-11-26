@@ -196,7 +196,7 @@ struct ClipboardVirtualChannel::OSD::D
 
     static void show_message(ClipboardVirtualChannel& self, chars_view filename, TrKey trkey)
     {
-        self.osd.osd_api.display_osd_message(str_concat(TR(trkey, self.osd.lang), filename));
+        self.osd.osd_api.display_osd_message(str_concat(self.osd.tr(trkey), filename));
     }
 };
 
@@ -2649,11 +2649,12 @@ ClipboardVirtualChannel::ClipboardVirtualChannel(
 , osd{
     events,
     osd_api,
+    this->params.validator_params.translator,
     this->params.validator_params.osd_delay,
     (this->params.validator_params.osd_delay.count()
         && (this->params.validator_params.block_invalid_file_down
-         || this->params.validator_params.block_invalid_file_up)),
-    this->params.validator_params.lang}
+         || this->params.validator_params.block_invalid_file_up))
+}
 {}
 
 ClipboardVirtualChannel::~ClipboardVirtualChannel()

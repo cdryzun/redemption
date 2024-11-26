@@ -117,7 +117,8 @@ RdpNegociation::RdpNegociation(
         mod_rdp_params.allow_tls_only, mod_rdp_params.allow_rdp_legacy,
         mod_rdp_params.enable_restricted_admin_mode,
         gen, time_base,
-        mod_rdp_params.close_box_extra_message_ref, mod_rdp_params.lang,
+        mod_rdp_params.close_box_extra_message_ref,
+        mod_rdp_params.validator_params.translator,
         tls_config,
         RdpNego::Verbose(mod_rdp_params.verbose)
     )

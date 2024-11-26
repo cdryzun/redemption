@@ -74,9 +74,11 @@ SelectorMod::SelectorMod(
     gdi::OsdApi& osd,
     FrontAPI & front, uint16_t width, uint16_t height,
     Rect const widget_rect, ClientExecute & rail_client_execute,
-    Font const& font, Theme const& theme, CopyPaste& copy_paste
+    Font const& font, Theme const& theme, CopyPaste& copy_paste,
+    Translator tr
 )
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, &copy_paste)
+    , tr(tr)
     , ini(ini)
     , osd(osd)
     , language_button(
@@ -91,7 +93,6 @@ SelectorMod::SelectorMod(
         params.weight[1] = 70;
         params.weight[2] = 10;
 
-        Translator tr(ini.get<cfg::translation::language>());
         params.label[0] = tr(trkeys::authorization);
         params.label[1] = tr(trkeys::target);
         params.label[2] = tr(trkeys::protocol);
@@ -178,7 +179,7 @@ SelectorMod::SelectorMod(
         ini.is_asked<cfg::context::selector_number_of_pages>()
             ? ""_av
             : int_to_decimal_zchars(ini.get<cfg::context::selector_number_of_pages>()),
-        &this->language_button, this->selector_params, font, theme, language(ini), true)
+        &this->language_button, this->selector_params, font, theme, tr, true)
 
     , current_page(unchecked_decimal_chars_to_int(this->selector.current_page.get_text()))
     , number_page(unchecked_decimal_chars_to_int(this->selector.number_page.get_text().from_offset(1)))
@@ -293,7 +294,7 @@ void SelectorMod::refresh_device()
     if (this->selector.selector_lines.get_nb_rows() == 0) {
         this->selector.selector_lines.set_unfocusable();
 
-        auto no_result = TR(trkeys::no_results, language(this->ini));
+        auto no_result = tr(trkeys::no_results);
         chars_view const texts[] {{}, no_result, {}};
         this->selector.add_device(texts);
     }
