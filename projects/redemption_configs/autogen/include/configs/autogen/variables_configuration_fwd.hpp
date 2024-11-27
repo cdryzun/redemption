@@ -43,7 +43,6 @@ namespace cfg
     };
 
     struct client {
-        struct keyboard_layout;
         struct ignore_logon_password;
         struct allow_using_multiple_monitors;
         struct allow_scale_factor;

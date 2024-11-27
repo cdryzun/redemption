@@ -42,7 +42,6 @@ template<> struct acl_and_spec_type<cfg::globals::experimental_enable_serializer
 template<> struct acl_and_spec_type<cfg::globals::rdp_keepalive_connection_interval> { using type = std::chrono::milliseconds; };
 template<> struct acl_and_spec_type<cfg::globals::enable_ipv6> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::globals::minimal_memory_available_before_connection_silently_closed> { using type = uint64_t; };
-template<> struct acl_and_spec_type<cfg::client::keyboard_layout> { using type = unsigned; };
 template<> struct acl_and_spec_type<cfg::client::ignore_logon_password> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::client::allow_using_multiple_monitors> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::client::allow_scale_factor> { using type = bool; };

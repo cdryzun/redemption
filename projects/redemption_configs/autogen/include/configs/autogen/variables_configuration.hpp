@@ -17,30 +17,30 @@ namespace configs
         // inline constexpr int section0 = 0; /* general */
         inline constexpr int section1 = 0; /* globals */
         inline constexpr int section2 = 16; /* client */
-        inline constexpr int section3 = 18; /* all_target_mod */
-        // inline constexpr int section4 = 19; /* remote_program */
-        inline constexpr int section5 = 19; /* mod_rdp */
-        inline constexpr int section6 = 65; /* protocol */
-        inline constexpr int section7 = 66; /* session_probe */
-        inline constexpr int section8 = 111; /* server_cert */
-        inline constexpr int section9 = 120; /* mod_vnc */
-        inline constexpr int section10 = 136; /* session_log */
-        // inline constexpr int section11 = 138; /* ocr */
-        inline constexpr int section12 = 138; /* capture */
-        inline constexpr int section13 = 145; /* audit */
-        inline constexpr int section14 = 154; /* file_verification */
-        inline constexpr int section15 = 162; /* file_storage */
-        // inline constexpr int section16 = 163; /* icap_server_down */
-        // inline constexpr int section17 = 163; /* icap_server_up */
-        inline constexpr int section18 = 163; /* crypto */
-        // inline constexpr int section19 = 165; /* websocket */
-        // inline constexpr int section20 = 165; /* vnc_over_ssh */
-        inline constexpr int section21 = 165; /* context */
-        // inline constexpr int section22 = 254; /* internal_mod */
-        inline constexpr int section23 = 254; /* mod_replay */
-        inline constexpr int section24 = 256; /* translation */
-        // inline constexpr int section25 = 258; /* theme */
-        // inline constexpr int section26 = 258; /* debug */
+        inline constexpr int section3 = 17; /* all_target_mod */
+        // inline constexpr int section4 = 18; /* remote_program */
+        inline constexpr int section5 = 18; /* mod_rdp */
+        inline constexpr int section6 = 64; /* protocol */
+        inline constexpr int section7 = 65; /* session_probe */
+        inline constexpr int section8 = 110; /* server_cert */
+        inline constexpr int section9 = 119; /* mod_vnc */
+        inline constexpr int section10 = 135; /* session_log */
+        // inline constexpr int section11 = 137; /* ocr */
+        inline constexpr int section12 = 137; /* capture */
+        inline constexpr int section13 = 144; /* audit */
+        inline constexpr int section14 = 153; /* file_verification */
+        inline constexpr int section15 = 161; /* file_storage */
+        // inline constexpr int section16 = 162; /* icap_server_down */
+        // inline constexpr int section17 = 162; /* icap_server_up */
+        inline constexpr int section18 = 162; /* crypto */
+        // inline constexpr int section19 = 164; /* websocket */
+        // inline constexpr int section20 = 164; /* vnc_over_ssh */
+        inline constexpr int section21 = 164; /* context */
+        // inline constexpr int section22 = 253; /* internal_mod */
+        inline constexpr int section23 = 253; /* mod_replay */
+        inline constexpr int section24 = 255; /* translation */
+        // inline constexpr int section25 = 256; /* theme */
+        // inline constexpr int section26 = 256; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -438,18 +438,6 @@ namespace cfg
         type value { 100 };
     };
 
-    /// type: unsigned <br/>
-    /// acl ⇐ proxy <br/>
-    /// default: 0 <br/>
-    struct client::keyboard_layout {
-        static constexpr unsigned acl_proxy_communication_flags = 0b01;
-        // for old cppcheck
-        // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section2 + 0};
-        using type = unsigned;
-        using mapped_type = unsigned;
-        type value { 0 };
-    };
     /// If true, ignore password provided by RDP client, user need do login manually. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -607,7 +595,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section2 + 1};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section2 + 0};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -4870,11 +4858,11 @@ namespace cfg
     };
 
     /// type: Language <br/>
-    /// acl ⇒ proxy <br/>
+    /// acl ⇔ proxy <br/>
     /// acl::name: language <br/>
     /// default: Language::en <br/>
     struct translation::language {
-        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        static constexpr unsigned acl_proxy_communication_flags = 0b11;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
         static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section24 + 0};
@@ -4884,13 +4872,9 @@ namespace cfg
     };
     /// Language used on the login page. When the user logs in, their user preference language is used. <br/>
     /// type: LoginLanguage <br/>
-    /// acl ⇐ proxy <br/>
     /// default: LoginLanguage::Auto <br/>
     struct translation::login_language {
-        static constexpr unsigned acl_proxy_communication_flags = 0b01;
-        // for old cppcheck
-        // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section24 + 1};
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
         using type = LoginLanguage;
         using mapped_type = std::string;
         type value { LoginLanguage::Auto };
@@ -5408,7 +5392,6 @@ struct client
 : cfg::client::ssl_cipher_list
 , cfg::client::tls_1_3_ciphersuites
 , cfg::client::tls_key_exchange_groups
-, cfg::client::keyboard_layout
 , cfg::client::ignore_logon_password
 , cfg::client::allow_using_multiple_monitors
 , cfg::client::allow_scale_factor
@@ -5909,7 +5892,6 @@ using VariablesAclPack = Pack<
 , cfg::globals::trace_type
 , cfg::globals::is_rec
 , cfg::globals::enable_osd_display_remote_target
-, cfg::client::keyboard_layout
 , cfg::client::disable_tsk_switch_shortcuts
 , cfg::all_target_mod::tcp_user_timeout
 , cfg::mod_rdp::disabled_orders
@@ -6150,22 +6132,19 @@ using VariablesAclPack = Pack<
 , cfg::mod_replay::replay_path
 , cfg::mod_replay::replay_on_loop
 , cfg::translation::language
-, cfg::translation::login_language
 >;
 
 
-constexpr U64BitFlags<5> loggable_field{ {
-  0b1110111111111111111111111111111111111111111111101111011111101100
-, 0b1111111110111111111111111111111111111111111111111111111111111111
-, 0b0011100001111110110001100000011111111111111011111110111111111111
-, 0b1111000000011100000110001101111111000101001111111111101000101111
-, 0b0000000000000000000000000000000000000000000000000000000000000001
+constexpr U64BitFlags<4> loggable_field{ {
+  0b1111011111111111111111111111111111111111111111111111011111101100
+, 0b1111111111011111111111111111111111111111111111111111111111111111
+, 0b1001110000111111011000110000001111111111111101111111011111111111
+, 0b1111100000001110000011000110111111100010100111111111110100010111
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b0000001000000000000000000000000000000000000000000000000000000000
-, 0b0000000000000000000000000000000000000000000000000000000000000000
+, 0b0000000100000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };
 } // namespace configs

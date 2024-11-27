@@ -178,7 +178,6 @@ void Inifile::initialize()
     this->push_to_send_index<cfg::context::real_target_device>();
     this->push_to_send_index<cfg::globals::host>();
     this->push_to_send_index<cfg::globals::target>();
-    this->push_to_send_index<cfg::translation::login_language>();
 
     this->asked_table.set(cfg::context::target_port::index);
 }

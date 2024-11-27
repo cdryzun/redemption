@@ -1680,16 +1680,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [translation]
 
-# values: en, fr
-# (acl config: proxy ⇐ language)
-#language = en
-
 # Language used on the login page. When the user logs in, their user preference language is used.
 #   Auto: The language will be deduced according to the keyboard layout announced by the client
 #   EN: 
 #   FR: 
 #_advanced
-# (acl config: proxy ⇒ login_language)
 #login_language = Auto
 
 [theme]

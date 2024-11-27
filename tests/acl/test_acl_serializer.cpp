@@ -58,7 +58,7 @@ RED_AUTO_TEST_CASE(TestAclSerializeAskNextModule)
 
     acl.send_acl_data();
     RED_CHECK(trans.trans.buf ==
-        "\x00\x17"
+        "\x00\x16"
         "?\x0ftarget_password"
         "?\x0btarget_host"
         "?\x0aproto_dest"
@@ -81,7 +81,6 @@ RED_AUTO_TEST_CASE(TestAclSerializeAskNextModule)
         "!\x12real_target_device\x00\x00\x00\x00"
         "!\x09ip_client\x00\x00\x00\x00"
         "!\x09ip_target\x00\x00\x00\x00"
-        "!\x0elogin_language\x00\x00\x00\x04""Auto"
         ""_av);
 
     trans.trans.buf.clear();

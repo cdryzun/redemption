@@ -2289,14 +2289,6 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
     }
     else if (this->section_id == 21) {
         if (0) {}
-        else if (key == "language"_zv) {
-            ::config_parse_and_log(
-                this->section_name, key.c_str(),
-                static_cast<cfg::translation::language&>(this->variables).value,
-                ::configs::spec_type<std::string>{},
-                value
-            );
-        }
         else if (key == "login_language"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),

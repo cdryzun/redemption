@@ -31,7 +31,6 @@ cfg::globals::is_rec ⇐ is_rec   [bool]
 cfg::globals::enable_osd_display_remote_target ⇐ enable_osd_display_remote_target   [bool]
     Allow to show target device name with F12 during the session
 
-cfg::client::keyboard_layout ⇒ keyboard_layout   [unsigned]
 cfg::client::disable_tsk_switch_shortcuts ⇐ disable_tsk_switch_shortcuts   [bool]
     If enabled, ignore Ctrl+Alt+Del, Ctrl+Shift+Esc and Windows+Tab keyboard sequences.
 
@@ -686,12 +685,7 @@ cfg::mod_replay::replay_path ⇐ replay_path   [::configs::spec_types::directory
 cfg::mod_replay::replay_on_loop ⇐ replay_on_loop   [bool]
     0 - replay once, 1 - loop replay
 
-cfg::translation::language ⇐ language   [Language ⇐ std::string]
-cfg::translation::login_language ⇒ login_language   [LoginLanguage ⇒ std::string]
-    Language used on the login page. When the user logs in, their user preference language is used.
-      Auto: The language will be deduced according to the keyboard layout announced by the client
-      EN: 
-      FR: 
+cfg::translation::language ⇔ language   [Language ⇔ std::string]
 
 
 

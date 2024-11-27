@@ -79,16 +79,6 @@ KEEPALIVE_TIMEOUT = KEEPALIVE_INTERVAL + KEEPALIVE_GRACEDELAY
 
 WORKFLOW_POLL_INTERVAL = 5
 
-FRENCH_LAYOUTS = (0x0000040C,  # French (Legacy, AZERTY)
-                  0x0001040C,  # French (Standard, AZERTY) (note: AFNOR layout)
-                  0x0002040C,  # French (Standard, BÉPO)
-                  0x00001009,  # Canadian French
-                  0x00000C0C,  # Canadian French (Legacy)
-                  0x0000080C,  # French (Belgium)
-                  0x0001080C,  # French (Belgium) Belgian (Comma)
-                  0x0000100C,  # French (Switzerland)
-                 )
-
 def mundane(value):
     if value == MAGICASK:
         return 'Unknown'
@@ -282,7 +272,6 @@ class Sesman():
             'login': MAGICASK,
             'ip_client': MAGICASK,
             'target_protocol': MAGICASK,
-            'keyboard_layout': MAGICASK,
 
             'auth_channel_answer': '',
             'auth_channel_target': '',
@@ -373,27 +362,6 @@ class Sesman():
         except Exception:
             pass
 
-    def set_language_from_keylayout(self) -> None:
-        self.language = SESMANCONF.language
-        keylayout = 0
-        keyboard_layout = self.shared.get('keyboard_layout')
-        if keyboard_layout != MAGICASK:
-            try:
-                keylayout = int(keyboard_layout)
-            except Exception:
-                pass
-
-        if keylayout in FRENCH_LAYOUTS:
-            self.language = 'fr'
-
-        login_language = self.shared.get('login_language')
-        login_language = (login_language.lower()
-                          if (login_language != MAGICASK
-                              and login_language != 'Auto')
-                          else self.language)
-
-        self.load_login_message(login_language)
-
     # TODO: is may be possible to delay sending data until the next
     #       input through receive_data
     def send_data(self, data: SharedDict) -> None:
@@ -423,16 +391,6 @@ class Sesman():
 
         if DEBUG:
             Logger().info(f'=> send_data (update) = {data.keys()}')
-
-        # if current language changed, send translations
-        if self.language != SESMANCONF.language:
-            if not self.language:
-                self.set_language_from_keylayout()
-            SESMANCONF.language = self.language
-
-            data['language'] = SESMANCONF.language
-            # if self.shared.get('password') == MAGICASK:
-            #     data['password'] = ''
 
         self.shared.update(data)
 
@@ -1024,6 +982,7 @@ class Sesman():
                 )
 
             self.language = self.engine.get_language()
+            self.send_data({'language': self.language})
             self.load_login_message(self.language)
             self._load_selector_banner()
 
@@ -1575,6 +1534,7 @@ class Sesman():
 
     @staticmethod
     def _format_internalmod_vscrolltxt(message: str) -> str:
+        # message could contain '\r\n'
         message = "\n".join(message.splitlines())
         return message
 
@@ -1629,10 +1589,10 @@ class Sesman():
                      self.target_service_name,
                      self.target_group)
 
-                if self.language != SESMANCONF.language:
+                if login_language := self.shared.get('language'):
                     if not self.language:
-                        self.set_language_from_keylayout()
-                    SESMANCONF.language = self.language
+                        self.load_login_message(login_language)
+                    self.language = login_language
 
                 data_to_send = {
                     'login': (
@@ -1643,7 +1603,6 @@ class Sesman():
                     'password': MAGICASK,
                     'module': 'login',
                     'login_message': self.login_message,
-                    'language': SESMANCONF.language,
                     'opt_message': (
                         TR(Sesmsg.AUTHENTICATION_FAILED)
                         if self.shared.get('password') != MAGICASK

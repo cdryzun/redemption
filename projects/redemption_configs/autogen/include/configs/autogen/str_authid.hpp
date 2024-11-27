@@ -25,7 +25,6 @@ namespace configs
         "trace_type"_zv,
         "is_rec"_zv,
         "enable_osd_display_remote_target"_zv,
-        "keyboard_layout"_zv,
         "disable_tsk_switch_shortcuts"_zv,
         "all_target_mod:tcp_user_timeout"_zv,
         "mod_rdp:disabled_orders"_zv,
@@ -266,7 +265,6 @@ namespace configs
         "replay_path"_zv,
         "replay_on_loop"_zv,
         "language"_zv,
-        "login_language"_zv,
     };
 
 } // namespace configs

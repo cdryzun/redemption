@@ -87,7 +87,6 @@ RED_AUTO_TEST_CASE(TestIniAssign)
     ini.set<cfg::client::disable_tsk_switch_shortcuts>(1);
     ini.set<cfg::client::fast_path>(true);
     ini.set<cfg::client::ignore_logon_password>(true);
-    ini.set_acl<cfg::client::keyboard_layout>(1);
     ini.set<cfg::internal_mod::keyboard_layout_proposals>(cslist);
     ini.set<cfg::internal_mod::keyboard_layout_proposals>(slist);
     ini.set<cfg::client::max_color_depth>(ColorDepth::depth16);
@@ -256,8 +255,8 @@ RED_AUTO_TEST_CASE(TestIniAssign)
 
     ini.set<cfg::session_log::keyboard_input_masking_level>(KeyboardInputMaskingLevel::unmasked);
 
-    ini.set<cfg::translation::language>(Language::en);
-    ini.set_acl<cfg::translation::login_language>(LoginLanguage::Auto);
+    ini.set_acl<cfg::translation::language>(Language::en);
+    ini.set<cfg::translation::login_language>(LoginLanguage::Auto);
 
     ini.set<cfg::capture::wrm_break_interval>(std::chrono::seconds{1});
     ini.set<cfg::capture::capture_flags>(CaptureFlags::wrm | CaptureFlags::png);

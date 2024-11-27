@@ -67,13 +67,24 @@ using namespace std::chrono_literals;
 namespace
 {
 
-Language login_language(Inifile const& ini)
+Language compute_language(Inifile const& ini, KeyLayout::KbdId kbd_id)
 {
-    switch (ini.get<cfg::translation::login_language>())
-    {
-        case LoginLanguage::Auto: break;
-        case LoginLanguage::EN: return ::Language::en;
-        case LoginLanguage::FR: return ::Language::fr;
+    switch (ini.get<cfg::translation::login_language>()) {
+    case LoginLanguage::Auto:
+        switch (kbd_id) {
+        case KeyLayout::KbdId(0x0000040C):  // French (Legacy, AZERTY)
+        case KeyLayout::KbdId(0x0001040C):  // French (Standard, AZERTY) (note: AFNOR layout)
+        case KeyLayout::KbdId(0x0002040C):  // French (Standard, BÉPO)
+        case KeyLayout::KbdId(0x00001009):  // Canadian French
+        case KeyLayout::KbdId(0x00000C0C):  // Canadian French (Legacy)
+        case KeyLayout::KbdId(0x0000080C):  // French (Belgium)
+        case KeyLayout::KbdId(0x0001080C):  // French (Belgium) Belgian (Comma)
+        case KeyLayout::KbdId(0x0000100C):  // French (Switzerland)
+            return Language::fr;
+        }
+        break;
+    case LoginLanguage::EN: return Language::en;
+    case LoginLanguage::FR: return Language::fr;
     }
     return ini.get<cfg::translation::language>();
 }
@@ -464,7 +475,6 @@ private:
         }
     }
 
-    bool is_first_looping_on_mod_selector = true;
     std::string session_type;
 
     void next_backend_module(
@@ -622,19 +632,6 @@ private:
 
         case ModuleName::selector:
             inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
-
-            if (this->is_first_looping_on_mod_selector) {
-                this->is_first_looping_on_mod_selector = false;
-                switch (this->ini.get<cfg::translation::language>())
-                {
-                    case Language::en:
-                        this->ini.set_acl<cfg::translation::login_language>(LoginLanguage::EN);
-                        break;
-                    case Language::fr:
-                        this->ini.set_acl<cfg::translation::login_language>(LoginLanguage::FR);
-                        break;
-                }
-            }
             log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
             mod_factory.create_selector_mod();
             break;
@@ -822,8 +819,10 @@ private:
 
     void acl_auth_info(ClientInfo const& client_info)
     {
-        LOG(LOG_INFO, "Session: Keyboard Layout = 0x%x", client_info.keylayout);
-        this->ini.set_acl<cfg::client::keyboard_layout>(safe_int(client_info.keylayout));
+        auto const kbd_id = client_info.keylayout;
+        LOG_IF(bool(this->verbose & SessionVerbose::Log), LOG_INFO,
+            "Session: Keyboard Layout = 0x%x", kbd_id);
+        this->ini.set_acl<cfg::translation::language>(compute_language(this->ini, kbd_id));
 
         this->ini.set_acl<cfg::context::opt_width>(client_info.screen_info.width);
         this->ini.set_acl<cfg::context::opt_height>(client_info.screen_info.height);
@@ -1596,7 +1595,9 @@ public:
                 event_manager.get_events(), event_manager.get_time_base(),
                 front.get_client_info(), front, front, front.get_palette(),
                 font, ini, front.keymap, rnd, cctx, err_msg_ctx,
-                translation_catalogs[login_language(ini)], log_translation);
+                translation_catalogs[ini.get<cfg::translation::language>()],
+                log_translation
+            );
 
             GuestCtx guest_ctx;
 

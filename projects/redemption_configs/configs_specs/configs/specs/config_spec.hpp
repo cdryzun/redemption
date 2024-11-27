@@ -552,12 +552,6 @@ _.section("session_log", [&]
 _.section("client", [&]
 {
     _.member(MemberInfo{
-        .name = "keyboard_layout",
-        .value = value<types::unsigned_>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
-    });
-
-    _.member(MemberInfo{
         .name = "ignore_logon_password",
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
@@ -3026,13 +3020,13 @@ _.section("translation", [&]
     _.member(MemberInfo{
         .name = names::acl_shortname("language"),
         .value = enum_as_string(Language::en),
-        .spec = ini_only(acl_to_proxy(no_reset_back_to_selector, loggable)),
+        .spec = acl_rw(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "login_language",
         .value = enum_as_string(LoginLanguage::Auto),
-        .spec = global_spec(proxy_to_acl(no_reset_back_to_selector), spec::advanced),
+        .spec = global_spec(no_acl, spec::advanced),
         .desc = "Language used on the login page. When the user logs in, their user preference language is used.",
     });
 });
