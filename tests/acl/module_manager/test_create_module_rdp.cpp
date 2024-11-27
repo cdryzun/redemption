@@ -21,8 +21,10 @@
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 #include "test_only/test_framework/working_directory.hpp"
 
+#include "acl/module_manager/update_application_driver.hpp"
+#include "core/font.hpp"
 #include "utils/sugar/unique_fd.hpp"
-#include "acl/module_manager/create_module_rdp.cpp" /* NOLINT */
+#include "utils/theme.hpp"
 
 RED_AUTO_TEST_CASE_WD(TestUpdateApplicationDriver, wd)
 {

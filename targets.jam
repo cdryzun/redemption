@@ -537,78 +537,20 @@ test-run tests/acl/module_manager/test_create_module_rdp :
 :
   <library>app_path_test.o
   <library>crypto
-  <library>gssapi_krb5
-  <library>krb5
-  <library>openssl
-  <library>png
   <library>projects/redemption_configs/redemption_src/configs/config.o
-  <library>snappy
-  <library>src/RAIL/client_execute.o
-  <library>src/acl/kv_list_from_strings.o
-  <library>src/acl/module_manager/create_module_rail.o
-  <library>src/capture/fdx_capture.o
-  <library>src/core/RDP/dwt.o
-  <library>src/core/RDP/mppc.o
-  <library>src/core/RDP/nego.o
-  <library>src/core/RDP/nla/kerberos.o
-  <library>src/core/RDP/orders/remoteFx.o
-  <library>src/core/RDP/rdp_pointer.o
-  <library>src/core/RDP/rlgr.o
-  <library>src/core/channels_authorizations.o
-  <library>src/core/dynamic_channels_authorizations.o
   <library>src/core/error.o
   <library>src/core/font.o
-  <library>src/core/log_certificate_status.o
-  <library>src/gdi/clip_from_cmd.o
-  <library>src/gdi/draw_utils.o
-  <library>src/gdi/graphic_api.o
-  <library>src/gdi/protected_graphics.o
-  <library>src/gdi/screen_functions.o
-  <library>src/gdi/text_metrics.o
-  <library>src/keyboard/keylayouts.o
-  <library>src/keyboard/keymap.o
-  <library>src/mod/internal/copy_paste.o
-  <library>src/mod/internal/rail_mod_base.o
-  <library>src/mod/internal/rail_module_host_mod.o
-  <library>src/mod/internal/widget/button.o
-  <library>src/mod/internal/widget/composite.o
-  <library>src/mod/internal/widget/label.o
-  <library>src/mod/internal/widget/module_host.o
-  <library>src/mod/internal/widget/multiline.o
-  <library>src/mod/internal/widget/screen.o
-  <library>src/mod/internal/widget/scroll.o
-  <library>src/mod/internal/widget/tooltip.o
-  <library>src/mod/rdp/channels/cliprdr_channel.o
-  <library>src/mod/rdp/channels/rdp_session_probe_wrapper.o
-  <library>src/mod/rdp/channels/rdpdr_file_system_drive_manager.o
   <library>src/mod/rdp/channels/sespro_channel_params.o
-  <library>src/mod/rdp/channels/sespro_clipboard_based_launcher.o
-  <library>src/mod/rdp/rdp_negociation.o
-  <library>src/mod/rdp/rdp_negociation_data.o
-  <library>src/system/linux/system/tls_check_certificate.o
-  <library>src/transport/crypto_transport.o
-  <library>src/transport/file_transport.o
-  <library>src/transport/mwrm_reader.o
-  <library>src/transport/socket_transport.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
-  <library>src/utils/bitmap_from_file.o
   <library>src/utils/cfgloader.o
   <library>src/utils/fileutils.o
   <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
-  <library>src/utils/hexdump.o
-  <library>src/utils/log_siem.o
-  <library>src/utils/netutils.o
-  <library>src/utils/parse_primary_drawing_orders.o
-  <library>src/utils/primitives/primitives.o
-  <library>src/utils/primitives/primitives_sse2.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/sugar/multisz.o
   <library>src/utils/translation.o
-  <library>src/utils/utf.o
   <library>tests/includes/test_only/test_framework/working_directory.o
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
@@ -2775,7 +2717,6 @@ test-run tests/mod/internal/test_rail_module_host_mod :
 test-run tests/mod/internal/test_replay_mod :
   $(REDEMPTION_TEST_PATH)/mod/internal/test_replay_mod.cpp
 :
-  <library>app_path_test.o
   <library>crypto
   <library>png
   <library>snappy
@@ -2800,14 +2741,12 @@ test-run tests/mod/internal/test_replay_mod :
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/front/fake_front.o
   <library>tests/includes/test_only/gdi/test_graphic.o
@@ -4772,10 +4711,6 @@ test-run tests/utils/test_ellipse :
 test-run tests/utils/test_error_message_ctx :
   $(REDEMPTION_TEST_PATH)/utils/test_error_message_ctx.cpp
 :
-  <library>app_path_test.o
-  <library>src/utils/gettext.o
-  <library>src/utils/strutils.o
-  <library>src/utils/translation.o
 ;
 test-run tests/utils/test_file_permissions :
   $(REDEMPTION_TEST_PATH)/utils/test_file_permissions.cpp
@@ -4980,10 +4915,7 @@ test-run tests/utils/test_translation :
   $(REDEMPTION_TEST_PATH)/utils/test_translation.cpp
 :
   <library>app_path_test.o
-  <library>projects/redemption_configs/redemption_src/configs/config.o
-  <library>src/utils/cfgloader.o
   <library>src/utils/gettext.o
-  <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/strutils.o
   <library>src/utils/translation.o
 ;
