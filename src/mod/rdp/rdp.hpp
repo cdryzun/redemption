@@ -829,19 +829,16 @@ public:
 
         FileSystemVirtualChannel& file_system_virtual_channel = *this->file_system_virtual_channel;
 
-        SessionProbeVirtualChannel::Params sp_vc_params;
-
-        sp_vc_params.sespro_params = this->session_probe.session_probe_channel_params;
-        sp_vc_params.target_informations = this->session_probe.target_informations.c_str();
-
-        sp_vc_params.front_width = stc.negociation_result.front_width;
-        sp_vc_params.front_height = stc.negociation_result.front_height;
-        sp_vc_params.real_alternate_shell = this->session_probe.channel_params.real_alternate_shell.c_str();
-        sp_vc_params.real_working_dir = this->session_probe.channel_params.real_working_dir.c_str();
-        sp_vc_params.translator = tr;
-        sp_vc_params.bogus_refresh_rect_ex = (bogus_refresh_rect && monitor_count);
-        sp_vc_params.show_maximized = !this->remote_app.enable_remote_program;
-        sp_vc_params.disconnect_session_instead_of_logoff_session = this->remote_app.enable_remote_program;
+        SessionProbeVirtualChannel::Params sp_vc_params{
+            .sespro_params = this->session_probe.session_probe_channel_params,
+            .target_informations = this->session_probe.target_informations.c_str(),
+            .real_alternate_shell = this->session_probe.channel_params.real_alternate_shell.c_str(),
+            .real_working_dir = this->session_probe.channel_params.real_working_dir.c_str(),
+            .translator = tr,
+            .bogus_refresh_rect_ex = (bogus_refresh_rect && monitor_count),
+            .show_maximized = !this->remote_app.enable_remote_program,
+            .disconnect_session_instead_of_logoff_session = this->remote_app.enable_remote_program,
+        };
 
         this->session_probe_virtual_channel = std::make_unique<SessionProbeVirtualChannel>(
             this->events,
@@ -875,27 +872,27 @@ private:
         this->remote_programs_to_server_sender =
             this->create_to_server_synchronous_sender(channel_names::rail, stc);
 
-        RemoteProgramsVirtualChannelParams remote_programs_virtual_channel_params;
+        RemoteProgramsVirtualChannelParams remote_programs_virtual_channel_params{
+            .windows_execute_shell_params = !this->remote_app.perform_automatic_reconnection
+                ? this->remote_app.windows_execute_shell_params
+                : WindowsExecuteShellParams(),
+            .windows_execute_shell_params_2 = !this->remote_app.perform_automatic_reconnection
+                ? this->remote_app.real_windows_execute_shell_params
+                : WindowsExecuteShellParams(),
 
-        remote_programs_virtual_channel_params.use_session_probe_to_launch_remote_program   =
-            this->session_probe.used_to_launch_remote_program;
+            .rail_session_manager = this->remote_programs_session_manager.get(),
 
-        if (!this->remote_app.perform_automatic_reconnection) {
-            remote_programs_virtual_channel_params.windows_execute_shell_params = this->remote_app.windows_execute_shell_params;
-            remote_programs_virtual_channel_params.windows_execute_shell_params_2 = this->remote_app.real_windows_execute_shell_params;
-        }
+            .should_ignore_first_client_execute =
+                this->remote_app.should_ignore_first_client_execute,
 
-        remote_programs_virtual_channel_params.rail_session_manager               =
-            this->remote_programs_session_manager.get();
+            .use_session_probe_to_launch_remote_program =
+                this->session_probe.used_to_launch_remote_program,
 
-        remote_programs_virtual_channel_params.should_ignore_first_client_execute =
-            this->remote_app.should_ignore_first_client_execute;
-
-        remote_programs_virtual_channel_params.client_supports_handshakeex_pdu    =
-            (client_rail_caps.RailSupportLevel & TS_RAIL_LEVEL_HANDSHAKE_EX_SUPPORTED);
-        remote_programs_virtual_channel_params.client_supports_enhanced_remoteapp =
-            this->remote_app.remote_program_enhanced;
-
+            .client_supports_handshakeex_pdu =
+                bool(client_rail_caps.RailSupportLevel & TS_RAIL_LEVEL_HANDSHAKE_EX_SUPPORTED),
+            .client_supports_enhanced_remoteapp =
+                this->remote_app.remote_program_enhanced,
+        };
 
         this->remote_programs_virtual_channel =
             std::make_unique<RemoteProgramsVirtualChannel>(

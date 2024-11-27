@@ -31,7 +31,6 @@
 #include "mod/rdp/rdp_api.hpp"
 #include "mod/rdp/mod_rdp_variables.hpp"
 #include "core/stream_throw_helpers.hpp"
-#include "utils/uninit_checked.hpp"
 #include "utils/ascii.hpp"
 
 
@@ -42,16 +41,14 @@ struct RemoteProgramsVirtualChannelParams
     WindowsExecuteShellParams windows_execute_shell_params;
     WindowsExecuteShellParams windows_execute_shell_params_2;
 
-    uninit_checked<RemoteProgramsSessionManager*> rail_session_manager;
+    RemoteProgramsSessionManager* rail_session_manager;
 
-    uninit_checked<bool> should_ignore_first_client_execute;
+    bool should_ignore_first_client_execute;
 
-    uninit_checked<bool> use_session_probe_to_launch_remote_program;
+    bool use_session_probe_to_launch_remote_program;
 
-    uninit_checked<bool> client_supports_handshakeex_pdu;
-    uninit_checked<bool> client_supports_enhanced_remoteapp;
-
-    explicit RemoteProgramsVirtualChannelParams() = default;
+    bool client_supports_handshakeex_pdu;
+    bool client_supports_enhanced_remoteapp;
 };
 
 

@@ -44,7 +44,6 @@
 #include "utils/sugar/int_to_chars.hpp"
 #include "utils/sugar/cast.hpp"
 #include "utils/sugar/numerics/safe_conversions.hpp"
-#include "utils/uninit_checked.hpp"
 #include "utils/trkeys.hpp"
 #include "utils/translation.hpp"
 #include "utils/sugar/chars_to_int.hpp"
@@ -123,9 +122,6 @@ private:
     const SessionProbeVirtualChannelParams sespro_params;
 
     std::string param_target_informations;
-
-    const uint16_t param_front_width;
-    const uint16_t param_front_height;
 
     std::string param_real_alternate_shell;
     std::string param_real_working_dir;
@@ -209,23 +205,18 @@ public:
     {
         SessionProbeVirtualChannelParams sespro_params;
 
-        uninit_checked<const char*> target_informations;
+        const char* target_informations;
 
-        uninit_checked<uint16_t> front_width;
-        uninit_checked<uint16_t> front_height;
-
-        uninit_checked<const char*> real_alternate_shell;
-        uninit_checked<const char*> real_working_dir;
+        const char* real_alternate_shell;
+        const char* real_working_dir;
 
         Translator translator = MsgTranslationCatalog::default_catalog();
 
-        uninit_checked<bool> bogus_refresh_rect_ex;
+        bool bogus_refresh_rect_ex;
 
-        uninit_checked<bool> show_maximized;
+        bool show_maximized;
 
-        uninit_checked<bool> disconnect_session_instead_of_logoff_session;
-
-        explicit Params() = default;
+        bool disconnect_session_instead_of_logoff_session;
     };
 
     explicit SessionProbeVirtualChannel(
@@ -243,8 +234,6 @@ public:
     : BaseVirtualChannel(nullptr, to_server_sender_)
     , sespro_params(params.sespro_params)
     , param_target_informations(params.target_informations)
-    , param_front_width(params.front_width)
-    , param_front_height(params.front_height)
     , param_real_alternate_shell(params.real_alternate_shell)
     , param_real_working_dir(params.real_working_dir)
     , tr(params.translator)
