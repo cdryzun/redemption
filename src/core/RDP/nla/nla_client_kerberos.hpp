@@ -30,8 +30,6 @@
 #include "utils/fileutils.hpp"
 #include "utils/hexdump.hpp"
 #include "utils/random.hpp"
-#include "utils/trkeys.hpp"
-#include "utils/translation.hpp"
 #include "system/ssl_sha256.hpp"
 
 #include "transport/transport.hpp"
@@ -525,8 +523,6 @@ private:
 
     const std::string target_host;
     Random & rand;
-    std::string& extra_message;
-    Translator tr;
     const bool credssp_verbose;
     const bool verbose;
 
@@ -602,12 +598,6 @@ private:
             this->ts_request.pubKeyAuth, Buffer, this->recv_seq_num++);
 
         if (status != SEC_E_OK) {
-            if (this->ts_request.pubKeyAuth.empty()) {
-                // report_error
-                this->extra_message = " ";
-                this->extra_message.append(this->tr(trkeys::err_login_password));
-                LOG(LOG_INFO, "Provided login/password is probably incorrect.");
-            }
             LOG(LOG_ERR, "sspi_DecryptMessage failure: 0x%08X", status);
             return status;
         }
@@ -872,16 +862,12 @@ public:
                const uint8_t * service_password,
                std::string_view service_keytab_path,
                Random & rand,
-               std::string& extra_message,
-               Translator translator,
                const bool credssp_verbose,
                const bool verbose)
         : ts_request(6) // Credssp Version 6 Supported
         , restricted_admin_mode(restricted_admin_mode)
         , target_host(target_host)
         , rand(rand)
-        , extra_message(extra_message)
-        , tr(translator)
         , credssp_verbose(credssp_verbose)
         , verbose(verbose)
         , trans(transport.get_transport())

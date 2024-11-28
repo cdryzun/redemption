@@ -30,7 +30,6 @@
 class NegoClient
 {
     FixedRandom random;
-    std::string extra_message;
     Transport & trans;
     RdpNego nego;
 
@@ -42,8 +41,7 @@ public:
     )
     : trans(trans)
     , nego(target_user, host, is_nla, enable_kerberos, true, true, true,
-        is_admin_mode, this->random, time_base, this->extra_message,
-        MsgTranslationCatalog::default_catalog(), tls_config, verbosity)
+        is_admin_mode, this->random, time_base, tls_config, verbosity)
     {
         auto [username, domain] = extract_user_domain(target_user);
         nego.set_identity(username, password, domain, "ProxyRecorder"_av);

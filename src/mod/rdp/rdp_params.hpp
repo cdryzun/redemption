@@ -135,6 +135,8 @@ struct ModRDPParams
 
     DriveParams drive_params;
 
+    Translator translator;
+
     bool allow_using_multiple_monitors = false;
     bool bogus_monitor_layout_treatment = false;
     bool allow_scale_factor = false;
@@ -225,6 +227,7 @@ struct ModRDPParams
                 , std::array<uint8_t, 28>& server_auto_reconnect_packet_ref
                 , std::string& close_box_extra_message_ref
                 , std::vector<uint8_t>&& redirection_password_or_cookie
+                , Translator translator
                 , RDPVerbose verbose
                 )
         : target_user(target_user)
@@ -232,6 +235,7 @@ struct ModRDPParams
         , target_host(target_host)
         , client_address(client_address)
         , key_locks(key_locks)
+        , translator(translator)
         , font(font)
         , theme(theme)
         , server_auto_reconnect_packet_ref(server_auto_reconnect_packet_ref)

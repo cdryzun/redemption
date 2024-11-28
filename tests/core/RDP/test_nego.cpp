@@ -109,7 +109,6 @@ RED_AUTO_TEST_CASE(TestNego)
     LCGRandom rand;
     TimeBase time_base{MonotonicTimePoint{167426s + 178586us}, {}};
 
-    std::string extra_message;
     RdpNego nego(
         "test", "127.0.0.1",
         true,  // enable nla
@@ -118,9 +117,7 @@ RED_AUTO_TEST_CASE(TestNego)
         true, // allow tls only
         false,  // allow rdp legacy
         false,  // admin mode
-        rand, time_base, extra_message,
-        MsgTranslationCatalog::default_catalog(),
-        TlsConfig{}, RdpNego::Verbose());
+        rand, time_base, TlsConfig{}, RdpNego::Verbose());
     nego.set_identity(user, pass, domain, host);
 
     TpduBuffer buf;

@@ -22,10 +22,8 @@
 #pragma once
 
 #include "core/RDP/nla/credssp.hpp"
-#include "utils/trkeys.hpp"
 #include "utils/hexdump.hpp"
 #include "system/ssl_sha256.hpp"
-#include "utils/translation.hpp"
 
 #ifndef __EMSCRIPTEN__
 #include "core/RDP/nla/kerberos.hpp"
@@ -46,8 +44,6 @@ class rdpCredsspServerKerberos final
     ClientNonce SavedClientNonce;
 
     writable_u8_array_view public_key;
-    std::string& extra_message;
-    Translator tr;
     const bool credssp_verbose;
     const bool verbose;
 
@@ -650,14 +646,8 @@ public:
     }
 
 public:
-    rdpCredsspServerKerberos(writable_u8_array_view key,
-               std::string& extra_message,
-               Translator translator,
-               const bool credssp_verbose,
-               const bool verbose)
+    rdpCredsspServerKerberos(writable_u8_array_view key, bool credssp_verbose, bool verbose)
         : public_key(key)
-        , extra_message(extra_message)
-        , tr(translator)
         , credssp_verbose(credssp_verbose)
         , verbose(verbose)
     {
@@ -755,12 +745,6 @@ private:
             this->ts_request.pubKeyAuth, Buffer, this->recv_seq_num++);
 
         if (status != SEC_E_OK) {
-            if (this->ts_request.pubKeyAuth.empty()) {
-                // report_error
-                this->extra_message = " ";
-                this->extra_message.append(tr(trkeys::err_login_password));
-                LOG(LOG_INFO, "Provided login/password is probably incorrect.");
-            }
             LOG(LOG_ERR, "DecryptMessage failure: 0x%08X", status);
             return status;
         }

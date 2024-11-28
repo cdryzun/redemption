@@ -477,6 +477,7 @@ ModPack create_mod_rdp(
       , server_auto_reconnect_packet
       , ini.get_mutable_ref<cfg::context::close_box_extra_message>()
       , std::move(ini.get_mutable_ref<cfg::context::redirection_password_or_cookie>())
+      , translator
       , rdp_verbose
     );
 
@@ -663,7 +664,6 @@ ModPack create_mod_rdp(
     vp.block_invalid_text_down = ini.get<cfg::file_verification::block_invalid_clipboard_text_down>();
     vp.up_target_name = ini.get<cfg::file_verification::enable_up>() ? "up" : "";
     vp.down_target_name = ini.get<cfg::file_verification::enable_down>() ? "down" : "";
-    vp.translator = translator;
 
     bool enable_validator = ini.get<cfg::file_verification::enable_up>()
         || ini.get<cfg::file_verification::enable_down>();

@@ -2031,7 +2031,7 @@ public:
         , events_guard(events)
         , session_log(session_log)
         , bogus_refresh_rect(mod_rdp_params.bogus_refresh_rect)
-        , tr(mod_rdp_params.validator_params.translator)
+        , tr(mod_rdp_params.translator)
         , session_time_start(events.get_monotonic_time_since_epoch())
         , replace_null_pointer_by_default_pointer(mod_rdp_params.replace_null_pointer_by_default_pointer)
         , large_pointer_support(mod_rdp_params.large_pointer_support)

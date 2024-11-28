@@ -52,7 +52,6 @@ RdpNego::RdpNego(
     bool nla, const bool krb, const bool nla_ntlm,
     const bool tls_only, const bool rdp_legacy, bool admin_mode,
     Random & rand, const TimeBase & time_base,
-    std::string& extra_message, Translator translator,
     TlsConfig const& tls_config, const Verbose verbose)
 : tls(true)
 , nla(nla)
@@ -73,8 +72,6 @@ RdpNego::RdpNego(
 , rand(rand)
 , time_base(time_base)
 , lb_info(nullptr)
-, extra_message(extra_message)
-, tr(translator)
 , tls_config(tls_config)
 , verbose(verbose)
 {
@@ -433,8 +430,8 @@ RdpNego::State RdpNego::activate_ssl_hybrid(OutTransport trans, CertificateCheck
                 this->hostname, this->target_host, this->domain,
                 this->user, this->current_password,/* nullptr,*/
                 this->restricted_admin_mode,
-                this->service_user, this->current_service_password, this->service_keytab_path,
-                this->rand, this->extra_message, this->tr,
+                this->service_user, this->current_service_password,
+                this->service_keytab_path, this->rand,
                 bool(this->verbose & Verbose::credssp),
                 bool(this->verbose & Verbose::negotiation)
             );

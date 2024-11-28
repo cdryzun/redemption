@@ -133,6 +133,7 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
                                , server_auto_reconnect_packet
                                , close_box_extra_message
                                , std::move(redirection_password_or_cookie)
+                               , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose{}
                                );
     mod_rdp_params.device_id                       = "device_id";

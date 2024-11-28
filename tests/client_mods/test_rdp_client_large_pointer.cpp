@@ -125,6 +125,7 @@ RED_AUTO_TEST_CASE(TestRdpClientLargePointerDisabled)
                                , server_auto_reconnect_packet
                                , close_box_extra_message
                                , std::move(redirection_password_or_cookie)
+                               , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose(0)
                                );
     mod_rdp_params.device_id                       = "device_id";
@@ -256,6 +257,7 @@ RED_AUTO_TEST_CASE(TestRdpClientLargePointerEnabled)
                                , server_auto_reconnect_packet
                                , close_box_extra_message
                                , std::move(redirection_password_or_cookie)
+                               , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose(0)
                                );
     mod_rdp_params.device_id                       = "device_id";

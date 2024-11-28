@@ -36,7 +36,8 @@ RED_AUTO_TEST_CASE_WD(TestUpdateApplicationDriver, wd)
 
     ModRDPParams mod_rdp_params(
         "A", "B", "C", "D", kbdtypes::KeyLocks(), font, theme,
-        server_auto_reconnect_packet, message, {}, RDPVerbose());
+        server_auto_reconnect_packet, message, {},
+        MsgTranslationCatalog::default_catalog(), RDPVerbose());
 
     mod_rdp_params.auth_channel = CHANNELS::ChannelNameId("xxxx");
     mod_rdp_params.application_params.alternate_shell = "__APP_DRIVER_EDGE_CHROMIUM_UIA__";
