@@ -1098,10 +1098,6 @@ public:
                 if (status != SEC_E_OK) {
                     LOG(LOG_ERR, "Could not verify public key echo!");
                     LOG_IF(this->verbose, LOG_INFO, "rdpCredsspClientKerberos::buffer_free");
-                    this->ts_request.negoTokens.clear();
-                    this->ts_request.pubKeyAuth.clear();
-                    this->ts_request.authInfo.clear();
-                    this->ts_request.clientNonce.reset();
                     return credssp::State::Err;
                 }
 
