@@ -6,6 +6,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #include "utils/trkey.hpp"
+#include "utils/sugar/array_view.hpp"
 #include "utils/sugar/zstring_view.hpp"
 
 
@@ -19,37 +20,48 @@ public:
     void set_msg(TrKey k)
     {
         tr_index = static_cast<int>(k.index);
-        translated_msg.clear();
+        translated_msg_or_extra_message.clear();
     }
 
-    void set_msg(zstring_view msg)
+    void set_msg(TrKey k, chars_view extra_msg)
+    {
+        tr_index = static_cast<int>(k.index);
+        translated_msg_or_extra_message.assign(extra_msg.data(), extra_msg.size());
+    }
+
+    void set_msg(TrKey k, std::string&& extra_msg)
+    {
+        tr_index = static_cast<int>(k.index);
+        translated_msg_or_extra_message = std::move(extra_msg);
+    }
+
+    void set_msg(chars_view msg)
     {
         tr_index = -1;
-        translated_msg = msg;
+        translated_msg_or_extra_message.assign(msg.data(), msg.size());
     }
 
     void set_msg(std::string&& msg)
     {
         tr_index = -1;
-        translated_msg = std::move(msg);
+        translated_msg_or_extra_message = std::move(msg);
     }
 
     void clear()
     {
         tr_index = -1;
-        translated_msg.clear();
+        translated_msg_or_extra_message.clear();
     }
 
     template<class F>
     decltype(auto) visit_msg(F&& f) const
     {
-        if (tr_index < 0) {
-            return f(zstring_view(translated_msg));
-        }
-        return f(TrKey{static_cast<unsigned>(tr_index)});
+        auto k = TrKey{static_cast<unsigned>(tr_index)};
+        return f(tr_index < 0 ? nullptr : &k, zstring_view(translated_msg_or_extra_message));
     }
 
 private:
     int tr_index = -1;
-    std::string translated_msg;
+    // when tr_index = -1, is a translated_msg
+    std::string translated_msg_or_extra_message;
 };

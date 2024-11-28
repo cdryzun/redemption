@@ -31,7 +31,6 @@
 #include "utils/load_theme.hpp"
 #include "utils/log_siem.hpp"
 #include "utils/error_message_ctx.hpp"
-#include "utils/sugar/overload.hpp"
 #include "mod/null/null.hpp"
 #include "keyboard/keymap.hpp"
 #include "core/client_info.hpp"
@@ -59,8 +58,6 @@ namespace
     };
 
     inline NoMod no_mod;
-
-    constexpr auto zstring_identity = [](zstring_view s) { return s; };
 }
 
 ModFactory::ModFactory(
@@ -116,7 +113,11 @@ void ModFactory::disconnect()
     if (&mod() != &no_mod) {
         if (is_connected()) {
             auto const& sid = ini.get<cfg::context::session_id>();
-            zstring_view message = err_msg_ctx.visit_msg(overload{zstring_identity, log_tr});
+            zstring_view message = err_msg_ctx.visit_msg(
+                [](TrKey const* k, zstring_view msg){
+                    return k ? MsgTranslationCatalog::default_catalog().msgid(*k) : msg;
+                }
+            );
             log_siem::target_disconnection(message, sid.c_str());
         }
 
@@ -169,10 +170,20 @@ struct ModFactory::Impl
 
     static ModPack create_close_mod(ModFactory& self, bool back_to_selector)
     {
-        zstring_view message = self.err_msg_ctx.visit_msg(overload{
-            zstring_identity,
-            [&](TrKey k) { return self.tr(k); },
-        });
+        std::string buffer;
+        zstring_view message = self.err_msg_ctx.visit_msg(
+            [&](TrKey const* k, zstring_view extra_msg) {
+                if (k) {
+                    auto msg = self.tr(*k);
+                    if (extra_msg.empty()) {
+                        return msg;
+                    }
+                    str_assign(buffer, msg, ' ', extra_msg);
+                    return zstring_view(buffer);
+                }
+                return extra_msg;
+            }
+        );
         if (message.empty()) {
             message = self.tr(trkeys::connection_ended);
         }

@@ -58,6 +58,11 @@ struct Translator
 
     Translator(MsgTranslationCatalog const&& catalog) = delete;
 
+    static Translator default_catalog() noexcept
+    {
+        return MsgTranslationCatalog::default_catalog();
+    }
+
     [[nodiscard]] zstring_view operator()(TrKey k) const noexcept;
 
     template<class T, class... Ts>

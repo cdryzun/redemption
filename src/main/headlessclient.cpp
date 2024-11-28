@@ -43,7 +43,6 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/static_string.hpp"
 #include "utils/uninit_buffer.hpp"
 #include "utils/key_qvalue_pairs.hpp"
-#include "utils/sugar/overload.hpp"
 #include "utils/translation.hpp"
 #include "system/urandom.hpp"
 
@@ -366,13 +365,12 @@ int main(int argc, char const** argv)
         }
         catch (Error const& e) {
             LOG(LOG_ERR, "Headless Client: Exception raised = %s !", e.errmsg());
-            auto const msg = err_msg_ctx.visit_msg(overload{
-                [](zstring_view s) { return s; },
-                [](TrKey k) { return MsgTranslationCatalog::default_catalog().msgid(k); },
+            err_msg_ctx.visit_msg([&](TrKey const* k, zstring_view s) {
+                auto msg = k ? MsgTranslationCatalog::default_catalog().msgid(*k) : s;
+                auto extra = k ? s : zstring_view();
+                auto sep = extra.empty() ? ""_zv : " "_zv;
+                LOG(LOG_ERR, "Headless Client: msg: %s%s%s", msg, sep, extra);
             });
-            if (!msg.empty()) {
-                LOG(LOG_ERR, "Headless Client: msg: %s", msg);
-            }
             err_msg_ctx.clear();
 
             if (ERR_AUTOMATIC_RECONNECTION_REQUIRED == e.id) {

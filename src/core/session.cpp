@@ -46,7 +46,6 @@
 #include "utils/to_timeval.hpp"
 #include "utils/error_message_ctx.hpp"
 #include "utils/trkeys.hpp"
-#include "utils/sugar/overload.hpp"
 #include "system/urandom.hpp"
 
 #include <cassert>
@@ -1362,17 +1361,23 @@ private:
                     case EndSessionResult::close_box: {
                         auto local_err = LocalErrMsg::from_error(e);
 
+                        err_msg_ctx.visit_msg(
+                            [&](TrKey const* k, zstring_view extra_msg) {
+                                ini.update<cfg::context::close_box_extra_message>([&](auto& s){
+                                    auto sep1 = (k && !extra_msg.empty()) ? " "_av : ""_av;
+                                    auto msg1 = k ? mod_factory.tr(*k) : ""_av;
+                                    auto sep2 = ((k || !extra_msg.empty()) && local_err.extra_msg) ? " "_av : ""_av;
+                                    auto msg2 = local_err.extra_msg ? mod_factory.tr(*local_err.extra_msg) : ""_av;
+                                    str_assign(s, msg1, sep1, extra_msg, sep2, msg2);
+                                });
+                            }
+                        );
+
                         if (local_err.msg) {
                             err_msg_ctx.set_msg(*local_err.msg);
                         }
                         else {
                             err_msg_ctx.set_msg(e.errmsg());
-                        }
-
-                        if (local_err.extra_msg) {
-                            ini.set<cfg::context::close_box_extra_message>(
-                                mod_factory.tr(*local_err.extra_msg)
-                            );
                         }
 
                         if (ini.get<cfg::internal_mod::enable_close_box>()) {
@@ -1518,10 +1523,11 @@ public:
         ErrorMessageCtx err_msg_ctx;
         auto const log_translation = translation_catalogs[Language::en];
         auto log_disconnection = [&]{
-            log_siem::disconnection(err_msg_ctx.visit_msg(overload{
-                [](zstring_view s) { return s; },
-                log_translation,
-            }));
+            log_siem::disconnection(err_msg_ctx.visit_msg(
+                [](TrKey const* k, zstring_view msg){
+                    return k ? MsgTranslationCatalog::default_catalog().msgid(*k) : msg;
+                }
+            ));
         };
 
         int auth_sck = INVALID_SOCKET;

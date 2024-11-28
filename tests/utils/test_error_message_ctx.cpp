@@ -7,7 +7,6 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "utils/error_message_ctx.hpp"
 #include "utils/trkeys.hpp"
-#include "utils/sugar/overload.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 
 RED_AUTO_TEST_CASE(TestErrMsgCtx)
@@ -15,9 +14,12 @@ RED_AUTO_TEST_CASE(TestErrMsgCtx)
     ErrorMessageCtx ctx;
 
     int_to_zchars_result r;
-    auto visitor = overload{
-        [](zstring_view s) { return s; },
-        [&](TrKey k) { r = int_to_decimal_zchars(k.index); return r.zv(); },
+    auto visitor = [&](TrKey const* k, zstring_view s) {
+        if (k) {
+            r = int_to_decimal_zchars(k->index);
+            return r.zv();
+        }
+        return s;
     };
 
     RED_CHECK(ctx.visit_msg(visitor) == ""_av);

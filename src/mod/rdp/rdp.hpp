@@ -2310,49 +2310,49 @@ public:
 
     void add_nego_state_to_close_box_extra_message()
     {
-        zstring_view statestr = "UNKNOWN_STATE"_zv;
-        zstring_view statedescr = "Unknown state."_zv;
+        zstring_view statestr = "(UNKNOWN_STATE)"_zv;
+        TrKey trkey = trkeys::err_mod_rdp_nego;
         RdpNegociation::State rdp_nego_state =
             this->private_rdp_negociation->rdp_negociation.get_state();
 
         switch (rdp_nego_state) {
             case RdpNegociation::State::NEGO_INITIATE:
-                statestr = "RDP_NEGO_INITIATE"_zv;
-                statedescr = tr(trkeys::err_mod_rdp_nego);
-            break;
+                statestr = "(RDP_NEGO_INITIATE)"_zv;
+                trkey = trkeys::err_mod_rdp_nego;
+                break;
             case RdpNegociation::State::NEGO:
-                statestr = "RDP_NEGO"_zv;
-                statedescr = tr(trkeys::err_mod_rdp_nego);
-            break;
+                statestr = "(RDP_NEGO)"_zv;
+                trkey = trkeys::err_mod_rdp_nego;
+                break;
             case RdpNegociation::State::BASIC_SETTINGS_EXCHANGE:
-                statestr = "RDP_BASIC_SETTINGS_EXCHANGE"_zv;
-                statedescr = tr(trkeys::err_mod_rdp_basic_settings_exchange);
-            break;
+                statestr = "(RDP_BASIC_SETTINGS_EXCHANGE)"_zv;
+                trkey = trkeys::err_mod_rdp_basic_settings_exchange;
+                break;
             case RdpNegociation::State::CHANNEL_CONNECTION_ATTACH_USER:
-                statestr = "RDP_CHANNEL_CONNECTION_ATTACH_USER"_zv;
-                statedescr = tr(trkeys::err_rdp_channel_connection);
-            break;
+                statestr = "(RDP_CHANNEL_CONNECTION_ATTACH_USER)"_zv;
+                trkey = trkeys::err_rdp_channel_connection;
+                break;
             case RdpNegociation::State::CHANNEL_JOIN_CONFIRM:
-                statestr = "RDP_CHANNEL_JOIN_CONFIRM"_zv;
-                statedescr = tr(trkeys::err_rdp_channel_connection);
-            break;
+                statestr = "(RDP_CHANNEL_JOIN_CONFIRM)"_zv;
+                trkey = trkeys::err_rdp_channel_connection;
+                break;
             case RdpNegociation::State::GET_LICENSE:
-                statestr = "RDP_GET_LICENSE"_zv;
-                statedescr = tr(trkeys::err_rdp_get_license);
-            break;
+                statestr = "(RDP_GET_LICENSE)"_zv;
+                trkey = trkeys::err_rdp_get_license;
+                break;
             case RdpNegociation::State::TERMINATED:
-                statestr = "RDP_TERMINATED"_zv;
-                statedescr = tr(trkeys::err_mod_rdp_nego);
-            break;
+                statestr = "(RDP_TERMINATED)"_zv;
+                trkey = trkeys::err_mod_rdp_nego;
+                break;
         }
 
-        str_append(this->close_box_extra_message_ref, ' ', statedescr);
-        if (rdp_nego_state != RdpNegociation::State::BASIC_SETTINGS_EXCHANGE) {
-            str_append(this->close_box_extra_message_ref, " ("_av, statestr, ')');
-        }
+        auto extra_message = (rdp_nego_state != RdpNegociation::State::BASIC_SETTINGS_EXCHANGE)
+            ? statestr
+            : chars_view();
+        this->err_msg_ctx.set_msg(trkey, extra_message);
 
         LOG(LOG_ERR, "Creation of new mod 'RDP' failed at %s state. %s",
-            statestr, statedescr);
+            statestr, Translator::default_catalog()(trkey));
     }
 
     void acl_update(AclFieldMask const& acl_fields) override
