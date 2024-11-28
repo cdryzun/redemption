@@ -66,6 +66,12 @@ LocalErrMsg LocalErrMsg::from_error(Error const& error) noexcept
     case ERR_RDP_NEGOTIATION:
         return {&trkeys::err_rdp_negotiation};
 
+    case ERR_NEGO_SSL_REQUIRED_BY_SERVER:
+        return {&trkeys::err_tls_required};
+
+    case ERR_NEGO_HYBRID_REQUIRED_BY_SERVER:
+        return {&trkeys::err_nla_required};
+
     case ERR_NEGO_NLA_REQUIRED_BY_RESTRICTED_ADMIN_MODE:
         return {&trkeys::err_rdp_nego_nla_restricted_admin};
 

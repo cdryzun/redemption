@@ -347,9 +347,6 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
         {
             LOG(LOG_INFO, "Enable NLA is probably required");
 
-            if (!this->nla_tried) {
-                str_append(this->extra_message, " ", this->tr(trkeys::err_nla_required));
-            }
             trans.disconnect();
 
             throw Error(this->nla_tried
@@ -360,9 +357,6 @@ RdpNego::State RdpNego::recv_connection_confirm(OutTransport trans, InStream x22
         if (x224.rdp_neg_code == X224::SSL_REQUIRED_BY_SERVER) {
             LOG(LOG_INFO, "Enable TLS is probably required");
 
-            if (!this->tls) {
-                str_append(this->extra_message, " ", this->tr(trkeys::err_tls_required));
-            }
             trans.disconnect();
 
             throw Error(ERR_NEGO_SSL_REQUIRED_BY_SERVER);

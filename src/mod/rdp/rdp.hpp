@@ -2247,6 +2247,8 @@ private:
                     case ERR_NEGO_SSL_REQUIRED:
                     case ERR_NEGO_SSL_ONLY_FORBIDDEN:
                     case ERR_NEGO_RDP_LEGACY_FORBIDDEN:
+                    case ERR_NEGO_HYBRID_REQUIRED_BY_SERVER:
+                    case ERR_NEGO_SSL_REQUIRED_BY_SERVER:
                         throw error;
                     default: break;
                     }
