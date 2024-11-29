@@ -61,8 +61,8 @@ struct Translator
     [[nodiscard]] zstring_view operator()(TrKey k) const noexcept;
 
     template<class T, class... Ts>
-    auto fmt(writable_chars_view av, TrKeyFmt<T> k, Ts const&... xs) const noexcept
-    -> decltype(zstring_view::from_null_terminated("", T::check_printf_result(av.data(), av.size(), xs...) + 1u))
+    auto fmt(writable_chars_view av, TrKeyFmt<T> k, Ts... xs) const noexcept
+    -> decltype(zstring_view::from_null_terminated("", T::check_printf_result(av.data(), av.size(), xs...)))
     {
         REDEMPTION_DIAGNOSTIC_PUSH()
         REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wformat-nonliteral")
@@ -89,7 +89,7 @@ struct Translator
         static_assert(N > 0);
 
         template<class T, class... Ts>
-        FmtMsg(Translator tr, TrKeyFmt<T> k, Ts const&... xs) noexcept
+        FmtMsg(Translator tr, TrKeyFmt<T> k, Ts... xs) noexcept
             : zstring_view(tr.fmt(writable_chars_view{buffer, N}, k, xs...))
         {}
 
