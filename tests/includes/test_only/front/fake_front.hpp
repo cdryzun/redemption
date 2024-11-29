@@ -26,8 +26,6 @@
 #include "core/channel_names.hpp"
 #include "utils/image_view.hpp"
 
-#include <memory>
-
 namespace gdi
 {
     class GraphicApi;
@@ -64,5 +62,5 @@ public:
 
 private:
     class D;
-    std::unique_ptr<D> d;
+    D* d;
 };

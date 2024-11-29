@@ -31,7 +31,10 @@ TestGraphic::TestGraphic(uint16_t w, uint16_t h)
   : d(new D{{w, h}})
 {}
 
-TestGraphic::~TestGraphic() = default;
+TestGraphic::~TestGraphic()
+{
+    delete d;
+}
 
 uint16_t TestGraphic::width() const
 {

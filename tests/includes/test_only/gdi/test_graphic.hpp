@@ -22,9 +22,6 @@
 
 #include "utils/image_view.hpp"
 
-#include <memory>
-
-
 namespace gdi
 {
     class GraphicApi;
@@ -53,5 +50,5 @@ struct TestGraphic
 
 private:
     class D;
-    std::unique_ptr<D> d;
+    D* d;
 };

@@ -73,4 +73,7 @@ FakeFront::FakeFront(ScreenInfo& screen_info)
 })
 {}
 
-FakeFront::~FakeFront() = default;
+FakeFront::~FakeFront()
+{
+    delete d;
+}
