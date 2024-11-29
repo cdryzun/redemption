@@ -108,7 +108,6 @@ RED_AUTO_TEST_CASE(TestRdpClientLargePointerDisabled)
 
     snprintf(info.hostname, sizeof(info.hostname), "192-168-1-100");
 
-    std::string close_box_extra_message;
     std::vector<uint8_t> redirection_password_or_cookie;
     Theme theme;
 
@@ -123,7 +122,6 @@ RED_AUTO_TEST_CASE(TestRdpClientLargePointerDisabled)
                                , global_font()
                                , theme
                                , server_auto_reconnect_packet
-                               , close_box_extra_message
                                , std::move(redirection_password_or_cookie)
                                , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose(0)
@@ -240,7 +238,6 @@ RED_AUTO_TEST_CASE(TestRdpClientLargePointerEnabled)
 
     snprintf(info.hostname, sizeof(info.hostname), "192-168-1-100");
 
-    std::string close_box_extra_message;
     std::vector<uint8_t> redirection_password_or_cookie;
     Theme theme;
 
@@ -255,7 +252,6 @@ RED_AUTO_TEST_CASE(TestRdpClientLargePointerEnabled)
                                , global_font()
                                , theme
                                , server_auto_reconnect_packet
-                               , close_box_extra_message
                                , std::move(redirection_password_or_cookie)
                                , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose(0)

@@ -177,8 +177,6 @@ struct ModRDPParams
     bool perform_automatic_reconnection = false;
     std::array<uint8_t, 28>& server_auto_reconnect_packet_ref;
 
-    std::string& close_box_extra_message_ref;
-
     const char * load_balance_info = "";
 
     bool support_connection_redirection_during_recording = true;
@@ -225,7 +223,6 @@ struct ModRDPParams
                 , Font const & font
                 , Theme const & theme
                 , std::array<uint8_t, 28>& server_auto_reconnect_packet_ref
-                , std::string& close_box_extra_message_ref
                 , std::vector<uint8_t>&& redirection_password_or_cookie
                 , Translator translator
                 , RDPVerbose verbose
@@ -239,7 +236,6 @@ struct ModRDPParams
         , font(font)
         , theme(theme)
         , server_auto_reconnect_packet_ref(server_auto_reconnect_packet_ref)
-        , close_box_extra_message_ref(close_box_extra_message_ref)
         , redirection_password_or_cookie(std::move(redirection_password_or_cookie))
         , verbose(verbose)
     { }

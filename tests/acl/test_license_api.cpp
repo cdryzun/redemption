@@ -149,7 +149,6 @@ namespace
                 global_font(),
                 theme,
                 server_auto_reconnect_packet,
-                ini.get_mutable_ref<cfg::context::close_box_extra_message>(),
                 std::move(ini.get_mutable_ref<cfg::context::redirection_password_or_cookie>()),
                 MsgTranslationCatalog::default_catalog(),
                 RDPVerbose(0));

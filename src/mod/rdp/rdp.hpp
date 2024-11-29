@@ -1829,8 +1829,6 @@ class mod_rdp : public mod_api, public rdp_api, public sespro_api
 
     LicenseApi& license_store;
 
-    std::string& close_box_extra_message_ref;
-
     const bool enable_fastpath;                    // choice of programmer
     const bool enable_fastpath_server_update;      // choice of programmer
     const bool enable_persistent_disk_bitmap_cache;
@@ -2009,7 +2007,6 @@ public:
         , verbose(mod_rdp_params.verbose)
         , cache_verbose(mod_rdp_params.cache_verbose)
         , license_store(license_store)
-        , close_box_extra_message_ref(mod_rdp_params.close_box_extra_message_ref)
         , enable_fastpath(mod_rdp_params.enable_fastpath)
         , enable_fastpath_server_update(mod_rdp_params.enable_fastpath)
         , enable_persistent_disk_bitmap_cache(mod_rdp_params.enable_persistent_disk_bitmap_cache)
@@ -3117,7 +3114,6 @@ public:
                     next_packet = sec.payload.get_current();
                 }
                 else {
-
                     ShareControl_Recv sctrl(sec.payload);
                     //sctrl.log();
                     next_packet += sctrl.totalLength;
@@ -3141,13 +3137,6 @@ public:
                                 uint32_t error_info = this->get_error_info_from_pdu(sdata.payload);
                                 this->errinfo_encountered = (0 != error_info);
                                 this->process_error_info(error_info);
-
-                                if (error_info == ERRINFO_SERVER_DENIED_CONNECTION) {
-                                    str_append(
-                                        this->close_box_extra_message_ref, ' ',
-                                        tr(trkeys::err_server_denied_connection)
-                                    );
-                                }
                             }
 
                             LOG(LOG_ERR, "Rdp::finalization is early");
@@ -3627,14 +3616,10 @@ public:
                  && DISCONNECTED != this->connection_finalization_state
                  && !this->already_upped_and_running
                 ) {
-                    const char * statedescr = tr(trkeys::err_mod_rdp_connected);
-                    str_append(
-                        this->close_box_extra_message_ref,
-                        ' ',
-                        statedescr,
-                        " (CONNECTED)");
-                    LOG(LOG_ERR, "Creation of new mod 'RDP' failed at CONNECTED state. %s",
-                        statedescr);
+                    if (!err_msg_ctx.has_msg()) {
+                        err_msg_ctx.set_msg(trkeys::err_mod_rdp_connected);
+                    }
+                    LOG(LOG_ERR, "Creation of new mod 'RDP' failed at CONNECTED state");
                     throw Error(ERR_SESSION_UNKNOWN_BACKEND);
                 }
 
@@ -4951,9 +4936,10 @@ public:
         ERRINFO_DECRYPTFAILED2                    = 0x00001195
     };
 
-    static const char* get_error_info_name(uint32_t errorInfo) {
+    static zstring_view get_error_info_name(uint32_t errorInfo)
+    {
         switch (errorInfo){
-            #define CASE(e) case ERRINFO_##e: return #e
+            #define CASE(e) case ERRINFO_##e: return "(" #e ")"_zv
             CASE(RPC_INITIATED_DISCONNECT);
             CASE(RPC_INITIATED_LOGOFF);
             CASE(IDLE_TIMEOUT);
@@ -5063,7 +5049,7 @@ public:
             CASE(DECRYPTFAILED2);
             #undef CASE
             default:
-                return "?";
+                return "(?)"_zv;
         }
     }   // get_error_info_name
 
@@ -5071,18 +5057,31 @@ public:
         return stream.in_uint32_le();
     }
 
-    void process_error_info(uint32_t errorInfo) {
-        const char* errorInfo_name = get_error_info_name(errorInfo);
+    void process_error_info(uint32_t errorInfo)
+    {
+        auto errorInfo_name = get_error_info_name(errorInfo);
         LOG(LOG_INFO, "process error info pdu: code=0x%08X error=%s", errorInfo, errorInfo_name);
 
-        if (errorInfo) {
-            str_append(this->close_box_extra_message_ref, " (", errorInfo_name, ')');
-        }
+        this->err_msg_ctx.set_msg(trkeys::err_process_info, errorInfo_name);
 
         switch (errorInfo) {
         case ERRINFO_DISCONNECTED_BY_OTHERCONNECTION:
-            this->err_msg_ctx.set_msg(trkeys::disconnected_by_otherconnection);
+            this->err_msg_ctx.set_msg(trkeys::disconnected_by_otherconnection, errorInfo_name);
             break;
+
+        case ERRINFO_SERVER_DENIED_CONNECTION:
+            this->err_msg_ctx.set_msg(trkeys::err_server_denied_connection, errorInfo_name);
+            break;
+
+        case ERRINFO_LOGOFF_BY_USER:
+        case ERRINFO_RPC_INITIATED_LOGOFF:
+        case ERRINFO_RPC_INITIATED_DISCONNECT:
+            // disconnection button on Windows
+        case ERRINFO_RPC_INITIATED_DISCONNECT_BYUSER:
+            // shutdown button on Windows
+            this->err_msg_ctx.set_msg(trkeys::end_connection, errorInfo_name);
+            break;
+
         case ERRINFO_REMOTEAPPSNOTENABLED:
             this->remote_apps_not_enabled = true;
             break;

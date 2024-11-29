@@ -17,6 +17,17 @@ public:
     ErrorMessageCtx(ErrorMessageCtx const&) = delete;
     ErrorMessageCtx& operator=(ErrorMessageCtx const&) = delete;
 
+    void clear()
+    {
+        tr_index = -1;
+        translated_msg_or_extra_message.clear();
+    }
+
+    bool has_msg() const noexcept
+    {
+        return tr_index != -1 || !translated_msg_or_extra_message.empty();
+    }
+
     void set_msg(TrKey k)
     {
         tr_index = static_cast<int>(k.index);
@@ -45,12 +56,6 @@ public:
     {
         tr_index = -1;
         translated_msg_or_extra_message = std::move(msg);
-    }
-
-    void clear()
-    {
-        tr_index = -1;
-        translated_msg_or_extra_message.clear();
     }
 
     template<class F>

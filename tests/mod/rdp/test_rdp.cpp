@@ -118,7 +118,6 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
     TestTransport t(cstr_array_view(indata), cstr_array_view(outdata));
 #endif
 
-    std::string close_box_extra_message;
     std::vector<uint8_t> redirection_password_or_cookie;
     Theme theme;
 
@@ -131,7 +130,6 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
                                , global_font()
                                , theme
                                , server_auto_reconnect_packet
-                               , close_box_extra_message
                                , std::move(redirection_password_or_cookie)
                                , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose{}

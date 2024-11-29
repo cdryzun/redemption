@@ -32,11 +32,10 @@ RED_AUTO_TEST_CASE_WD(TestUpdateApplicationDriver, wd)
     Font font;
     Theme theme;
     std::array<uint8_t, 28> server_auto_reconnect_packet;
-    std::string message;
 
     ModRDPParams mod_rdp_params(
         "A", "B", "C", "D", kbdtypes::KeyLocks(), font, theme,
-        server_auto_reconnect_packet, message, {},
+        server_auto_reconnect_packet, {},
         MsgTranslationCatalog::default_catalog(), RDPVerbose());
 
     mod_rdp_params.auth_channel = CHANNELS::ChannelNameId("xxxx");
