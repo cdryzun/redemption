@@ -1986,7 +1986,12 @@ public:
 #endif
         , redir_info(redir_info)
         , disconnect_on_logon_user_change(mod_rdp_params.disconnect_on_logon_user_change)
-        , logon_info(make_bounded_array_view(info.hostname), mod_rdp_params.hide_client_name, mod_rdp_params.target_user, mod_rdp_params.split_domain)
+        , logon_info(
+            truncatable_bounded_array_view(chars_view{
+                info.hostname, strnlen(info.hostname, std::size(info.hostname))}),
+            mod_rdp_params.hide_client_name,
+            mod_rdp_params.target_user,
+            mod_rdp_params.split_domain)
         , front_bitmap_codec_caps(info.bitmap_codec_caps)
         , server_auto_reconnect_packet_ref(mod_rdp_params.server_auto_reconnect_packet_ref)
         , monitor_count(mod_rdp_params.allow_using_multiple_monitors ? info.cs_monitor.monitorCount : 0)
