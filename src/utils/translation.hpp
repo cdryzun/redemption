@@ -41,7 +41,7 @@ struct MsgTranslationCatalog
 
     void init_from_file(const char* filename, std::pmr::monotonic_buffer_resource& mbr);
 
-    zstring_view msgid(TrKey k) const
+    zstring_view msgid(TrKey k) const noexcept
     {
         return msgstrs[k.index].plurals[0];
     }
@@ -52,16 +52,11 @@ struct MsgTranslationCatalog
 
 struct Translator
 {
-    Translator(MsgTranslationCatalog const& catalog)
+    Translator(MsgTranslationCatalog const& catalog) noexcept
       : catalog(&catalog)
     {}
 
     Translator(MsgTranslationCatalog const&& catalog) = delete;
-
-    static Translator default_catalog() noexcept
-    {
-        return MsgTranslationCatalog::default_catalog();
-    }
 
     [[nodiscard]] zstring_view operator()(TrKey k) const noexcept;
 

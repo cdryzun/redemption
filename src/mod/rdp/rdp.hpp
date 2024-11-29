@@ -2349,7 +2349,7 @@ public:
         this->err_msg_ctx.set_msg(trkey, extra_message);
 
         LOG(LOG_ERR, "Creation of new mod 'RDP' failed at %s state. %s",
-            statestr, Translator::default_catalog()(trkey));
+            statestr, MsgTranslationCatalog::default_catalog().msgid(trkey));
     }
 
     void acl_update(AclFieldMask const& acl_fields) override
