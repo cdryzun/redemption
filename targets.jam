@@ -532,8 +532,8 @@ test-run tests/RAIL/test_client_execute :
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/acl/module_manager/test_create_module_rdp :
-  $(REDEMPTION_TEST_PATH)/acl/module_manager/test_create_module_rdp.cpp
+test-run tests/acl/module_manager/test_update_application_driver :
+  $(REDEMPTION_TEST_PATH)/acl/module_manager/test_update_application_driver.cpp
 :
   <library>app_path_test.o
   <library>crypto
@@ -1549,35 +1549,28 @@ test-run tests/core/RDP/mppc/test_mppc_61 :
 test-run tests/core/RDP/nla/kerberos/test_kerberos :
   $(REDEMPTION_TEST_PATH)/core/RDP/nla/kerberos/test_kerberos.cpp
 :
-  <library>app_path_test.o
   <library>crypto
   <library>gssapi_krb5
   <library>krb5
   <library>src/core/RDP/nla/kerberos.o
   <library>src/core/error.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/stacktrace.o
-  <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run tests/core/RDP/nla/kerberos/test_nla_client_kerberos :
   $(REDEMPTION_TEST_PATH)/core/RDP/nla/kerberos/test_nla_client_kerberos.cpp
 :
-  <library>app_path_test.o
   <library>crypto
   <library>gssapi_krb5
   <library>krb5
   <library>src/core/RDP/nla/kerberos.o
   <library>src/core/error.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
@@ -5132,7 +5125,7 @@ obj tests/includes/test_only/test_framework/working_directory.o : $(REDEMPTION_T
 obj tests/includes/test_only/transport/test_transport.o : $(REDEMPTION_TEST_PATH)/includes/test_only/transport/test_transport.cpp : $(CXXFLAGS_TEST) ;
 
 alias test_client_execute : tests/RAIL/test_client_execute ;
-alias test_create_module_rdp : tests/acl/module_manager/test_create_module_rdp ;
+alias test_update_application_driver : tests/acl/module_manager/test_update_application_driver ;
 alias test_acl_field_mask : tests/acl/test_acl_field_mask ;
 alias test_acl_serializer : tests/acl/test_acl_serializer ;
 alias test_acl_update_sesion_report : tests/acl/test_acl_update_sesion_report ;
@@ -5449,7 +5442,7 @@ alias tests/RAIL.norec :
   tests/RAIL/test_client_execute
 ;
 alias tests/acl/module_manager.norec :
-  tests/acl/module_manager/test_create_module_rdp
+  tests/acl/module_manager/test_update_application_driver
 ;
 alias tests/acl.norec :
   tests/acl/test_acl_field_mask
@@ -6248,7 +6241,7 @@ explicit
 
 explicit
   test_client_execute
-  test_create_module_rdp
+  test_update_application_driver
   test_acl_field_mask
   test_acl_serializer
   test_acl_update_sesion_report
