@@ -69,9 +69,6 @@ public:
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height);
 
 private:
-    template<class T, class... Ts>
-    void set_warning_buffer(TrKeyFmt<T> k, Ts const&... xs);
-
     void check_confirmation();
 
     Events events;
@@ -97,6 +94,4 @@ private:
 
     unsigned flags;
     std::chrono::minutes duration_max;
-
-    char warning_buffer[512];
 };

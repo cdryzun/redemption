@@ -81,7 +81,6 @@ WidgetForm::WidgetForm(
     , tr(tr)
     , flags(flags)
     , duration_max(duration_max == 0min ? 60000min : duration_max)
-    , warning_buffer()
 {
     this->set_bg_color(theme.global.bgcolor);
 
@@ -193,28 +192,6 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
 
 namespace
 {
-    template<class T>
-    T const& to_ctype(T const& x)
-    {
-        return x;
-    }
-
-    char const* to_ctype(zstring_view const& str)
-    {
-        return str.c_str();
-    }
-} // anonymous namespace
-
-template<class T, class... Ts>
-void WidgetForm::set_warning_buffer(TrKeyFmt<T> k, Ts const&... xs)
-{
-    auto buffer = make_writable_array_view(this->warning_buffer);
-    auto msg = tr.fmt(buffer, k, to_ctype(xs)...);
-    this->warning_msg.set_text(msg);
-}
-
-namespace
-{
     char const* consume_spaces(char const* s) noexcept
     {
         while (*s ==  ' ') {
@@ -259,11 +236,15 @@ namespace
 
 void WidgetForm::check_confirmation()
 {
+    auto set_warning_buffer = [this](auto k, TrKey field, auto... args) {
+        this->warning_msg.set_text(Translator::FmtMsg<512>(tr, k, tr(field).c_str(), args...));
+    };
+
     if (((this->flags & DURATION_DISPLAY) == DURATION_DISPLAY) &&
         ((this->flags & DURATION_MANDATORY) == DURATION_MANDATORY) &&
         (this->duration_edit.num_chars == 0)
     ) {
-        this->set_warning_buffer(trkeys::fmt_field_required, tr(trkeys::duration));
+        set_warning_buffer(trkeys::fmt_field_required, trkeys::duration);
         this->set_widget_focus(this->duration_edit, focus_reason_mousebutton1);
         this->rdp_input_invalidate(this->get_rect());
         return;
@@ -276,10 +257,10 @@ void WidgetForm::check_confirmation()
         if (res <= 0min || res > this->duration_max) {
             if (res <= 0min) {
                 this->duration_edit.set_text(""_av);
-                this->set_warning_buffer(trkeys::fmt_invalid_format, tr(trkeys::duration));
+                set_warning_buffer(trkeys::fmt_invalid_format, trkeys::duration);
             }
             else {
-                this->set_warning_buffer(trkeys::fmt_toohigh_duration, tr(trkeys::duration),
+                set_warning_buffer(trkeys::fmt_toohigh_duration, trkeys::duration,
                     int(this->duration_max.count()));
             }
             this->set_widget_focus(this->duration_edit, focus_reason_mousebutton1);
@@ -292,7 +273,7 @@ void WidgetForm::check_confirmation()
         ((this->flags & TICKET_MANDATORY) == TICKET_MANDATORY) &&
         (this->ticket_edit.num_chars == 0)
     ) {
-        this->set_warning_buffer(trkeys::fmt_field_required, tr(trkeys::ticket));
+        set_warning_buffer(trkeys::fmt_field_required, trkeys::ticket);
         this->set_widget_focus(this->ticket_edit, focus_reason_mousebutton1);
         this->rdp_input_invalidate(this->get_rect());
         return;
@@ -302,7 +283,7 @@ void WidgetForm::check_confirmation()
         ((this->flags & COMMENT_MANDATORY) == COMMENT_MANDATORY) &&
         (this->comment_edit.num_chars == 0)
     ) {
-        this->set_warning_buffer(trkeys::fmt_field_required, tr(trkeys::comment));
+        set_warning_buffer(trkeys::fmt_field_required, trkeys::comment);
         this->set_widget_focus(this->comment_edit, focus_reason_mousebutton1);
         this->rdp_input_invalidate(this->get_rect());
         return;
