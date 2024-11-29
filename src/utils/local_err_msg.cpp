@@ -22,11 +22,11 @@
 #include "utils/trkeys.hpp"
 #include "core/error.hpp"
 
-LocalErrMsg LocalErrMsg::from_error(Error const& error) noexcept
+LocalErrMsg LocalErrMsg::from_error_id(error_type id) noexcept
 {
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
-    switch (error.id) {
+    switch (id) {
     case ERR_SESSION_UNKNOWN_BACKEND:
         return {&trkeys::err_session_unknown_backend};
 

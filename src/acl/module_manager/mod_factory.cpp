@@ -30,6 +30,7 @@
 #include "utils/translation.hpp"
 #include "utils/load_theme.hpp"
 #include "utils/log_siem.hpp"
+#include "utils/local_err_msg.hpp"
 #include "utils/error_message_ctx.hpp"
 #include "mod/null/null.hpp"
 #include "keyboard/keymap.hpp"
@@ -170,26 +171,34 @@ struct ModFactory::Impl
 
     static ModPack create_close_mod(ModFactory& self, bool back_to_selector)
     {
-        std::string buffer;
-        zstring_view message = self.err_msg_ctx.visit_msg(
-            [&](TrKey const* k, zstring_view extra_msg) {
-                if (k) {
-                    auto msg = self.tr(*k);
-                    if (extra_msg.empty()) {
-                        return msg;
-                    }
-                    str_assign(buffer, msg, ' ', extra_msg);
-                    return zstring_view(buffer);
-                }
-                return extra_msg;
+        auto tr_optional = [&](TrKey const* k){
+            return k ? self.tr(*k) : ""_av;
+        };
+
+        std::string message;
+
+        self.err_msg_ctx.visit_msg([&](TrKey const* k, chars_view extra_msg2) {
+            auto local_err = LocalErrMsg::from_error_id(self.error_id);
+            auto info = tr_optional(local_err.extra_msg);
+            auto msg1 = tr_optional(local_err.msg);
+            auto msg2 = tr_optional(k);
+
+            if (msg1.empty() && msg2.empty() && extra_msg2.empty()) {
+                msg2 = self.tr(trkeys::connection_ended);
             }
-        );
-        if (message.empty()) {
-            message = self.tr(trkeys::connection_ended);
-        }
+
+            auto msg1_sep = (!msg1.empty() && (!msg2.empty() || !extra_msg2.empty() || !info.empty())) ? "\n\n"_av : ""_av;
+            auto msg2_sep = (!msg2.empty() && !extra_msg2.empty()) ? " "_av : ""_av;
+            auto info_sep = (!info.empty() && (!msg2.empty() || !extra_msg2.empty())) ? "\n\n"_av : ""_av;
+
+            str_assign(message, msg1, msg1_sep, msg2, msg2_sep, extra_msg2, info_sep, info);
+        });
+
+        self.err_msg_ctx.clear();
+        self.error_id = NO_ERROR;
 
         auto new_mod = new CloseMod(
-            message.to_sv(),
+            std::move(message),
             self.ini,
             self.events,
             self.graphics,

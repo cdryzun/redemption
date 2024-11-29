@@ -41,6 +41,11 @@ public:
 
     ~ModFactory();
 
+    void set_close_box_error_id(error_type eid) noexcept
+    {
+        error_id = eid;
+    }
+
     void set_translator(Translator translator) noexcept
     {
         mod_wrapper.set_translator(translator);
@@ -166,6 +171,7 @@ private:
     CryptoContext & cctx;
     ErrorMessageCtx & err_msg_ctx;
     Translator log_tr;
+    error_type error_id = NO_ERROR;
 
     std::unique_ptr<CopyPaste> copy_paste_ptr;
     std::array<uint8_t, 28> server_auto_reconnect_packet {};

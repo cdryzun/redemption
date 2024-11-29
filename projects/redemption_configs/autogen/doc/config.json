@@ -3913,13 +3913,6 @@
     },
     {
       "section": "context",
-      "name": "close_box_extra_message",
-      "type": "str",
-      "value": "",
-      "description": ""
-    },
-    {
-      "section": "context",
       "name": "is_wabam",
       "type": "bool",
       "value": false,

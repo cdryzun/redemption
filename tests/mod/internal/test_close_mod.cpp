@@ -56,7 +56,7 @@ RED_AUTO_TEST_CASE(TestCloseMod)
 
     auto& event_cont = detail::ProtectedEventContainer::get_events(events);
     {
-        CloseMod d("message"_av, ini, events, front.gd(),
+        CloseMod d("message", ini, events, front.gd(),
                    screen_info.width, screen_info.height, Rect(0, 0, 799, 599),
                    client_execute, global_font_deja_vu_14(), theme,
                    MsgTranslationCatalog::default_catalog(), false);
@@ -102,7 +102,7 @@ RED_AUTO_TEST_CASE(TestCloseModSelector)
     Keymap keymap(*find_layout_by_id(KeyLayout::KbdId(0x040C)));
 
     Inifile ini;
-    CloseMod d("message"_av, ini, events, front.gd(),
+    CloseMod d("message", ini, events, front.gd(),
         screen_info.width, screen_info.height, Rect(0, 0, 799, 599), client_execute,
         global_font_deja_vu_14(), theme, MsgTranslationCatalog::default_catalog(), true);
 
@@ -160,7 +160,7 @@ RED_AUTO_TEST_CASE(TestCloseModRail)
         Rect(0, 0, screen_info.width-1u, screen_info.height-1u));
 
     Inifile ini;
-    CloseMod d("message"_av, ini, events, gd,
+    CloseMod d("message", ini, events, gd,
         screen_info.width, screen_info.height, widget_rect, client_execute,
         global_font_deja_vu_14(), theme, MsgTranslationCatalog::default_catalog(), true);
     client_execute.ready(d, global_font_deja_vu_14(), false);

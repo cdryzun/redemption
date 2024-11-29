@@ -41,7 +41,6 @@
 #include "utils/select.hpp"
 #include "utils/log_siem.hpp"
 #include "utils/redirection_info.hpp"
-#include "utils/local_err_msg.hpp"
 #include "utils/monotonic_clock.hpp"
 #include "utils/to_timeval.hpp"
 #include "utils/error_message_ctx.hpp"
@@ -1359,26 +1358,7 @@ private:
                     switch (end_session_exception(e, ini, mod_factory))
                     {
                     case EndSessionResult::close_box: {
-                        auto local_err = LocalErrMsg::from_error(e);
-
-                        err_msg_ctx.visit_msg(
-                            [&](TrKey const* k, zstring_view extra_msg) {
-                                ini.update<cfg::context::close_box_extra_message>([&](auto& s){
-                                    auto sep1 = (k && !extra_msg.empty()) ? " "_av : ""_av;
-                                    auto msg1 = k ? mod_factory.tr(*k) : ""_av;
-                                    auto sep2 = ((k || !extra_msg.empty()) && local_err.extra_msg) ? " "_av : ""_av;
-                                    auto msg2 = local_err.extra_msg ? mod_factory.tr(*local_err.extra_msg) : ""_av;
-                                    str_assign(s, msg1, sep1, extra_msg, sep2, msg2);
-                                });
-                            }
-                        );
-
-                        if (local_err.msg) {
-                            err_msg_ctx.set_msg(*local_err.msg);
-                        }
-                        else {
-                            err_msg_ctx.set_msg(e.errmsg());
-                        }
+                        mod_factory.set_close_box_error_id(e.id);
 
                         if (ini.get<cfg::internal_mod::enable_close_box>()) {
                             if (!is_close_module(mod_factory.mod_name())) {

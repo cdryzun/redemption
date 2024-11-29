@@ -20,12 +20,13 @@
 
 #pragma once
 
-class Error;
 class TrKey;
+
+enum error_type : unsigned;
 
 struct LocalErrMsg
 {
-    static LocalErrMsg from_error(Error const& error) noexcept;
+    static LocalErrMsg from_error_id(error_type id) noexcept;
 
     TrKey const* msg = nullptr;
     TrKey const* extra_msg = nullptr;

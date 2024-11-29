@@ -4467,14 +4467,6 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// type: std::string <br/>
-    /// default: "" <br/>
-    struct context::close_box_extra_message {
-        static constexpr unsigned acl_proxy_communication_flags = 0b00;
-        using type = std::string;
-        using mapped_type = type;
-        type value {  };
-    };
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
     /// default: false <br/>
@@ -5728,7 +5720,6 @@ struct context
 , cfg::context::auth_command_rail_exec_arguments
 , cfg::context::auth_command_rail_exec_account
 , cfg::context::auth_command_rail_exec_password
-, cfg::context::close_box_extra_message
 , cfg::context::pm_response
 , cfg::context::pm_request
 , cfg::context::rd_shadow_userdata

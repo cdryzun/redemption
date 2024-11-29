@@ -3493,12 +3493,6 @@ _.section("context", [&]
     });
 
     _.member(MemberInfo{
-        .name = "close_box_extra_message",
-        .value = value<std::string>(),
-        .spec = no_acl,
-    });
-
-    _.member(MemberInfo{
         .name = "is_wabam",
         .value = value(false),
         .spec = acl_to_proxy(no_reset_back_to_selector, loggable),

@@ -209,7 +209,7 @@
 
 #define MAKE_ENUM(e) e,
 #define MAKE_ENUM_V(e, x) e = x,
-enum error_type
+enum error_type : unsigned
 {
     EACH_ERROR(MAKE_ENUM, MAKE_ENUM_V)
 };
