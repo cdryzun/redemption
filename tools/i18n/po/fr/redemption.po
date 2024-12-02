@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-13 16:20+0100\n"
+"POT-Creation-Date: 2024-12-02 15:46+0100\n"
 "PO-Revision-Date: 2021-03-01 15:52+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,83 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/utils/trkeys.hpp:29
-msgid "Target (optional)"
-msgstr "Cible (optionnel)"
-
-#: src/utils/trkeys.hpp:30
-msgid "Login"
-msgstr "Login"
-
-#: src/utils/trkeys.hpp:31
-msgid "Password"
-msgstr "Mot de passe"
-
-#: src/utils/trkeys.hpp:32
-msgid "Connection closed"
-msgstr "Connexion fermée"
-
-#: src/utils/trkeys.hpp:33
+#: src/translation/trkeys_def.hpp:14
 msgid "OK"
 msgstr "OK"
 
-#: src/utils/trkeys.hpp:34
-msgid "Close"
-msgstr "Fermer"
+#: src/translation/trkeys_def.hpp:17
+msgid "Target (optional)"
+msgstr "Cible (optionnel)"
 
-#: src/utils/trkeys.hpp:36
-msgid "Protocol"
-msgstr "Protocole"
-
-#: src/utils/trkeys.hpp:37
-msgid "Authorization"
-msgstr "Autorisation"
-
-#: src/utils/trkeys.hpp:38
-msgid "Target"
-msgstr "Cible"
-
-#: src/utils/trkeys.hpp:39
-msgid "Logout"
-msgstr "Déconnexion"
-
-#: src/utils/trkeys.hpp:40
-msgid "Filter"
-msgstr "Filtrer"
-
-#: src/utils/trkeys.hpp:41
-msgid "Connect"
-msgstr "Connecter"
-
-#: src/utils/trkeys.hpp:42
-msgid "second"
-msgstr "seconde"
-
-#: src/utils/trkeys.hpp:43
-msgid "minute"
-msgstr "minute"
-
-#: src/utils/trkeys.hpp:44
-msgid "hour"
-msgstr "heure"
-
-#: src/utils/trkeys.hpp:45
-msgid "before closing"
-msgstr "avant fermeture"
-
-#: src/utils/trkeys.hpp:46
-msgid "Your session is currently being audited."
-msgstr "Votre session est actuellement en cours d'observation."
-
-#: src/utils/trkeys.hpp:47
-msgid "Connection closed by manager."
-msgstr "Le gestionnaire de session a coupé la connexion."
-
-#: src/utils/trkeys.hpp:48
-msgid "End of connection"
-msgstr "Fin de connexion"
-
-#: src/utils/trkeys.hpp:50
+#: src/translation/trkeys_def.hpp:19
 msgid ""
 "The \"Target\" field can be entered with a string labelled in this format:\n"
 "\"Account@Domain@Device:Service:Auth\".\n"
@@ -116,7 +48,177 @@ msgstr ""
 "\n"
 "Contactez votre administrateur système pour obtenir de l'aide."
 
-#: src/utils/trkeys.hpp:60
+#: src/translation/trkeys_def.hpp:29
+msgid "Login"
+msgstr "Login"
+
+#: src/translation/trkeys_def.hpp:30
+msgid "Password"
+msgstr "Mot de passe"
+
+#: src/translation/trkeys_def.hpp:32
+msgid "Target Information Required"
+msgstr "Informations Cible Requises"
+
+#: src/translation/trkeys_def.hpp:33
+msgid "Device"
+msgstr "Machine"
+
+#: src/translation/trkeys_def.hpp:36
+msgid "Press \"Insert\" key or left-click to hide this message."
+msgstr "Appuyez sur la touche \"Insert\" ou clic gauche pour cacher ce message."
+
+#: src/translation/trkeys_def.hpp:39
+#, c-format
+msgid "%d hours, %d minutes, %d seconds before closing"
+msgstr "%d heures, %d minutes, %d seconds avant fermeture"
+
+#: src/translation/trkeys_def.hpp:40
+#, c-format
+msgid "%d minutes, %d seconds before closing"
+msgstr "%d minutes, %d seconds avant fermeture"
+
+#: src/translation/trkeys_def.hpp:41
+#, c-format
+msgid "%d second before closing"
+msgid_plural "%d seconds before closing"
+msgstr[0] "%d seconde avant fermeture"
+msgstr[1] "%d secondes avant fermeture"
+
+#: src/translation/trkeys_def.hpp:44
+#, c-format
+msgid "%d second before closing."
+msgid_plural "%d seconds before closing."
+msgstr[0] "%d seconde avant fermeture."
+msgstr[1] "%d secondes avant fermeture."
+
+#: src/translation/trkeys_def.hpp:45
+#, c-format
+msgid "%d minute before closing."
+msgid_plural "%d minutes before closing."
+msgstr[0] "%d minute avant fermeture."
+msgstr[1] "%d minutes avant fermeture."
+
+#: src/translation/trkeys_def.hpp:47
+msgid "Connection to server ended."
+msgstr "Connexion au serveur terminée."
+
+#: src/translation/trkeys_def.hpp:49
+msgid "Connection closed"
+msgstr "Connexion fermée"
+
+#: src/translation/trkeys_def.hpp:50
+msgid "Close"
+msgstr "Fermer"
+
+#: src/translation/trkeys_def.hpp:51
+msgid "Username:"
+msgstr "Nom d'utilisateur:"
+
+#: src/translation/trkeys_def.hpp:52
+msgid "Target:"
+msgstr "Cible:"
+
+#: src/translation/trkeys_def.hpp:53
+msgid "Diagnostic:"
+msgstr "Diagnostic:"
+
+#: src/translation/trkeys_def.hpp:54
+msgid "Time left:"
+msgstr "Temps restant:"
+
+#: src/translation/trkeys_def.hpp:56
+msgid "Back to Selector"
+msgstr "Retour au Sélecteur"
+
+#: src/translation/trkeys_def.hpp:58
+msgid "Exit"
+msgstr "Sortir"
+
+#: src/translation/trkeys_def.hpp:60
+msgid "Comment"
+msgstr "Commentaire"
+
+#: src/translation/trkeys_def.hpp:61
+msgid "Comment *"
+msgstr "Commentaire *"
+
+#: src/translation/trkeys_def.hpp:62
+msgid "Ticket Ref."
+msgstr "Ticket Ref."
+
+#: src/translation/trkeys_def.hpp:63
+msgid "Ticket Ref. *"
+msgstr "Ticket Ref. *"
+
+#: src/translation/trkeys_def.hpp:64
+msgid "Duration"
+msgstr "Durée"
+
+#: src/translation/trkeys_def.hpp:65
+msgid "Duration *"
+msgstr "Durée *"
+
+#: src/translation/trkeys_def.hpp:66
+msgid "Format: [hours]h[mins]m"
+msgstr "Format: [heures]h[mins]m"
+
+#: src/translation/trkeys_def.hpp:67
+msgid "(*) required fields"
+msgstr "(*) champs requis"
+
+#: src/translation/trkeys_def.hpp:68
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: src/translation/trkeys_def.hpp:69
+#, c-format
+msgid "Error: %s field is required."
+msgstr "Erreur: le champ %s est requis."
+
+#: src/translation/trkeys_def.hpp:70
+#, c-format
+msgid "Error: %s invalid format."
+msgstr "Erreur: format %s invalide."
+
+#: src/translation/trkeys_def.hpp:71
+#, c-format
+msgid "Error: %s is too high (max: %d minutes)."
+msgstr "Erreur: %s trop haute (max: %d minutes)."
+
+#: src/translation/trkeys_def.hpp:73
+msgid "Information"
+msgstr "Information"
+
+#: src/translation/trkeys_def.hpp:76
+msgid "Protocol"
+msgstr "Protocole"
+
+#: src/translation/trkeys_def.hpp:77
+msgid "Authorization"
+msgstr "Autorisation"
+
+#: src/translation/trkeys_def.hpp:78
+msgid "Target"
+msgstr "Cible"
+
+#: src/translation/trkeys_def.hpp:79
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: src/translation/trkeys_def.hpp:80
+msgid "Filter"
+msgstr "Filtrer"
+
+#: src/translation/trkeys_def.hpp:81
+msgid "Connect"
+msgstr "Connecter"
+
+#: src/translation/trkeys_def.hpp:82
+msgid "No results found"
+msgstr "Aucun résultat"
+
+#: src/translation/trkeys_def.hpp:84
 msgid ""
 "Use the following syntax to filter specific fields on a target:\n"
 "    ?<field>=<pattern>\n"
@@ -134,407 +236,320 @@ msgstr ""
 "Exemple :\n"
 "   ?account=my_account&?device=my_device"
 
-#: src/utils/trkeys.hpp:67
-msgid "Session is out of allowed timeframe"
-msgstr "L'autorisation de la session a expiré"
+#: src/translation/trkeys_def.hpp:93
+msgid "Please wait..."
+msgstr "Veuillez patienter..."
 
-#: src/utils/trkeys.hpp:68
-msgid "Missed keepalive from ACL"
-msgstr "Absence de réponse de Keepalive de l'ACL"
+#: src/translation/trkeys_def.hpp:96
+msgid "The recorded file is inaccessible or corrupted."
+msgstr "Le fichier d'enregistrement est inaccessible ou corrompu."
 
-#: src/utils/trkeys.hpp:69
-msgid "Connection closed on inactivity"
-msgstr "Fermeture sur inactivité"
+#: src/translation/trkeys_def.hpp:99
+msgid "I accept"
+msgstr "J'accepte"
 
-#: src/utils/trkeys.hpp:70
+#: src/translation/trkeys_def.hpp:100
+msgid "I decline"
+msgstr "Je refuse"
+
+#: src/translation/trkeys_def.hpp:103
+msgid "Challenge"
+msgstr ""
+
+#: src/translation/trkeys_def.hpp:106
+msgid "URL Redirection"
+msgstr "Redirection d'URL"
+
+#: src/translation/trkeys_def.hpp:107
+msgid "Copy to clipboard: "
+msgstr "Copier dans le presse-papier: "
+
+#: src/translation/trkeys_def.hpp:108
+msgid "The link is copied."
+msgstr "Le lien est copié."
+
+#: src/translation/trkeys_def.hpp:111
+msgid "Your session is currently being audited."
+msgstr "Votre session est actuellement en cours d'observation."
+
+#: src/translation/trkeys_def.hpp:112
+msgid "Connection closed by manager."
+msgstr "Le gestionnaire de session a coupé la connexion."
+
+#: src/translation/trkeys_def.hpp:113
 msgid "Authentifier service failed"
 msgstr "Echec du service d'authentification"
 
-#: src/utils/trkeys.hpp:71
+#: src/translation/trkeys_def.hpp:115
+msgid "No authentifier available."
+msgstr "Service d'authentification indisponible."
+
+#: src/translation/trkeys_def.hpp:118
 msgid "Failed to connect to remote host."
 msgstr "Échec de la connexion à l'hôte distant."
 
-#: src/utils/trkeys.hpp:72
+#: src/translation/trkeys_def.hpp:121
+msgid "File being analyzed: "
+msgstr "Fichier en cours d'analyse: "
+
+#: src/translation/trkeys_def.hpp:122
+msgid "Valid file: "
+msgstr "Fichier valide: "
+
+#: src/translation/trkeys_def.hpp:123
+msgid "Invalid file: "
+msgstr "Fichier invalide: "
+
+#: src/translation/trkeys_def.hpp:126
 msgid "Failed to connect to remote host. Maybe the session invitation has expired."
 msgstr "Échec de la connexion à l'hôte distant. L'invitation de session est peut-être expirée."
 
-#: src/utils/trkeys.hpp:73
+#: src/translation/trkeys_def.hpp:127
 msgid "Failed to authenticate with remote RDP host."
 msgstr "Échec de l'authentification avec l'hôte RDP distant."
 
-#: src/utils/trkeys.hpp:74
+#: src/translation/trkeys_def.hpp:129
 msgid "Failed to authenticate with remote VNC host."
 msgstr "Échec de l'authentification avec l'hôte VNC distant."
 
-#: src/utils/trkeys.hpp:75
-msgid "Connection to server ended."
-msgstr "Connexion au serveur terminée."
+#: src/translation/trkeys_def.hpp:132
+msgid "Session logoff in progress."
+msgstr "Fermeture de session en cours."
 
-#: src/utils/trkeys.hpp:76
-msgid "No results found"
-msgstr "Aucun résultat"
-
-#: src/utils/trkeys.hpp:77
-msgid "Back to Selector"
-msgstr "Retour au Sélecteur"
-
-#: src/utils/trkeys.hpp:78
-msgid "Exit"
-msgstr "Sortir"
-
-#: src/utils/trkeys.hpp:79
-msgid "Comment"
-msgstr "Commentaire"
-
-#: src/utils/trkeys.hpp:80
-msgid "Comment *"
-msgstr "Commentaire *"
-
-#: src/utils/trkeys.hpp:81
-msgid "Ticket Ref."
-msgstr "Ticket Ref."
-
-#: src/utils/trkeys.hpp:82
-msgid "Ticket Ref. *"
-msgstr "Ticket Ref. *"
-
-#: src/utils/trkeys.hpp:83
-msgid "Duration"
-msgstr "Durée"
-
-#: src/utils/trkeys.hpp:84
-msgid "Duration *"
-msgstr "Durée *"
-
-#: src/utils/trkeys.hpp:85
-msgid "Format: [hours]h[mins]m"
-msgstr "Format: [heures]h[mins]m"
-
-#: src/utils/trkeys.hpp:86
-msgid "(*) required fields"
-msgstr "(*) champs requis"
-
-#: src/utils/trkeys.hpp:87
-msgid "Confirm"
-msgstr "Confirmer"
-
-#: src/utils/trkeys.hpp:88
-#, c-format
-msgid "Error: %s field is required."
-msgstr "Erreur: le champ %s est requis."
-
-#: src/utils/trkeys.hpp:89
-#, c-format
-msgid "Error: %s invalid format."
-msgstr "Erreur: format %s invalide."
-
-#: src/utils/trkeys.hpp:90
-#, c-format
-msgid "Error: %s is too high (max: %d minutes)."
-msgstr "Erreur: %s trop haute (max: %d minutes)."
-
-#: src/utils/trkeys.hpp:91
-msgid "Information"
-msgstr "Information"
-
-#: src/utils/trkeys.hpp:92
-msgid "Target Information Required"
-msgstr "Informations Cible Requises"
-
-#: src/utils/trkeys.hpp:93
-msgid "Device"
-msgstr "Machine"
-
-#: src/utils/trkeys.hpp:97
-msgid "Username:"
-msgstr "Nom d'utilisateur:"
-
-#: src/utils/trkeys.hpp:98
-msgid "Target:"
-msgstr "Cible:"
-
-#: src/utils/trkeys.hpp:99
-msgid "Diagnostic:"
-msgstr "Diagnostic:"
-
-#: src/utils/trkeys.hpp:100
-msgid "Time left:"
-msgstr "Temps restant:"
-
-#: src/utils/trkeys.hpp:104
-msgid "Press \"Insert\" key or left-click to hide this message."
-msgstr "Appuyez sur la touche \"Insert\" ou clic gauche pour cacher ce message."
-
-#: src/utils/trkeys.hpp:107
+#: src/translation/trkeys_def.hpp:133
 msgid "Another user connected to the resource, so your connection was lost."
 msgstr "Un autre utilisateur s'est connecté à la ressource, provoquant la perte de votre connexion."
 
-#: src/utils/trkeys.hpp:108
+#: src/translation/trkeys_def.hpp:134
+msgid "Please check provided Load Balance Info."
+msgstr "Veuillez vérifier le Load Balance Info fournies."
+
+#: src/translation/trkeys_def.hpp:135
+msgid "Fail during TLS security exchange."
+msgstr "Échec lors de l'échange de sécurité TLS."
+
+#: src/translation/trkeys_def.hpp:136
+msgid "Remote access may be denied for the user account."
+msgstr "L'accès distant est peut-être refusé pour le compte utilisateur."
+
+#: src/translation/trkeys_def.hpp:137
+msgid "Fail during channels connection."
+msgstr "Échec lors de la connexion des canaux."
+
+#: src/translation/trkeys_def.hpp:138
+msgid "Failed while trying to get licence."
+msgstr "Échec en essayant d'obtenir une licence."
+
+#: src/translation/trkeys_def.hpp:139
+msgid "Fail while connecting session on the target."
+msgstr "Échec lors de la connexion de la session sur la cible."
+
+#: src/translation/trkeys_def.hpp:140
+msgid "Disconnected by the RDP server."
+msgstr "Déconnecté par le serveur RDP."
+
+#: src/translation/trkeys_def.hpp:143
+msgid "(RemoteApp) The logon credentials which were supplied are invalid."
+msgstr "(RemoteApp) Les informations de connexion fournies ne sont pas valides."
+
+#: src/translation/trkeys_def.hpp:145
+msgid "(RemoteApp) The user cannot continue with the logon process until the password is changed."
+msgstr "(RemoteApp) L'utilisateur ne peut pas poursuivre le processus de connexion tant que le mot de passe n'est pas modifié."
+
+#: src/translation/trkeys_def.hpp:146
+msgid "(RemoteApp) The logon process failed."
+msgstr "(RemoteApp) Le processus de connexion a échoué."
+
+#: src/translation/trkeys_def.hpp:147
+msgid "(RemoteApp) The logon process has displayed a warning."
+msgstr "(RemoteApp) Le processus de connexion a affiché un avertissement."
+
+#: src/translation/trkeys_def.hpp:148
+msgid "(RemoteApp) Unexpected Error Notification Type."
+msgstr "(RemoteApp) Type de notification d’erreur inattendue."
+
+#: src/translation/trkeys_def.hpp:150
+msgid "Fail during TLS security exchange. Enable NLA is probably required."
+msgstr "Échec lors de l'échange de sécurité TLS. Il est probablement nécessaire d'activer NLA."
+
+#: src/translation/trkeys_def.hpp:151
+msgid "Fail during TLS security exchange. Enable TLS is probably required."
+msgstr "Échec lors de l'échange de sécurité TLS. Il est probablement nécessaire d'activer TLS."
+
+#: src/translation/trkeys_def.hpp:152
+msgid "Session is out of allowed timeframe"
+msgstr "L'autorisation de la session a expiré"
+
+#: src/translation/trkeys_def.hpp:153
+msgid "Missed keepalive from ACL"
+msgstr "Absence de réponse de Keepalive de l'ACL"
+
+#: src/translation/trkeys_def.hpp:154
+msgid "Connection closed on inactivity"
+msgstr "Fermeture sur inactivité"
+
+#: src/translation/trkeys_def.hpp:155
+msgid "The computer that you are trying to connect to is redirecting you to another computer."
+msgstr "L'ordinateur auquel vous essayez de vous connecter vous redirige vers un autre ordinateur."
+
+#: src/translation/trkeys_def.hpp:156
+msgid "NLA Authentication Failed."
+msgstr "Échec d'authentification NLA."
+
+#: src/translation/trkeys_def.hpp:158
+msgid "TLS certificate changed."
+msgstr "Certificat TLS modifié."
+
+#: src/translation/trkeys_def.hpp:159
+msgid "TLS certificate missed."
+msgstr "Certificat TLS manquant."
+
+#: src/translation/trkeys_def.hpp:160
+msgid "TLS certificate corrupted."
+msgstr "Certificat TLS corrompu."
+
+#: src/translation/trkeys_def.hpp:161
+msgid "TLS certificate is inaccessible."
+msgstr "Certificat TLS inaccessible."
+
+#: src/translation/trkeys_def.hpp:163
+msgid "The certificate presented by the target doesn't match the certificate fingerprint stored in the Bastion for this target. Contact your Bastion administrator to delete the existing fingerprint or to change the default behavior of the Bastion when this happens."
+msgstr "Le certificat présenté par la cible ne correspond pas à celui stocké dans le Bastion pour cette cible. Contactez votre administrateur Bastion pour l'ajouter ou pour modifier le comportement par défaut du Bastion lorsque cela se produit."
+
+#: src/translation/trkeys_def.hpp:164
+msgid "The certificate presented by the target is not stored in the Bastion for this target. Contact your Bastion administrator to add it or to change the behavior of the Bastion when this happens."
+msgstr "Le certificat présenté par la cible n'est pas stocké dans le Bastion pour cette cible. Contactez votre administrateur Bastion pour l'ajouter ou pour modifier le comportement du Bastion lorsque cela se produit."
+
+#: src/translation/trkeys_def.hpp:165
+msgid "The certificate stored in the Bastion for this target is corrupted."
+msgstr "Le certificat stocké dans le Bastion pour cette cible est corrompu."
+
+#: src/translation/trkeys_def.hpp:166
+msgid "The certificate stored in the Bastion for this target is inaccessible."
+msgstr "Le certificat stocké dans le Bastion pour cette cible est inaccessible."
+
+#: src/translation/trkeys_def.hpp:168
+msgid "End of connection"
+msgstr "Fin de connexion"
+
+#: src/translation/trkeys_def.hpp:171
 #, c-format
 msgid "The process '%.*s' was interrupted in accordance with security policies."
 msgstr "Le processus '%.*s' a été interrompu conformément aux politiques de sécurité."
 
-#: src/utils/trkeys.hpp:109
+#: src/translation/trkeys_def.hpp:172
 #, c-format
 msgid "The account manipulation initiated by process '%.*s' was rejected in accordance with security policies."
 msgstr "L'édition de compte d'utilisateur effectuée via le processus '%.*s' a été rejeté conformément aux politiques de sécurité."
 
-#: src/utils/trkeys.hpp:110
-msgid "Session logoff in progress."
-msgstr "Fermeture de session en cours."
-
-#: src/utils/trkeys.hpp:114
+#: src/translation/trkeys_def.hpp:175
 msgid "Starting RemoteApp ..."
 msgstr "Lancement de RemoteApp ..."
 
-#: src/utils/trkeys.hpp:115
+#: src/translation/trkeys_def.hpp:176
 msgid "All RemoteApp windows are closed."
 msgstr "Toutes les fenêtre de RemoteApp sont fermées."
 
-#: src/utils/trkeys.hpp:116
+#: src/translation/trkeys_def.hpp:177
 msgid "Disconnect Now"
 msgstr "Se déconnecter maintenant"
 
-#: src/utils/trkeys.hpp:119
-msgid "The computer that you are trying to connect to is redirecting you to another computer."
-msgstr "L'ordinateur auquel vous essayez de vous connecter vous redirige vers un autre ordinateur."
-
-#: src/utils/trkeys.hpp:120
-msgid "NLA Authentication Failed."
-msgstr "Échec d'authentification NLA."
-
-#: src/utils/trkeys.hpp:124
-msgid "TLS certificate changed."
-msgstr "Certificat TLS modifié."
-
-#: src/utils/trkeys.hpp:125
-msgid "TLS certificate missed."
-msgstr "Certificat TLS manquant."
-
-#: src/utils/trkeys.hpp:126
-msgid "TLS certificate corrupted."
-msgstr "Certificat TLS corrompu."
-
-#: src/utils/trkeys.hpp:127
-msgid "TLS certificate is inaccessible."
-msgstr "Certificat TLS inaccessible."
-
-#: src/utils/trkeys.hpp:129
-msgid "The certificate presented by the target doesn't match the certificate fingerprint stored in the Bastion for this target. Contact your Bastion administrator to delete the existing fingerprint or to change the default behavior of the Bastion when this happens."
-msgstr "Le certificat présenté par la cible ne correspond pas à celui stocké dans le Bastion pour cette cible. Contactez votre administrateur Bastion pour l'ajouter ou pour modifier le comportement par défaut du Bastion lorsque cela se produit."
-
-#: src/utils/trkeys.hpp:130
-msgid "The certificate presented by the target is not stored in the Bastion for this target. Contact your Bastion administrator to add it or to change the behavior of the Bastion when this happens."
-msgstr "Le certificat présenté par la cible n'est pas stocké dans le Bastion pour cette cible. Contactez votre administrateur Bastion pour l'ajouter ou pour modifier le comportement du Bastion lorsque cela se produit."
-
-#: src/utils/trkeys.hpp:131
-msgid "The certificate stored in the Bastion for this target is corrupted."
-msgstr "Le certificat stocké dans le Bastion pour cette cible est corrompu."
-
-#: src/utils/trkeys.hpp:132
-msgid "The certificate stored in the Bastion for this target is inaccessible."
-msgstr "Le certificat stocké dans le Bastion pour cette cible est inaccessible."
-
-#: src/utils/trkeys.hpp:135
-msgid "VNC connection error."
-msgstr "Erreur de connexion VNC."
-
-#: src/utils/trkeys.hpp:136
-msgid "Unsupported client display monitor layout."
-msgstr "La disposition du moniteur d'affichage du client n'est pas supportée."
-
-#: src/utils/trkeys.hpp:137
-msgid "RDP negotiation phase failure."
-msgstr "Echec de la phase de negociation."
-
-#: src/utils/trkeys.hpp:138
-msgid "CREDSSP Kerberos Authentication Failed, NTLM not allowed."
-msgstr "Échec d'authentification CREDSSP Kerberos, NTLM n'est pas autorisé."
-
-#: src/utils/trkeys.hpp:139
-msgid "NLA failed. TLS only not allowed."
-msgstr "Échec d'authentification NLA. TLS seul n'est pas autorisé."
-
-#: src/utils/trkeys.hpp:140
-msgid "NLA failed. NLA required by restricted admin mode."
-msgstr "Échec d'authentification NLA. NLA requière la restriction du mode admin."
-
-#: src/utils/trkeys.hpp:141
-msgid "Can't activate SSL. RDP Legacy only not allowed"
-msgstr "Ne peut activer SSL. RDP Legacy seul n'est pas autorisé."
-
-#: src/utils/trkeys.hpp:142
-msgid "An error occurred during the licensing protocol."
-msgstr "Une erreur de protocole de licence s'est produite."
-
-#: src/utils/trkeys.hpp:143
-msgid "The RemoteApp program did not start on the remote computer."
-msgstr "Le programme RemoteApp n'a pas démarré sur l'ordinateur distant."
-
-#: src/utils/trkeys.hpp:144
-msgid "Cannot start the RemoteApp program."
-msgstr "Impossible de démarrer le programme RemoteApp."
-
-#: src/utils/trkeys.hpp:145
-msgid "The RemoteApp program is not in the list of authorized programs."
-msgstr "Le programme RemoteApp n'est pas dans la liste des programmes autorisés."
-
-#: src/utils/trkeys.hpp:146
-msgid "Logon timer expired."
-msgstr "Le délai d'attente d'ouverture de session a expiré."
-
-#: src/utils/trkeys.hpp:147
+#: src/translation/trkeys_def.hpp:180
 msgid "Unauthorized logon user change detected."
 msgstr "Changement d'utilisateur de connexion non autorisé détecté."
 
-#: src/utils/trkeys.hpp:148
+#: src/translation/trkeys_def.hpp:182
+msgid "VNC connection error."
+msgstr "Erreur de connexion VNC."
+
+#: src/translation/trkeys_def.hpp:183
+msgid "Unsupported client display monitor layout."
+msgstr "La disposition du moniteur d'affichage du client n'est pas supportée."
+
+#: src/translation/trkeys_def.hpp:184
+msgid "RDP negotiation phase failure."
+msgstr "Echec de la phase de negociation."
+
+#: src/translation/trkeys_def.hpp:185
+msgid "CREDSSP Kerberos Authentication Failed, NTLM not allowed."
+msgstr "Échec d'authentification CREDSSP Kerberos, NTLM n'est pas autorisé."
+
+#: src/translation/trkeys_def.hpp:186
+msgid "NLA failed. TLS only not allowed."
+msgstr "Échec d'authentification NLA. TLS seul n'est pas autorisé."
+
+#: src/translation/trkeys_def.hpp:187
+msgid "NLA failed. NLA required by restricted admin mode."
+msgstr "Échec d'authentification NLA. NLA requière la restriction du mode admin."
+
+#: src/translation/trkeys_def.hpp:188
+msgid "Can't activate SSL. RDP Legacy only not allowed"
+msgstr "Ne peut activer SSL. RDP Legacy seul n'est pas autorisé."
+
+#: src/translation/trkeys_def.hpp:189
+msgid "An error occurred during the licensing protocol."
+msgstr "Une erreur de protocole de licence s'est produite."
+
+#: src/translation/trkeys_def.hpp:190
+msgid "The RemoteApp program did not start on the remote computer."
+msgstr "Le programme RemoteApp n'a pas démarré sur l'ordinateur distant."
+
+#: src/translation/trkeys_def.hpp:191
+msgid "Cannot start the RemoteApp program."
+msgstr "Impossible de démarrer le programme RemoteApp."
+
+#: src/translation/trkeys_def.hpp:192
+msgid "The RemoteApp program is not in the list of authorized programs."
+msgstr "Le programme RemoteApp n'est pas dans la liste des programmes autorisés."
+
+#: src/translation/trkeys_def.hpp:193
+msgid "Logon timer expired."
+msgstr "Le délai d'attente d'ouverture de session a expiré."
+
+#: src/translation/trkeys_def.hpp:194
 msgid "Could not launch Session Probe."
 msgstr "Impossible de lancer Session Probe."
 
-#: src/utils/trkeys.hpp:150
+#: src/translation/trkeys_def.hpp:196
 msgid "(ASBL) Could not launch Session Probe. File System Virtual Channel is unavailable. Please allow the drive redirection in the Remote Desktop Services settings of the target."
 msgstr "(ASBL) Impossible de lancer Session Probe. Le canal virtuel du système de fichiers n'est pas disponible. Veuillez autorisez la redirection du lecteur dans les paramètres des Services de bureau à distance de la cible."
 
-#: src/utils/trkeys.hpp:153
+#: src/translation/trkeys_def.hpp:199
 msgid "(ASBL) Could not launch Session Probe. Maybe something blocks it on the target. Is the target running under Microsoft Server products? The Command Prompt should be published as the RemoteApp program and accept any command-line parameters. Please also check the temporary directory to ensure there is enough free space."
 msgstr "(ASBL) Impossible de lancer Session Probe. Peut-être que quelque chose le bloque sur la cible. La cible fonctionne-t-elle sous un produit de famille Microsoft Server ? L'invite de commande doit être publiée comme programme RemoteApp et accepter tout type de paramètres de ligne de commande. Veuillez vérifier également le répertoire temporaire afin d'assurer qu'il y a suffisamment d'espace libre."
 
-#: src/utils/trkeys.hpp:157
+#: src/translation/trkeys_def.hpp:203
 msgid "(ASBL) Session Probe launch has failed for unknown reason."
 msgstr "(ASBL) Le lancement de Session Probe a échoué pour une raison inconnue."
 
-#: src/utils/trkeys.hpp:159
+#: src/translation/trkeys_def.hpp:205
 msgid "(CBBL) Could not launch Session Probe. File System Virtual Channel is unavailable. Please allow the drive redirection in the Remote Desktop Services settings of the target."
 msgstr "(CBBL) Impossible de lancer Session Probe. Le canal virtuel du système de fichiers n'est pas disponible. Veuillez autorisez la redirection du lecteur dans les paramètres des Services de bureau à distance de la cible."
 
-#: src/utils/trkeys.hpp:162
+#: src/translation/trkeys_def.hpp:208
 msgid "(CBBL) Could not launch Session Probe. Clipboard Virtual Channel is unavailable. Please allow the clipboard redirection in the Remote Desktop Services settings of the target."
 msgstr "(CBBL) Impossible de lancer Session Probe. Le canal virtuel du presse-papier n'est pas disponible. Veuillez autorisez la redirection du presse-papier dans les paramètres des Services de bureau à distance de la cible."
 
-#: src/utils/trkeys.hpp:165
+#: src/translation/trkeys_def.hpp:211
 msgid "(CBBL) Could not launch Session Probe. Drive of Session Probe is not ready yet. Is the target running under Windows Server 2008 R2 or more recent version?"
 msgstr "(CBBL) Impossible de lancer Session Probe. Le lecteur de Session Probe n'est pas encore prêt. La cible fonctionne-t-elle sous Windows Server 2008 R2 ou une version plus récente ?"
 
-#: src/utils/trkeys.hpp:168
+#: src/translation/trkeys_def.hpp:214
 msgid "(CBBL) Session Probe is not launched. Maybe something blocks it on the target. Please also check the temporary directory to ensure there is enough free space."
 msgstr "(CBBL) Impossible de lancer Session Probe. Peut-être que quelque chose le bloque sur la cible. Veuillez vérifier également le répertoire temporaire afin d'assurer qu'il y a suffisamment d'espace libre."
 
-#: src/utils/trkeys.hpp:171
+#: src/translation/trkeys_def.hpp:217
 msgid "(CBBL) Session Probe launch cycle has been interrupted. The launch timeout duration may be too short."
 msgstr "(CBBL) Le cycle de lancement de Session Probe a été interrompu. La durée du délai d'attente de lancement peut être trop courte."
 
-#: src/utils/trkeys.hpp:174
+#: src/translation/trkeys_def.hpp:220
 msgid "(CBBL) Session Probe launch has failed for unknown reason. Please refer to the syslog file for more detailed information regarding the error condition."
 msgstr "(CBBL) Le lancement de Session Probe a échoué pour une raison inconnue. Veuillez vous reporter au fichier syslog pour obtenir des informations plus détaillées concernant la condition d'erreur."
 
-#: src/utils/trkeys.hpp:177
+#: src/translation/trkeys_def.hpp:223
 msgid "(RP) Could not launch Session Probe. Please refer to the syslog file for more detailed information regarding the error condition."
 msgstr "(RP) Impossible de lancer Session Probe. Veuillez vous reporter au fichier syslog pour obtenir des informations plus détaillées concernant la condition d'erreur."
 
-#: src/utils/trkeys.hpp:179
+#: src/translation/trkeys_def.hpp:225
 msgid "Unknown backend failure."
 msgstr "Erreur de backend inconnue."
-
-#: src/utils/trkeys.hpp:180
-msgid "Provided login/password is probably incorrect."
-msgstr "Le nom d'utilisateur/mot de passe fourni est probablement incorrect."
-
-#: src/utils/trkeys.hpp:181
-msgid "Please wait..."
-msgstr "Veuillez patienter..."
-
-#: src/utils/trkeys.hpp:182
-msgid "Enable NLA is probably required."
-msgstr "Il est probablement nécessaire d'activer NLA."
-
-#: src/utils/trkeys.hpp:183
-msgid "Enable TLS is probably required."
-msgstr "Il est probablement nécessaire d'activer TLS."
-
-#: src/utils/trkeys.hpp:184
-msgid "Please check provided Load Balance Info."
-msgstr "Veuillez vérifier le Load Balance Info fournies."
-
-#: src/utils/trkeys.hpp:185
-msgid "Fail during TLS security exchange."
-msgstr "Échec lors de l'échange de sécurité TLS."
-
-#: src/utils/trkeys.hpp:186
-msgid "Remote access may be denied for the user account."
-msgstr "L'accès distant est peut-être refusé pour le compte utilisateur."
-
-#: src/utils/trkeys.hpp:187
-msgid "Fail during channels connection."
-msgstr "Échec lors de la connexion des canaux."
-
-#: src/utils/trkeys.hpp:188
-msgid "Failed while trying to get licence."
-msgstr "Échec en essayant d'obtenir une licence."
-
-#: src/utils/trkeys.hpp:189
-msgid "Fail while connecting session on the target."
-msgstr "Échec lors de la connexion de la session sur la cible."
-
-#: src/utils/trkeys.hpp:192
-msgid "File being analyzed: "
-msgstr "Fichier en cours d'analyse: "
-
-#: src/utils/trkeys.hpp:193
-msgid "Valid file: "
-msgstr "Fichier valide: "
-
-#: src/utils/trkeys.hpp:194
-msgid "Invalid file: "
-msgstr "Fichier invalide: "
-
-#: src/utils/trkeys.hpp:198
-msgid "(RemoteApp) The logon credentials which were supplied are invalid."
-msgstr "(RemoteApp) Les informations de connexion fournies ne sont pas valides."
-
-#: src/utils/trkeys.hpp:200
-msgid "(RemoteApp) The user cannot continue with the logon process until the password is changed."
-msgstr "(RemoteApp) L'utilisateur ne peut pas poursuivre le processus de connexion tant que le mot de passe n'est pas modifié."
-
-#: src/utils/trkeys.hpp:201
-msgid "(RemoteApp) The logon process failed."
-msgstr "(RemoteApp) Le processus de connexion a échoué."
-
-#: src/utils/trkeys.hpp:202
-msgid "(RemoteApp) The logon process has displayed a warning."
-msgstr "(RemoteApp) Le processus de connexion a affiché un avertissement."
-
-#: src/utils/trkeys.hpp:203
-msgid "(RemoteApp) Unexpected Error Notification Type."
-msgstr "(RemoteApp) Type de notification d’erreur inattendue."
-
-#: src/utils/trkeys.hpp:206
-msgid "The recorded file is inaccessible or corrupted."
-msgstr "Le fichier d'enregistrement est inaccessible ou corrompu."
-
-#: src/utils/trkeys.hpp:209
-msgid "No authentifier available."
-msgstr "Service d'authentification indisponible."
-
-#: src/utils/trkeys.hpp:212
-msgid "I accept"
-msgstr "J'accepte"
-
-#: src/utils/trkeys.hpp:213
-msgid "I decline"
-msgstr "Je refuse"
-
-#: src/utils/trkeys.hpp:216
-msgid "Challenge"
-msgstr ""
-
-#: src/utils/trkeys.hpp:219
-msgid "URL Redirection"
-msgstr "Redirection d'URL"
-
-#: src/utils/trkeys.hpp:220
-msgid "Copy to clipboard: "
-msgstr "Copier dans le presse-papier: "
-
-#: src/utils/trkeys.hpp:221
-msgid "The link is copied."
-msgstr "Le lien est copié."

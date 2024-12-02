@@ -38,14 +38,17 @@ each_locale() {
 }
 
 po_dir=tools/i18n/po
-trkeys_file=src/utils/trkeys.hpp
+trkeys_file=src/translation/trkeys_def.hpp
 pot_file="$po_dir/redemption.pot"
 
 case "${1:-}" in
 
 e|extract)
     (( $# == 1 )) || usage_and_exit
-    runecho xgettext --keyword=TR_KV:2 --keyword=TR_KV_FMT:2 --c++ --sort-by-file \
+    runecho xgettext --c++ --sort-by-file \
+        --keyword=TR_KV:2 \
+        --keyword=TR_KV_FMT:2 \
+        --keyword=TR_KV_PLURAL_FMT:2,3 \
         --output="$pot_file" "$trkeys_file"
 ;;
 
