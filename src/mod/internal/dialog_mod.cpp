@@ -23,8 +23,8 @@
 #include "mod/internal/copy_paste.hpp"
 #include "mod/internal/dialog_mod.hpp"
 #include "mod/internal/widget/edit.hpp"
-#include "utils/translation.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/translation.hpp"
+#include "translation/trkeys.hpp"
 
 namespace
 {

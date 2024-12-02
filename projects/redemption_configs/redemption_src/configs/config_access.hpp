@@ -23,7 +23,6 @@
 
 #include "configs/autogen/variables_configuration_fwd.hpp"
 #include "utils/sugar/cast.hpp"
-#include "utils/translation.hpp"
 
 class Inifile;
 

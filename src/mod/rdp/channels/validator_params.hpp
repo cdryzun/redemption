@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 
 #include <string>
 #include <chrono>

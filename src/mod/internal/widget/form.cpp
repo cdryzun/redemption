@@ -21,7 +21,7 @@
 
 #include "mod/internal/widget/form.hpp"
 #include "utils/sugar/chars_to_int.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/trkeys.hpp"
 #include "utils/theme.hpp"
 
 using namespace std::chrono_literals;

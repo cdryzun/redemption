@@ -23,8 +23,8 @@
 #include "mod/internal/widget/multiline_borders.hpp"
 #include "keyboard/keymap.hpp"
 
-#include "utils/translation.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/translation.hpp"
+#include "translation/trkeys.hpp"
 #include "utils/theme.hpp"
 
 

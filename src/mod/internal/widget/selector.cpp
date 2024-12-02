@@ -21,8 +21,8 @@
  */
 
 #include "mod/internal/widget/selector.hpp"
-#include "utils/translation.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/translation.hpp"
+#include "translation/trkeys.hpp"
 #include "utils/theme.hpp"
 #include "utils/sugar/buf_maker.hpp"
 #include "gdi/graphic_api.hpp"

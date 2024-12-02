@@ -24,7 +24,7 @@
 #include "mod/internal/copy_paste.hpp"
 #include "main/version.hpp"
 #include "utils/strutils.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/trkeys.hpp"
 
 #include <string>
 #include <utility>

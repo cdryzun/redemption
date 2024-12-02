@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "acl/mod_wrapper.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/theme.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 #include "acl/file_system_license_store.hpp"
 #include "RAIL/client_execute.hpp"
 #include "configs/autogen/enums.hpp"

@@ -34,7 +34,7 @@
 #include "utils/meminfo.hpp"
 #include "utils/monotonic_clock.hpp"
 #include "utils/sugar/chars_to_int.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 
 #include "configs/config.hpp"
 

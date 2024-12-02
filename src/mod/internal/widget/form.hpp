@@ -25,7 +25,7 @@
 #include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/edit.hpp"
 #include "configs/autogen/enums.hpp" // Language
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 
 #include <chrono>
 

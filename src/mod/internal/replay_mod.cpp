@@ -25,7 +25,7 @@ Author(s): Wallix Team
 #include "utils/fileutils.hpp"
 #include "utils/strutils.hpp"
 #include "utils/error_message_ctx.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/trkeys.hpp"
 #include "mod/internal/replay_mod.hpp"
 #include "transport/in_multi_crypto_transport.hpp"
 #include "transport/mwrm_file_data.hpp"

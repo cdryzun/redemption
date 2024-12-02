@@ -22,6 +22,7 @@
 #pragma once
 
 #include "configs/config_access.hpp"
+#include "translation/translation.hpp"
 #include "mod/internal/rail_mod_base.hpp"
 #include "mod/internal/widget/dialog.hpp"
 #include "mod/internal/widget/language_button.hpp"

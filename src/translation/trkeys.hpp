@@ -5,7 +5,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include "utils/trkey.hpp"
+#include "translation/trkey.hpp"
 
 #include <cstdio>
 
@@ -47,7 +47,7 @@ namespace trkeys
 
 #define TR_KV(name, msg) constexpr TrKey name{__COUNTER__ - detail::trkey_start_counter - 1};
 
-#include "utils/trkeys_def.hpp"
+#include "translation/trkeys_def.hpp"
 
 #undef TR_KV
 #undef TR_KV_FMT

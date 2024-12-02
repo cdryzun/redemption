@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2024 Wallix Proxies Team
 SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "utils/gettext.hpp"
+#include "translation/gettext.hpp"
 #include "utils/stream.hpp"
 #include "utils/strutils.hpp"
 #include "utils/ascii.hpp"

@@ -14,8 +14,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "gdi/subrect4.hpp"
 #include "keyboard/keymap.hpp"
 #include "mod/null/null.hpp"
-#include "utils/trkeys.hpp"
-#include "utils/translation.hpp"
+#include "translation/trkeys.hpp"
+#include "translation/translation.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 #include "RAIL/client_execute.hpp"
 

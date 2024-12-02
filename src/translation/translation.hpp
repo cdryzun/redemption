@@ -7,10 +7,10 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "configs/autogen/enums.hpp" // Language
 #include "cxx/diagnostic.hpp"
-#include "utils/trkey.hpp"
+#include "translation/trkey.hpp"
+#include "translation/gettext.hpp"
 #include "utils/sugar/zstring_view.hpp"
 #include "utils/sugar/bounded_array_view.hpp"
-#include "utils/gettext.hpp"
 
 #include <array>
 #include <memory_resource>
@@ -25,7 +25,7 @@ struct MsgTranslationCatalog
     #define TR_KV_PLURAL_FMT TR_KV
 
     static constexpr std::size_t translation_count = 0
-        #include "utils/trkeys_def.hpp"
+        #include "translation/trkeys_def.hpp"
     ;
 
     #undef TR_KV

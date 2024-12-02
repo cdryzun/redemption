@@ -5,7 +5,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include "utils/trkey.hpp"
+#include "translation/trkey.hpp"
 #include "utils/sugar/array_view.hpp"
 #include "utils/sugar/zstring_view.hpp"
 

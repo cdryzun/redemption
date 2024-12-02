@@ -22,8 +22,8 @@
 #include "configs/config.hpp"
 #include "mod/internal/close_mod.hpp"
 #include "utils/timebase.hpp"
-#include "utils/trkeys.hpp"
 #include "utils/strutils.hpp"
+#include "translation/trkeys.hpp"
 
 
 static WidgetWabClose build_close_widget(

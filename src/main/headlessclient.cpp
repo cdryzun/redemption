@@ -43,7 +43,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/static_string.hpp"
 #include "utils/uninit_buffer.hpp"
 #include "utils/key_qvalue_pairs.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 #include "system/urandom.hpp"
 
 

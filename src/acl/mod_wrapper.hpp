@@ -13,8 +13,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "gdi/text_metrics.hpp"
 #include "utils/ref.hpp"
 #include "utils/timebase.hpp"
-#include "utils/translation.hpp"
 #include "utils/sugar/not_null_ptr.hpp"
+#include "translation/translation.hpp"
 
 
 class ClientInfo;

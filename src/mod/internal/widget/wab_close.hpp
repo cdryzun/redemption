@@ -27,7 +27,7 @@
 #include "mod/internal/widget/multiline.hpp"
 #include "mod/internal/widget/image.hpp"
 #include "mod/internal/widget/button.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 
 #include <string>
 #include <memory>

@@ -22,7 +22,7 @@
 
 #include "utils/sugar/unique_fd.hpp"
 #include "utils/monotonic_clock.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 
 class Inifile;
 class PidFile;

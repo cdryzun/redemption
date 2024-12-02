@@ -33,8 +33,8 @@ Author(s): Jonathan Poelen, Christophe Grosjean, Raphael Zhou
 #include "utils/sugar/not_null_ptr.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 #include "utils/sugar/static_array_to_hexadecimal_chars.hpp"
-#include "utils/translation.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/translation.hpp"
+#include "translation/trkeys.hpp"
 #include "gdi/osd_api.hpp"
 
 #include <cassert>

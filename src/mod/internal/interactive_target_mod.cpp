@@ -21,8 +21,8 @@
 
 #include "configs/config.hpp"
 #include "mod/internal/interactive_target_mod.hpp"
-#include "utils/translation.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/translation.hpp"
+#include "translation/trkeys.hpp"
 
 InteractiveTargetMod::InteractiveTargetMod(
     InteractiveTargetModVariables vars,

@@ -125,6 +125,9 @@ exe rdpproxy :
   <library>src/mod/vnc/encoder/zrle.o
   <library>src/mod/vnc/vnc.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/local_err_msg.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -145,12 +148,10 @@ exe rdpproxy :
   <library>src/utils/drawable.o
   <library>src/utils/drawable_pointer.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/ip.o
   <library>src/utils/load_theme.o
-  <library>src/utils/local_err_msg.o
   <library>src/utils/log_siem.o
   <library>src/utils/netutils.o
   <library>src/utils/parse_primary_drawing_orders.o
@@ -163,7 +164,6 @@ exe rdpproxy :
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
   <library>src/utils/timestamp_tracer.o
-  <library>src/utils/translation.o
   <library>src/utils/uninit_buffer.o
   <library>src/utils/utf.o
   <library>z
@@ -277,6 +277,8 @@ exe headlessclient :
   <library>src/mod/vnc/encoder/zrle.o
   <library>src/mod/vnc/vnc.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -293,7 +295,6 @@ exe headlessclient :
   <library>src/utils/drawable.o
   <library>src/utils/drawable_pointer.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/log_siem.o
@@ -307,7 +308,6 @@ exe headlessclient :
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/uninit_buffer.o
   <library>src/utils/utf.o
   <library>z
@@ -336,17 +336,17 @@ exe nla_server :
   <library>src/core/RDP/nego.o
   <library>src/core/RDP/nla/kerberos.o
   <library>src/core/error.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/file_transport.o
   <library>src/transport/recorder_transport.o
   <library>src/transport/socket_transport.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
   $(EXE_DEPENDENCIES_NO_SYSLOG)
@@ -383,17 +383,17 @@ exe proxy_recorder :
   <library>src/core/RDP/nla/kerberos.o
   <library>src/core/error.o
   <library>src/proxy_recorder/proxy_recorder.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/file_transport.o
   <library>src/transport/recorder_transport.o
   <library>src/transport/socket_transport.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
   $(EXE_DEPENDENCIES_NO_SYSLOG)
@@ -541,16 +541,16 @@ test-run tests/acl/module_manager/test_update_application_driver :
   <library>src/core/error.o
   <library>src/core/font.o
   <library>src/mod/rdp/channels/sespro_channel_params.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/cfgloader.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>tests/includes/test_only/test_framework/working_directory.o
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
@@ -643,6 +643,8 @@ test-run tests/acl/test_license_api :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
@@ -652,7 +654,6 @@ test-run tests/acl/test_license_api :
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/parse_primary_drawing_orders.o
@@ -662,7 +663,6 @@ test-run tests/acl/test_license_api :
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -688,19 +688,19 @@ test-run tests/acl/test_mod_wrapper :
   <library>src/gdi/protected_graphics.o
   <library>src/gdi/text_metrics.o
   <library>src/keyboard/keymap.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -1061,6 +1061,8 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
@@ -1070,7 +1072,6 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/parse_primary_drawing_orders.o
@@ -1080,7 +1081,6 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -1135,6 +1135,8 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
@@ -1144,7 +1146,6 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/parse_primary_drawing_orders.o
@@ -1154,7 +1155,6 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -1209,6 +1209,8 @@ test-run tests/client_mods/test_rdp_client_wab :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
@@ -1218,7 +1220,6 @@ test-run tests/client_mods/test_rdp_client_wab :
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/parse_primary_drawing_orders.o
@@ -1229,7 +1230,6 @@ test-run tests/client_mods/test_rdp_client_wab :
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -1858,13 +1858,13 @@ test-run tests/core/RDP/test_nego :
   <library>src/core/RDP/nego.o
   <library>src/core/RDP/nla/kerberos.o
   <library>src/core/error.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/transport/test_transport.o
   $(BOOST_STACKTRACE_LINKFLAGS)
@@ -2109,6 +2109,8 @@ test-run tests/front/test_front :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -2125,7 +2127,6 @@ test-run tests/front/test_front :
   <library>src/utils/drawable.o
   <library>src/utils/drawable_pointer.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
@@ -2139,7 +2140,6 @@ test-run tests/front/test_front :
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
   <library>src/utils/timestamp_tracer.o
-  <library>src/utils/translation.o
   <library>src/utils/uninit_buffer.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
@@ -2448,20 +2448,20 @@ test-run tests/mod/internal/test_close_mod :
   <library>src/mod/internal/widget/tooltip.o
   <library>src/mod/internal/widget/wab_close.o
   <library>src/mod/internal/widget/widget_rect.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -2543,18 +2543,18 @@ test-run tests/mod/internal/test_dialog_mod :
   <library>src/mod/internal/widget/tooltip.o
   <library>src/mod/internal/widget/vertical_scroll_text.o
   <library>src/mod/internal/widget/widget_rect.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -2594,18 +2594,18 @@ test-run tests/mod/internal/test_interactive_target_mod :
   <library>src/mod/internal/widget/screen.o
   <library>src/mod/internal/widget/tooltip.o
   <library>src/mod/internal/widget/widget_rect.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -2646,18 +2646,18 @@ test-run tests/mod/internal/test_login_mod :
   <library>src/mod/internal/widget/screen.o
   <library>src/mod/internal/widget/tooltip.o
   <library>src/mod/internal/widget/vertical_scroll_text.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -3015,17 +3015,17 @@ test-run tests/mod/internal/widget/test_form :
   <library>src/mod/internal/widget/edit.o
   <library>src/mod/internal/widget/form.o
   <library>src/mod/internal/widget/label.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/gdi/test_graphic.o
@@ -3259,17 +3259,17 @@ test-run tests/mod/internal/widget/test_login :
   <library>src/mod/internal/widget/screen.o
   <library>src/mod/internal/widget/tooltip.o
   <library>src/mod/internal/widget/vertical_scroll_text.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/gdi/test_graphic.o
@@ -3468,17 +3468,17 @@ test-run tests/mod/internal/widget/test_selector :
   <library>src/mod/internal/widget/labelgrid.o
   <library>src/mod/internal/widget/number_edit.o
   <library>src/mod/internal/widget/selector.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/gdi/test_graphic.o
@@ -3577,17 +3577,17 @@ test-run tests/mod/internal/widget/test_wab_close :
   <library>src/mod/internal/widget/multiline.o
   <library>src/mod/internal/widget/wab_close.o
   <library>src/mod/internal/widget/widget_rect.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/gdi/test_graphic.o
@@ -3617,17 +3617,17 @@ test-run tests/mod/internal/widget/test_wait :
   <library>src/mod/internal/widget/label.o
   <library>src/mod/internal/widget/multiline.o
   <library>src/mod/internal/widget/wait.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/bitmap_from_file.o
   <library>src/utils/drawable.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/png.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/gdi/test_graphic.o
@@ -3669,16 +3669,16 @@ test-run tests/mod/rdp/channels/test_cliprdr_channel :
   <library>src/capture/fdx_capture.o
   <library>src/core/error.o
   <library>src/mod/rdp/channels/cliprdr_channel.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/test_framework/working_directory.o
   <library>tests/includes/test_only/transport/test_transport.o
@@ -3791,6 +3791,8 @@ test-run tests/mod/rdp/test_rdp :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
@@ -3801,7 +3803,6 @@ test-run tests/mod/rdp/test_rdp :
   <library>src/utils/cfgloader.o
   <library>src/utils/drawable.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
@@ -3812,7 +3813,6 @@ test-run tests/mod/rdp/test_rdp :
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
   <library>tests/includes/test_only/front/fake_front.o
@@ -3839,16 +3839,16 @@ test-run tests/mod/rdp/test_rdp_negociation_data :
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/utils/bitmap.o
   <library>src/utils/bitmap_data_allocator.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/rle.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
@@ -3974,15 +3974,15 @@ test-run tests/proxy_recorder/test_proxy_recorder :
   <library>src/core/RDP/nla/kerberos.o
   <library>src/core/error.o
   <library>src/proxy_recorder/proxy_recorder.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/file_transport.o
   <library>src/transport/recorder_transport.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexdump.o
   <library>src/utils/stacktrace.o
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
-  <library>src/utils/translation.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/test_framework/working_directory.o
   <library>tests/includes/test_only/transport/test_transport.o
@@ -4027,6 +4027,8 @@ test-run tests/server/test_mstsc_client :
   <library>src/keyboard/keymap.o
   <library>src/mod/internal/test_card_mod.o
   <library>src/mod/rdp/rdp_negociation_data.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -4041,7 +4043,6 @@ test-run tests/server/test_mstsc_client :
   <library>src/utils/drawable.o
   <library>src/utils/drawable_pointer.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
@@ -4053,7 +4054,6 @@ test-run tests/server/test_mstsc_client :
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
   <library>src/utils/timestamp_tracer.o
-  <library>src/utils/translation.o
   <library>src/utils/uninit_buffer.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
@@ -4101,6 +4101,8 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   <library>src/keyboard/keymap.o
   <library>src/mod/internal/test_card_mod.o
   <library>src/mod/rdp/rdp_negociation_data.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -4115,7 +4117,6 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   <library>src/utils/drawable.o
   <library>src/utils/drawable_pointer.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
@@ -4127,7 +4128,6 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
   <library>src/utils/timestamp_tracer.o
-  <library>src/utils/translation.o
   <library>src/utils/uninit_buffer.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
@@ -4175,6 +4175,8 @@ test-run tests/server/test_rdesktop_client :
   <library>src/keyboard/keymap.o
   <library>src/mod/internal/test_card_mod.o
   <library>src/mod/rdp/rdp_negociation_data.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -4189,7 +4191,6 @@ test-run tests/server/test_rdesktop_client :
   <library>src/utils/drawable.o
   <library>src/utils/drawable_pointer.o
   <library>src/utils/fileutils.o
-  <library>src/utils/gettext.o
   <library>src/utils/hexadecimal_string_to_buffer.o
   <library>src/utils/hexdump.o
   <library>src/utils/netutils.o
@@ -4201,7 +4202,6 @@ test-run tests/server/test_rdesktop_client :
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
   <library>src/utils/timestamp_tracer.o
-  <library>src/utils/translation.o
   <library>src/utils/uninit_buffer.o
   <library>src/utils/utf.o
   <library>tests/includes/test_only/core/font.o
@@ -4254,6 +4254,20 @@ test-run tests/system/linux/system/test_ssl_sha256 :
   <library>src/core/error.o
   <library>src/utils/stacktrace.o
   $(BOOST_STACKTRACE_LINKFLAGS)
+;
+test-run tests/translation/test_gettext :
+  $(REDEMPTION_TEST_PATH)/translation/test_gettext.cpp
+:
+  <library>src/utils/fileutils.o
+  <library>src/utils/strutils.o
+;
+test-run tests/translation/test_translation :
+  $(REDEMPTION_TEST_PATH)/translation/test_translation.cpp
+:
+  <library>app_path_test.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
+  <library>src/utils/strutils.o
 ;
 test-run tests/transport/test_crypto_transport :
   $(REDEMPTION_TEST_PATH)/transport/test_crypto_transport.cpp
@@ -4720,12 +4734,6 @@ test-run tests/utils/test_get_printable_password :
   $(REDEMPTION_TEST_PATH)/utils/test_get_printable_password.cpp
 :
 ;
-test-run tests/utils/test_gettext :
-  $(REDEMPTION_TEST_PATH)/utils/test_gettext.cpp
-:
-  <library>src/utils/fileutils.o
-  <library>src/utils/strutils.o
-;
 test-run tests/utils/test_hexadecimal_string_to_buffer :
   $(REDEMPTION_TEST_PATH)/utils/test_hexadecimal_string_to_buffer.cpp
 :
@@ -4904,14 +4912,6 @@ test-run tests/utils/test_to_timeval :
   $(REDEMPTION_TEST_PATH)/utils/test_to_timeval.cpp
 :
 ;
-test-run tests/utils/test_translation :
-  $(REDEMPTION_TEST_PATH)/utils/test_translation.cpp
-:
-  <library>app_path_test.o
-  <library>src/utils/gettext.o
-  <library>src/utils/strutils.o
-  <library>src/utils/translation.o
-;
 test-run tests/utils/test_txt2d_to_rects :
   $(REDEMPTION_TEST_PATH)/utils/test_txt2d_to_rects.cpp
 :
@@ -5068,6 +5068,9 @@ obj src/mod/vnc/encoder/zrle.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/zrle.cpp
 obj src/mod/vnc/vnc.o : $(REDEMPTION_SRC_PATH)/mod/vnc/vnc.cpp : <define>ZLIB_CONST ;
 obj src/proxy_recorder/proxy_recorder.o : $(REDEMPTION_SRC_PATH)/proxy_recorder/proxy_recorder.cpp ;
 obj src/system/linux/system/tls_check_certificate.o : $(REDEMPTION_SRC_PATH)/system/linux/system/tls_check_certificate.cpp ;
+obj src/translation/gettext.o : $(REDEMPTION_SRC_PATH)/translation/gettext.cpp ;
+obj src/translation/local_err_msg.o : $(REDEMPTION_SRC_PATH)/translation/local_err_msg.cpp ;
+obj src/translation/translation.o : $(REDEMPTION_SRC_PATH)/translation/translation.cpp ;
 obj src/transport/crypto_transport.o : $(REDEMPTION_SRC_PATH)/transport/crypto_transport.cpp ;
 obj src/transport/file_transport.o : $(REDEMPTION_SRC_PATH)/transport/file_transport.cpp ;
 obj src/transport/gzip_compression_transport.o : $(REDEMPTION_SRC_PATH)/transport/gzip_compression_transport.cpp : <define>ZLIB_CONST ;
@@ -5091,12 +5094,10 @@ obj src/utils/d3des.o : $(REDEMPTION_SRC_PATH)/utils/d3des.cpp ;
 obj src/utils/drawable.o : $(REDEMPTION_SRC_PATH)/utils/drawable.cpp ;
 obj src/utils/drawable_pointer.o : $(REDEMPTION_SRC_PATH)/utils/drawable_pointer.cpp ;
 obj src/utils/fileutils.o : $(REDEMPTION_SRC_PATH)/utils/fileutils.cpp ;
-obj src/utils/gettext.o : $(REDEMPTION_SRC_PATH)/utils/gettext.cpp ;
 obj src/utils/hexadecimal_string_to_buffer.o : $(REDEMPTION_SRC_PATH)/utils/hexadecimal_string_to_buffer.cpp ;
 obj src/utils/hexdump.o : $(REDEMPTION_SRC_PATH)/utils/hexdump.cpp ;
 obj src/utils/ip.o : $(REDEMPTION_SRC_PATH)/utils/ip.cpp ;
 obj src/utils/load_theme.o : $(REDEMPTION_SRC_PATH)/utils/load_theme.cpp ;
-obj src/utils/local_err_msg.o : $(REDEMPTION_SRC_PATH)/utils/local_err_msg.cpp ;
 obj src/utils/log_siem.o : $(REDEMPTION_SRC_PATH)/utils/log_siem.cpp ;
 obj src/utils/netutils.o : $(REDEMPTION_SRC_PATH)/utils/netutils.cpp ;
 obj src/utils/parse_primary_drawing_orders.o : $(REDEMPTION_SRC_PATH)/utils/parse_primary_drawing_orders.cpp ;
@@ -5110,7 +5111,6 @@ obj src/utils/stacktrace.o : $(REDEMPTION_SRC_PATH)/utils/stacktrace.cpp : $(BOO
 obj src/utils/strutils.o : $(REDEMPTION_SRC_PATH)/utils/strutils.cpp ;
 obj src/utils/sugar/multisz.o : $(REDEMPTION_SRC_PATH)/utils/sugar/multisz.cpp ;
 obj src/utils/timestamp_tracer.o : $(REDEMPTION_SRC_PATH)/utils/timestamp_tracer.cpp ;
-obj src/utils/translation.o : $(REDEMPTION_SRC_PATH)/utils/translation.cpp ;
 obj src/utils/uninit_buffer.o : $(REDEMPTION_SRC_PATH)/utils/uninit_buffer.cpp ;
 obj src/utils/utf.o : $(REDEMPTION_SRC_PATH)/utils/utf.cpp ;
 obj tests/includes/test_only/core/font.o : $(REDEMPTION_TEST_PATH)/includes/test_only/core/font.cpp : $(CXXFLAGS_TEST) ;
@@ -5339,6 +5339,8 @@ alias test_ssl_mod_exp : tests/system/linux/system/test_ssl_mod_exp ;
 alias test_ssl_rc4 : tests/system/linux/system/test_ssl_rc4 ;
 alias test_ssl_sha1 : tests/system/linux/system/test_ssl_sha1 ;
 alias test_ssl_sha256 : tests/system/linux/system/test_ssl_sha256 ;
+alias test_gettext : tests/translation/test_gettext ;
+alias test_translation : tests/translation/test_translation ;
 alias test_crypto_transport : tests/transport/test_crypto_transport ;
 alias test_file_transport : tests/transport/test_file_transport ;
 alias test_gzip_compression_transport : tests/transport/test_gzip_compression_transport ;
@@ -5403,7 +5405,6 @@ alias test_error_message_ctx : tests/utils/test_error_message_ctx ;
 alias test_file_permissions : tests/utils/test_file_permissions ;
 alias test_fileutils : tests/utils/test_fileutils ;
 alias test_get_printable_password : tests/utils/test_get_printable_password ;
-alias test_gettext : tests/utils/test_gettext ;
 alias test_hexadecimal_string_to_buffer : tests/utils/test_hexadecimal_string_to_buffer ;
 alias test_id_manager : tests/utils/test_id_manager ;
 alias test_ip : tests/utils/test_ip ;
@@ -5433,7 +5434,6 @@ alias test_stream : tests/utils/test_stream ;
 alias test_string_c : tests/utils/test_string_c ;
 alias test_strutils : tests/utils/test_strutils ;
 alias test_to_timeval : tests/utils/test_to_timeval ;
-alias test_translation : tests/utils/test_translation ;
 alias test_txt2d_to_rects : tests/utils/test_txt2d_to_rects ;
 alias test_utf : tests/utils/test_utf ;
 alias test_zlib : tests/utils/test_zlib ;
@@ -5729,6 +5729,10 @@ alias tests/system/linux/system.norec :
   tests/system/linux/system/test_ssl_sha1
   tests/system/linux/system/test_ssl_sha256
 ;
+alias tests/translation.norec :
+  tests/translation/test_gettext
+  tests/translation/test_translation
+;
 alias tests/transport.norec :
   tests/transport/test_crypto_transport
   tests/transport/test_file_transport
@@ -5806,7 +5810,6 @@ alias tests/utils.norec :
   tests/utils/test_file_permissions
   tests/utils/test_fileutils
   tests/utils/test_get_printable_password
-  tests/utils/test_gettext
   tests/utils/test_hexadecimal_string_to_buffer
   tests/utils/test_id_manager
   tests/utils/test_ip
@@ -5836,7 +5839,6 @@ alias tests/utils.norec :
   tests/utils/test_string_c
   tests/utils/test_strutils
   tests/utils/test_to_timeval
-  tests/utils/test_translation
   tests/utils/test_txt2d_to_rects
   tests/utils/test_utf
   tests/utils/test_zlib
@@ -5861,6 +5863,7 @@ alias tests :
   tests/mod
   tests/proxy_recorder
   tests/server
+  tests/translation
   tests/transport
   tests/utils
 ;
@@ -6007,6 +6010,9 @@ alias tests/system/linux/system :
 ;
 alias tests/system/linux :
   tests/system/linux/system
+;
+alias tests/translation :
+  tests/translation.norec
 ;
 alias tests/transport :
   tests/transport.norec
@@ -6182,6 +6188,9 @@ explicit
   src/mod/vnc/vnc.o
   src/proxy_recorder/proxy_recorder.o
   src/system/linux/system/tls_check_certificate.o
+  src/translation/gettext.o
+  src/translation/local_err_msg.o
+  src/translation/translation.o
   src/transport/crypto_transport.o
   src/transport/file_transport.o
   src/transport/gzip_compression_transport.o
@@ -6205,12 +6214,10 @@ explicit
   src/utils/drawable.o
   src/utils/drawable_pointer.o
   src/utils/fileutils.o
-  src/utils/gettext.o
   src/utils/hexadecimal_string_to_buffer.o
   src/utils/hexdump.o
   src/utils/ip.o
   src/utils/load_theme.o
-  src/utils/local_err_msg.o
   src/utils/log_siem.o
   src/utils/netutils.o
   src/utils/parse_primary_drawing_orders.o
@@ -6224,7 +6231,6 @@ explicit
   src/utils/strutils.o
   src/utils/sugar/multisz.o
   src/utils/timestamp_tracer.o
-  src/utils/translation.o
   src/utils/uninit_buffer.o
   src/utils/utf.o
   tests/includes/test_only/core/font.o
@@ -6455,6 +6461,8 @@ explicit
   test_ssl_rc4
   test_ssl_sha1
   test_ssl_sha256
+  test_gettext
+  test_translation
   test_crypto_transport
   test_file_transport
   test_gzip_compression_transport
@@ -6519,7 +6527,6 @@ explicit
   test_file_permissions
   test_fileutils
   test_get_printable_password
-  test_gettext
   test_hexadecimal_string_to_buffer
   test_id_manager
   test_ip
@@ -6549,7 +6556,6 @@ explicit
   test_string_c
   test_strutils
   test_to_timeval
-  test_translation
   test_txt2d_to_rects
   test_utf
   test_zlib
@@ -6595,6 +6601,7 @@ explicit
   tests/proxy_recorder.norec
   tests/server.norec
   tests/system/linux/system.norec
+  tests/translation.norec
   tests/transport.norec
   tests/transport/ws.norec
   tests/utils/crypto.norec
@@ -6649,6 +6656,7 @@ explicit
   tests/server
   tests/system/linux/system
   tests/system/linux
+  tests/translation
   tests/transport
   tests/transport/ws
   tests/utils/crypto

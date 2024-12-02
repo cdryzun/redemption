@@ -26,8 +26,8 @@
 #include "acl/auth_api.hpp"
 #include "configs/config.hpp"
 #include "core/log_id.hpp"
+#include "translation/trkeys.hpp"
 #include "utils/log.hpp"
-#include "utils/trkeys.hpp"
 #include "utils/sugar/unique_fd.hpp"
 #include "utils/log_siem.hpp"
 #include "utils/netutils.hpp"
@@ -43,7 +43,7 @@
 
 inline unique_fd connect_to_target_host(
     Inifile & ini, SessionLogApi& session_log, ErrorMessageCtx& err_msg_ctx,
-    TrKey const& authentification_fail, bool enable_ipv6,
+    TrKey authentification_fail, bool enable_ipv6,
     std::chrono::milliseconds connection_establishment_timeout,
     std::chrono::milliseconds tcp_user_timeout)
 {

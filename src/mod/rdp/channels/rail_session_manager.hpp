@@ -39,9 +39,9 @@
 #include "utils/rect.hpp"
 #include "utils/theme.hpp"
 #include "utils/timebase.hpp"
-#include "utils/trkeys.hpp"
-#include "utils/translation.hpp"
 #include "utils/sugar/not_null_ptr.hpp"
+#include "translation/trkeys.hpp"
+#include "translation/translation.hpp"
 #include "core/events.hpp"
 
 #include <string>

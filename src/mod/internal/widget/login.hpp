@@ -25,7 +25,7 @@
 #include "mod/internal/widget/edit_valid.hpp"
 #include "mod/internal/widget/image.hpp"
 #include "mod/internal/widget/vertical_scroll_text.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 #include "mod/internal/widget/multiline.hpp"
 
 class Theme;

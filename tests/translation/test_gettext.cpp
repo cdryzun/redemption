@@ -26,8 +26,8 @@
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 #include "test_only/test_framework/file.hpp"
 
-#include "utils/gettext.hpp"
-#include "utils/gettext.cpp"
+#include "translation/gettext.hpp"
+#include "translation/gettext.cpp"
 #include "utils/sugar/int_to_chars.hpp"
 
 #include <string_view>

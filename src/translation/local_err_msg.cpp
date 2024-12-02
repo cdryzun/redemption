@@ -18,8 +18,8 @@
   Author(s): Wallix Team
 */
 
-#include "utils/local_err_msg.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/local_err_msg.hpp"
+#include "translation/trkeys.hpp"
 #include "core/error.hpp"
 
 LocalErrMsg LocalErrMsg::from_error_id(error_type id) noexcept

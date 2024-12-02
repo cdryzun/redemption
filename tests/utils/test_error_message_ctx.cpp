@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 
+#include "translation/trkeys.hpp"
 #include "utils/error_message_ctx.hpp"
-#include "utils/trkeys.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 
 RED_AUTO_TEST_CASE(TestErrMsgCtx)

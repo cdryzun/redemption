@@ -3,11 +3,11 @@ SPDX-FileCopyrightText: 2024 Wallix Proxies Team
 SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
+#include "translation/gettext.hpp"
 #include "utils/sugar/unique_fd.hpp"
 #include "utils/sugar/scope_exit.hpp"
 #include "utils/log.hpp"
-#include "utils/gettext.hpp"
 #include "utils/strutils.hpp"
 #include "utils/log.hpp"
 #include "core/app_path.hpp"
@@ -52,7 +52,7 @@ constexpr MsgTranslationCatalog::Plurals make_plurals(zstring_view msg, zstring_
 inline constexpr MsgTranslationCatalog msgid_catalog {
     GettextPlural::plural_1_neq_n(),
     {
-        #include "utils/trkeys_def.hpp"
+        #include "translation/trkeys_def.hpp"
     }
 };
 

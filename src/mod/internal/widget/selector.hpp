@@ -28,7 +28,7 @@
 #include "mod/internal/widget/number_edit.hpp"
 #include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/labelgrid.hpp"
-#include "utils/translation.hpp"
+#include "translation/translation.hpp"
 
 class Theme;
 

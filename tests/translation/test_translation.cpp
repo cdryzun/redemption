@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 
-#include "utils/translation.hpp"
-#include "utils/trkeys.hpp"
+#include "translation/translation.hpp"
+#include "translation/trkeys.hpp"
 
 
 RED_AUTO_TEST_CASE(TestTranslation)
