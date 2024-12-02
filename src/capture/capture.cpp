@@ -1598,6 +1598,14 @@ void Capture::resize(uint16_t width, uint16_t height)
                     );
                 }
             }
+            #ifndef REDEMPTION_NO_FFMPEG
+            if (this->full_video_capture_obj) {
+                this->full_video_capture_obj->update_fullscreen();
+            }
+            if (this->sequenced_video_capture_obj) {
+                this->sequenced_video_capture_obj->update_fullscreen();
+            }
+            #endif
         }
 
         return ;

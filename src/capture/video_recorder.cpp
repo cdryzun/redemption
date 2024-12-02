@@ -226,6 +226,7 @@ struct video_recorder::D
 
     AVPacket* pkt = nullptr;
     int original_height;
+    int previous_height;
     int timestamp_height;
 
     std::unique_ptr<uint8_t, default_av_free> dst_frame_buffer;
@@ -285,6 +286,7 @@ video_recorder::video_recorder(
     const int height = image_view.height();
 
     d->original_height = height;
+    d->previous_height = height;
 
     #if LIBAVCODEC_VERSION_MAJOR <= 57
     /* initialize libavcodec, and register all codecs and formats */
@@ -504,9 +506,23 @@ video_recorder::~video_recorder() /*NOLINT*/
     av_write_trailer(this->d->oc);
 }
 
-void video_recorder::preparing_video_frame()
+void video_recorder::preparing_video_frame(int bottom)
 {
     /* stat */// LOG(LOG_INFO, "preparing_video_frame");
+    int height = std::max(bottom, this->d->previous_height);
+    this->d->previous_height = bottom;
+    sws_scale(
+        this->d->frame_convert_ctx,
+        this->d->src_frame_data,
+        this->d->src_frame_linesize,
+        0,
+        std::min(height, this->d->original_height),
+        this->d->dst_frame->data,
+        this->d->dst_frame->linesize);
+}
+
+void video_recorder::preparing_video_frame()
+{
     sws_scale(
         this->d->frame_convert_ctx,
         this->d->src_frame_data,
@@ -554,6 +570,8 @@ video_recorder::video_recorder(
 {}
 
 video_recorder::~video_recorder() = default;
+
+void video_recorder::preparing_video_frame(int) { }
 
 void video_recorder::preparing_video_frame() { }
 

@@ -184,15 +184,24 @@ void DrawablePointer::set_cursor(RdpPointerView const& cursor)
                                            storage);
 }
 
+Rect DrawablePointer::get_rect(Drawable& drawable) const
+{
+    auto const x = int16_t(int(this->cursor_x) - int(this->hotspot_x));
+    auto const y = int16_t(int(this->cursor_y) - int(this->hotspot_y));
+    Rect const rect_pointer(x, y, this->width, this->height);
+    Rect const rect_drawable(0, 0, drawable.width(), drawable.height());
+    Rect const rect_intersect = rect_drawable.intersect(rect_pointer);
+    return rect_intersect;
+}
+
+
 void DrawablePointer::trace_mouse(Drawable& drawable, BufferSaver& drawable_buffer) const
 {
     uint8_t* cur_psave = drawable_buffer;
 
     auto const x = int16_t(int(this->cursor_x) - int(this->hotspot_x));
     auto const y = int16_t(int(this->cursor_y) - int(this->hotspot_y));
-    Rect const rect_pointer(x, y, this->width, this->height);
-    Rect const rect_drawable(0, 0, drawable.width(), drawable.height());
-    Rect const rect_intersect = rect_drawable.intersect(rect_pointer);
+    Rect const rect_intersect = get_rect(drawable);
     if (rect_intersect.isempty()) {
         return;
     }
@@ -205,8 +214,8 @@ void DrawablePointer::trace_mouse(Drawable& drawable, BufferSaver& drawable_buff
         cur_psave += data_length;
     }
 
-    Rect rect_sub_view(rect_intersect.x - rect_pointer.x,
-                       rect_intersect.y - rect_pointer.y,
+    Rect rect_sub_view(rect_intersect.x - x,
+                       rect_intersect.y - y,
                        rect_intersect.cx,
                        rect_intersect.cy);
 
@@ -230,11 +239,7 @@ void DrawablePointer::clear_mouse(Drawable& drawable, BufferSaver const& drawabl
 {
     uint8_t const* cur_psave = drawable_buffer;
 
-    auto const x = int16_t(int(this->cursor_x) - int(this->hotspot_x));
-    auto const y = int16_t(int(this->cursor_y) - int(this->hotspot_y));
-    Rect const rect_pointer(x, y, this->width, this->height);
-    Rect const rect_drawable(0, 0, drawable.width(), drawable.height());
-    Rect const rect_intersect = rect_drawable.intersect(rect_pointer);
+    Rect const rect_intersect = get_rect(drawable);
     if (rect_intersect.isempty()) {
         return;
     }

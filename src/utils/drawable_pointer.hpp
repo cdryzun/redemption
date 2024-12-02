@@ -66,6 +66,8 @@ public:
         this->cursor_y = y;
     }
 
+    Rect get_rect(Drawable& drawable) const;
+
     void trace_mouse(Drawable& drawable, BufferSaver& drawable_buffer) const;
     void clear_mouse(Drawable& drawable, BufferSaver const& drawable_buffer) const;
 };  // struct DrawablePointer

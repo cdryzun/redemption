@@ -37,7 +37,6 @@
 #include <cstring>
 #include <cstddef>
 #include <cstdio>
-#include <cstdlib>
 #include <ctime>
 
 
@@ -176,10 +175,10 @@ VideoCaptureCtx::VideoCaptureCtx(
 , image_by_interval(image_by_interval)
 , has_timestamp(image_by_interval == ImageByInterval::ZeroOrOneWithTimestamp)
 , video_cropper(drawable, crop_rect)
+, rect_tracker(drawable.width(), drawable.height())
 , updatable_frame_marker_end_bitset_stream(updatable_frame_marker_end_bitset_view.data())
 , updatable_frame_marker_end_bitset_end(updatable_frame_marker_end_bitset_view.end())
 {
-    this->updatable_graphics.set_drawing_event(true);
 }
 
 void VideoCaptureCtx::preparing_video_frame(video_recorder & recorder)
@@ -195,8 +194,12 @@ void VideoCaptureCtx::preparing_video_frame(video_recorder & recorder)
     if (this->has_timestamp) {
         this->timestamp_tracer.trace(image, this->get_tm());
     }
-
-    recorder.preparing_video_frame();
+    // Cropping not working, why ?
+    if(video_cropper.is_cropped()) {
+        recorder.preparing_video_frame();
+    } else {
+        recorder.preparing_video_frame(rect_tracker.get_rect().disjunct(drawable_pointer.get_rect(drawable)).ebottom());
+    }
 
     if (this->has_timestamp) {
         this->timestamp_tracer.clear(image);
@@ -219,12 +222,12 @@ void VideoCaptureCtx::frame_marker_event(
 {
     if (((updatable_frame_marker_end_bitset_stream.current() == updatable_frame_marker_end_bitset_end
        || updatable_frame_marker_end_bitset_stream.read()
-      ) && this->updatable_graphics.has_drawing_event())
+      ) && this->rect_tracker.has_drawing_event())
      || this->cursor_x != cursor_x
      || this->cursor_y != cursor_y
     ) {
         this->preparing_video_frame(recorder);
-        this->updatable_graphics.set_drawing_event(false);
+        this->rect_tracker.reset();
         this->cursor_x = cursor_x;
         this->cursor_y = cursor_y;
     }
@@ -251,6 +254,7 @@ void VideoCaptureCtx::next_video(video_recorder & recorder)
     this->frame_index = 0;
     this->preparing_video_frame(recorder);
     recorder.encoding_video_frame(++this->frame_index);
+    this->rect_tracker.set_area(this->drawable.width(), this->drawable.height());
 }
 
 void VideoCaptureCtx::synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time)
@@ -266,6 +270,7 @@ void VideoCaptureCtx::set_cropping(Rect cropping) noexcept
     assert(cropping.ebottom() <= this->drawable.height());
 
     this->video_cropper.set_cropping(cropping);
+    this->rect_tracker.set_area(this->drawable.width(), this->drawable.height());
 }
 
 bool VideoCaptureCtx::logical_frame_ended() const noexcept
@@ -306,6 +311,11 @@ tm VideoCaptureCtx::get_tm() const
     return to_tm_t(this->monotonic_last_time_capture, this->monotonic_to_real);
 }
 
+void VideoCaptureCtx::update_fullscreen()
+{
+    this->rect_tracker.set_area(drawable.width(), drawable.height());
+}
+
 WaitingTimeBeforeNextSnapshot VideoCaptureCtx::snapshot(
     video_recorder & recorder, MonotonicTimePoint now,
     uint16_t cursor_x, uint16_t cursor_y
@@ -317,7 +327,7 @@ WaitingTimeBeforeNextSnapshot VideoCaptureCtx::snapshot(
         bool const update_timestamp = this->has_timestamp
                                    && now >= this->next_trace_time;
         bool const update_image = (!this->has_frame_marker
-                                  && this->updatable_graphics.has_drawing_event())
+                                  && this->rect_tracker.has_drawing_event())
                                 || this->cursor_x != cursor_x
                                 || this->cursor_y != cursor_y
                                 ;
@@ -325,17 +335,21 @@ WaitingTimeBeforeNextSnapshot VideoCaptureCtx::snapshot(
 
         DrawablePointer::BufferSaver buffer_saver;
 
+        bool const is_image_drawable
+            = update_pointer
+            || (update_image
+                && (!this->has_timestamp || this->monotonic_last_time_capture < this->next_trace_time));
+        Rect rect = is_image_drawable ? rect_tracker.get_rect() : Rect();
+
         if (update_pointer) {
             auto& drawable_pointer = this->lazy_drawable_pointer.drawable_pointer();
             drawable_pointer.trace_mouse(this->drawable, buffer_saver);
+            rect = rect.disjunct(drawable_pointer.get_rect(drawable));
         }
 
         auto image = WritableImageView::create_null_view();
 
-        if (update_pointer
-         || (update_image
-             && (!this->has_timestamp || this->monotonic_last_time_capture < this->next_trace_time))
-        ) {
+        if (is_image_drawable) {
             image = this->prepare_image_frame();
 
             if (this->has_timestamp) {
@@ -345,8 +359,12 @@ WaitingTimeBeforeNextSnapshot VideoCaptureCtx::snapshot(
                     this->next_trace_time += 1s;
                 }
             }
-
-            recorder.preparing_video_frame();
+            // Cropping not working, why ?
+            if(video_cropper.is_cropped()) {
+                recorder.preparing_video_frame();
+            } else {
+                recorder.preparing_video_frame(rect.ebottom());
+            }
         }
 
         this->cursor_x = cursor_x;
@@ -402,7 +420,7 @@ WaitingTimeBeforeNextSnapshot VideoCaptureCtx::snapshot(
                 break;
         }
 
-        this->updatable_graphics.set_drawing_event(false);
+        this->rect_tracker.reset();
 
         if (update_timestamp && this->has_timestamp) {
             this->timestamp_tracer.clear(image);

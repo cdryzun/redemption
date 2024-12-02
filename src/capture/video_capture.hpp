@@ -26,7 +26,7 @@
 #include "capture/notify_next_video.hpp"
 #include "capture/lazy_drawable_pointer.hpp"
 #include "gdi/capture_api.hpp"
-#include "gdi/updatable_graphics.hpp"
+#include "gdi/rect_tracker.hpp"
 #include "utils/sugar/noncopyable.hpp"
 #include "utils/timestamp_tracer.hpp"
 #include "utils/monotonic_time_to_real_time.hpp"
@@ -41,7 +41,6 @@ class CaptureParams;
 class FullVideoParams;
 class SequencedVideoParams;
 class Drawable;
-
 
 struct VideoCaptureCtx : noncopyable
 {
@@ -64,7 +63,7 @@ struct VideoCaptureCtx : noncopyable
 
     gdi::GraphicApi& graphics_api() noexcept
     {
-        return this->updatable_graphics;
+        return this->rect_tracker;
     }
 
     void frame_marker_event(
@@ -95,6 +94,8 @@ struct VideoCaptureCtx : noncopyable
 
     tm get_tm() const;
 
+    void update_fullscreen();
+
 private:
     void preparing_video_frame(video_recorder & recorder);
 
@@ -106,6 +107,11 @@ private:
         VideoCropper(Drawable & drawable, Rect crop_rect);
 
         void set_cropping(Rect cropping) noexcept;
+
+        bool is_cropped() const noexcept
+        {
+            return !this->is_fullscreen;
+        }
 
         void prepare_image_frame(Drawable & drawable) noexcept;
 
@@ -134,14 +140,13 @@ private:
 
     VideoCropper video_cropper;
 
-    gdi::UpdatableGraphics updatable_graphics;
+    RectTracker rect_tracker;
     BitsetInStream updatable_frame_marker_end_bitset_stream;
     BitsetInStream::underlying_type const* updatable_frame_marker_end_bitset_end;
 
 public:
     TimestampTracer timestamp_tracer;
 };
-
 
 class FullVideoCaptureImpl final : public gdi::CaptureApi
 {
@@ -164,7 +169,7 @@ public:
 
     void set_cropping(Rect cropping)
     {
-        return this->video_cap_ctx.set_cropping(cropping);
+        this->video_cap_ctx.set_cropping(cropping);
     }
 
     void frame_marker_event(
@@ -176,6 +181,11 @@ public:
     ) override;
 
     void synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time);
+
+    void update_fullscreen()
+    {
+        this->video_cap_ctx.update_fullscreen();
+    }
 
 private:
     VideoCaptureCtx video_cap_ctx;
@@ -220,6 +230,11 @@ public:
     void next_video(MonotonicTimePoint now);
 
     void synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time);
+
+    void update_fullscreen()
+    {
+        this->video_cap_ctx.update_fullscreen();
+    }
 
 private:
     void ic_flush(const tm& now);
