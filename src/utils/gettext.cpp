@@ -20,6 +20,12 @@ namespace
 #define REDEMPTION_GETTEXT_DEFS(f)            \
     f(Num, Expr, 0, false) /* [0-9]+ */       \
     f(Id, Expr, 0, false) /* 'n' */           \
+    f(NEq, BinaryOp, 30, true) /* != */       \
+    f(Eq, BinaryOp, 30, true) /* == */        \
+    f(LT, BinaryOp, 40, true) /* < */         \
+    f(GT, BinaryOp, 40, true) /* > */         \
+    f(LE, BinaryOp, 40, true) /* <= */        \
+    f(GE, BinaryOp, 40, true) /* >= */        \
     f(Not, UnaryOp, 90, false) /* ! */        \
     f(Mul, BinaryOp, 80, true) /* * */        \
     f(Div, BinaryOp, 80, true) /* / */        \
@@ -28,12 +34,6 @@ namespace
     f(Sub, BinaryOp, 60, true) /* - binary */ \
     f(Plus, UnaryOp, 90, false) /* + unary */ \
     f(Neg, UnaryOp, 90, false) /* - unary */  \
-    f(LT, BinaryOp, 40, true) /* < */         \
-    f(GT, BinaryOp, 40, true) /* > */         \
-    f(LE, BinaryOp, 40, true) /* <= */        \
-    f(GE, BinaryOp, 40, true) /* >= */        \
-    f(Eq, BinaryOp, 30, true) /* == */        \
-    f(NEq, BinaryOp, 30, true) /* != */       \
     f(And, BinaryOp, 20, true) /* && */       \
     f(Or, BinaryOp, 10, true) /* || */        \
     f(TernIf, BinaryOp, 0, false) /* ? */     \
@@ -128,11 +128,11 @@ chars_view MoMsgStrIterator::next() noexcept
 }
 
 
-array_view<GettextPlural::ItemImpl> GettextPlural::items()
+array_view<GettextPlural::ItemImpl> GettextPlural::items() const noexcept
 {
     return {
-        static_cast<ItemImpl const*>(m_output + 0),
-        static_cast<ItemImpl const*>(m_output + m_output_len),
+        static_cast<ItemImpl const*>(m_stack + 0),
+        static_cast<ItemImpl const*>(m_stack + m_stack_len),
     };
 }
 
@@ -144,7 +144,7 @@ expr = n ? 1 : 2
                                        offset from 0       |__________|
                                                            offset from 0
 */
-char const* GettextPlural::parse(chars_view s)
+char const* GettextPlural::parse(chars_view s) noexcept
 {
     struct OpStack
     {
@@ -156,12 +156,12 @@ char const* GettextPlural::parse(chars_view s)
     ExprType previous_type = ExprType::UnaryOp;
     op_stack[0] = {Token{}, 0};
 
-    auto* output_it = m_output;
+    auto* output_it = m_stack;
     auto* op_it = op_stack;
     auto* ternary_offset_it = ternary_offset_stack;
 
     auto output_size = [&]{
-        return output_it - std::begin(m_output);
+        return output_it - std::begin(m_stack);
     };
 
     auto op_stack_size = [&]{
@@ -196,7 +196,7 @@ char const* GettextPlural::parse(chars_view s)
             --op_it;
             --ternary_offset_it;
             const auto offset_expr = checked_int(output_size());
-            m_output[*ternary_offset_it] = ItemImpl::make(Token::TernElse, offset_expr);
+            m_stack[*ternary_offset_it] = ItemImpl::make(Token::TernElse, offset_expr);
         }
     };
 
@@ -350,7 +350,7 @@ char const* GettextPlural::parse(chars_view s)
             const auto offset_expr = output_size();
             *output_it++ = ItemImpl::make(desc.token);
 
-            m_output[*(ternary_offset_it - 1)] = ItemImpl::make(Token::TernIf, checked_int(offset_expr + 1));
+            m_stack[*(ternary_offset_it - 1)] = ItemImpl::make(Token::TernIf, checked_int(offset_expr + 1));
             *(ternary_offset_it - 1) = checked_int(offset_expr);
             continue;
         }
@@ -372,11 +372,11 @@ char const* GettextPlural::parse(chars_view s)
         return p;
     }
 
-    m_output_len = checked_int(output_size());
+    m_stack_len = checked_int(output_size());
     return nullptr;
 }
 
-unsigned long GettextPlural::eval(unsigned long n)
+unsigned long GettextPlural::eval(unsigned long n) const noexcept
 {
     unsigned long stack[GettextPlural::stack_capacity / 2 + 1];
     unsigned long* p = stack;

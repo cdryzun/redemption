@@ -6,26 +6,35 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #if defined(IN_IDE_PARSER) && !defined(TR_KV)
 #   define TR_KV(name, msg)
 #   define TR_KV_FMT(name, msg)
+#   define TR_KV_PLURAL_FMT(name, msg, plural_msg)
 #   define IN_IDE_PARSER_TR_KV 1
 #endif
 
 TR_KV(optional_target, "Target (optional)")
 TR_KV(login, "Login")
 TR_KV(password, "Password")
-TR_KV(connection_closed, "Connection closed")
 TR_KV(OK, "OK")
 TR_KV(close, "Close")
 
+// close box
+TR_KV(connection_closed, "Connection closed")
+
+// OSD (time before closing)
+TR_KV_FMT(osd_hour_minute_second_before_closing, "%d hours, %d minutes, %d seconds before closing")
+TR_KV_FMT(osd_minute_second_before_closing, "%d minutes, %d seconds before closing")
+TR_KV_PLURAL_FMT(osd_second_before_closing, "%d second before closing", "%d seconds before closing")
+// OSD (end time warning)
+TR_KV_PLURAL_FMT(close_box_second_timer, "%d second before closing.", "%d seconds before closing.")
+TR_KV_PLURAL_FMT(close_box_minute_timer, "%d minute before closing.", "%d minutes before closing.")
+
+// selector
 TR_KV(protocol, "Protocol")
 TR_KV(authorization, "Authorization")
 TR_KV(target, "Target")
 TR_KV(logout, "Logout")
 TR_KV(filter, "Filter")
 TR_KV(connect, "Connect")
-TR_KV(second, "second")
-TR_KV(minute, "minute")
-TR_KV(hour, "hour")
-TR_KV(before_closing, "before closing")
+
 TR_KV(enable_rt_display, "Your session is currently being audited.")
 TR_KV(manager_close_cnx, "Connection closed by manager.")
 TR_KV(end_connection, "End of connection")

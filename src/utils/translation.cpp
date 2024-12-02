@@ -35,11 +35,22 @@ constexpr MsgTranslationCatalog::Plurals make_plurals(zstring_view msg) noexcept
     return ret;
 }
 
+constexpr MsgTranslationCatalog::Plurals make_plurals(zstring_view msg, zstring_view plural_msg) noexcept
+{
+    MsgTranslationCatalog::Plurals ret{};
+    for (auto& s : ret.plurals) {
+        s = plural_msg;
+    }
+    ret.plurals.front() = msg;
+    return ret;
+}
+
 #define TR_KV(name, msg) make_plurals(msg ""_zv),
 #define TR_KV_FMT TR_KV
+#define TR_KV_PLURAL_FMT(name, msg, plural_msg) make_plurals(msg ""_zv, plural_msg ""_zv),
 
 inline constexpr MsgTranslationCatalog msgid_catalog {
-    GettextPlural::constexpr_t(),
+    GettextPlural::plural_1_neq_n(),
     {
         #include "utils/trkeys_def.hpp"
     }
@@ -47,6 +58,7 @@ inline constexpr MsgTranslationCatalog msgid_catalog {
 
 #undef TR_KV
 #undef TR_KV_FMT
+#undef TR_KV_PLURAL_FMT
 
 void log_read_file_err(char const* filename, char const* ctx)
 {
@@ -221,9 +233,4 @@ void MsgTranslationCatalog::init_from_file(
         LOG(LOG_WARNING, "i18n: %s: invalid msgstr format", filename);
         break;
     }
-}
-
-zstring_view Translator::operator()(TrKey k) const noexcept
-{
-    return catalog->msgstrs[k.index].plurals[0];
 }

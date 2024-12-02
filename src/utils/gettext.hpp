@@ -16,19 +16,24 @@ struct GettextPlural
     GettextPlural() noexcept
     {}
 
-    class constexpr_t {};
-    constexpr GettextPlural(constexpr_t) noexcept
-      : m_output_len(0)
-      , m_output{}
-    {}
+    class plural_1_neq_n {};
+    constexpr GettextPlural(plural_1_neq_n) noexcept
+      : m_stack_len(3)
+      , m_stack{}
+    {
+        // 1 + n (see .cpp). Checked in test_gettext.cpp
+        m_stack[0].data = 1 << 6; // num = 1
+        m_stack[1].data = 1; // id (n)
+        m_stack[2].data = 2; // binary +
+    }
 
     /// \return error position
-    char const* parse(chars_view s);
+    char const* parse(chars_view s) noexcept;
 
-    unsigned long eval(unsigned long n);
+    unsigned long eval(unsigned long n) const noexcept;
 
     struct ItemImpl;
-    array_view<ItemImpl> items();
+    array_view<ItemImpl> items() const noexcept;
 
 private:
     struct Item
@@ -37,8 +42,8 @@ private:
         uint_type data;
     };
 
-    uint32_t m_output_len = 0;
-    Item m_output[stack_capacity];
+    uint32_t m_stack_len = 0;
+    Item m_stack[stack_capacity];
 };
 
 

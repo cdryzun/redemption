@@ -18,5 +18,15 @@ RED_AUTO_TEST_CASE(TestTranslation)
         == "Error: 'XY' field is required."_av
     );
 
+    RED_CHECK(
+        Translator::FmtMsg<128>(tr, 1, trkeys::close_box_minute_timer, 1).to_av()
+        == "1 minute before closing."_av
+    );
+
+    RED_CHECK(
+        Translator::FmtMsg<128>(tr, 3, trkeys::close_box_minute_timer, 3).to_av()
+        == "3 minutes before closing."_av
+    );
+
     RED_CHECK_EQUAL(tr(trkeys::login), "Login");
 }

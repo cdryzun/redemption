@@ -1259,13 +1259,11 @@ private:
                          && mod_factory.mod().is_up_and_running()
                         ) {
                             loop_state = LoopState::UpdateOsd;
-                            mod_factory.display_osd_message(str_concat(
-                                int_to_decimal_chars(minutes.count()),
-                                ' ',
-                                mod_factory.tr(trkeys::minute),
-                                (minutes.count() > 1) ? "s " : " ",
-                                mod_factory.tr(trkeys::before_closing)
-                            ));
+                            mod_factory.display_osd_message(Translator::FmtMsg<256>(
+                                mod_factory.get_translator(),
+                                trkeys::close_box_minute_timer,
+                                static_cast<int>(minutes.count())
+                            ).to_sv());
                         }
                     });
                 }

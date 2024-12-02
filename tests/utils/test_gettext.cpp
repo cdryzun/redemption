@@ -189,6 +189,19 @@ RED_AUTO_TEST_CASE(TestParsePlural)
     GettextPlural plural;
     bool last_result = false;
 
+    auto plural_to_string = [&](GettextPlural const& plural){
+        if (!plural.items().empty()) {
+            for (auto item : plural.items()) {
+                buffer += '{';
+                buffer += token_to_string(item.token());
+                buffer += '|';
+                buffer += int_to_decimal_chars(item.number());
+                buffer += "} ";
+            }
+            buffer.pop_back();
+        }
+    };
+
     auto parse = [&](chars_view s) -> chars_view {
         buffer.clear();
         plural = GettextPlural();
@@ -198,15 +211,8 @@ RED_AUTO_TEST_CASE(TestParsePlural)
             last_result = false;
             str_assign(buffer, "error at position "_av, int_to_decimal_chars(p - s.data()), " ("_av, *p ? *p : '@', ')');
         }
-        else if (!plural.items().empty()) {
-            for (auto item : plural.items()) {
-                buffer += '{';
-                buffer += token_to_string(item.token());
-                buffer += '|';
-                buffer += int_to_decimal_chars(item.number());
-                buffer += "} ";
-            }
-            buffer.pop_back();
+        else {
+            plural_to_string(plural);
         }
 
         return buffer;
@@ -218,6 +224,9 @@ RED_AUTO_TEST_CASE(TestParsePlural)
         }
         return plural.eval(n);
     };
+
+    plural_to_string(GettextPlural(GettextPlural::plural_1_neq_n()));
+    RED_CHECK(buffer == "{Num|1} {Id|0} {NEq|0}"_av);
 
     RED_CHECK(parse(""_av) == ""_av); {
         RED_CHECK(eval(0) == 0);

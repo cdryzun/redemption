@@ -16,3 +16,8 @@ template<class T> struct TrKeyFmt
 {
     unsigned index;
 };
+
+template<class T> struct TrKeyPluralFmt
+{
+    unsigned index;
+};

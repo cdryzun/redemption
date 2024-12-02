@@ -92,48 +92,25 @@ void ModWrapper::clear_osd_message(bool redraw)
     }
 }
 
-namespace
+static void append_time_before_closing(std::string& msg, Translator tr, std::chrono::seconds elapsed_time)
 {
+    const auto hours_ = elapsed_time.count() / 3600;
+    const auto minutes_ = elapsed_time.count() / 60 - hours_ * 60;
+    const auto seconds_ = elapsed_time.count() - hours_ * 3600 - minutes_ * 60;
 
-inline void append_time_before_closing(std::string& msg, Translator tr, std::chrono::seconds elapsed_time)
-{
-    const auto hours = elapsed_time.count() / 3600;
-    const auto minutes = elapsed_time.count() / 60 - hours * 60;
-    const auto seconds = elapsed_time.count() - hours * 3600 - minutes * 60;
+    const int hours = static_cast<int>(hours_);
+    const int minutes = static_cast<int>(minutes_);
+    const int seconds = static_cast<int>(seconds_);
 
-    msg += "  [";
+    using TrFmt = Translator::FmtMsg<256>;
 
-    if (hours || minutes) {
-        if (hours) {
-            str_append(
-                msg,
-                int_to_decimal_chars(hours),
-                ' ',
-                tr(trkeys::hour),
-                (hours > 1) ? "s, " : ", "
-            );
-        }
+    auto becore_closing_msg = (hours && minutes)
+        ? TrFmt(tr, trkeys::osd_hour_minute_second_before_closing, hours, minutes, seconds)
+        : minutes
+        ? TrFmt(tr, trkeys::osd_minute_second_before_closing, minutes, seconds)
+        : TrFmt(tr, trkeys::osd_second_before_closing, seconds);
 
-        str_append(
-            msg,
-            int_to_decimal_chars(minutes),
-            ' ',
-            tr(trkeys::minute),
-            (minutes > 1) ? "s, " : ", "
-        );
-    }
-
-    str_append(
-        msg,
-        int_to_decimal_chars(seconds),
-        ' ',
-        tr(trkeys::second),
-        (seconds > 1) ? "s " : " ",
-        tr(trkeys::before_closing),
-        ']'
-    );
-}
-
+    str_append(msg, "  ["_av, becore_closing_msg, ']');
 }
 
 void ModWrapper::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)

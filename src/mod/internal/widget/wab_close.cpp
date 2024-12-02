@@ -300,21 +300,16 @@ std::chrono::seconds WidgetWabClose::refresh_timeleft(std::chrono::seconds remai
         tl = tl / 60;
     }
     if (this->prev_time != tl) {
-        char buff[256];
-        snprintf(
-            buff, sizeof(buff), "%ld %s%s %s. ",
-            tl,
-            seconds
-                ? tr(trkeys::second).c_str()
-                : tr(trkeys::minute).c_str(),
-            (tl <= 1) ? "" : "s",
-            tr(trkeys::before_closing).c_str()
-        );
+        using TrFmt = Translator::FmtMsg<256>;
+        auto duration = static_cast<int>(tl);
+        auto text = seconds
+            ? TrFmt(tr, trkeys::close_box_second_timer, duration)
+            : TrFmt(tr, trkeys::close_box_minute_timer, duration);
 
         Rect old = this->timeleft_value.get_rect();
         this->timeleft_value.set_text(nullptr);
         this->rdp_input_invalidate(old);
-        this->timeleft_value.set_text({buff, strlen(buff)});
+        this->timeleft_value.set_text(text);
 
         Dimension dim = this->timeleft_value.get_optimal_dim();
         this->timeleft_value.set_wh(dim);
