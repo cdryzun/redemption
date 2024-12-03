@@ -500,7 +500,6 @@ _.section("globals", [&]
         .spec = global_spec(no_acl),
         .desc =
             "Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client.\n"
-            "!!!May cause FreeRDP-based client to CRASH!!!\n"
             "Set to 0 to disable this feature."
     });
 

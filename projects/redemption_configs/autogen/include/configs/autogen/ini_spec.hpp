@@ -50,7 +50,6 @@ enable_osd_display_remote_target = boolean(default=True)
 show_target_user_in_f12_message = boolean(default=False)
 
 # Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client.
-# !!!May cause FreeRDP-based client to CRASH!!!
 # Set to 0 to disable this feature.<br/>
 # (in milliseconds)
 #_display_name=RDP keepalive connection interval

@@ -358,7 +358,7 @@
       "name": "rdp_keepalive_connection_interval",
       "type": "milliseconds",
       "value": 0,
-      "description": "Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client.\n!!!May cause FreeRDP-based client to CRASH!!!\nSet to 0 to disable this feature.",
+      "description": "Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client.\nSet to 0 to disable this feature.",
       "displayName": "RDP keepalive connection interval",
       "globalSpec": true
     },
