@@ -45,11 +45,7 @@ case "${1:-}" in
 
 e|extract)
     (( $# == 1 )) || usage_and_exit
-    runecho xgettext --c++ --sort-by-file \
-        --keyword=TR_KV:2 \
-        --keyword=TR_KV_FMT:2 \
-        --keyword=TR_KV_PLURAL_FMT:2,3 \
-        --output="$pot_file" "$trkeys_file"
+    runecho tools/i18n/xgettext.py "$trkeys_file" "$pot_file"
 ;;
 
 m|merge) # ([<locale>] | 'all')
@@ -70,7 +66,7 @@ c|compile) # mo_dir ([<locale>] | 'all')
     compile() {
         declare mo_dir="$2/$1/LC_MESSAGES"
         mkdir -p "$mo_dir"
-        runecho msgfmt --output-file="$mo_dir/redemption.mo" "$po_dir/$1/redemption.po"
+        runecho msgfmt --no-hash --output-file="$mo_dir/redemption.mo" "$po_dir/$1/redemption.po"
     }
 
     if (( $# == 3 )) && [[ $3 == 'all' ]] || (( $# == 2 )) ; then

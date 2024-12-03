@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-02 15:46+0100\n"
+"POT-Creation-Date: 2024-12-03 11:53+01:00\n"
 "PO-Revision-Date: 2021-03-01 15:52+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,17 +16,25 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 
+# id: OK
+# ctx: widget button
 #: src/translation/trkeys_def.hpp:14
 msgid "OK"
 msgstr "OK"
 
+# id: optional_target
+# ctx: ModuleName::login
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/login
 #: src/translation/trkeys_def.hpp:17
 msgid "Target (optional)"
 msgstr "Cible (optionnel)"
 
-#: src/translation/trkeys_def.hpp:19
+# id: help_message
+# ctx: ModuleName::login
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/login
+#: src/translation/trkeys_def.hpp:18
 msgid ""
 "The \"Target\" field can be entered with a string labelled in this format:\n"
 "\"Account@Domain@Device:Service:Auth\".\n"
@@ -48,36 +56,62 @@ msgstr ""
 "\n"
 "Contactez votre administrateur système pour obtenir de l'aide."
 
+# id: login
+# ctx: ModuleName::login + ModuleName::interactive_target
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/login
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/interactive_target
 #: src/translation/trkeys_def.hpp:29
 msgid "Login"
 msgstr "Login"
 
+# id: password
+# ctx: ModuleName::login + ModuleName::interactive_target
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/login
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/interactive_target
 #: src/translation/trkeys_def.hpp:30
 msgid "Password"
 msgstr "Mot de passe"
 
+# id: target_info_required
+# ctx: ModuleName::interactive_target
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/interactive_target
 #: src/translation/trkeys_def.hpp:32
 msgid "Target Information Required"
 msgstr "Informations Cible Requises"
 
+# id: device
+# ctx: ModuleName::interactive_target
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/interactive_target
 #: src/translation/trkeys_def.hpp:33
 msgid "Device"
 msgstr "Machine"
 
+# id: disable_osd
+# ctx: OSD message
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:36
 msgid "Press \"Insert\" key or left-click to hide this message."
 msgstr "Appuyez sur la touche \"Insert\" ou clic gauche pour cacher ce message."
 
+# id: osd_hour_minute_second_before_closing
+# ctx: OSD (time before closing)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:39
 #, c-format
 msgid "%d hours, %d minutes, %d seconds before closing"
 msgstr "%d heures, %d minutes, %d seconds avant fermeture"
 
+# id: osd_minute_second_before_closing
+# ctx: OSD (time before closing)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:40
 #, c-format
 msgid "%d minutes, %d seconds before closing"
 msgstr "%d minutes, %d seconds avant fermeture"
 
+# id: osd_second_before_closing
+# ctx: OSD (time before closing)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:41
 #, c-format
 msgid "%d second before closing"
@@ -85,6 +119,11 @@ msgid_plural "%d seconds before closing"
 msgstr[0] "%d seconde avant fermeture"
 msgstr[1] "%d secondes avant fermeture"
 
+# id: close_box_second_timer
+# ctx: OSD (end time warning) + ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:44
 #, c-format
 msgid "%d second before closing."
@@ -92,6 +131,11 @@ msgid_plural "%d seconds before closing."
 msgstr[0] "%d seconde avant fermeture."
 msgstr[1] "%d secondes avant fermeture."
 
+# id: close_box_minute_timer
+# ctx: OSD (end time warning) + ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:45
 #, c-format
 msgid "%d minute before closing."
@@ -99,126 +143,211 @@ msgid_plural "%d minutes before closing."
 msgstr[0] "%d minute avant fermeture."
 msgstr[1] "%d minutes avant fermeture."
 
+# id: connection_ended
+# ctx: ModuleName::close (mod_factory)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:47
 msgid "Connection to server ended."
 msgstr "Connexion au serveur terminée."
 
+# id: connection_closed
+# ctx: ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:49
 msgid "Connection closed"
 msgstr "Connexion fermée"
 
+# id: close
+# ctx: ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:50
 msgid "Close"
 msgstr "Fermer"
 
+# id: wab_close_username
+# ctx: ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:51
 msgid "Username:"
 msgstr "Nom d'utilisateur:"
 
+# id: wab_close_target
+# ctx: ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:52
 msgid "Target:"
 msgstr "Cible:"
 
+# id: wab_close_diagnostic
+# ctx: ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:53
 msgid "Diagnostic:"
 msgstr "Diagnostic:"
 
+# id: wab_close_timeleft
+# ctx: ModuleName::close
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:54
 msgid "Time left:"
 msgstr "Temps restant:"
 
+# id: back_selector
+# ctx: ModuleName::close + ModuleName::waitinfo
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:56
 msgid "Back to Selector"
 msgstr "Retour au Sélecteur"
 
+# id: exit
+# ctx: ModuleName::waitinfo
 #: src/translation/trkeys_def.hpp:58
 msgid "Exit"
 msgstr "Sortir"
 
+# id: comment
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:60
 msgid "Comment"
 msgstr "Commentaire"
 
+# id: comment_r
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:61
 msgid "Comment *"
 msgstr "Commentaire *"
 
+# id: ticket
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:62
 msgid "Ticket Ref."
 msgstr "Ticket Ref."
 
+# id: ticket_r
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:63
 msgid "Ticket Ref. *"
 msgstr "Ticket Ref. *"
 
+# id: duration
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:64
 msgid "Duration"
 msgstr "Durée"
 
+# id: duration_r
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:65
 msgid "Duration *"
 msgstr "Durée *"
 
+# id: note_duration_format
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:66
 msgid "Format: [hours]h[mins]m"
 msgstr "Format: [heures]h[mins]m"
 
+# id: note_required
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:67
 msgid "(*) required fields"
 msgstr "(*) champs requis"
 
+# id: confirm
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:68
 msgid "Confirm"
 msgstr "Confirmer"
 
+# id: fmt_field_required
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:69
 #, c-format
 msgid "Error: %s field is required."
 msgstr "Erreur: le champ %s est requis."
 
+# id: fmt_invalid_format
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:70
 #, c-format
 msgid "Error: %s invalid format."
 msgstr "Erreur: format %s invalide."
 
+# id: fmt_toohigh_duration
+# ctx: ModuleName::waitinfo (form)
 #: src/translation/trkeys_def.hpp:71
 #, c-format
 msgid "Error: %s is too high (max: %d minutes)."
 msgstr "Erreur: %s trop haute (max: %d minutes)."
 
+# id: information
+# ctx: ModuleName::waitinfo, ModuleName::valid, ModuleName::confirm (mod_factory)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:73
 msgid "Information"
 msgstr "Information"
 
+# id: protocol
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:76
 msgid "Protocol"
 msgstr "Protocole"
 
+# id: authorization
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:77
 msgid "Authorization"
 msgstr "Autorisation"
 
+# id: target
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:78
 msgid "Target"
 msgstr "Cible"
 
+# id: logout
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:79
 msgid "Logout"
 msgstr "Déconnexion"
 
+# id: filter
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:80
 msgid "Filter"
 msgstr "Filtrer"
 
+# id: connect
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:81
 msgid "Connect"
 msgstr "Connecter"
 
+# id: no_results
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
 #: src/translation/trkeys_def.hpp:82
 msgid "No results found"
 msgstr "Aucun résultat"
 
-#: src/translation/trkeys_def.hpp:84
+# id: target_accurate_filter_help
+# ctx: ModuleName::selector
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/selector
+#: src/translation/trkeys_def.hpp:83
 msgid ""
 "Use the following syntax to filter specific fields on a target:\n"
 "    ?<field>=<pattern>\n"
@@ -236,320 +365,617 @@ msgstr ""
 "Exemple :\n"
 "   ?account=my_account&?device=my_device"
 
+# id: wait_msg
+# ctx: TransitionMod
 #: src/translation/trkeys_def.hpp:93
 msgid "Please wait..."
 msgstr "Veuillez patienter..."
 
+# id: err_replay_open_file
+# ctx: ModuleName::autotest (replay_mod error)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:96
 msgid "The recorded file is inaccessible or corrupted."
 msgstr "Le fichier d'enregistrement est inaccessible ou corrompu."
 
+# id: accepted
+# ctx: ModuleName::valid (mod_factory)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:99
 msgid "I accept"
 msgstr "J'accepte"
 
+# id: refused
+# ctx: ModuleName::valid (mod_factory)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:100
 msgid "I decline"
 msgstr "Je refuse"
 
+# id: challenge
+# ctx: ModuleName::challenge (mod_factory)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:103
 msgid "Challenge"
 msgstr ""
 
+# id: link_caption
+# ctx: ModuleName::link_confirm
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:106
 msgid "URL Redirection"
 msgstr "Redirection d'URL"
 
+# id: link_label
+# ctx: ModuleName::link_confirm
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:107
 msgid "Copy to clipboard: "
 msgstr "Copier dans le presse-papier: "
 
+# id: link_copied
+# ctx: ModuleName::link_confirm
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/dialog
 #: src/translation/trkeys_def.hpp:108
 msgid "The link is copied."
 msgstr "Le lien est copié."
 
+# id: enable_rt_display
+# ctx: session error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:111
 msgid "Your session is currently being audited."
 msgstr "Votre session est actuellement en cours d'observation."
 
+# id: manager_close_cnx
+# ctx: session error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:112
 msgid "Connection closed by manager."
 msgstr "Le gestionnaire de session a coupé la connexion."
 
+# id: acl_fail
+# ctx: session error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:113
 msgid "Authentifier service failed"
 msgstr "Echec du service d'authentification"
 
+# id: err_sesman_unavailable
+# ctx: session error (sesman)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:115
 msgid "No authentifier available."
 msgstr "Service d'authentification indisponible."
 
+# id: target_fail
+# ctx: connect_to_target_host error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:118
 msgid "Failed to connect to remote host."
 msgstr "Échec de la connexion à l'hôte distant."
 
+# id: file_verification_wait
+# ctx: OSD for ICAP with cliprdr
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:121
 msgid "File being analyzed: "
 msgstr "Fichier en cours d'analyse: "
 
+# id: file_verification_accepted
+# ctx: OSD for ICAP with cliprdr
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:122
 msgid "Valid file: "
 msgstr "Fichier valide: "
 
+# id: file_verification_rejected
+# ctx: OSD for ICAP with cliprdr
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:123
 msgid "Invalid file: "
 msgstr "Fichier invalide: "
 
+# id: target_shadow_fail
+# ctx: create rdp_mod error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:126
 msgid "Failed to connect to remote host. Maybe the session invitation has expired."
 msgstr "Échec de la connexion à l'hôte distant. L'invitation de session est peut-être expirée."
 
+# id: authentification_rdp_fail
+# ctx: create rdp_mod error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:127
 msgid "Failed to authenticate with remote RDP host."
 msgstr "Échec de l'authentification avec l'hôte RDP distant."
 
+# id: authentification_vnc_fail
+# ctx: create vnc_mod error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:129
 msgid "Failed to authenticate with remote VNC host."
 msgstr "Échec de l'authentification avec l'hôte VNC distant."
 
+# id: session_logoff_in_progress
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:132
 msgid "Session logoff in progress."
 msgstr "Fermeture de session en cours."
 
+# id: disconnected_by_otherconnection
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:133
 msgid "Another user connected to the resource, so your connection was lost."
 msgstr "Un autre utilisateur s'est connecté à la ressource, provoquant la perte de votre connexion."
 
+# id: err_server_denied_connection
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:134
 msgid "Please check provided Load Balance Info."
 msgstr "Veuillez vérifier le Load Balance Info fournies."
 
+# id: err_mod_rdp_nego
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:135
 msgid "Fail during TLS security exchange."
 msgstr "Échec lors de l'échange de sécurité TLS."
 
+# id: err_mod_rdp_basic_settings_exchange
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:136
 msgid "Remote access may be denied for the user account."
 msgstr "L'accès distant est peut-être refusé pour le compte utilisateur."
 
+# id: err_rdp_channel_connection
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:137
 msgid "Fail during channels connection."
 msgstr "Échec lors de la connexion des canaux."
 
+# id: err_rdp_get_license
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:138
 msgid "Failed while trying to get licence."
 msgstr "Échec en essayant d'obtenir une licence."
 
+# id: err_mod_rdp_connected
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:139
 msgid "Fail while connecting session on the target."
 msgstr "Échec lors de la connexion de la session sur la cible."
 
+# id: err_process_info
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:140
 msgid "Disconnected by the RDP server."
 msgstr "Déconnecté par le serveur RDP."
 
-#: src/translation/trkeys_def.hpp:143
+# id: err_remoteapp_bad_password
+# ctx: mod_rdp error (RemoteApp)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:142
 msgid "(RemoteApp) The logon credentials which were supplied are invalid."
 msgstr "(RemoteApp) Les informations de connexion fournies ne sont pas valides."
 
-#: src/translation/trkeys_def.hpp:145
+# id: err_remoteapp_update_password
+# ctx: mod_rdp error (RemoteApp)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:144
 msgid "(RemoteApp) The user cannot continue with the logon process until the password is changed."
 msgstr "(RemoteApp) L'utilisateur ne peut pas poursuivre le processus de connexion tant que le mot de passe n'est pas modifié."
 
+# id: err_remoteapp_failed
+# ctx: mod_rdp error (RemoteApp)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:146
 msgid "(RemoteApp) The logon process failed."
 msgstr "(RemoteApp) Le processus de connexion a échoué."
 
+# id: err_remoteapp_warning
+# ctx: mod_rdp error (RemoteApp)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:147
 msgid "(RemoteApp) The logon process has displayed a warning."
 msgstr "(RemoteApp) Le processus de connexion a affiché un avertissement."
 
+# id: err_remoteapp_unexpected_error
+# ctx: mod_rdp error (RemoteApp)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:148
 msgid "(RemoteApp) Unexpected Error Notification Type."
 msgstr "(RemoteApp) Type de notification d’erreur inattendue."
 
+# id: err_nla_required
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:150
 msgid "Fail during TLS security exchange. Enable NLA is probably required."
 msgstr "Échec lors de l'échange de sécurité TLS. Il est probablement nécessaire d'activer NLA."
 
+# id: err_tls_required
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:151
 msgid "Fail during TLS security exchange. Enable TLS is probably required."
 msgstr "Échec lors de l'échange de sécurité TLS. Il est probablement nécessaire d'activer TLS."
 
+# id: session_out_time
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:152
 msgid "Session is out of allowed timeframe"
 msgstr "L'autorisation de la session a expiré"
 
+# id: miss_keepalive
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:153
 msgid "Missed keepalive from ACL"
 msgstr "Absence de réponse de Keepalive de l'ACL"
 
+# id: close_inactivity
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:154
 msgid "Connection closed on inactivity"
 msgstr "Fermeture sur inactivité"
 
+# id: err_rdp_server_redir
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:155
 msgid "The computer that you are trying to connect to is redirecting you to another computer."
 msgstr "L'ordinateur auquel vous essayez de vous connecter vous redirige vers un autre ordinateur."
 
+# id: err_nla_authentication_failed
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:156
 msgid "NLA Authentication Failed."
 msgstr "Échec d'authentification NLA."
 
+# id: err_transport_tls_certificate_changed
+# ctx: local error (LocalErrMsg) (certificate error)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:158
 msgid "TLS certificate changed."
 msgstr "Certificat TLS modifié."
 
+# id: err_transport_tls_certificate_missed
+# ctx: local error (LocalErrMsg) (certificate error)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:159
 msgid "TLS certificate missed."
 msgstr "Certificat TLS manquant."
 
+# id: err_transport_tls_certificate_corrupted
+# ctx: local error (LocalErrMsg) (certificate error)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:160
 msgid "TLS certificate corrupted."
 msgstr "Certificat TLS corrompu."
 
+# id: err_transport_tls_certificate_inaccessible
+# ctx: local error (LocalErrMsg) (certificate error)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:161
 msgid "TLS certificate is inaccessible."
 msgstr "Certificat TLS inaccessible."
 
+# id: err_transport_tls_certificate_changed_extra_message
+# ctx: local error (LocalErrMsg) (certificate error) + ModuleName::close (extra message)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:163
 msgid "The certificate presented by the target doesn't match the certificate fingerprint stored in the Bastion for this target. Contact your Bastion administrator to delete the existing fingerprint or to change the default behavior of the Bastion when this happens."
 msgstr "Le certificat présenté par la cible ne correspond pas à celui stocké dans le Bastion pour cette cible. Contactez votre administrateur Bastion pour l'ajouter ou pour modifier le comportement par défaut du Bastion lorsque cela se produit."
 
+# id: err_transport_tls_certificate_missed_extra_message
+# ctx: local error (LocalErrMsg) (certificate error) + ModuleName::close (extra message)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:164
 msgid "The certificate presented by the target is not stored in the Bastion for this target. Contact your Bastion administrator to add it or to change the behavior of the Bastion when this happens."
 msgstr "Le certificat présenté par la cible n'est pas stocké dans le Bastion pour cette cible. Contactez votre administrateur Bastion pour l'ajouter ou pour modifier le comportement du Bastion lorsque cela se produit."
 
+# id: err_transport_tls_certificate_corrupted_extra_message
+# ctx: local error (LocalErrMsg) (certificate error) + ModuleName::close (extra message)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:165
 msgid "The certificate stored in the Bastion for this target is corrupted."
 msgstr "Le certificat stocké dans le Bastion pour cette cible est corrompu."
 
+# id: err_transport_tls_certificate_inaccessible_extra_message
+# ctx: local error (LocalErrMsg) (certificate error) + ModuleName::close (extra message)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:166
 msgid "The certificate stored in the Bastion for this target is inaccessible."
 msgstr "Le certificat stocké dans le Bastion pour cette cible est inaccessible."
 
+# id: end_connection
+# ctx: mod_rdp error | local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:168
 msgid "End of connection"
 msgstr "Fin de connexion"
 
+# id: process_interrupted_security_policies
+# ctx: SessionProbe OSD info
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:171
 #, c-format
 msgid "The process '%.*s' was interrupted in accordance with security policies."
 msgstr "Le processus '%.*s' a été interrompu conformément aux politiques de sécurité."
 
+# id: account_manipulation_blocked_security_policies
+# ctx: SessionProbe OSD info
+# image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
 #: src/translation/trkeys_def.hpp:172
 #, c-format
 msgid "The account manipulation initiated by process '%.*s' was rejected in accordance with security policies."
 msgstr "L'édition de compte d'utilisateur effectuée via le processus '%.*s' a été rejeté conformément aux politiques de sécurité."
 
+# id: starting_remoteapp
+# ctx: rail session manager (widget message)
 #: src/translation/trkeys_def.hpp:175
 msgid "Starting RemoteApp ..."
 msgstr "Lancement de RemoteApp ..."
 
+# id: closing_remoteapp
+# ctx: rail session manager (widget message)
 #: src/translation/trkeys_def.hpp:176
 msgid "All RemoteApp windows are closed."
 msgstr "Toutes les fenêtre de RemoteApp sont fermées."
 
+# id: disconnect_now
+# ctx: rail session manager (widget message)
 #: src/translation/trkeys_def.hpp:177
 msgid "Disconnect Now"
 msgstr "Se déconnecter maintenant"
 
+# id: err_rdp_unauthorized_user_change
+# ctx: mod_rdp error
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:180
 msgid "Unauthorized logon user change detected."
 msgstr "Changement d'utilisateur de connexion non autorisé détecté."
 
+# id: err_vnc_connection_error
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:182
 msgid "VNC connection error."
 msgstr "Erreur de connexion VNC."
 
+# id: err_rdp_unsupported_monitor_layout
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:183
 msgid "Unsupported client display monitor layout."
 msgstr "La disposition du moniteur d'affichage du client n'est pas supportée."
 
+# id: err_rdp_negotiation
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:184
 msgid "RDP negotiation phase failure."
 msgstr "Echec de la phase de negociation."
 
+# id: err_rdp_nego_krb_required
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:185
 msgid "CREDSSP Kerberos Authentication Failed, NTLM not allowed."
 msgstr "Échec d'authentification CREDSSP Kerberos, NTLM n'est pas autorisé."
 
+# id: err_rdp_nego_nla_required
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:186
 msgid "NLA failed. TLS only not allowed."
 msgstr "Échec d'authentification NLA. TLS seul n'est pas autorisé."
 
+# id: err_rdp_nego_nla_restricted_admin
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:187
 msgid "NLA failed. NLA required by restricted admin mode."
 msgstr "Échec d'authentification NLA. NLA requière la restriction du mode admin."
 
+# id: err_rdp_nego_ssl_required
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:188
 msgid "Can't activate SSL. RDP Legacy only not allowed"
 msgstr "Ne peut activer SSL. RDP Legacy seul n'est pas autorisé."
 
+# id: err_lic
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:189
 msgid "An error occurred during the licensing protocol."
 msgstr "Une erreur de protocole de licence s'est produite."
 
+# id: err_rail_client_execute
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:190
 msgid "The RemoteApp program did not start on the remote computer."
 msgstr "Le programme RemoteApp n'a pas démarré sur l'ordinateur distant."
 
+# id: err_rail_starting_program
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:191
 msgid "Cannot start the RemoteApp program."
 msgstr "Impossible de démarrer le programme RemoteApp."
 
+# id: err_rail_unauthorized_program
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:192
 msgid "The RemoteApp program is not in the list of authorized programs."
 msgstr "Le programme RemoteApp n'est pas dans la liste des programmes autorisés."
 
+# id: err_rdp_open_session_timeout
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:193
 msgid "Logon timer expired."
 msgstr "Le délai d'attente d'ouverture de session a expiré."
 
+# id: err_session_probe_launch
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:194
 msgid "Could not launch Session Probe."
 msgstr "Impossible de lancer Session Probe."
 
-#: src/translation/trkeys_def.hpp:196
+# id: err_session_probe_asbl_fsvc_unavailable
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:195
 msgid "(ASBL) Could not launch Session Probe. File System Virtual Channel is unavailable. Please allow the drive redirection in the Remote Desktop Services settings of the target."
 msgstr "(ASBL) Impossible de lancer Session Probe. Le canal virtuel du système de fichiers n'est pas disponible. Veuillez autorisez la redirection du lecteur dans les paramètres des Services de bureau à distance de la cible."
 
-#: src/translation/trkeys_def.hpp:199
+# id: err_session_probe_asbl_maybe_something_blocks
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:198
 msgid "(ASBL) Could not launch Session Probe. Maybe something blocks it on the target. Is the target running under Microsoft Server products? The Command Prompt should be published as the RemoteApp program and accept any command-line parameters. Please also check the temporary directory to ensure there is enough free space."
 msgstr "(ASBL) Impossible de lancer Session Probe. Peut-être que quelque chose le bloque sur la cible. La cible fonctionne-t-elle sous un produit de famille Microsoft Server ? L'invite de commande doit être publiée comme programme RemoteApp et accepter tout type de paramètres de ligne de commande. Veuillez vérifier également le répertoire temporaire afin d'assurer qu'il y a suffisamment d'espace libre."
 
+# id: err_session_probe_asbl_unknown_reason
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:203
 msgid "(ASBL) Session Probe launch has failed for unknown reason."
 msgstr "(ASBL) Le lancement de Session Probe a échoué pour une raison inconnue."
 
-#: src/translation/trkeys_def.hpp:205
+# id: err_session_probe_cbbl_fsvc_unavailable
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:204
 msgid "(CBBL) Could not launch Session Probe. File System Virtual Channel is unavailable. Please allow the drive redirection in the Remote Desktop Services settings of the target."
 msgstr "(CBBL) Impossible de lancer Session Probe. Le canal virtuel du système de fichiers n'est pas disponible. Veuillez autorisez la redirection du lecteur dans les paramètres des Services de bureau à distance de la cible."
 
-#: src/translation/trkeys_def.hpp:208
+# id: err_session_probe_cbbl_cbvc_unavailable
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:207
 msgid "(CBBL) Could not launch Session Probe. Clipboard Virtual Channel is unavailable. Please allow the clipboard redirection in the Remote Desktop Services settings of the target."
 msgstr "(CBBL) Impossible de lancer Session Probe. Le canal virtuel du presse-papier n'est pas disponible. Veuillez autorisez la redirection du presse-papier dans les paramètres des Services de bureau à distance de la cible."
 
-#: src/translation/trkeys_def.hpp:211
+# id: err_session_probe_cbbl_drive_not_ready_yet
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:210
 msgid "(CBBL) Could not launch Session Probe. Drive of Session Probe is not ready yet. Is the target running under Windows Server 2008 R2 or more recent version?"
 msgstr "(CBBL) Impossible de lancer Session Probe. Le lecteur de Session Probe n'est pas encore prêt. La cible fonctionne-t-elle sous Windows Server 2008 R2 ou une version plus récente ?"
 
-#: src/translation/trkeys_def.hpp:214
+# id: err_session_probe_cbbl_maybe_something_blocks
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:213
 msgid "(CBBL) Session Probe is not launched. Maybe something blocks it on the target. Please also check the temporary directory to ensure there is enough free space."
 msgstr "(CBBL) Impossible de lancer Session Probe. Peut-être que quelque chose le bloque sur la cible. Veuillez vérifier également le répertoire temporaire afin d'assurer qu'il y a suffisamment d'espace libre."
 
-#: src/translation/trkeys_def.hpp:217
+# id: err_session_probe_cbbl_launch_cycle_interrupted
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:216
 msgid "(CBBL) Session Probe launch cycle has been interrupted. The launch timeout duration may be too short."
 msgstr "(CBBL) Le cycle de lancement de Session Probe a été interrompu. La durée du délai d'attente de lancement peut être trop courte."
 
-#: src/translation/trkeys_def.hpp:220
+# id: err_session_probe_cbbl_unknown_reason_refer_to_syslog
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:219
 msgid "(CBBL) Session Probe launch has failed for unknown reason. Please refer to the syslog file for more detailed information regarding the error condition."
 msgstr "(CBBL) Le lancement de Session Probe a échoué pour une raison inconnue. Veuillez vous reporter au fichier syslog pour obtenir des informations plus détaillées concernant la condition d'erreur."
 
-#: src/translation/trkeys_def.hpp:223
+# id: err_session_probe_rp_launch_refer_to_syslog
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
+#: src/translation/trkeys_def.hpp:222
 msgid "(RP) Could not launch Session Probe. Please refer to the syslog file for more detailed information regarding the error condition."
 msgstr "(RP) Impossible de lancer Session Probe. Veuillez vous reporter au fichier syslog pour obtenir des informations plus détaillées concernant la condition d'erreur."
 
+# id: err_session_unknown_backend
+# ctx: local error (LocalErrMsg)
+# image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
+# image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:225
 msgid "Unknown backend failure."
 msgstr "Erreur de backend inconnue."

@@ -32,7 +32,7 @@ TR_KV(password, "Password")
 TR_KV(target_info_required, "Target Information Required")
 TR_KV(device, "Device")
 
-// osd message
+// OSD message
 TR_KV(disable_osd, "Press \"Insert\" key or left-click to hide this message.")
 
 // OSD (time before closing)
@@ -107,14 +107,14 @@ TR_KV(link_caption, "URL Redirection")
 TR_KV(link_label, "Copy to clipboard: ")
 TR_KV(link_copied, "The link is copied.")
 
-// session
+// session error
 TR_KV(enable_rt_display, "Your session is currently being audited.")
 TR_KV(manager_close_cnx, "Connection closed by manager.")
 TR_KV(acl_fail, "Authentifier service failed")
-// sesman error (session)
+// session error (sesman)
 TR_KV(err_sesman_unavailable, "No authentifier available.")
 
-// connect_to_target_host
+// connect_to_target_host error
 TR_KV(target_fail, "Failed to connect to remote host.")
 
 // OSD for ICAP with cliprdr
@@ -122,10 +122,10 @@ TR_KV(file_verification_wait, "File being analyzed: ")
 TR_KV(file_verification_accepted, "Valid file: ")
 TR_KV(file_verification_rejected, "Invalid file: ")
 
-// create rdp_mod
+// create rdp_mod error
 TR_KV(target_shadow_fail, "Failed to connect to remote host. Maybe the session invitation has expired.")
 TR_KV(authentification_rdp_fail, "Failed to authenticate with remote RDP host.")
-// create vnc_mod
+// create vnc_mod error
 TR_KV(authentification_vnc_fail, "Failed to authenticate with remote VNC host.")
 
 // mod_rdp error
@@ -146,7 +146,7 @@ TR_KV(err_remoteapp_update_password,
 TR_KV(err_remoteapp_failed, "(RemoteApp) The logon process failed.")
 TR_KV(err_remoteapp_warning, "(RemoteApp) The logon process has displayed a warning.")
 TR_KV(err_remoteapp_unexpected_error, "(RemoteApp) Unexpected Error Notification Type.")
-// local_err
+// local error (LocalErrMsg)
 TR_KV(err_nla_required, "Fail during TLS security exchange. Enable NLA is probably required.")
 TR_KV(err_tls_required, "Fail during TLS security exchange. Enable TLS is probably required.")
 TR_KV(session_out_time, "Session is out of allowed timeframe")
@@ -154,17 +154,17 @@ TR_KV(miss_keepalive, "Missed keepalive from ACL")
 TR_KV(close_inactivity, "Connection closed on inactivity")
 TR_KV(err_rdp_server_redir, "The computer that you are trying to connect to is redirecting you to another computer.")
 TR_KV(err_nla_authentication_failed, "NLA Authentication Failed.")
-// local_err (certificate error)
+// local error (LocalErrMsg) (certificate error)
 TR_KV(err_transport_tls_certificate_changed, "TLS certificate changed.")
 TR_KV(err_transport_tls_certificate_missed, "TLS certificate missed.")
 TR_KV(err_transport_tls_certificate_corrupted, "TLS certificate corrupted.")
 TR_KV(err_transport_tls_certificate_inaccessible, "TLS certificate is inaccessible.")
-// local_err (certificate error) + ModuleName::close (extra message)
+// local error (LocalErrMsg) (certificate error) + ModuleName::close (extra message)
 TR_KV(err_transport_tls_certificate_changed_extra_message, "The certificate presented by the target doesn't match the certificate fingerprint stored in the Bastion for this target. Contact your Bastion administrator to delete the existing fingerprint or to change the default behavior of the Bastion when this happens.")
 TR_KV(err_transport_tls_certificate_missed_extra_message, "The certificate presented by the target is not stored in the Bastion for this target. Contact your Bastion administrator to add it or to change the behavior of the Bastion when this happens.")
 TR_KV(err_transport_tls_certificate_corrupted_extra_message, "The certificate stored in the Bastion for this target is corrupted.")
 TR_KV(err_transport_tls_certificate_inaccessible_extra_message, "The certificate stored in the Bastion for this target is inaccessible.")
-// mod_rdp error | local_err
+// mod_rdp error | local error (LocalErrMsg)
 TR_KV(end_connection, "End of connection")
 
 // SessionProbe OSD info
@@ -178,7 +178,7 @@ TR_KV(disconnect_now, "Disconnect Now")
 
 // mod_rdp error
 TR_KV(err_rdp_unauthorized_user_change, "Unauthorized logon user change detected.")
-// local_err
+// local error (LocalErrMsg)
 TR_KV(err_vnc_connection_error, "VNC connection error.")
 TR_KV(err_rdp_unsupported_monitor_layout, "Unsupported client display monitor layout.")
 TR_KV(err_rdp_negotiation, "RDP negotiation phase failure.")
