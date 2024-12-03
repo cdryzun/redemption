@@ -249,7 +249,6 @@ class RdpClient
     RedirectionInfo redir_info;
 
     std::array<unsigned char, 28> server_auto_reconnect_packet;
-    std::string close_box_extra_message;
     Theme theme;
     Font font;
 
@@ -370,8 +369,8 @@ public:
             font,
             theme,
             server_auto_reconnect_packet,
-            close_box_extra_message,
             {},
+            MsgTranslationCatalog::default_catalog(),
             verbose);
 
         rdp_params.server_info_ref = &server_info;
@@ -413,7 +412,7 @@ public:
                 config, "persistBitmapCacheOnDisk",
                 rdp_params.enable_persistent_disk_bitmap_cache);
 
-        set_if(config, "lang", rdp_params.lang);
+        // set_if(config, "lang", rdp_params.lang);
 
         rdp_params.allow_scale_factor
             = client_info.desktop_scale_factor && client_info.device_scale_factor;

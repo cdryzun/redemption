@@ -42,6 +42,8 @@ exe-js js_client :
   src/keyboard/keymap.bc
   src/mod/rdp/rdp_negociation.bc
   src/mod/rdp/rdp_negociation_data.bc
+  src/translation/gettext.bc
+  src/translation/translation.bc
   src/utils/bitmap.bc
   src/utils/bitmap_data_allocator.bc
   src/utils/hexadecimal_string_to_buffer.bc
@@ -208,6 +210,8 @@ objjs src/gdi/screen_functions.bc : $(REDEMPTION_SRC_PATH)/gdi/screen_functions.
 objjs src/keyboard/keymap.bc : $(REDEMPTION_SRC_PATH)/keyboard/keymap.cpp ;
 objjs src/mod/rdp/rdp_negociation.bc : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation.cpp ;
 objjs src/mod/rdp/rdp_negociation_data.bc : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation_data.cpp ;
+objjs src/translation/gettext.bc : $(REDEMPTION_SRC_PATH)/translation/gettext.cpp ;
+objjs src/translation/translation.bc : $(REDEMPTION_SRC_PATH)/translation/translation.cpp ;
 objjs src/transport/mwrm_reader.bc : $(REDEMPTION_SRC_PATH)/transport/mwrm_reader.cpp ;
 objjs src/utils/bitmap.bc : $(REDEMPTION_SRC_PATH)/utils/bitmap.cpp ;
 objjs src/utils/bitmap_data_allocator.bc : $(REDEMPTION_SRC_PATH)/utils/bitmap_data_allocator.cpp ;
@@ -304,6 +308,8 @@ explicit
   src/keyboard/keymap.bc
   src/mod/rdp/rdp_negociation.bc
   src/mod/rdp/rdp_negociation_data.bc
+  src/translation/gettext.bc
+  src/translation/translation.bc
   src/transport/mwrm_reader.bc
   src/utils/bitmap.bc
   src/utils/bitmap_data_allocator.bc

@@ -23,7 +23,7 @@
 #include <cstring>
 #include <algorithm>
 #include <functional>
-#ifdef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__) && __has_include(<experimental/functional>)
 #  include <experimental/functional>
 #endif
 
@@ -51,7 +51,7 @@ void str_replace_inplace(std::string& str, chars_view pattern, chars_view replac
 {
     assert(!pattern.empty());
 
-#ifdef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__) && __has_include(<experimental/functional>)
     std::experimental::boyer_moore_searcher<std::string_view::iterator>
 #else
     std::boyer_moore_searcher

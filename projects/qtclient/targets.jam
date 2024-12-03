@@ -76,8 +76,9 @@ constant main_qt_client_redemption :
   <library>src/mod/vnc/encoder/rre.o
   <library>src/mod/vnc/encoder/zrle.o
   <library>src/mod/vnc/vnc.o
-  <library>src/system/linux/system/i18n/message_translator_gettext.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/gzip_compression_transport.o
@@ -112,7 +113,6 @@ constant main_qt_client_redemption :
   <library>z
   $(BOOST_STACKTRACE_LINKFLAGS)
   $(EXE_DEPENDENCIES)
-  $(MUSL_GETTEXT)
   <define>ZLIB_CONST
 ;
 
@@ -346,8 +346,9 @@ obj src/mod/vnc/encoder/raw.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/raw.cpp ;
 obj src/mod/vnc/encoder/rre.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/rre.cpp ;
 obj src/mod/vnc/encoder/zrle.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/zrle.cpp : <define>ZLIB_CONST ;
 obj src/mod/vnc/vnc.o : $(REDEMPTION_SRC_PATH)/mod/vnc/vnc.cpp : <define>ZLIB_CONST ;
-obj src/system/linux/system/i18n/message_translator_gettext.o : $(REDEMPTION_SRC_PATH)/system/linux/system/i18n/message_translator_gettext.cpp ;
 obj src/system/linux/system/tls_check_certificate.o : $(REDEMPTION_SRC_PATH)/system/linux/system/tls_check_certificate.cpp ;
+obj src/translation/gettext.o : $(REDEMPTION_SRC_PATH)/translation/gettext.cpp ;
+obj src/translation/translation.o : $(REDEMPTION_SRC_PATH)/translation/translation.cpp ;
 obj src/transport/crypto_transport.o : $(REDEMPTION_SRC_PATH)/transport/crypto_transport.cpp ;
 obj src/transport/file_transport.o : $(REDEMPTION_SRC_PATH)/transport/file_transport.cpp ;
 obj src/transport/gzip_compression_transport.o : $(REDEMPTION_SRC_PATH)/transport/gzip_compression_transport.cpp : <define>ZLIB_CONST ;
@@ -458,8 +459,9 @@ explicit
   src/mod/vnc/encoder/rre.o
   src/mod/vnc/encoder/zrle.o
   src/mod/vnc/vnc.o
-  src/system/linux/system/i18n/message_translator_gettext.o
   src/system/linux/system/tls_check_certificate.o
+  src/translation/gettext.o
+  src/translation/translation.o
   src/transport/crypto_transport.o
   src/transport/file_transport.o
   src/transport/gzip_compression_transport.o

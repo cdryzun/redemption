@@ -64,8 +64,9 @@ exe qtclient2 :
   <library>src/mod/rdp/channels/sespro_clipboard_based_launcher.o
   <library>src/mod/rdp/rdp_negociation.o
   <library>src/mod/rdp/rdp_negociation_data.o
-  <library>src/system/linux/system/i18n/message_translator_gettext.o
   <library>src/system/linux/system/tls_check_certificate.o
+  <library>src/translation/gettext.o
+  <library>src/translation/translation.o
   <library>src/transport/crypto_transport.o
   <library>src/transport/file_transport.o
   <library>src/transport/mwrm_reader.o
@@ -89,7 +90,6 @@ exe qtclient2 :
   <library>src/utils/utf.o
   $(BOOST_STACKTRACE_LINKFLAGS)
   $(EXE_DEPENDENCIES)
-  $(MUSL_GETTEXT)
 ;
 
 
@@ -194,8 +194,9 @@ obj src/mod/rdp/channels/sespro_channel_params.o : $(REDEMPTION_SRC_PATH)/mod/rd
 obj src/mod/rdp/channels/sespro_clipboard_based_launcher.o : $(REDEMPTION_SRC_PATH)/mod/rdp/channels/sespro_clipboard_based_launcher.cpp ;
 obj src/mod/rdp/rdp_negociation.o : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation.cpp ;
 obj src/mod/rdp/rdp_negociation_data.o : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation_data.cpp ;
-obj src/system/linux/system/i18n/message_translator_gettext.o : $(REDEMPTION_SRC_PATH)/system/linux/system/i18n/message_translator_gettext.cpp ;
 obj src/system/linux/system/tls_check_certificate.o : $(REDEMPTION_SRC_PATH)/system/linux/system/tls_check_certificate.cpp ;
+obj src/translation/gettext.o : $(REDEMPTION_SRC_PATH)/translation/gettext.cpp ;
+obj src/translation/translation.o : $(REDEMPTION_SRC_PATH)/translation/translation.cpp ;
 obj src/transport/crypto_transport.o : $(REDEMPTION_SRC_PATH)/transport/crypto_transport.cpp ;
 obj src/transport/file_transport.o : $(REDEMPTION_SRC_PATH)/transport/file_transport.cpp ;
 obj src/transport/mwrm_reader.o : $(REDEMPTION_SRC_PATH)/transport/mwrm_reader.cpp ;
@@ -303,8 +304,9 @@ explicit
   src/mod/rdp/channels/sespro_clipboard_based_launcher.o
   src/mod/rdp/rdp_negociation.o
   src/mod/rdp/rdp_negociation_data.o
-  src/system/linux/system/i18n/message_translator_gettext.o
   src/system/linux/system/tls_check_certificate.o
+  src/translation/gettext.o
+  src/translation/translation.o
   src/transport/crypto_transport.o
   src/transport/file_transport.o
   src/transport/mwrm_reader.o

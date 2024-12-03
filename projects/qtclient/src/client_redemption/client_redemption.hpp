@@ -119,7 +119,6 @@ private:
     Theme theme;
     Font font;
     RedirectionInfo redir_info;
-    std::string close_box_extra_message_ref;
     std::vector<uint8_t> redirection_password_or_cookie;
 
     //  Remote App
@@ -267,7 +266,6 @@ public:
         , client_sck(-1)
         , _callback(this, default_layout())
         , event_manager(event_manager)
-        , close_box_extra_message_ref("Close")
         , rail_client_execute(event_manager.get_time_base(), *this, *this,
             this->config.info.window_list_caps,
             bool((RDPVerbose::rail | RDPVerbose::rail_dump) & this->config.verbose))
@@ -399,8 +397,8 @@ public:
                   , this->font
                   , this->theme
                   , this->server_auto_reconnect_packet_ref
-                  , this->close_box_extra_message_ref
                   , std::move(this->redirection_password_or_cookie)
+                  , MsgTranslationCatalog::default_catalog()
                   , this->config.verbose
                 );
 

@@ -37,6 +37,7 @@ class X509;
     ServerCertCheck /*server_cert_check*/,
     BasicFunction<void(CertificateStatus status, std::string_view error_msg)> /*certificate_checker*/,
     const char* /*certif_path*/,
+    const char* /*protocol*/,
     const char* /*ip_address*/,
     int /*port*/)
 {

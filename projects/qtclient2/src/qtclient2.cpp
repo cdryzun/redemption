@@ -154,7 +154,6 @@ int main(int argc, char** argv)
     ModRdpFactory mod_rdp_factory;
     NullLicenseStore license_store;
     std::array<uint8_t, 28> server_auto_reconnect_packet_ref;
-    std::string close_box_extra_message_ref;
     const ChannelsAuthorizations channels_authorizations("*"_zv, ""_zv);
     TlsConfig tls_config {
         .min_level = profile.tls_min_level,
@@ -180,8 +179,8 @@ int main(int argc, char** argv)
         glyph,
         theme,
         server_auto_reconnect_packet_ref,
-        close_box_extra_message_ref,
         {},
+        MsgTranslationCatalog::default_catalog(),
         profile.rdp_verbose
     );
 

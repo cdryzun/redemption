@@ -24,6 +24,10 @@
 #include "configs/autogen/variables_configuration_fwd.hpp"
 #include "utils/sugar/cast.hpp"
 
+#ifdef __EMSCRIPTEN__
+#   include "configs/config.hpp"
+#endif
+
 class Inifile;
 
 

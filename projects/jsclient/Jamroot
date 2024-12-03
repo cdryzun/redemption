@@ -144,7 +144,6 @@ project redjs
     # <linkflags>"-s SIMD=1"
     # <cxxflags>"-s FS_LOG=1"
 
-    <cxxflags>"-s USE_PTHREADS=0"
     # <cxxflags>"-s FILESYSTEM=0"
     <cxxflags>"-s USE_LIBPNG=0"
     <cxxflags>"-s USE_ZLIB=0"
