@@ -128,8 +128,6 @@ sys_lib_assoc = dict((
         cxxflags=['$(BOOST_STACKTRACE_CXXFLAGS)'])),
     ('thread', Dep(
         linkflags=['<linkflags>-pthread'])),
-    ('libintl.h', Dep(
-        linkflags=['$(MUSL_GETTEXT)'])),
     ('hs/hs.h', Dep(
         linkflags=['<library>hyperscan'],
         cxxflags=['$(REDEMPTION_HYPERSCAN_FLAGS)'])),

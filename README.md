@@ -32,8 +32,7 @@ The project also contains 2 RDP clients:
     5. [Modes and options](#modes-and-options)
         1. [Setting build variables](#setting-build-variables)
             1. [Local installation](#local-installation)
-            2. [Musl libc](#musl-libc)
-            3. [ARM](#arm)
+            2. [ARM](#arm)
     6. [Add .cpp file](#add-cpp-file)
     7. [Update keylayout](#update-keylayout)
 2. [Run Redemption](#run-redemption)
@@ -49,7 +48,8 @@ The project also contains 2 RDP clients:
 
 # Compilation
 
-For automatic compilation, a Dockerfile is available. This one is based on Ubuntu, but other linux systems are supported like Debian or Alpine. For the latter, `-s MUSL_LIBC=1` must be added on the line containing `bjam` and the `libgettext` package must be added in the installed package.
+For automatic compilation, a Dockerfile is available.
+This one is based on Ubuntu, but other linux systems are supported like Debian or Alpine.
 
 For ARM, `-s TARGET=arm` must be added on the line containing `bjam`.
 
@@ -69,7 +69,7 @@ To compile Redemption you need the following packages:
 - libbz2-dev
 - libhyperscan-dev
 - libffmpeg-dev (see below)
-- gettext
+- gettext (for `msgfmt` tool)
 - g++ >= 8.0 or clang++ >= 7.0 or other C++17 compiler
 
 ```sh
@@ -268,12 +268,6 @@ export VAR_PREFIX="$install_path"/var
 export SESSION_PREFIX="$install_path"/var/lib
 export PID_PATH="$install_path"/var/run
 bjam ....
-```
-
-#### Musl libc
-
-```sh
-bjam -s MUSL_LIBC=1 ....
 ```
 
 #### ARM

@@ -24,15 +24,6 @@ else
 explicit hyperscan ;
 ## }
 
-# gettext with musl
-if $(MUSL_LIBC) != 0
-{
-    lib intl ;
-    MUSL_GETTEXT = <library>intl ;
-    explicit intl ;
-}
-
-
 ## ffmpeg {
 if $(NO_FFMPEG) = 0
 {
