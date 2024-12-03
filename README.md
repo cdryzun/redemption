@@ -70,7 +70,7 @@ To compile Redemption you need the following packages:
 - libhyperscan-dev
 - libffmpeg-dev (see below)
 - gettext (for `msgfmt` tool)
-- g++ >= 8.0 or clang++ >= 7.0 or other C++17 compiler
+- g++ >= 13.0 or clang++ >= 18.0 or other C++20 compiler
 
 ```sh
 apt install libboost-tools-dev libboost-test-dev libssl-dev libkrb5-dev libsnappy-dev libpng-dev libbz2-dev libhyperscan-dev
