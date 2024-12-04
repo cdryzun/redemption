@@ -148,6 +148,7 @@ template<> struct acl_and_spec_type<cfg::mod_rdp::remote_programs_disconnect_mes
 template<> struct acl_and_spec_type<cfg::mod_rdp::use_session_probe_to_launch_remote_program> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::replace_null_pointer_by_default_pointer> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::windows_xp_clipboard_support> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::mod_rdp::block_user_input_until_appdriver_completes> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::protocol::save_session_info_pdu> { using type = RdpSaveSessionInfoPDU; };
 template<> struct acl_and_spec_type<cfg::session_probe::enable_session_probe> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::session_probe::exe_or_file> { using type = ::configs::spec_types::fixed_string; };

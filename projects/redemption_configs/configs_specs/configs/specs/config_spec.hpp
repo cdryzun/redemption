@@ -1515,6 +1515,13 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .spec = connpolicy(rdp, loggable),
         .desc = "Enable Windows XP clipboard support.",
     });
+
+    _.member(MemberInfo{
+        .name = "block_user_input_until_appdriver_completes",
+        .value = value(false),
+        .spec = connpolicy(rdp, loggable),
+        .desc = "If this option is enabled, user input will be ignored until the Application Driver's work is complete."
+    });
 });
 
 _.section("protocol", [&]

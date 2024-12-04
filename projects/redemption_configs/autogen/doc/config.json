@@ -1567,6 +1567,18 @@
       "logStategy": "1"
     },
     {
+      "section": "mod_rdp",
+      "name": "block_user_input_until_appdriver_completes",
+      "type": "bool",
+      "value": false,
+      "description": "If this option is enabled, user input will be ignored until the Application Driver's work is complete.",
+      "displayName": "Block user input until Application Driver completes",
+      "rdp": true,
+      "rdp_sogisces_1_3_2030": true,
+      "aclToProxy": true,
+      "logStategy": "1"
+    },
+    {
       "section": "protocol",
       "name": "save_session_info_pdu",
       "type": "enum",

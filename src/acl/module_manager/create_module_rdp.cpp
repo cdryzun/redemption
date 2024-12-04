@@ -601,6 +601,9 @@ ModPack create_mod_rdp(
     mod_rdp_params.windows_xp_clipboard_support
         = ini.get<cfg::mod_rdp::windows_xp_clipboard_support>();
 
+    mod_rdp_params.block_user_input_until_appdriver_completes
+        = ini.get<cfg::mod_rdp::block_user_input_until_appdriver_completes>();
+
     mod_rdp_params.enable_restricted_admin_mode = ini.get<cfg::mod_rdp::enable_restricted_admin_mode>();
     mod_rdp_params.file_system_params.smartcard_passthrough        = smartcard_passthrough;
     mod_rdp_params.forward_client_build_number = ini.get<cfg::mod_rdp::forward_client_build_number>();

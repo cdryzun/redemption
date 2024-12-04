@@ -46,6 +46,7 @@ cp_spec = {
         ('mod_rdp:use_session_probe_to_launch_remote_program', 'use_session_probe_to_launch_remote_program', True),
         ('mod_rdp:replace_null_pointer_by_default_pointer', 'replace_null_pointer_by_default_pointer', False),
         ('mod_rdp:windows_xp_clipboard_support', 'windows_xp_clipboard_support', False),
+        ('mod_rdp:block_user_input_until_appdriver_completes', 'block_user_input_until_appdriver_completes', False),
     },
     'protocol': {
         ('protocol:save_session_info_pdu', 'save_session_info_pdu', 1),

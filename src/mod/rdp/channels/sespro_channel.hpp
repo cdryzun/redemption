@@ -36,6 +36,7 @@
 #include "mod/rdp/channels/sespro_channel_params.hpp"
 #include "mod/rdp/channels/sespro_api.hpp"
 #include "mod/rdp/rdp_api.hpp"
+#include "mod/rdp/mod_rdp_callback.hpp"
 #include "utils/timebase.hpp"
 #include "utils/random.hpp"
 #include "utils/parse_server_message.hpp"
@@ -98,17 +99,6 @@ using SessionProbeVariables = vcfg::variables<
 
 class SessionProbeVirtualChannel final : public BaseVirtualChannel, public sespro_api
 {
-public:
-    struct Callbacks {
-        virtual void freeze_screen() = 0;
-        virtual void disable_graphics_update() = 0;
-        virtual void enable_graphics_update() = 0;
-        virtual void disable_input_event() = 0;
-        virtual void enable_input_event() = 0;
-        virtual void display_osd_message(std::string_view message) = 0;
-        virtual ~Callbacks() = default;
-    };
-
 private:
     static constexpr std::string_view REPLACEMENT_HIDE = "********";
     static constexpr char TAG_HIDE = '\x03';
@@ -156,7 +146,7 @@ private:
     uint32_t reconnection_cookie = INVALID_RECONNECTION_COOKIE;
 
     EventsGuard events_guard;
-    Callbacks & callbacks;
+    ModRdpCallbacks & callbacks;
     SessionLogApi& session_log;
     SessionProbeVariables vars;
 
@@ -229,7 +219,7 @@ public:
         FileSystemVirtualChannel& file_system_virtual_channel,
         Random & gen,
         const Params& params,
-        Callbacks & callbacks,
+        ModRdpCallbacks & callbacks,
         RDPVerbose verbose)
     : BaseVirtualChannel(nullptr, to_server_sender_)
     , sespro_params(params.sespro_params)
@@ -368,7 +358,7 @@ private:
         this->session_probe_timer.garbage();
 
         this->callbacks.enable_graphics_update();
-        this->callbacks.enable_input_event();
+        this->callbacks.enable_input_event(Requester::SesProbe);
 
         if (this->sespro_params.on_launch_failure != SessionProbeOnLaunchFailure::ignore_and_continue) {
             this->session_log.acl_report(AclReport::session_probe_launch_failed(err_info.err_msg));
@@ -387,7 +377,7 @@ private:
 
             if (!this->client_input_disabled_because_session_probe_keepalive_is_missing) {
                 this->callbacks.enable_graphics_update();
-                this->callbacks.enable_input_event();
+                this->callbacks.enable_input_event(Requester::SesProbe);
             }
 
             if (!this->disconnection_reconnection_required) {
@@ -403,7 +393,7 @@ private:
 
                         if (!this->client_input_disabled_because_session_probe_keepalive_is_missing) {
                             this->callbacks.disable_graphics_update();
-                            this->callbacks.disable_input_event();
+                            this->callbacks.disable_input_event(Requester::SesProbe);
                             this->client_input_disabled_because_session_probe_keepalive_is_missing = true;
                         }
                         this->request_keep_alive();
@@ -429,7 +419,7 @@ private:
 
                     if (!this->client_input_disabled_because_session_probe_keepalive_is_missing) {
                         this->callbacks.disable_graphics_update();
-                        this->callbacks.disable_input_event();
+                        this->callbacks.disable_input_event(Requester::SesProbe);
 
                         this->client_input_disabled_because_session_probe_keepalive_is_missing = true;
                         this->callbacks.freeze_screen();
@@ -584,7 +574,7 @@ public:
                 this->front.session_probe_started(true);
 
                 if (!delay_disabled_launch_mask) {
-                    this->callbacks.enable_input_event();
+                    this->callbacks.enable_input_event(Requester::SesProbe);
                     this->callbacks.enable_graphics_update();
                 }
 
@@ -796,7 +786,7 @@ public:
                 });
             }
             else if (upper_param0 == "DisableLaunchMask"_ascii_upper) {
-                this->callbacks.enable_input_event();
+                this->callbacks.enable_input_event(Requester::SesProbe);
                 this->callbacks.enable_graphics_update();
             }
             else if (upper_param0 == "DisableRedirectedDrive"_ascii_upper) {
@@ -1056,7 +1046,7 @@ public:
             this->session_probe_keep_alive_received = true;
 
             if (this->client_input_disabled_because_session_probe_keepalive_is_missing) {
-                this->callbacks.enable_input_event();
+                this->callbacks.enable_input_event(Requester::SesProbe);
                 this->callbacks.enable_graphics_update();
                 this->callbacks.display_osd_message("");
                 this->request_keep_alive();

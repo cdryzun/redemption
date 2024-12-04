@@ -20,27 +20,27 @@ namespace configs
         inline constexpr int section3 = 17; /* all_target_mod */
         // inline constexpr int section4 = 18; /* remote_program */
         inline constexpr int section5 = 18; /* mod_rdp */
-        inline constexpr int section6 = 64; /* protocol */
-        inline constexpr int section7 = 65; /* session_probe */
-        inline constexpr int section8 = 110; /* server_cert */
-        inline constexpr int section9 = 119; /* mod_vnc */
-        inline constexpr int section10 = 135; /* session_log */
-        // inline constexpr int section11 = 137; /* ocr */
-        inline constexpr int section12 = 137; /* capture */
-        inline constexpr int section13 = 144; /* audit */
-        inline constexpr int section14 = 153; /* file_verification */
-        inline constexpr int section15 = 161; /* file_storage */
-        // inline constexpr int section16 = 162; /* icap_server_down */
-        // inline constexpr int section17 = 162; /* icap_server_up */
-        inline constexpr int section18 = 162; /* crypto */
-        // inline constexpr int section19 = 164; /* websocket */
-        // inline constexpr int section20 = 164; /* vnc_over_ssh */
-        inline constexpr int section21 = 164; /* context */
-        // inline constexpr int section22 = 253; /* internal_mod */
-        inline constexpr int section23 = 253; /* mod_replay */
-        inline constexpr int section24 = 255; /* translation */
-        // inline constexpr int section25 = 256; /* theme */
-        // inline constexpr int section26 = 256; /* debug */
+        inline constexpr int section6 = 65; /* protocol */
+        inline constexpr int section7 = 66; /* session_probe */
+        inline constexpr int section8 = 111; /* server_cert */
+        inline constexpr int section9 = 120; /* mod_vnc */
+        inline constexpr int section10 = 136; /* session_log */
+        // inline constexpr int section11 = 138; /* ocr */
+        inline constexpr int section12 = 138; /* capture */
+        inline constexpr int section13 = 145; /* audit */
+        inline constexpr int section14 = 154; /* file_verification */
+        inline constexpr int section15 = 162; /* file_storage */
+        // inline constexpr int section16 = 163; /* icap_server_down */
+        // inline constexpr int section17 = 163; /* icap_server_up */
+        inline constexpr int section18 = 163; /* crypto */
+        // inline constexpr int section19 = 165; /* websocket */
+        // inline constexpr int section20 = 165; /* vnc_over_ssh */
+        inline constexpr int section21 = 165; /* context */
+        // inline constexpr int section22 = 254; /* internal_mod */
+        inline constexpr int section23 = 254; /* mod_replay */
+        inline constexpr int section24 = 256; /* translation */
+        // inline constexpr int section25 = 257; /* theme */
+        // inline constexpr int section26 = 257; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -1758,6 +1758,21 @@ namespace cfg
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
         static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 45};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
+    /// If this option is enabled, user input will be ignored until the Application Driver's work is complete. <br/>
+    /// type: bool <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_rdp:block_user_input_until_appdriver_completes <br/>
+    /// displayName: Block user input until Application Driver completes <br/>
+    /// default: false <br/>
+    struct mod_rdp::block_user_input_until_appdriver_completes {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 46};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -5496,6 +5511,7 @@ struct mod_rdp
 , cfg::mod_rdp::use_session_probe_to_launch_remote_program
 , cfg::mod_rdp::replace_null_pointer_by_default_pointer
 , cfg::mod_rdp::windows_xp_clipboard_support
+, cfg::mod_rdp::block_user_input_until_appdriver_completes
 { static constexpr bool is_section = true; };
 
 struct protocol
@@ -5931,6 +5947,7 @@ using VariablesAclPack = Pack<
 , cfg::mod_rdp::use_session_probe_to_launch_remote_program
 , cfg::mod_rdp::replace_null_pointer_by_default_pointer
 , cfg::mod_rdp::windows_xp_clipboard_support
+, cfg::mod_rdp::block_user_input_until_appdriver_completes
 , cfg::protocol::save_session_info_pdu
 , cfg::session_probe::enable_session_probe
 , cfg::session_probe::use_smart_launcher
@@ -6126,16 +6143,18 @@ using VariablesAclPack = Pack<
 >;
 
 
-constexpr U64BitFlags<4> loggable_field{ {
+constexpr U64BitFlags<5> loggable_field{ {
   0b1111011111111111111111111111111111111111111111111111011111101100
-, 0b1111111111011111111111111111111111111111111111111111111111111111
-, 0b1001110000111111011000110000001111111111111101111111011111111111
-, 0b1111100000001110000011000110111111100010100111111111110100010111
+, 0b1111111110111111111111111111111111111111111111111111111111111111
+, 0b0011100001111110110001100000011111111111111011111110111111111111
+, 0b1111000000011100000110001101111111000101001111111111101000101111
+, 0b0000000000000000000000000000000000000000000000000000000000000001
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b0000000100000000000000000000000000000000000000000000000000000000
+, 0b0000001000000000000000000000000000000000000000000000000000000000
+, 0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };
 } // namespace configs

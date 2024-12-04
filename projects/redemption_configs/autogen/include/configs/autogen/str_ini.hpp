@@ -759,6 +759,12 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:windows_xp_clipboard_support)
 #windows_xp_clipboard_support = 0
 
+# If this option is enabled, user input will be ignored until the Application Driver's work is complete.
+# (type: boolean (0/no/false or 1/yes/true))
+#_display_name=Block user input until Application Driver completes
+# (acl config: proxy ⇐ mod_rdp:block_user_input_until_appdriver_completes)
+#block_user_input_until_appdriver_completes = 0
+
 [protocol]
 
 #   0: Windows

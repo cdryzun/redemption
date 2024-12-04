@@ -380,7 +380,7 @@ private:
     SessionLogApi& session_log;
     FileValidatorService * file_validator_service;
     ValidatorParams validator_params;
-    SessionProbeVirtualChannel::Callbacks & callbacks;
+    ModRdpCallbacks & callbacks;
 
     const bool bogus_freerdp_clipboard;
 
@@ -397,7 +397,7 @@ public:
         SessionLogApi& session_log,
         FileValidatorService * file_validator_service,
         ModRdpFactory& mod_rdp_factory,
-        SessionProbeVirtualChannel::Callbacks & callbacks)
+        ModRdpCallbacks & callbacks)
     : channels_authorizations(channels_authorizations)
     , enable_auth_channel(mod_rdp_params.application_params.alternate_shell[0]
                         && !mod_rdp_params.ignore_auth_channel)
@@ -952,10 +952,10 @@ public:
 
         if (upper_order == "Input"_ascii_upper && !parameters.empty()) {
             if (!insensitive_eq(parameters[0], "Enable"_ascii_upper)) {
-                this->callbacks.disable_input_event();
+                this->callbacks.disable_input_event(Requester::AppDriver);
             }
             else {
-                this->callbacks.enable_input_event();
+                this->callbacks.enable_input_event(Requester::AppDriver);
             }
             this->callbacks.enable_graphics_update();
         }
@@ -1050,6 +1050,11 @@ public:
 
         const char* auth_channel_message_ptr = stream.in_skip_remaining().as_charp();
         chars_view auth_channel_message(auth_channel_message_ptr, ::strlen(auth_channel_message_ptr));
+
+LOG(LOG_INFO,
+    "mod_rdp::process_auth_event: AuthChannelMessage=\"%.*s\"",
+    static_cast<int>(auth_channel_message.size()),
+    auth_channel_message.data());
 
         LOG_IF(bool(this->verbose & RDPVerbose::basic_trace), LOG_INFO,
             "mod_rdp::process_auth_event: AuthChannelMessage=\"%.*s\"",
@@ -1764,14 +1769,14 @@ public:
 class mod_rdp : public mod_api, public rdp_api, public sespro_api
 {
 #ifndef __EMSCRIPTEN__
-    struct SessionProbeChannelCallbacks : public SessionProbeVirtualChannel::Callbacks
+    struct SessionProbeChannelCallbacks : public ModRdpCallbacks
     {
         mod_rdp & mod;
         gdi::OsdApi& osd;
         SessionProbeChannelCallbacks(mod_rdp & mod, gdi::OsdApi& osd) : mod(mod), osd(osd) {}
         void freeze_screen() override { mod.freeze_screen(); }
-        void disable_input_event() override { mod.deny_suppress_output(); mod.disable_input_event(); }
-        void enable_input_event() override { mod.enable_input_event(); mod.allow_suppress_output(); }
+        void disable_input_event(Requester r) override { mod.deny_suppress_output(); mod.disable_input_event(r); }
+        void enable_input_event(Requester r) override { mod.enable_input_event(r); mod.allow_suppress_output(); }
         void enable_graphics_update() override { mod.enable_graphics_update(); }
         void disable_graphics_update() override { mod.disable_graphics_update(); }
         void display_osd_message(std::string_view message) override  { osd.display_osd_message(message); }
@@ -1868,7 +1873,8 @@ class mod_rdp : public mod_api, public rdp_api, public sespro_api
     bool already_upped_and_running = false;
 
     bool suppress_output_denied   = false;
-    bool input_event_disabled     = false;
+    bool input_event_disabled_appdriver = false;
+    bool input_event_disabled_sesprobe  = false;
     bool graphics_update_disabled = false;
 
     bool mcs_disconnect_provider_ultimatum_pdu_received = false;
@@ -2095,6 +2101,14 @@ public:
         }
 #endif
 
+        if (mod_rdp_params.block_user_input_until_appdriver_completes
+            && (mod_rdp_params.remote_app_params.enable_remote_program
+                || !mod_rdp_params.application_params.target_application.empty()))
+        {
+            LOG(LOG_INFO, "User input will be ignored until the Application Driver's work is complete.");
+            this->input_event_disabled_appdriver = true;
+        }
+
         this->negociation_result.front_width = info.screen_info.width;
         this->negociation_result.front_height = info.screen_info.height;
 
@@ -2282,7 +2296,7 @@ public:
     ~mod_rdp() override {
 #ifndef __EMSCRIPTEN__
         if (this->channels.session_probe.enable_session_probe) {
-            this->enable_input_event();
+            this->enable_input_event(Requester::SesProbe);
             this->allow_suppress_output();
             this->enable_graphics_update();
         }
@@ -2480,7 +2494,7 @@ private:
     void input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time)
     {
         if ((UP_AND_RUNNING == this->connection_finalization_state)
-         && !this->input_event_disabled
+         && !this->is_input_event_disabled()
         ) {
             if (this->first_scancode && !bool(flags & KbdFlags::Release)) {
 #ifndef __EMSCRIPTEN__
@@ -2542,7 +2556,7 @@ public:
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override
     {
         if (UP_AND_RUNNING == this->connection_finalization_state
-         && !this->input_event_disabled
+         && !this->is_input_event_disabled()
         ) {
             this->send_input_mouse(device_flags, x, y);
 
@@ -2557,7 +2571,7 @@ public:
     void rdp_input_mouse_ex(uint16_t device_flags, uint16_t x, uint16_t y) override
     {
         if (UP_AND_RUNNING == this->connection_finalization_state
-         && !this->input_event_disabled
+         && !this->is_input_event_disabled()
         ) {
             this->send_input_mouse_ex(device_flags, x, y);
         }
@@ -3603,7 +3617,7 @@ public:
 
 #ifndef __EMSCRIPTEN__
                 if (this->channels.session_probe.enable_session_probe) {
-                    this->enable_input_event();
+                    this->enable_input_event(Requester::SesProbe);
                     this->allow_suppress_output();
                     this->enable_graphics_update();
                 }
@@ -5154,7 +5168,7 @@ public:
           || !this->channels.session_probe_virtual_channel->has_been_launched())
         ) {
             this->deny_suppress_output();
-            this->disable_input_event();
+            this->disable_input_event(Requester::SesProbe);
             if (this->channels.session_probe.enable_launch_mask){
                 this->disable_graphics_update();
             }
@@ -5206,7 +5220,7 @@ public:
             if (this->channels.session_probe.enable_session_probe &&
                 (!this->channels.session_probe_virtual_channel || !this->channels.session_probe_virtual_channel->has_been_launched())) {
                 this->deny_suppress_output();
-                this->disable_input_event();
+                this->disable_input_event(Requester::SesProbe);
                 if (this->channels.session_probe.enable_launch_mask){
                     this->disable_graphics_update();
                 }
@@ -6160,16 +6174,31 @@ public:
         this->suppress_output_denied = false;
     }
 
-    void disable_input_event()
+    bool is_input_event_disabled() const
     {
-        LOG(LOG_INFO, "mod_rdp: disable input event.");
-        this->input_event_disabled = true;
+        return input_event_disabled_appdriver || input_event_disabled_sesprobe;
     }
 
-    void enable_input_event()
+    void disable_input_event(Requester r)
+    {
+        LOG(LOG_INFO, "mod_rdp: disable input event.");
+        if (Requester::AppDriver == r) {
+            this->input_event_disabled_appdriver = true;
+        }
+        else {
+            this->input_event_disabled_sesprobe = true;
+        }
+    }
+
+    void enable_input_event(Requester r)
     {
         LOG(LOG_INFO, "mod_rdp: enable input event.");
-        this->input_event_disabled = false;
+        if (Requester::AppDriver == r) {
+            this->input_event_disabled_appdriver = false;
+        }
+        else {
+            this->input_event_disabled_sesprobe = false;
+        }
     }
 
     void disable_graphics_update()
