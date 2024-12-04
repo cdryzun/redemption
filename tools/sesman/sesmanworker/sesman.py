@@ -1990,7 +1990,7 @@ class Sesman():
                         "Send critic notification "
                         "(every attempt to connect to some physical node)"
                     )
-                    if extra_info.is_critical and (not is_interactive_login or self.shared.get('target_login') != MAGICASK):
+                    if _status and extra_info.is_critical:
                         Logger().info("CRITICAL CONNECTION")
                         self.engine.NotifyConnectionToCriticalEquipment(
                             ('APP' if application else proto_info.protocol),
