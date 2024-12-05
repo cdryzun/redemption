@@ -153,18 +153,22 @@ RED_AUTO_TEST_CASE(TestParseMO)
     chars_view plural_expr = {};
     std::vector<Msg> msgs;
 
+    auto init_parser = [&](uint32_t msgcount_, uint32_t nplurals_, chars_view plural_expr_) {
+        msgcount = msgcount_;
+        nplurals = nplurals_;
+        plural_expr = plural_expr_;
+        return true;
+    };
+
+    auto push_mo_msg = [&](chars_view msgid, chars_view msgid_plurals, MoMsgStrIterator msgs_it) {
+        auto str = [](chars_view av) { return av.as<std::string_view>(); };
+        msgs.push_back(Msg{str(msgid), str(msgid_plurals), str(msgs_it.raw_messages())});
+        return true;
+    };
+
     MoParserCallables fns{
-        .init = [&](uint32_t msgcount_, uint32_t nplurals_, chars_view plural_expr_) {
-            msgcount = msgcount_;
-            nplurals = nplurals_;
-            plural_expr = plural_expr_;
-            return true;
-        },
-        .push_msg = [&](chars_view msgid, chars_view msgid_plurals, MoMsgStrIterator msgs_it) {
-            auto str = [](chars_view av) { return av.as<std::string_view>(); };
-            msgs.push_back(Msg{str(msgid), str(msgid_plurals), str(msgs_it.raw_messages())});
-            return true;
-        },
+        .init = init_parser,
+        .push_msg = push_mo_msg,
     };
 
     using namespace std::string_view_literals;

@@ -191,7 +191,7 @@ void MsgTranslationCatalog::init_from_file(
 
     unsigned last_index = 0;
 
-    MoParserCallables fns{
+    auto const res = parse_mo(content, MoParserCallables{
         .init = [&](uint32_t /*msgcount*/, uint32_t /*nplurals*/, chars_view plural_expr) {
             if (char const* p = plural.parse(plural_expr)) {
                 LOG(LOG_WARNING, "i18n: %s: invalid plural expression: '%.*s' at position %ld", filename, static_cast<int>(plural_expr.size()), plural_expr.data(), p - plural_expr.data());
@@ -202,9 +202,8 @@ void MsgTranslationCatalog::init_from_file(
             push_msg(filename, *this, mbr, last_index, msgid.as<std::string_view>(), msgs_it);
             return true;
         },
-    };
+    });
 
-    auto const res = parse_mo(content, fns);
     switch (res.ec) {
     case MoParserErrorCode::NoError:
         break;
