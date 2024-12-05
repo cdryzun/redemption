@@ -166,14 +166,9 @@ RED_AUTO_TEST_CASE(TestParseMO)
         return true;
     };
 
-    MoParserCallables fns{
-        .init = init_parser,
-        .push_msg = push_mo_msg,
-    };
-
     using namespace std::string_view_literals;
 
-    RED_CHECK(MoParserErrorCode::NoError == parse_mo(mo_file, fns).ec);
+    RED_CHECK(MoParserErrorCode::NoError == parse_mo(mo_file, init_parser, push_mo_msg).ec);
     RED_CHECK(msgcount == 4);
     RED_CHECK(nplurals == 3);
     RED_CHECK(plural_expr ==

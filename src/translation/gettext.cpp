@@ -494,7 +494,11 @@ T + ((N-1)*8)| length & offset (N-1)th translation      |  | | | |
              |                                          |
              +------------------------------------------+
 */
-MoParserError parse_mo(bytes_view buf, MoParserCallables callables)
+MoParserError parse_mo(
+    bytes_view buf,
+    FunctionRef<bool(uint32_t msgcount, uint32_t nplurals, chars_view plural_expr)> init,
+    FunctionRef<bool(chars_view msgid, chars_view msgid_plurals, MoMsgStrIterator msgs)> push_msg
+)
 {
     constexpr uint32_t LE_MAGIC = 0x950412de;
     constexpr uint32_t BE_MAGIC = 0xde120495;
@@ -541,7 +545,7 @@ MoParserError parse_mo(bytes_view buf, MoParserCallables callables)
     chars_view plural_expr = ""_av;
 
     if (msgcount <= 0) [[unlikely]] {
-        callables.init(0, 0, ""_av);
+        init(0, 0, ""_av);
         return MoParserError{MoParserErrorCode::NoError, 0};
     }
 
@@ -649,7 +653,7 @@ MoParserError parse_mo(bytes_view buf, MoParserCallables callables)
         }
     }
 
-    if (!callables.init(msgcount, nplurals, plural_expr)) {
+    if (!init(msgcount, nplurals, plural_expr)) {
         return MoParserError{MoParserErrorCode::InitError, 0};
     }
 
@@ -674,7 +678,7 @@ MoParserError parse_mo(bytes_view buf, MoParserCallables callables)
             ? chars_view(mptr, mlen).from_offset(n + 1)
             : chars_view{};
         auto msgs = zstring_view::from_null_terminated(tptr, tlen);
-        if (!callables.push_msg(msgid, msgid_plurals, MoMsgStrIterator(msgs))) {
+        if (!push_msg(msgid, msgid_plurals, MoMsgStrIterator(msgs))) {
             return MoParserError{MoParserErrorCode::InvalidMessage, 0};
         }
     }

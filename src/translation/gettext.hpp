@@ -81,10 +81,6 @@ private:
     std::size_t len;
 };
 
-struct MoParserCallables
-{
-    FunctionRef<bool(uint32_t msgcount, uint32_t nplurals, chars_view plural_expr)> init;
-    FunctionRef<bool(chars_view msgid, chars_view msgid_plurals, MoMsgStrIterator msgs)> push_msg;
-};
-
-MoParserError parse_mo(bytes_view data, MoParserCallables callables);
+MoParserError parse_mo(bytes_view data,
+    FunctionRef<bool(uint32_t msgcount, uint32_t nplurals, chars_view plural_expr)> init,
+    FunctionRef<bool(chars_view msgid, chars_view msgid_plurals, MoMsgStrIterator msgs)> push_msg);
