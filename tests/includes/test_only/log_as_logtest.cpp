@@ -135,6 +135,7 @@ void LOG_REDEMPTION_INTERNAL_IMPL(int priority, char const * format, ...) noexce
         va_list ap;
         REDEMPTION_DIAGNOSTIC_PUSH()
         REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wformat-nonliteral")
+        REDEMPTION_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wformat-truncation") // null format string...
         va_start(ap, format);
         auto sz = std::vsnprintf(nullptr, 0, format, ap) + 1; /*NOLINT*/
         va_end(ap);
