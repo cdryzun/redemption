@@ -17,7 +17,7 @@ do
     )^0)
 end
 
-local trkeys_path = 'src/utils/trkeys.hpp'
+local trkeys_path = 'src/translation/trkeys.hpp'
 
 local match_and_setk = utils.match_and_setk
 
