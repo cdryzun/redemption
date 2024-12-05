@@ -2134,8 +2134,9 @@ public:
                 access_ok = false;
             }
             if (!this->param_file_system_write_authorized &&
-                smb2::write_access_is_required(DesiredAccess,
-                                               /* strict_check = */false)) {
+                (smb2::write_access_is_required(DesiredAccess,
+                                               /* strict_check = */false) ||
+                 (device_create_request.CreateDisposition() == smb2::FILE_CREATE))) {
                 access_ok = false;
             }
         }
