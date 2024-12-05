@@ -132,9 +132,9 @@
     fv(ERR_BITMAP_CACHE_PERSISTENT, 18005)                   \
                                                              \
     fv(ERR_NEGO_SSL_REQUIRED_BY_SERVER, 19000)               \
-    f(ERR_NEGO_SSL_NOT_ALLOWED_BY_SERVER)                    \
-    f(ERR_NEGO_SSL_CERT_NOT_ON_SERVER)                       \
-    f(ERR_NEGO_INCONSISTENT_FLAGS)                           \
+    /*fv(ERR_NEGO_SSL_NOT_ALLOWED_BY_SERVER, 19001)*/        \
+    /*fv(ERR_NEGO_SSL_CERT_NOT_ON_SERVER, 19002)*/           \
+    fv(ERR_NEGO_INCONSISTENT_FLAGS, 19003)                   \
     f(ERR_NEGO_HYBRID_REQUIRED_BY_SERVER)                    \
     f(ERR_NEGO_NLA_REQUIRED_BY_RESTRICTED_ADMIN_MODE)        \
     f(ERR_NEGO_KRB_REQUIRED)                                 \
