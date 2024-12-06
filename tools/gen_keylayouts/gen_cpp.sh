@@ -12,6 +12,4 @@ if [[ -z "$KBDLAYOUT_PATH" ]]; then
     KBDLAYOUT_PATH="$KEYBOARD_JS_PATH"/tools/kbdlayout.info
 fi
 
-source "$KEYBOARD_JS_PATH"/tools/keylayout_list.sh
-
-PYTHONPATH="$KEYBOARD_JS_PATH/tools/:$PYTHONPATH" "$d"/gen_cpp.py "${KBDLAYOUT_LAYOUTS[@]}" > "$d"/../../src/keyboard/keylayouts.cpp
+PYTHONPATH="$KEYBOARD_JS_PATH/tools/:$PYTHONPATH" "$d"/gen_cpp.py "$KBDLAYOUT_PATH"/*.xml > "$d"/../../src/keyboard/keylayouts.cpp

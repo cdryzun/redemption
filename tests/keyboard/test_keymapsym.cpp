@@ -133,8 +133,10 @@ namespace
 {
     struct KeymapSymTest
     {
-        KeymapSymTest(KeymapSym::IsApple is_apple, KeymapSym::IsUnix is_unix)
-        : keymapSym(*layout_fr, KeyLocks(), is_apple, is_unix, false)
+        KeymapSymTest(
+            KeymapSym::IsApple is_apple, KeymapSym::IsUnix is_unix,
+            KeyLayout const& layout = *layout_fr)
+        : keymapSym(layout, KeyLocks(), is_apple, is_unix, false)
         {}
 
         Keysyms utf16(KeymapSym::KbdFlags flag, uint16_t utf16)
@@ -256,6 +258,24 @@ RED_AUTO_TEST_CASE(TestKeymapSym)
     RED_CHECK(keymap.scancode(down, Scancode(0x45)) == ksyms(stDown(0x0000ff7f)));
     RED_CHECK(keymap.scancode(release, Scancode(0x45)) == ksyms(stUp(0x0000ff7f)));
     RED_CHECK(keymap.scancode(release | extended1, Scancode::LCtrl) == ksyms(stUp(0xff13)));
+}
+
+RED_AUTO_TEST_CASE(TestKeymapSymKana)
+{
+    auto jap = find_layout_by_id(KeyLayout::KbdId(0x0411));
+    KeymapSymTest keymap(KeymapSym::IsApple::No, KeymapSym::IsUnix::No, *jap);
+
+    // q
+    RED_CHECK(keymap.scancode(down, Scancode::Q) == ksyms(stDown('q')));
+    RED_CHECK(keymap.scancode(release, Scancode::Q) == ksyms(stUp('q')));
+
+    // KanaLock
+    RED_CHECK(keymap.scancode(down, Scancode(0x72)) == ksyms(stDown(0xff2d)));
+    RED_CHECK(keymap.scancode(release, Scancode(0x72)) == ksyms(stUp(0xff2d)));
+
+    // q
+    RED_CHECK(keymap.scancode(down, Scancode::Q) == ksyms(stDown(0x100'ff80)));
+    RED_CHECK(keymap.scancode(release, Scancode::Q) == ksyms(stUp(0x100'ff80)));
 }
 
 RED_AUTO_TEST_CASE(TestKeymapSymMacOS)

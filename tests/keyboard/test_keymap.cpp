@@ -60,7 +60,7 @@ static ut::assertion_result test_comp_decoded(DecodedKeyAndKEvent a, DecodedKeyA
         auto put = [&](std::ostream& out, DecodedKeyAndKEvent const& x){
             char uchar0[] = " (x)";
             char uchar1[] = " (x)";
-            auto to_ascii = [](char* s, KeyLayout::unicode_t uni) -> char const* {
+            auto to_ascii = [](char* s, uint32_t uni) -> char const* {
                 if (' ' <= uni && uni <= '~') {
                     s[2] = char(uni);
                     return s;
@@ -113,11 +113,11 @@ RED_AUTO_TEST_CASE(TestKeymap)
         return DecodedKeyAndKEvent{keymap.last_decoded_keys(), keymap.last_kevent()};
     };
 
-    auto values = [](KCode keycode, KFlags flags, std::array<Keymap::unicode_t, 2> uchars, KV kevent){
+    auto values = [](KCode keycode, KFlags flags, std::array<uint32_t, 2> uchars, KV kevent){
         return DecodedKeyAndKEvent{{keycode, flags, uchars}, kevent};
     };
 
-    uint16_t release = checked_int( KFlags::Release);
+    uint16_t release = checked_int(KFlags::Release);
     uint16_t downnnn = 0;
 
     // unknown scancode
@@ -330,4 +330,57 @@ RED_AUTO_TEST_CASE(TestKeymap)
     RED_CHECK(keymap.mods().as_uint() == KeyModFlags().as_uint());
     RED_CHECK_EQ(event(release | 0x1d /*left ctrl*/), values(KCode(0x1d), KFlags(0x8000), {}, KV::None));
     RED_CHECK(keymap.mods().as_uint() == KeyModFlags().as_uint());
+
+
+    // Test on large codepoint (>= 0x3fff) and Kana
+
+    // Jap layout
+    keymap.set_layout(*find_layout_by_id(KeyLayout::KbdId(0x0411)));
+
+    RED_CHECK(keymap.mods().as_uint() == 0);
+    RED_CHECK(event(downnnn | 0x10 /*q*/) == values(KCode(0x10), KFlags(), {'q'}, KV::KeyDown));
+    RED_CHECK(event(release | 0x10 /*q*/) == values(KCode(0x10), KFlags(0x8000), {}, KV::None));
+
+    // force KanaLock
+    keymap.set_locks(KeyLocks::KanaLock);
+    RED_CHECK(keymap.mods().as_uint() == KeyModFlags(KeyLocks::KanaLock).as_uint());
+    // large codepoint
+    RED_CHECK(event(downnnn | 0x10 /*q*/) == values(KCode(0x10), KFlags(), {0xff80}, KV::KeyDown));
+    RED_CHECK(event(release | 0x10 /*q*/) == values(KCode(0x10), KFlags(0x8000), {}, KV::None));
+
+    keymap.set_locks(KeyLocks());
+    RED_CHECK(keymap.mods().as_uint() == 0);
+    // set KanaLock
+    RED_CHECK(event(downnnn | 0x72 /* KanaLock */) == values(KCode(0x72), KFlags(), {}, KV::KeyDown));
+    RED_CHECK(event(release | 0x72 /* KanaLock */) == values(KCode(0x72), KFlags(0x8000), {}, KV::None));
+    RED_CHECK(keymap.mods().as_uint() == KeyModFlags(KeyLocks::KanaLock).as_uint());
+
+    // large codepoint
+    RED_CHECK(event(downnnn | 0x10 /*q*/) == values(KCode(0x10), KFlags(), {0xff80}, KV::KeyDown));
+    RED_CHECK(event(release | 0x10 /*q*/) == values(KCode(0x10), KFlags(0x8000), {}, KV::None));
+
+
+    // Test on double dkey
+
+    // German Extended (E2) layout
+    keymap.set_layout(*find_layout_by_id(KeyLayout::KbdId(0x30407)));
+    keymap.set_locks(KeyLocks());
+
+    // ´ + ^ + a = ấ
+
+    RED_CHECK(event(downnnn | 0x0D /*´*/) == values(KCode(0x0D), KFlags(), {}, KV::KeyDown));
+    RED_CHECK(event(release | 0x0D /*´*/) == values(KCode(0x0D), KFlags(0x8000), {}, KV::None));
+    RED_CHECK(event(downnnn | 0x29 /*^*/) == values(KCode(0x29), KFlags(), {}, KV::KeyDown));
+    RED_CHECK(event(release | 0x29 /*^*/) == values(KCode(0x29), KFlags(0x8000), {}, KV::None));
+    RED_CHECK(event(downnnn | 0x1E /*a*/) == values(KCode(0x1E), KFlags(), {0x1EA5/*ấ*/}, KV::KeyDown));
+    RED_CHECK(event(release | 0x1E /*a*/) == values(KCode(0x1E), KFlags(0x8000), {}, KV::None));
+
+    // ^ + ´ + a = ấ
+
+    RED_CHECK(event(downnnn | 0x29 /*^*/) == values(KCode(0x29), KFlags(), {}, KV::KeyDown));
+    RED_CHECK(event(release | 0x29 /*^*/) == values(KCode(0x29), KFlags(0x8000), {}, KV::None));
+    RED_CHECK(event(downnnn | 0x0D /*´*/) == values(KCode(0x0D), KFlags(), {}, KV::KeyDown));
+    RED_CHECK(event(release | 0x0D /*´*/) == values(KCode(0x0D), KFlags(0x8000), {}, KV::None));
+    RED_CHECK(event(downnnn | 0x1E /*a*/) == values(KCode(0x1E), KFlags(), {0x1EA5/*ấ*/}, KV::KeyDown));
+    RED_CHECK(event(release | 0x1E /*a*/) == values(KCode(0x1E), KFlags(0x8000), {}, KV::None));
 }

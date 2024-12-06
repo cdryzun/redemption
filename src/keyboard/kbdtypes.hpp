@@ -293,6 +293,7 @@ namespace kbdtypes
         ScrollLock = 0x46,
         /// /!\\ Pause is 0x1D | 0x200, 0x45
         NumLock = 0x45,
+        KanaLock = 0x72,
 
         UpArrow = 0x48 | 0x100,
         LeftArrow = 0x4B | 0x100,

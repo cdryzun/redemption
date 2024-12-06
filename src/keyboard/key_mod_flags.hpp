@@ -37,7 +37,8 @@ enum class KeyMod : unsigned
     RMeta,
     NumLock,
     CapsLock,
-    ScrollLock
+    ScrollLock,
+    KanaLock,
 };
 
 struct KeyModFlags
@@ -58,11 +59,11 @@ struct KeyModFlags
     {
         clear(KeyMod::NumLock);
         clear(KeyMod::CapsLock);
-        // clear(KeyMod::KanaLock);
+        clear(KeyMod::KanaLock);
         clear(KeyMod::ScrollLock);
         set_if(bool(locks & KeyLocks::NumLock), KeyMod::NumLock);
         set_if(bool(locks & KeyLocks::CapsLock), KeyMod::CapsLock);
-        // set_if(bool(locks & KeyLocks::KanaLock), KeyMod::KanaLock);
+        set_if(bool(locks & KeyLocks::KanaLock), KeyMod::KanaLock);
         set_if(bool(locks & KeyLocks::ScrollLock), KeyMod::ScrollLock);
     }
 

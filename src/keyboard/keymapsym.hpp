@@ -98,11 +98,11 @@ private:
 
     KeyLayout layout_;
 
-    sized_array_view<KeyLayout::unicode_t, 256> keymap_;
+    std::array<KeyLayout::HalfKeymap, 2> keymap_;
     KeyLayout::DKeyTable dkeys_ {};
     kbdtypes::KeyModFlags mods_ {};
 
-    Utf16ToUnicodeConverter unicode32_decoder {};
+    Utf16ToUnicodeConverter unicode32_decoder_ {};
 
     uint8_t imods_ {};
 

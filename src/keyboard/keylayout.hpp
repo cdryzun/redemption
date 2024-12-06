@@ -56,24 +56,31 @@ struct KeyLayout
 
     enum class KbdId : uint32_t;
 
-    enum class RCtrlIsCtrl : bool;
+    enum class RCtrlIsCtrl : bool { No, Yes };
 
-    using unicode_t = uint16_t;
+    using unicode16_t = uint16_t;
 
-    static constexpr unicode_t DK = unicode_t(1) << (sizeof(unicode_t) * 8 - 1);
+    static constexpr unicode16_t DK = 1u << (sizeof(unicode16_t) * 8 - 1);
+    static constexpr unicode16_t HI = 1u << (sizeof(unicode16_t) * 8 - 2);
 
     struct DKeyTable
     {
         struct DKey
         {
-            unicode_t second;
-            unicode_t result;
+            union Data
+            {
+                unicode16_t result;
+                uint16_t dkeytable_idx; // enable when (second & DK)
+            };
+
+            unicode16_t second;
+            Data data;
         };
 
         struct Meta
         {
             uint16_t size;
-            unicode_t accent;
+            unicode16_t accent;
         };
 
         union Data
@@ -89,7 +96,7 @@ struct KeyLayout
             return data;
         }
 
-        unicode_t accent() const noexcept
+        unicode16_t accent() const noexcept
         {
             assert(data);
             return data[0].meta.accent;
@@ -103,14 +110,27 @@ struct KeyLayout
             return array_view{reinterpret_cast<DKey const*>(&data[1]), data[0].meta.size}; /*NOLINT*/
         }
 
-        unicode_t find_composition(unicode_t unicode) const noexcept
+        DKey const * find_composition(unicode16_t unicode) const noexcept
         {
-            for (auto& dkey : dkeys()) {
-                if (dkey.second == unicode) {
-                    return dkey.result;
+            // std::lower_bound()
+
+            auto c = dkeys();
+            auto it = c.begin();
+            auto count = c.end() - it;
+
+            while (count > 0) {
+                auto step = count / 2;
+
+                if (it[step].second < unicode) {
+                    it += step + 1;
+                    count -= step + 1;
+                }
+                else {
+                    count = step;
                 }
             }
-            return 0;
+
+            return it == c.end() || it->second != unicode ? nullptr : &*it;
         }
     };
 
@@ -124,19 +144,50 @@ struct KeyLayout
             NumLock,
             CapsLock,
             OEM_8,
+            KanaLock,
         };
+    };
+
+    using HalfKeymap = sized_array_view<unicode16_t, 128>;
+    using HalfKeymapPerBatchOf32 = sized_array_view<HalfKeymap, 32>;
+
+    struct KeymapByMod
+    {
+        HalfKeymapPerBatchOf32 by_mods[4];
+
+        HalfKeymap operator[](uint8_t i) const noexcept
+        {
+            return by_mods[i / 32][i % 32];
+        }
+    };
+
+    using DKeyTableIdxPerBatchOf32 = sized_array_view<uint16_t const*, 32>;
+
+    struct DKeyIdxByMod
+    {
+        DKeyTableIdxPerBatchOf32 by_mods[4];
+
+        uint16_t const* operator[](uint8_t i) const noexcept
+        {
+            return by_mods[i / 32][i % 32];
+        }
     };
 
     KbdId kbdid;
     RCtrlIsCtrl right_ctrl_is_ctrl;
+
     // scancodes used with Session Probe
     kbdtypes::Scancode key_R;
     kbdtypes::Scancode key_C;
     kbdtypes::Scancode key_V;
-    zstring_view name;
 
-    sized_array_view<sized_array_view<unicode_t, 256>, 64> keymap_by_mod;
-    sized_array_view<sized_array_view<DKeyTable, 128>, 64> dkeymap_by_mod;
+    // {uni_low(16b) [0-128], uni_low(16b) [128-255], uni_high(16b) from [0-128]}
+    KeymapByMod keymap_by_mod[3];
+    DKeyIdxByMod dkeymap_idx_by_mod;
+    DKeyTable const* dkeymaps;
+
+    zstring_view name;
+    zstring_view display_name;
 };
 
 
@@ -144,10 +195,9 @@ struct KeyLayout
 
 namespace detail
 {
-    inline constexpr KeyLayout::unicode_t null_layout_unicodes[256] {};
-    inline constexpr KeyLayout::DKeyTable null_layout_keytables[128] {};
-    inline constexpr sized_array_view<KeyLayout::unicode_t, 256> null_layout_unicode_by_mods[]
-    {
+    inline constexpr KeyLayout::unicode16_t null_layout_unicodes[128] {};
+
+    inline constexpr KeyLayout::HalfKeymap null_keymap_per_batch_of_32[] {
         null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
         null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
         null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
@@ -158,54 +208,38 @@ namespace detail
         null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
         null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
         null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes, null_layout_unicodes, null_layout_unicodes,
-        null_layout_unicodes,
+        null_layout_unicodes, null_layout_unicodes,
     };
-    inline constexpr sized_array_view<KeyLayout::DKeyTable, 128> null_layout_keytable_by_mods[]
-    {
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables, null_layout_keytables, null_layout_keytables,
-        null_layout_keytables,
-    };
+
+    inline constexpr uint16_t const* null_dkeymap_idx_per_batch_of_32[32] {};
 
     inline constexpr KeyLayout null_layout_layout{
         KeyLayout::KbdId(0),
-        KeyLayout::RCtrlIsCtrl(true),
+        KeyLayout::RCtrlIsCtrl::Yes,
         kbdtypes::Scancode(),
         kbdtypes::Scancode(),
         kbdtypes::Scancode(),
+        {
+            {{
+                null_keymap_per_batch_of_32, null_keymap_per_batch_of_32,
+                null_keymap_per_batch_of_32, null_keymap_per_batch_of_32,
+            }},
+            {{
+                null_keymap_per_batch_of_32, null_keymap_per_batch_of_32,
+                null_keymap_per_batch_of_32, null_keymap_per_batch_of_32,
+            }},
+            {{
+                null_keymap_per_batch_of_32, null_keymap_per_batch_of_32,
+                null_keymap_per_batch_of_32, null_keymap_per_batch_of_32,
+            }},
+        },
+        {{
+            null_dkeymap_idx_per_batch_of_32, null_dkeymap_idx_per_batch_of_32,
+            null_dkeymap_idx_per_batch_of_32, null_dkeymap_idx_per_batch_of_32,
+        }},
+        nullptr,
         "null"_zv,
-        detail::null_layout_unicode_by_mods,
-        detail::null_layout_keytable_by_mods
+        "null"_zv,
     };
 } // namespace detail
 

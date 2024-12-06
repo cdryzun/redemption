@@ -102,6 +102,7 @@ inline uint32_t keycode_to_sym(kbdtypes::KeyCode keycode, kbdtypes::KeyModFlags 
         case KeyCode::CapsLock: return 0xffe5;
         case KeyCode::ScrollLock: return 0xff14;
         case KeyCode::NumLock: return 0xff7f;
+        case KeyCode::KanaLock: return 0xff2d;
 
         case KeyCode::UpArrow: return 0xff52;
         case KeyCode::LeftArrow: return 0xff51;
@@ -384,12 +385,19 @@ const uint16_t macos_shift_capslock[] = {
 };
 static_assert(sizeof(macos_shift_capslock) == 256 * 2);
 
-sized_array_view<KeyLayout::unicode_t, 256> macos_layout_for(kbdtypes::KeyModFlags mods, bool verbose) noexcept
+std::array<sized_array_view<KeyLayout::unicode16_t, 128>, 2>
+to_two_half_layout(sized_array_view<KeyLayout::unicode16_t, 256> layout)
+{
+    return {layout.first<128>(), layout.last<128>()};
+}
+
+std::array<sized_array_view<KeyLayout::unicode16_t, 128>, 2>
+macos_layout_for(kbdtypes::KeyModFlags mods, bool verbose) noexcept
 {
     using kbdtypes::KeyMod;
 
     char const* mod_name = "PLain layout";
-    sized_array_view<KeyLayout::unicode_t, 256> layout = macos_noshift;
+    sized_array_view<KeyLayout::unicode16_t, 256> layout = macos_noshift;
 
     // if left ctrl and left alt are pressed, vnc server will convert key combination itself.
     if (((mods.test(KeyMod::LCtrl) || mods.test(KeyMod::RCtrl)) && mods.test(KeyMod::LAlt))
@@ -414,7 +422,7 @@ sized_array_view<KeyLayout::unicode_t, 256> macos_layout_for(kbdtypes::KeyModFla
     }
 
     LOG_IF(verbose, LOG_INFO, "KeymapSym::_update_keymap(): %s", mod_name);
-    return layout;
+    return to_two_half_layout(layout);
 }
 
 void push_alt_gr_state(
@@ -472,7 +480,7 @@ using kbdtypes::KeyCode;
 
 KeymapSym::KeymapSym(KeyLayout layout, kbdtypes::KeyLocks locks, IsApple is_apple, IsUnix is_unix, bool verbose) noexcept
 : layout_(layout)
-, keymap_(macos_noshift)
+, keymap_(to_two_half_layout(macos_noshift))
 , mods_(locks)
 , is_win_(!bool(is_unix))
 , is_apple_(bool(is_apple))
@@ -504,70 +512,88 @@ KeymapSym::Keys KeymapSym::scancode_to_keysyms(KbdFlags flags, Scancode scancode
 
     switch (underlying_cast(keycode))
     {
-        // Lock keys
-        case underlying_cast(KeyCode::CapsLock):   set_locks_mod(KeyMod::CapsLock); break;
-        case underlying_cast(KeyCode::NumLock):    set_locks_mod(KeyMod::NumLock); break;
-        case underlying_cast(KeyCode::ScrollLock): set_locks_mod(KeyMod::ScrollLock); break;
+    // Lock keys
+    case underlying_cast(KeyCode::CapsLock):   set_locks_mod(KeyMod::CapsLock); break;
+    case underlying_cast(KeyCode::NumLock):    set_locks_mod(KeyMod::NumLock); break;
+    case underlying_cast(KeyCode::ScrollLock): set_locks_mod(KeyMod::ScrollLock); break;
+    case underlying_cast(KeyCode::KanaLock):   set_locks_mod(KeyMod::KanaLock); break;
 
-        // Modifier keys
-        case underlying_cast(KeyCode::LCtrl):  set_mod(KeyMod::LCtrl); break;
-        case underlying_cast(KeyCode::RCtrl):  set_mod(KeyMod::RCtrl); break;
-        case underlying_cast(KeyCode::LShift): set_mod(KeyMod::LShift); break;
-        case underlying_cast(KeyCode::RShift): set_mod(KeyMod::RShift); break;
-        case underlying_cast(KeyCode::LAlt):   set_mod(KeyMod::LAlt); break;
-        case underlying_cast(KeyCode::RAlt):   set_mod(KeyMod::RAlt); break;
+    // Modifier keys
+    case underlying_cast(KeyCode::LCtrl):  set_mod(KeyMod::LCtrl); break;
+    case underlying_cast(KeyCode::RCtrl):  set_mod(KeyMod::RCtrl); break;
+    case underlying_cast(KeyCode::LShift): set_mod(KeyMod::LShift); break;
+    case underlying_cast(KeyCode::RShift): set_mod(KeyMod::RShift); break;
+    case underlying_cast(KeyCode::LAlt):   set_mod(KeyMod::LAlt); break;
+    case underlying_cast(KeyCode::RAlt):   set_mod(KeyMod::RAlt); break;
 
-        // ctrl+alt+fin as ctrl+alt+del
-        case underlying_cast(KeyCode::End):  {
-            const auto ksym = is_ctrl_alt(mods_)
-                ? keycode_to_sym(KeyCode::Delete, mods_)
-                : keycode_to_sym(KeyCode::End, mods_);
+    // ctrl+alt+fin as ctrl+alt+del
+    case underlying_cast(KeyCode::End):  {
+        const auto ksym = is_ctrl_alt(mods_)
+            ? keycode_to_sym(KeyCode::Delete, mods_)
+            : keycode_to_sym(KeyCode::End, mods_);
+        keys.push({ksym, down_flag});
+        break;
+    }
+
+    default:
+        if (auto ksym = keycode_to_sym(keycode, mods_)) {
             keys.push({ksym, down_flag});
-            break;
         }
+        else if (REDEMPTION_UNLIKELY(!keycode_is_compressable_to_byte(keycode))) {
+            // unknown value
+        }
+        // MacOs (old version) considers keysyms to be keycodes
+        else if (REDEMPTION_UNLIKELY(is_apple_)) {
+            auto keymap_index = keycode_to_byte_index(keycode);
+            keys.push({keymap_[keymap_index / 128][keymap_index % 128], down_flag});
+        }
+        else {
+            const std::size_t keymap_index = keycode_to_byte_index(keycode);
+            auto unicode = keymap_[keymap_index / 128][keymap_index % 128];
 
-        default:
-            if (auto ksym = keycode_to_sym(keycode, mods_)) {
-                keys.push({ksym, down_flag});
+            if (REDEMPTION_UNLIKELY(!unicode)) {
+                break;
             }
-            else if (REDEMPTION_UNLIKELY(!keycode_is_compressable_to_byte(keycode))) {
-                // unknown value
-            }
-            // MacOs (old version) considers keysyms to be keycodes
-            else if (REDEMPTION_UNLIKELY(is_apple_)) {
-                auto keymap_index = keycode_to_byte_index(keycode);
-                keys.push({keymap_[keymap_index], down_flag});
-            }
-            else {
-                const std::size_t keymap_index = keycode_to_byte_index(keycode);
-                auto unicode = keymap_[keymap_index];
 
-                if (REDEMPTION_UNLIKELY(!unicode)) {
-                    break;
-                }
+            auto push1 = [&](uint32_t uc){
+                push_key(keys, uc, down_flag, mods_, is_win_);
+            };
 
-                auto push1 = [&](uint32_t uc){
-                    push_key(keys, uc, down_flag, mods_, is_win_);
-                };
+            auto get_hi = [&]{
+                uint32_t unicode2 = layout_.keymap_by_mod[2][imods_][keymap_index];
+                return (unicode2 << 14) | (unicode & 0x3fffu);
+            };
 
-                if (underlying_cast(flags) & underlying_cast(KbdFlags::Release)) {
-                    if (!dkeys_) {
-                        if (!(unicode & KeyLayout::DK)) {
-                            push1(unicode);
-                        }
-                        else {
-                            push1(layout_.dkeymap_by_mod[imods_][keymap_index].accent());
-                        }
+            if (underlying_cast(flags) & underlying_cast(KbdFlags::Release)) {
+                if (!dkeys_) {
+                    if (!(unicode & (KeyLayout::DK | KeyLayout::HI))) [[likely]] {
+                        push1(unicode);
+                    }
+                    else if (unicode & KeyLayout::DK) {
+                        auto& dkeys = layout_.dkeymaps[layout_.dkeymap_idx_by_mod[imods_][keymap_index]];
+                        push1(dkeys.accent());
+                    }
+                    else {
+                        push1(get_hi());
                     }
                 }
-                else if (REDEMPTION_UNLIKELY(dkeys_)) {
-                    if (auto unicode2 = dkeys_.find_composition(unicode)) {
-                        push1(unicode2);
+            }
+            else if (dkeys_) [[unlikely]] {
+                if (auto * dkey = dkeys_.find_composition(unicode)) {
+                    if (dkey->second & KeyLayout::DK) {
+                        dkeys_ = layout_.dkeymaps[dkey->data.dkeytable_idx];
                     }
+                    else {
+                        push1(dkey->data.result);
+                        dkeys_ = {};
+                    }
+                }
+                else{
                     // Windows(c) behavior for backspace following a Deadkey
-                    else if (keycode != KeyCode::Backspace) {
+                    if (keycode != KeyCode::Backspace) {
+                        auto uni2 = (unicode & KeyLayout::HI) ? get_hi() : (unicode & ~KeyLayout::DK);
                         const auto ksym1 = unicode_to_ksym(dkeys_.accent());
-                        const auto ksym2 = unicode_to_ksym(unicode & ~KeyLayout::DK);
+                        const auto ksym2 = unicode_to_ksym(uni2);
                         push_alt_gr_state(keys, mods_, VncKeyState::Up, is_win_);
                         keys.push({ksym1, VncKeyState::Down});
                         keys.push({ksym1, VncKeyState::Up});
@@ -576,13 +602,19 @@ KeymapSym::Keys KeymapSym::scancode_to_keysyms(KbdFlags flags, Scancode scancode
                     }
                     dkeys_ = {};
                 }
-                else if (REDEMPTION_UNLIKELY(unicode & KeyLayout::DK)) {
-                    dkeys_ = layout_.dkeymap_by_mod[imods_][keymap_index];
-                }
-                else {
-                    push1(unicode);
-                }
             }
+            else if (!(unicode & (KeyLayout::DK | KeyLayout::HI))) [[likely]] {
+                push1(unicode);
+            }
+            else if (unicode & KeyLayout::DK) {
+                dkeys_ = layout_.dkeymaps[layout_.dkeymap_idx_by_mod[imods_][keymap_index]];
+            }
+            else /*if (unicode & KeyLayout::HI)*/ {
+                assert(unicode & KeyLayout::HI);
+                assert(keymap_index < 128);
+                push1(get_hi());
+            }
+        }
     }
 
     return keys;
@@ -625,6 +657,7 @@ void KeymapSym::_update_keymap() noexcept
 
     unsigned numlock = mods_.test_as_uint(KeyMod::NumLock);
     unsigned capslock = mods_.test_as_uint(KeyMod::CapsLock);
+    unsigned kanalock = mods_.test_as_uint(KeyMod::KanaLock);
     unsigned ctrl = mods_.test_as_uint(KeyMod::LCtrl)
                   | (mods_.test_as_uint(KeyMod::RCtrl) & rctrl_is_ctrl);
     unsigned oem8 = mods_.test_as_uint(KeyMod::RCtrl) & ~rctrl_is_ctrl;
@@ -641,13 +674,15 @@ void KeymapSym::_update_keymap() noexcept
            | (oem8 << KeyLayout::Mods::OEM_8)
            | (numlock << KeyLayout::Mods::NumLock)
            | (capslock << KeyLayout::Mods::CapsLock)
+           | (kanalock << KeyLayout::Mods::KanaLock)
            );
-    keymap_ = layout_.keymap_by_mod[imods_];
+    keymap_[0] = layout_.keymap_by_mod[0][imods_];
+    keymap_[1] = layout_.keymap_by_mod[1][imods_];
 }
 
 KeymapSym::Keys KeymapSym::utf16_to_keysyms(KbdFlags flag, uint16_t utf16) noexcept
 {
-    const auto unicode = unicode32_decoder.convert(utf16);
+    const auto unicode = unicode32_decoder_.convert(utf16);
 
     Keys keys;
 

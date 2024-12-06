@@ -38,7 +38,7 @@ struct Keymap
 
     using KeyModFlags = kbdtypes::KeyModFlags;
 
-    using unicode_t = KeyLayout::unicode_t;
+    using unicode16_t = KeyLayout::unicode16_t;
 
     enum class KEvent : uint8_t
     {
@@ -73,7 +73,7 @@ struct Keymap
         KeyCode keycode;
         KbdFlags flags;
         // 2 unicode chars when bad dead key
-        std::array<unicode_t, 2> uchars;
+        std::array<uint32_t, 2> uchars;
 
         bool has_char() const noexcept
         {
@@ -139,7 +139,7 @@ private:
     DecodedKeys _decoded_key {};
     KeyModFlags _key_mods {};
 
-    sized_array_view<unicode_t, 256> _keymap;
+    std::array<KeyLayout::HalfKeymap, 2> _keymap;
     uint8_t _imods {};
     KeyLayout::DKeyTable _dkeys {};
 
