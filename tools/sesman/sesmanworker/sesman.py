@@ -2057,6 +2057,11 @@ class Sesman():
                             "Added connection to active Bastion services"
                         )
 
+                        # From now, error status will be provided by proxy
+                        self.engine.set_session_status(
+                            result=True,
+                            diag='Success'
+                        )
                         # Looping on keepalived socket
                         while True:
                             r = []

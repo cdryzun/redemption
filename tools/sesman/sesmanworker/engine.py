@@ -1138,6 +1138,9 @@ class Engine:
                 self.failed_secondary_set = False
                 if self.session_id is None:
                     return None, None, "SESSION_ID_IS_NONE"
+                # Assume error status until proxy handle it
+                self.set_session_status(diag='Connection aborted',
+                                        result=False)
         except LicenseException as e:
             Logger().info("Engine start_session failed: License Exception")
             self.session_id, self.start_time, error_msg = \
