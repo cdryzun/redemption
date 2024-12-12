@@ -139,7 +139,7 @@ namespace detail
 
         SplitterChView(Data data, int sep) noexcept
         : data_(data)
-        , has_value_(*data.str)
+        , has_value_(data.str && *data.str)
         , sep_(sep)
         {}
 
