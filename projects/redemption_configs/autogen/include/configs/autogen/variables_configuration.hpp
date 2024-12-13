@@ -4797,14 +4797,13 @@ namespace cfg
         type value { true };
     };
     /// List of keyboard layouts available by the internal pages button located at bottom left of some internal pages (login, selector, etc). <br/>
-    /// Possible values: bg-BG, bg-BG.latin, bs-Cy, bépo, cs-CZ, cs-CZ.programmers, cs-CZ.qwerty, cy-GB, da-DK, de-CH, de-DE, de-DE.ex1, de-DE.ex2, de-DE.ibm, el-GR, el-GR.220, el-GR.220_latin, el-GR.319, el-GR.319_latin, el-GR.latin, el-GR.polytonic, en-CA.fr, en-CA.multilingual, en-GB, en-IE, en-IE.irish, en-US, en-US.colemak, en-US.dvorak, en-US.dvorak_left, en-US.dvorak_right, en-US.international, es-ES, es-ES.variation, es-MX, et-EE, fi-FI.finnish, fi-SE, fo-FO, fr-BE, fr-BE.fr, fr-CA, fr-CH, fr-FR, fr-FR.standard, hr-HR, hu-HU, is-IS, it-IT, it-IT.142, iu-La, kk-KZ, ky-KG, lb-LU, lt-LT, lt-LT.ibm, lv-LV, lv-LV.qwerty, mi-NZ, mk-MK, mn-MN, mt-MT.47, mt-MT.48, nb-NO, nl-BE, nl-NL, pl-PL, pl-PL.programmers, pt-BR.abnt, pt-BR.abnt2, pt-PT, ro-RO, ru-RU, ru-RU.typewriter, se-NO, se-NO.ext_norway, se-SE, se-SE.ext_finland_sweden, sk-SK, sk-SK.qwerty, sl-SI, sr-Cy, sr-La, sv-SE, tr-TR.f, tr-TR.q, tt-RU, uk-UA, uz-Cy <br/>
     /// type: std::string <br/>
-    /// default: "en-US, fr-FR, de-DE, ru-RU" <br/>
+    /// default: "en-US, fr-FR, de-DE" <br/>
     struct internal_mod::keyboard_layout_proposals {
         static constexpr unsigned acl_proxy_communication_flags = 0b00;
         using type = std::string;
         using mapped_type = ::configs::spec_types::list<std::string>;
-        type value { "en-US, fr-FR, de-DE, ru-RU" };
+        type value { "en-US, fr-FR, de-DE" };
     };
     /// Show close screen. <br/>
     /// This displays errors related to the secondary connection then closes automatically after a timeout specified by [internal_mod]close_box_timeout or on user request. <br/>

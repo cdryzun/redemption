@@ -3047,23 +3047,26 @@ _.section("internal_mod", [&]
         .desc = "Enable target edit field in login page. This target edit field allows to enter the target and the login separately.",
     });
 
-    // to_string()
-    std::string keyboard_layout_proposals_desc;
+    std::string keyboard_layout_proposals_desc = "<details>"
+        "<summary>Possible values in alphabetical order:</summary>"
+        "<table><tr><th>Value</th><th>Windows 11 name (informative)</th></tr>";
     for (KeyLayout const& layout : keylayouts_sorted_by_name()) {
+        keyboard_layout_proposals_desc += "<tr><td>";
         keyboard_layout_proposals_desc += layout.name;
-        keyboard_layout_proposals_desc += ", ";
+        keyboard_layout_proposals_desc += "</td><td>";
+        keyboard_layout_proposals_desc += layout.display_name;
+        keyboard_layout_proposals_desc += "</td></tr>";
     }
-    if (!keyboard_layout_proposals_desc.empty()) {
-        keyboard_layout_proposals_desc.resize(keyboard_layout_proposals_desc.size() - 2);
-    }
+    keyboard_layout_proposals_desc += "</table></details>";
 
     _.member(MemberInfo{
         .name = "keyboard_layout_proposals",
-        .value = value<types::list<std::string>>("en-US, fr-FR, de-DE, ru-RU"),
+        .value = value<types::list<std::string>>("en-US, fr-FR, de-DE"),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc =
-            "List of keyboard layouts available by the internal pages button located at bottom left of some internal pages (login, selector, etc).\n"
-            "Possible values: " + keyboard_layout_proposals_desc
+        .desc = Description::WithDetails{
+            .general = "List of keyboard layouts available by the internal pages button located at bottom left of some internal pages (login, selector, etc).",
+            .details = std::move(keyboard_layout_proposals_desc),
+        }
     });
 
     _.member(MemberInfo{

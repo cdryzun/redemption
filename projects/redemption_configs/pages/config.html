@@ -685,6 +685,7 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
           <p class="type-info">type: ${type} ${optSep} ${option.advanced ? `advanced ${optSep} ` : ''}<span class="type-info-${defaultValueType}">${defaultValueType}</span>: <code>${defaultValue}</code>${humanValue}${rdpSogisces}</p>
           <p class="description">${description.replaceAll('\n', '</p><p class="description">')}</p>
           ${extraDescription}
+          ${option.details || ''}
           ${history}
         </article>
       `)

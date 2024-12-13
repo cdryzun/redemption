@@ -472,9 +472,21 @@ struct Description
     };
 
     std::string general_desc;
+    std::string details_desc;
     std::vector<ConnPolicy> specific_descs;
 
     Description() = default;
+
+    struct WithDetails
+    {
+        std::string general;
+        std::string details;
+    };
+
+    Description(WithDetails d)
+    : general_desc(std::move(d.general))
+    , details_desc(std::move(d.details))
+    {}
 
     template<class... ConnPolicy>
     Description(char const* str, ConnPolicy&&... conn_policy)
@@ -2434,6 +2446,10 @@ public:
             auto comment = is_spec ? htmlize(marker.cut()) : marker.cut();
             add_comment(appender.str, comment, "# "sv);
 
+            if (!mem_info.desc.details_desc.empty()) {
+                add_comment(appender.str, mem_info.desc.details_desc, "# "sv);
+            }
+
             auto spec_attr = mem_info.spec.attributes;
             if (is_spec) {
                 spec_attr |= (mem_info.value.enumeration && type_enumeration::Category::flags == mem_info.value.enumeration->cat)
@@ -2536,6 +2552,12 @@ public:
             };
             json_quoted(json_values, desc_ref_replacer.replace_refs(true, json_replacer).sv());
             json_values += '"';
+
+            if (!mem_info.desc.details_desc.empty()) {
+                json_values += ",\n      \"details\": \"";
+                json_quoted(json_values, mem_info.desc.details_desc);
+                json_values += '"';
+            }
 
             std::string const* rdp_value = &mem_info.value.values.json;
             std::string const* rdp_sogis_value = nullptr;
