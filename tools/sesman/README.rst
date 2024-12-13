@@ -1,10 +1,11 @@
 Unit tests
 ----------
 
-* Run tests::
+* requirement::
+    - pytest
+    - freezegun
 
-    python3 -m unittest discover -t . tests
 
-or
+*  Run tests::
 
     pytest tests
