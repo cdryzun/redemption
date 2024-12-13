@@ -1373,14 +1373,24 @@ RED_AUTO_TEST_CASE_WD(TestInCryptoTransportBigReadEncrypted, wd)
         #elif SNAPPY_VERSION < (1<<16|1<<8|9)
             " 95ac075e238b5a331242efce2852cff0d475ecdaf75d4b315488e298916820d6"
             " f5b6a73d68ac7405d988bbb60a88afd59b72a47bab2e03068573e7510451e801\n"_av
-        #else
+        #elif SNAPPY_VERSION < (1<<16|2<<8|1)
             " 95ac075e238b5a331242efce2852cff0d475ecdaf75d4b315488e298916820d6"
             " 31c0065b2d4b084ec89a3d73f72128a46092c7c1706d63523ad81534bd56feae\n"_av
+        #else
+            " b228319d74693fa3635c89ed0c1471dd82bdb75c3baaf6a4289205377f43ccd5"
+            " 6bfa1b436217ea7f28d68c48bda81ea77a02e3d96912e2b041010ceb76cfa3d0\n"_av
+        #endif
+        ;
+        auto h =
+        #if SNAPPY_VERSION < (1<<16|2<<8|1)
+            "v2\n\n\nencrypted_file.enc 1143180 "_av
+        #else
+            "v2\n\n\nencrypted_file.enc 1142732 "_av
         #endif
         ;
         auto st = get_stat(encrypted_file);
         RED_CHECK(hash_buf == str_concat(
-            "v2\n\n\nencrypted_file.enc 1143180 ",
+            h,
             int_to_decimal_chars(st.st_mode), ' ',
             int_to_decimal_chars(st.st_uid), ' ',
             int_to_decimal_chars(st.st_gid), ' ',
