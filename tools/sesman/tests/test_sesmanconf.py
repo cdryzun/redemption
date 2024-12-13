@@ -1,6 +1,6 @@
 import unittest
 
-from sesmanconf import TR, Sesmsg, SESMANCONF
+from sesmanworker.sesmanconf import TR, Sesmsg, SESMANCONF
 
 
 class Test_translation(unittest.TestCase):

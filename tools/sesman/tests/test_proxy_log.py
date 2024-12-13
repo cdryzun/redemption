@@ -2,7 +2,7 @@ import unittest
 import syslog
 
 from unittest.mock import patch
-from proxy_log import RdpProxyLog
+from sesmanworker.proxy_log import RdpProxyLog
 
 
 class Test_RdpProxyLog(unittest.TestCase):

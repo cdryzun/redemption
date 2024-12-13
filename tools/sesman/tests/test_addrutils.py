@@ -1,6 +1,6 @@
 import unittest
 
-from addrutils import is_device_in_subnet
+from sesmanworker.addrutils import is_device_in_subnet
 
 class Test_addrutils(unittest.TestCase):
     def test_is_device_in_subnet_failure(self):

@@ -1,12 +1,13 @@
 import unittest
 
-from parsers import (parse_account,
-                     replace_token,
-                     parse_param,
-                     parse_auth,
-                     parse_app,
-                     parse_duration,
-                     )
+from sesmanworker.parsers import (
+    parse_account,
+    replace_token,
+    parse_param,
+    parse_auth,
+    parse_app,
+    parse_duration,
+)
 
 class Test_parsers(unittest.TestCase):
     def test_param(self):

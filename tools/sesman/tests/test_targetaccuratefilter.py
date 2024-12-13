@@ -1,9 +1,12 @@
 import unittest
 
-import targetaccuratefilter as taf
-from targetaccuratefilter import (FilterKeywordSyntaxError,
-                                  FilterKeywordDuplicateError,
-                                  ParsingError)
+import sesmanworker.targetaccuratefilter as taf
+from sesmanworker.targetaccuratefilter import (
+    FilterKeywordSyntaxError,
+    FilterKeywordDuplicateError,
+    ParsingError
+)
+
 
 class Test_targetaccuratefilter(unittest.TestCase):
     def test_get_selector_filter_mode_with_several_patterns(self):
