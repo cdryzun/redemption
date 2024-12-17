@@ -493,10 +493,10 @@ void mwrm3_text_writer_read_data(mwrm3_type_info<type, Ts...> m)
     Readers readers;
 
     bool ok = true;
-    ((ok ? void((
+    ((ok ? (
         void(std::cerr << get_type_name<Ts>() << ": "),
-        void(ok && (ok = static_cast<decltype(reader<Ts>())&>(readers).read()))
-    )) : void()), ...);
+        void(ok = static_cast<decltype(reader<Ts>())&>(readers).read())
+    ) : void()), ...);
 
     if (ok)
     {
@@ -541,7 +541,7 @@ void mwrm3_text_writer_impl(integral_mwrm3_type_info_list<Mwrm3TypeInfo...> /*in
         std::cerr << "\n#" << nb << "\n";
         i = 0;
         ((
-            void(i == id ? void(mwrm3_text_writer_read_data(Mwrm3TypeInfo{})) : void()),
+            void(i == id ? static_cast<void>(mwrm3_text_writer_read_data(Mwrm3TypeInfo{})) : void()),
             void(++i)
         ), ...);
     }
