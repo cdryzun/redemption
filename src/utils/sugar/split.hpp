@@ -22,6 +22,7 @@
 
 #include "utils/sugar/array_view.hpp"
 #include "utils/sugar/cast.hpp"
+#include "cxx/diagnostic.hpp"
 
 #include <type_traits>
 #include <cstring>
@@ -326,6 +327,11 @@ namespace detail
 /// \code
 /// split_with(",a,b,", ',') -> "", "a", "b"
 /// \endcode
+REDEMPTION_DIAGNOSTIC_PUSH()
+#if REDEMPTION_WORKAROUND(REDEMPTION_COMP_GCC, >= 1400) \
+    && REDEMPTION_WORKAROUND(REDEMPTION_COMP_GCC, < 1500)
+REDEMPTION_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wdangling-reference")
+#endif
 template<class Chars, class Sep>
 auto split_with(Chars&& chars, Sep&& sep)
 {
@@ -367,3 +373,4 @@ auto get_lines(Chars&& chars, Sep&& sep = '\n') /*NOLINT*/
 {
     return split_with(static_cast<Chars&&>(chars), static_cast<Sep&&>(sep));
 }
+REDEMPTION_DIAGNOSTIC_POP()
