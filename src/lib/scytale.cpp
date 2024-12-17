@@ -678,7 +678,7 @@ int scytale_meta_reader_read_line(ScytaleMetaReaderHandle * handle)
         handle->eof
             = Transport::Read::Eof == handle->mwrm_reader.read_meta_line(handle->meta_line),
         ERR_TRANSPORT_READ_FAILED);
-    return handle->eof ? ERR_TRANSPORT_NO_MORE_DATA : 0;
+    return handle->eof ? ERR_TRANSPORT_NO_MORE_DATA : NO_ERROR;
 }
 
 int scytale_meta_reader_read_line_eof(ScytaleMetaReaderHandle * handle)
