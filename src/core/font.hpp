@@ -20,7 +20,7 @@ struct FontCharView
     uint8_t incby = 0;
     uint8_t width = 0;
     uint8_t height = 0;
-    uint8_t const* data = nullptr;
+    uint8_t const* data = reinterpret_cast<uint8_t const*>("");
 
     [[nodiscard]] uint16_t datasize() const noexcept
     {
