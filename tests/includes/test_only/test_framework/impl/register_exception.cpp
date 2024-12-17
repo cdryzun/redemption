@@ -37,10 +37,10 @@ namespace
         {
             REDEMPTION_DIAGNOSTIC_PUSH()
             REDEMPTION_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wzero-as-null-pointer-constant")
-            #if REDEMPTION_COMP_CLANG_VERSION >= REDEMPTION_COMP_VERSION_NUMBER(5, 0, 0)
+            #if REDEMPTION_WORKAROUND(REDEMPTION_COMP_CLANG, >= 500)
                 REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wzero-as-null-pointer-constant")
             #endif
-            #if REDEMPTION_COMP_CLANG_VERSION >= REDEMPTION_COMP_VERSION_NUMBER(9, 0, 0)
+            #if REDEMPTION_WORKAROUND(REDEMPTION_COMP_CLANG, >= 900)
                 REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wused-but-marked-unused")
             #endif
             boost::unit_test::unit_test_monitor.register_exception_translator<Error>(

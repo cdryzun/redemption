@@ -38,7 +38,7 @@ namespace
 struct TypeName : std::string_view {};
 
 #ifdef __clang__
-#if REDEMPTION_COMP_CLANG_VERSION_LESS(16, 0, 0)
+#if REDEMPTION_COMP_CLANG_LIKE < 1600
 // clang < 16: (anonymous namespace)::TypeName (anonymous namespace)::get_type_name() [T = E]
 constexpr std::size_t get_type_prefix_length = 76;
 #else

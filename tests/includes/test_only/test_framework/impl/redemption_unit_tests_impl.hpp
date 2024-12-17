@@ -33,7 +33,7 @@ Author(s): Jonathan Poelen
 #include "cxx/compiler_version.hpp"
 
 // FIXME global warning deactivation, should be in each macro
-#if REDEMPTION_COMP_CLANG_VERSION >= REDEMPTION_COMP_VERSION_NUMBER(9, 0, 0)
+#if REDEMPTION_WORKAROUND(REDEMPTION_COMP_CLANG, >= 900)
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wused-but-marked-unused")
 #endif

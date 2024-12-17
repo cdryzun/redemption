@@ -140,7 +140,7 @@
 #if defined(__GNUC__) || defined(__clang__)
 // https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 # if !defined(REDEMPTION_UNREACHABLE) \
-  && ( REDEMPTION_COMP_GNUC_VERSION >= REDEMPTION_COMP_VERSION_NUMBER(4, 5, 0) \
+  && (REDEMPTION_WORKAROUND(REDEMPTION_COMP_GCC, >= 4500) \
     || defined(__clang__))
 #  define REDEMPTION_UNREACHABLE() __builtin_unreachable()
 # endif

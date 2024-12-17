@@ -38,7 +38,7 @@ namespace detail
     void memcpy_possibly_more(void* dest, void const* src, std::size_t n)
     {
         // compiler optimizes memcpy when size is compile-time
-        constexpr std::size_t max_before_memcpy = REDEMPTION_COMP_IS_GCC ? 256 : 128;
+        constexpr std::size_t max_before_memcpy = REDEMPTION_COMP_GCC ? 256 : 128;
         if constexpr (StaticBufferDesc::is_static
                    && StaticBufferDesc::size + overflow_copy <= max_before_memcpy
         ) {
