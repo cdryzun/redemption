@@ -455,7 +455,7 @@ public:
             }
 
             if (REDEMPTION_LIKELY(!event.garbage)) {
-                if (event.fd != INVALID_SOCKET && fn(event.fd)) {
+                if (fn(event.fd)) {
                     event.trigger_time = now + event.grace_delay;
                     event.actions.exec_action(event);
                 }

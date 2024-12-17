@@ -128,7 +128,7 @@ inline ExecuteEventResult execute_events(
 
     event_manager.get_writable_time_base().monotonic_time = MonotonicTimePoint::clock::now();
     event_manager.execute_events([&rfds](int fd){
-        return io_fd_isset(fd, rfds);
+        return fd >= 0 && io_fd_isset(fd, rfds);
     }, false);
 
     return num == 0 ? ExecuteEventResult::Timeout : ExecuteEventResult::Ok;

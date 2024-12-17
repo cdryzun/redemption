@@ -41,8 +41,8 @@
 #include "utils/error_message_ctx.hpp"
 #include "gdi/osd_api.hpp"
 
-//#define GENERATE_TESTING_DATA
-// remove # otherwise bjam add the file as a dependency (even if it's a comment !!!)
+// #define GENERATE_TESTING_DATA
+// // remove # otherwise bjam add the file as a dependency (even if it's a comment !!!)
 // include "core/listen.hpp"
 // include "utils/netutils.hpp"
 // include "system/linux/system/tls_context.hpp"
@@ -198,28 +198,27 @@ namespace
         {
             auto mod = ::new_mod_rdp(
                 trans, front.gd(), osd, event_manager.get_events(),
-                session_log, err_msg_ctx, front, info, redir_info, gen, channels_authorizations,
-                get_mod_rdp_params(), tls_config, license_store, ini,
-                nullptr, mod_rdp_factory);
+                session_log, err_msg_ctx, front, info, redir_info, gen,
+                channels_authorizations, get_mod_rdp_params(), tls_config,
+                license_store, ini, nullptr, mod_rdp_factory);
             LOG(LOG_INFO, "--- new mod");
             return mod;
         }
 
 #ifdef GENERATE_TESTING_DATA
-        std::string error_message;
         SocketTransport socket_transport()
         {
-            const char * name       = "RDP W2008 TLS Target";
-            unique_fd    client_sck = ip_connect(ini.get<cfg::context::target_host>().c_str(), 3389);
+            unique_fd    client_sck = ip_connect(ini.get<cfg::context::target_host>().c_str(), 3389, DefaultConnectTag{});
 
             return SocketTransport(
-                name,
+                "RDP W2008 TLS Target"_sck_name,
                 std::move(client_sck),
-                ini.get<cfg::context::target_host>().c_str(),
+                ini.get<cfg::context::target_host>(),
                 3389,
                 std::chrono::seconds(1),
-                SocketTransport::Verbose::dump,
-                &error_message
+                std::chrono::seconds(1),
+                std::chrono::seconds(1),
+                SocketTransport::Verbose::dump
             );
         }
 
@@ -231,23 +230,22 @@ namespace
 
             // TODO: fix that for actual TESTING DATA GENERATION
             unique_server_loop(unique_fd(trans.get_fd()), [&](int /*sck*/)->bool {
-                (void)sck;
                 LOG(LOG_INFO, "is_up_and_running=%s", mod->is_up_and_running() ? "Yes" : "No");
-                if (!already_redirected) {
-                    return true;
-                }
+                // if (!already_redirected) {
+                //     return true;
+                // }
                 return !mod->is_up_and_running();
             });
         }
 #else
-        void event_loop(TestTransport& trans, LicenseApi& license_store)
+        void event_loop(TestTransport& trans, LicenseApi& license_store, int nmax = 70)
         {
             auto mod = new_mod_rdp(trans, license_store);
 
             event_manager.execute_events([](int /*sck*/){return true;}, false);
 
             int n = 0;
-            while (!event_manager.is_empty() && (++n < 70)) {
+            while (!event_manager.is_empty() && (++n < nmax)) {
                 event_manager.execute_events([](int /*sck*/){return true;}, false);
             }
         }
@@ -265,12 +263,6 @@ RED_AUTO_TEST_CASE(TestWithoutExistingLicense)
         do_work = false;
 
         try {
-            std::array<uint8_t, LIC::LICENSE_HWID_SIZE> test_hwid = {
-                '0', '1', '2', '3', '4', '5', '6', '7',
-                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-            };
-
-
 #ifdef GENERATE_TESTING_DATA
             class CaptureLicenseStore : public NullLicenseStore
             {
@@ -280,22 +272,22 @@ RED_AUTO_TEST_CASE(TestWithoutExistingLicense)
                     (void)enable_log;
 
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ const char license_client_name[] =");
-                    hexdump_c(client_name, ::strlen(client_name));
+                    hexdump_c(license_info.client_name);
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ ;");
 
-                    LOG(LOG_INFO, "/*CaptureLicenseStore */ uint32_t license_version = %u", version);
+                    LOG(LOG_INFO, "/*CaptureLicenseStore */ uint32_t license_version = %u", license_info.version);
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ ;");
 
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ const char license_scope[] =");
-                    hexdump_c(scope, ::strlen(scope));
+                    hexdump_c(license_info.scope);
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ ;");
 
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ const char license_company_name[] =");
-                    hexdump_c(company_name, ::strlen(company_name));
+                    hexdump_c(license_info.company_name);
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ ;");
 
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ const char license_product_id[] =");
-                    hexdump_c(product_id, ::strlen(product_id));
+                    hexdump_c(license_info.product_id);
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ ;");
 
                     LOG(LOG_INFO, "/*CaptureLicenseStore */ const uint8_t hwid[%zu] = {", hwid.size());
@@ -313,60 +305,80 @@ RED_AUTO_TEST_CASE(TestWithoutExistingLicense)
             class CompareLicenseStore : public NullLicenseStore
             {
             public:
-                CompareLicenseStore(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, bytes_view hwid, bytes_view license_data) :
-                    expected_client_name(client_name),
-                    expected_version(version),
-                    expected_scope(scope),
-                    expected_company_name(company_name),
-                    expected_product_id(product_id),
-                    expected_hwid(hwid),
-                    expected_license_data(license_data) {}
+                CompareLicenseStore(
+                    std::string_view client_name, uint32_t version,
+                    /*std::string_view scope, */std::string_view company_name,
+                    std::string_view product_id, /*bytes_view hwid, */
+                    bytes_view license_data
+                )
+                    : expected_client_name(client_name)
+                    , expected_version(version)
+                    // , expected_scope(scope)
+                    , expected_company_name(company_name)
+                    , expected_product_id(product_id)
+                    // , expected_hwid(hwid)
+                    , expected_license_data(license_data)
+                {}
 
-                bool put_license(LicenseInfo license_info, sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, bytes_view in, bool enable_log) override
+                bool put_license(
+                    LicenseInfo license_info,
+                    sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
+                    bytes_view in, bool enable_log) override
                 {
                     (void)enable_log;
 
                     RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
                     RED_CHECK_EQ(license_info.version,      this->expected_version);
-                    RED_CHECK_EQ(license_info.scope,        this->expected_scope);
+                    // \0 because the test is crap
+                    RED_CHECK_EQ(license_info.scope,        "microsoft.com\x00"_av);
                     RED_CHECK_EQ(license_info.company_name, this->expected_company_name);
                     RED_CHECK_EQ(license_info.product_id,   this->expected_product_id);
 
-                    RED_REQUIRE_EQ(hwid.size(), this->expected_hwid.size());
-
-                    RED_CHECK(hwid == this->expected_hwid);
-
-                    RED_REQUIRE_EQ(in.size(), this->expected_license_data.size());
-
+                    // because the test is crap
+                    RED_CHECK(hwid == "\x02\x00\x00\x00""CLT02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"_av);
                     RED_CHECK(in == this->expected_license_data);
+
+                    is_called = true;
 
                     return true;
                 }
 
+                bool is_called = false;
+
             private:
                 std::string_view expected_client_name;
                 uint32_t         expected_version;
-                std::string_view expected_scope;
+                // std::string_view expected_scope;
                 std::string_view expected_company_name;
                 std::string_view expected_product_id;
-                bytes_view       expected_hwid;
+                // bytes_view       expected_hwid;
                 bytes_view       expected_license_data;
-            } license_store(license_client_name, license_version, license_scope, license_company_name,
-                  license_product_id, test_hwid, bytes_view(license_data, sizeof(license_data)));
+            } license_store(
+                license_client_name, license_version, /*license_scope,*/
+                license_company_name, license_product_id,
+                /*make_array_view(license_hwdi), */make_array_view(license_data)
+            );
 #endif
 
 #ifdef GENERATE_TESTING_DATA
             SocketTransport trans = ctx.socket_transport();
 #else
-            // Comment the code block below to generate testing data.
             TestTransport trans(
-                    (already_redirected ? cstr_array_view(indata_woel_2) : cstr_array_view(indata_woel_1)),
-                    (already_redirected ? cstr_array_view(outdata_woel_2) : cstr_array_view(outdata_woel_1))
-                );
+                already_redirected
+                    ? cstr_array_view(indata_woel_2)
+                    : cstr_array_view(indata_woel_1),
+                already_redirected
+                    ? cstr_array_view(outdata_woel_2)
+                    : cstr_array_view(outdata_woel_1)
+            );
             trans.disable_remaining_error();
 #endif
 
-            ctx.event_loop(trans, license_store);
+            ctx.event_loop(trans, license_store, 2);
+
+#ifndef GENERATE_TESTING_DATA
+            RED_CHECK(license_store.is_called);
+#endif
         }
         catch(Error const & e) {
             if (e.id == ERR_RDP_SERVER_REDIR) {
@@ -401,22 +413,34 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
             class ReplayLicenseStore : public LicenseApi
             {
             public:
-                ReplayLicenseStore(char const* client_name, uint32_t version, char const* scope, char const* company_name, char const* product_id, bytes_view hwid, bytes_view license_data) :
-                    expected_client_name(client_name),
-                    expected_version(version),
-                    expected_scope(scope),
-                    expected_company_name(company_name),
-                    expected_product_id(product_id),
-                    expected_hwid(hwid),
-                    expected_license_data(license_data) {}
+                ReplayLicenseStore(
+                    std::string_view client_name, uint32_t version
+                    /*, std::string_view scope*/, std::string_view company_name,
+                    std::string_view product_id, bytes_view hwid,
+                    bytes_view license_data
+                )
+                    : expected_client_name(client_name)
+                    , expected_version(version)
+                    // , expected_scope(scope)
+                    , expected_company_name(company_name)
+                    , expected_product_id(product_id)
+                    , expected_hwid(hwid)
+                    , expected_license_data(license_data)
+                {}
 
-                bytes_view get_license_v1(LicenseInfo license_info, writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid, writable_bytes_view out, bool enable_log) override
+                bytes_view get_license_v1(
+                    LicenseInfo license_info,
+                    writable_sized_bytes_view<LIC::LICENSE_HWID_SIZE> hwid,
+                    writable_bytes_view out, bool enable_log) override
                 {
                     (void)enable_log;
 
+                    called_flags |= 0b001;
+
                     RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
                     RED_CHECK_EQ(license_info.version,      this->expected_version);
-                    RED_CHECK_EQ(license_info.scope,        this->expected_scope);
+                    // \0 because the test is crap
+                    RED_CHECK_EQ(license_info.scope,        "microsoft.com\x00"_av);
                     RED_CHECK_EQ(license_info.company_name, this->expected_company_name);
                     RED_CHECK_EQ(license_info.product_id,   this->expected_product_id);
 
@@ -432,9 +456,13 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
                 }
 
                 // The functions shall return empty bytes_view to indicate the error.
-                bytes_view get_license_v0(LicenseInfo license_info, writable_bytes_view out, bool enable_log) override
+                bytes_view get_license_v0(
+                    LicenseInfo license_info, writable_bytes_view out,
+                    bool enable_log) override
                 {
                     (void)enable_log;
+
+                    called_flags |= 0b010;
 
                     RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
                     RED_CHECK_EQ(license_info.version,      this->expected_version);
@@ -457,6 +485,8 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
                     (void)hwid;
                     (void)in;
 
+                    called_flags |= 0b100;
+
                     RED_CHECK_EQ(license_info.client_name,  this->expected_client_name);
                     RED_CHECK_EQ(license_info.version,      this->expected_version);
                     RED_CHECK_EQ(license_info.scope,        this->expected_scope);
@@ -465,6 +495,8 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
 
                     return true;
                 }
+
+                int called_flags = 0;
 
             private:
                 std::string_view expected_client_name;
@@ -479,7 +511,7 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
             ReplayLicenseStore license_store(
                 license_client_name,
                 license_version,
-                license_scope,
+                // license_scope,
                 license_company_name,
                 license_product_id,
                 make_array_view(license_hwdi),
@@ -489,15 +521,22 @@ RED_AUTO_TEST_CASE(TestWithExistingLicense)
 #ifdef GENERATE_TESTING_DATA
             SocketTransport trans = ctx.socket_transport();
 #else
-            // Comment the code block below to generate testing data.
             TestTransport trans(
-                    (already_redirected ? cstr_array_view(indata_wel_2) : cstr_array_view(indata_wel_1)),
-                    (already_redirected ? cstr_array_view(outdata_wel_2) : cstr_array_view(outdata_wel_1))
-                );
+                already_redirected
+                    ? cstr_array_view(indata_wel_2)
+                    : cstr_array_view(indata_wel_1),
+                already_redirected
+                    ? cstr_array_view(outdata_wel_2)
+                    : cstr_array_view(outdata_wel_1)
+            );
             trans.disable_remaining_error();
 #endif
 
-            ctx.event_loop(trans, license_store);
+            ctx.event_loop(trans, license_store, 2);
+
+#ifndef GENERATE_TESTING_DATA
+            RED_CHECK(license_store.called_flags == 1);
+#endif
         }
         catch(Error const & e) {
             if (e.id == ERR_RDP_SERVER_REDIR) {

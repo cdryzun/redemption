@@ -117,7 +117,7 @@ public:
                     this->event_manager.get_writable_time_base().monotonic_time
                         = MonotonicTimePoint::clock::now();
                     try {
-                        auto fn = [is_timeout](int /*fd*/){ return !is_timeout; };
+                        auto fn = [is_timeout](int fd){ return fd >= 0 && !is_timeout; };
                         this->event_manager.execute_events(fn, 0);
                         this->qt_graphic.update_view();
                     } catch (const Error & e) {

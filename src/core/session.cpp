@@ -1195,7 +1195,9 @@ private:
                     }
 
                     event_manager.execute_events(
-                        [&ioswitch](int fd){ return ioswitch.is_set_for_reading(fd); },
+                        [&ioswitch](int fd){
+                            return fd >= 0 && ioswitch.is_set_for_reading(fd);
+                        },
                         bool(this->verbose & SessionVerbose::Event));
 
                     back_event = mod_factory.mod().get_mod_signal();
