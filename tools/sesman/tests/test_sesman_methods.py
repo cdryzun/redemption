@@ -41,11 +41,18 @@ class TestSesmanCheckDeconnectionTime(TestCase):
     @patch("sesmanworker.engine.Engine.get_deconnection_time")
     @patch("sesmanworker.sesman.Sesman.interactive_display_message")
     def test_deconnection_time_after(self, mock_interdsiplay, mock_getdeco):
-        set_test_timezone('UTC')
+        set_test_timezone('Europe/Paris')
         self.run_deco(
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
-            expect_result=(1734102672, True, ""),
+            expect_result=(1734099072, True, ""),
+            expect_message="Your session will close at 2024-12-13 15:11:12.",
+        )
+        set_test_timezone('Japan')
+        self.run_deco(
+            DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
+            deco_time="2024-12-13 15:11:12",
+            expect_result=(1734070272, True, ""),
             expect_message="Your session will close at 2024-12-13 15:11:12.",
         )
 
@@ -53,7 +60,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
     @patch("sesmanworker.engine.Engine.get_deconnection_time")
     @patch("sesmanworker.sesman.Sesman.interactive_display_message")
     def test_deconnection_time_before(self, mock_interdsiplay, mock_getdeco):
-        set_test_timezone('UTC')
+        set_test_timezone('Europe/Paris')
         self.run_deco(
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-12 15:11:12",
@@ -65,7 +72,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
     @patch("sesmanworker.engine.Engine.get_deconnection_time")
     @patch("sesmanworker.sesman.Sesman.interactive_display_message")
     def test_deconnection_time_after2034(self, mock_interdsiplay, mock_getdeco):
-        set_test_timezone('UTC')
+        set_test_timezone('Europe/Paris')
         self.run_deco(
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2034-12-12 15:11:12",
