@@ -789,7 +789,7 @@ private:
 
             event_manager.set_time_base(TimeBase::now());
             event_manager.execute_events(
-                [](int /*fd*/){ assert(false); return false; },
+                []([[maybe_unused]] int fd){ assert(fd == -1); return false; },
                 bool(this->verbose & SessionVerbose::Event));
             front.sync();
 
