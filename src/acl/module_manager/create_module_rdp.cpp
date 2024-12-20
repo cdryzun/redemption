@@ -540,8 +540,9 @@ ModPack create_mod_rdp(
             && ini.get<cfg::mod_rdp::auto_adjust_performance_flags>()
             && ((ini.get<cfg::capture::capture_flags>()
                 & (CaptureFlags::wrm | CaptureFlags::ocr)) != CaptureFlags::none));
+
+    auto & rap = mod_rdp_params.remote_app_params;
     {
-        auto & rap = mod_rdp_params.remote_app_params;
         rap.rail_client_execute = &rail_client_execute;
         rap.windows_execute_shell_params = rail_client_execute.get_windows_execute_shell_params();
 
@@ -644,6 +645,7 @@ ModPack create_mod_rdp(
 
     if (auto const& resolution = ini.get<cfg::mod_rdp::force_display_resolution>()
       ; resolution.is_valid()
+        && (!rap.enable_remote_program || rap.convert_remoteapp_to_desktop)
     ) {
         client_info.screen_info.width  = resolution.width;
         client_info.screen_info.height = resolution.height;
