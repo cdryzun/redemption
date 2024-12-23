@@ -85,7 +85,8 @@ for m in re.finditer(
         paths = set(path for mod in extract_mod.findall(last_comment)
                     if (path := paths_mapping.get(''.join(mod))))
         if paths:
-            last_comment = f'{last_comment}\n{"\n".join(sorted(paths))}'
+            tmp = "\n".join(sorted(paths))
+            last_comment = f'{last_comment}\n{tmp}'
     elif m[2]:
         output_parts.append(
             f'\n# id: {m[2]}'
