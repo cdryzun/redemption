@@ -171,7 +171,9 @@ if (( $fast == 0 )); then
 
     # debug with coverage
     build $toolset_gcc -j4 debug -s FAST_CHECK=1 cxxflags='--coverage -Wno-deprecated-declarations' linkflags=-lgcov
-    gcovr --gcov-executable $gcovbin --xml --gcov-ignore-errors=source_not_found -r . -f src/ bin/gcc*/debug/ > gcovr_report.xml
+    gcovr --gcov-executable $gcovbin --xml -r . -f src/ bin/gcc*/debug/ \
+      --gcov-ignore-errors=source_not_found --merge-mode-functions separate \
+      > gcovr_report.xml
 
     show_duration $toolset_gcc coverage
 
