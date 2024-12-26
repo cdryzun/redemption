@@ -63,6 +63,7 @@ build-analyze:
     - when: on_success
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+    JOB_REQUIRED_MEMORY: '8Gi'
   image: ${NEXUS_WAB_PROXIES_URL}/${IMAGE_REDEMPTION_ANALYZE}
   script:
     - mkdir -p "$TESTDIR"
