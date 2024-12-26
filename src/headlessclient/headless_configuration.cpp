@@ -32,8 +32,9 @@ void headless_init_client_info(ClientInfo& client_info)
 
 void headless_init_ini(Inifile& ini)
 {
-    ini.set<cfg::mod_rdp::persistent_disk_bitmap_cache>(false);
+    ini.set<cfg::mod_rdp::allow_tls_only_fallback>(true);
     ini.set<cfg::mod_rdp::ignore_auth_channel>(false);
+    ini.set<cfg::mod_rdp::persistent_disk_bitmap_cache>(false);
 }
 
 namespace
