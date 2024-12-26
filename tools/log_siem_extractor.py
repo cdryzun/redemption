@@ -200,6 +200,17 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[LogFormatType,   # 
                     deprecated_log_ids = set(log_id for (log_id, deprecated) in extracted_log_ids
                                              if deprecated)
                     declared_log_ids = set(log_id for (log_id, _) in extracted_log_ids)
+                elif filename == 'log_certificate_status.cpp':
+                    for logid, desc in re.findall(
+                        r'return D\{\s*[\w.]+,\s*LogId::([A-Z0-9_]+),\s*("(?:[^"\\]+|\\\\|\\")*")',
+                        cppfile_from_dirpath(filename),
+                        re.DOTALL
+                    ):
+                        kname = 'description'
+                        data = f'{cat}="{logid}" {colored(kname)}={desc}'
+                        for d in (rdp_logs, vnc_logs):
+                            d[logid].formated_logs.add(data)
+                            d[logid].used_params.add((kname,))
                 else:
                     text = cppfile_from_dirpath(filename)
                     log6_process(rdp_and_vnc_logs, text)
