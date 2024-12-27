@@ -8,6 +8,9 @@ set -ex
 free
 nproc ||:
 
+export TMPDIR_TEST="${TMPDIR_TEST:-bin/tmp/}"
+mkdir -p "$TMPDIR_TEST"
+
 {
 
 typeset -i fast=1
@@ -101,9 +104,6 @@ export LSAN_OPTIONS=exitcode=0 # re-trace by valgrind
 export UBSAN_OPTIONS=print_stacktrace=1
 
 # export BOOST_TEST_COLOR_OUTPUT=0
-
-mkdir -p bin/tmp
-export TMPDIR_TEST="${TMPDIR_TEST:-bin/tmp/}"
 
 # export REDEMPTION_LOG_PRINT=1
 export REDEMPTION_LOG_PRINT=0
@@ -203,4 +203,11 @@ if (( $fast == 0 )); then
 fi
 
 } |& tee report.txt
-exit ${PIPESTATUS[0]}
+
+status=${PIPESTATUS[0]}
+
+if ((!$status)); then
+   rm -rf "$TMPDIR_TEST"
+fi
+
+exit ${status}

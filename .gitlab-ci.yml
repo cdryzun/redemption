@@ -66,7 +66,6 @@ build-analyze:
     JOB_REQUIRED_MEMORY: '8Gi'
   image: ${NEXUS_WAB_PROXIES_URL}/${IMAGE_REDEMPTION_ANALYZE}
   script:
-    - mkdir -p "$TESTDIR"
     - TMPDIR_TEST="$TESTDIR" ./tools/gitlab-analyze.sh full
   artifacts:
     when: always
