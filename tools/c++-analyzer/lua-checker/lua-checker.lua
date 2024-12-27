@@ -20,7 +20,6 @@ parser:option('--configs', 'Checker arguments', {}):argname{'<check>','<argument
 local args = parser:parse()
 
 local list_checkers = {
-    log6 = true,
     config = true,
     error = true,
     vcfg = true,

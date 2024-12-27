@@ -3,8 +3,10 @@ import os
 import re
 import sys
 import glob
+import operator
+import functools
 from typing import Iterable, TextIO, Callable, Any, NewType, TypeVar, NamedTuple
-from itertools import chain
+from itertools import chain, zip_longest, pairwise
 from os.path import join as path_join
 from collections import defaultdict, Counter
 
@@ -76,9 +78,23 @@ def inject_optional_param_from_used_params(d: LogFormatType):
         datalog.optional_params.update(p for p, n in counter_param.items() if n != extended_n)
 
 
-def extract_siem_format(src_path: str, color: bool) -> tuple[LogFormatType,   # proxy
-                                                             LogFormatType,   # rdp
-                                                             LogFormatType]:  # vnc
+def check_prefix_parameters(d: LogFormatType, color: bool) -> True:
+    ok = True
+    for logid, datalog in d.items():
+        for params1, params2 in pairwise(datalog.used_params):
+            if not all(name1 == name2 for name1, name2 in zip(params1, params2)):
+                print_alert_on_list(f'log6 call differ for LogId::{logid}',
+                                    map(', '.join, (params1, params2)),
+                                    color)
+                ok = False
+    return ok
+
+
+
+def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType,  # proxy
+                                                                   LogFormatType,  # rdp
+                                                                   LogFormatType,  # vnc
+                                                            ], bool]:              # no error
     src_path = src_path.rstrip('/')
     colored = color_builder('35') if color else identity
     cat = colored('type')
@@ -219,6 +235,11 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[LogFormatType,   # 
             update(other_logs, log6_process, filenames)
 
     siem_cpp_process(proxy_logs, read_cppfile(f'{src_path}/utils/log_siem.cpp'))
+
+    # ignore sesman.py because TARGET_DISCONNECTION is prefix with optinal value
+    ok = all(map(functools.partial(check_prefix_parameters, color=color),
+                 (proxy_logs, rdp_logs, vnc_logs)))
+
     sesman_process(proxy_logs, read_pyfile(f'{src_path}/../tools/sesman/sesmanworker/sesman.py'))
 
     # merge rdp_and_vnc_logs into rdp_logs and vnc_logs
@@ -252,11 +273,7 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[LogFormatType,   # 
 
     copy_in_rdp_and_vnc(capture_logs)
 
-    # build optional values
-    for logs in (proxy_logs, rdp_logs, vnc_logs):
-        inject_optional_param_from_used_params(logs)
-
-    return proxy_logs, rdp_logs, vnc_logs
+    return (proxy_logs, rdp_logs, vnc_logs), ok and not (unused_logs or other_logs)
 
 
 def extract_doc_siem(docdir: str) -> tuple[LogFormatType,   # proxy
@@ -510,14 +527,27 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--python-ids', action='store_true')
     parser.add_argument('-o', '--output-python', default=sys.stdout, type=argparse.FileType('w'))
     parser.add_argument('-q', '--no-check-quote', action='store_true')
-    parser.add_argument('-m', '--no-check-missing-or-unknown', action='store_true')
+    parser.add_argument('-m', '--no-check-missing-or-unknown', action='store_true',
+                        help='disable check on missing or unknown id with --check-doc')
+    parser.add_argument('-C', '--check-ids', action='store_true')
     parser.add_argument('--color', action='store_true')
     parser.add_argument('path', nargs='?', default='src')
 
     args = parser.parse_args()
     has_action = False
 
-    siems = extract_siem_format(args.path, args.color)
+    siems, ok = extract_siem_format(args.path, args.color)
+
+    if args.check_ids:
+        if not ok:
+            exit(1)
+        if not (args.list_format or args.check_doc or args.python_ids):
+            exit(0)
+        has_action = True
+
+    # build optional values
+    for logs in siems:
+        inject_optional_param_from_used_params(logs)
 
     if args.list_format:
         print_siem_format(*siems)

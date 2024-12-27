@@ -33,6 +33,8 @@ show_duration()
     timestamp=$timestamp2
 }
 
+export TMPDIR_TEST="${TMPDIR_TEST:-bin/tmp/}"
+mkdir -p "$TMPDIR_TEST"
 
 # Custom analyzer
 # @{
@@ -43,7 +45,6 @@ find src \( -name '*.hpp' -or -name '*.cpp' \) -and -not -path 'src/keyboard/*' 
 
 show_duration redemption-analyzer.sh
 # @}
-
 
 # Python tests and coverage
 # @{
@@ -129,7 +130,7 @@ beforerun=$(rootlist)
 # release for -Warray-bounds and not assert
 build $toolset_gcc -j4 release cxxflags='-g -Wno-deprecated-declarations'
 
-show_duration $toolset_gcc
+show_duration $toolset_gcc release
 
 # Warn new files created by tests.
 set -o pipefail

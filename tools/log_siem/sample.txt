@@ -1,0 +1,114 @@
+[rdpproxy] ... type="AUTHENTICATION_FAILURE" method=method
+[rdpproxy] ... type="AUTHENTICATION_SUCCESS" method=method
+[rdpproxy] ... type="AUTHENTICATION_TRY" method=method
+[rdpproxy] ... type="DISCONNECT"
+[rdpproxy] ... type="DISCONNECT" reason=%s
+[rdpproxy] ... type="INCOMING_CONNECTION" src_ip=%.*s src_port=%d
+[rdpproxy] ... type="LOGOUT"
+[rdpproxy] ... type="TARGET_CONNECTION" target=%s session_id=%s host=%s port=%u
+[rdpproxy] ... type="TARGET_CONNECTION_FAILED" target=%s session_id=%s host=%s port=%u reason=%s
+[rdpproxy] ... type="TARGET_DISCONNECTION" session_id=%s
+[rdpproxy] ... type="TARGET_DISCONNECTION" session_id=%s reason=%s
+[rdpproxy] ... type="TARGET_ERROR" reason=_error
+[rdpproxy] ... type="TARGET_ERROR" target=_target reason="Target not found in user rights"
+[rdpproxy] ... type="TIME_METRICS" session_id=self
+
+[RDP Session] ... type="ACCOUNT_MANIPULATION_BLOCKED" operation=parameters[0] server_name=parameters[1] group_name=parameters[2] account_name=parameters[3] app_name=parameters[4] app_cmd_line=parameters[5]
+[RDP Session] ... type="ACCOUNT_MANIPULATION_DETECTED" operation=parameters[0] server_name=parameters[1] group_name=parameters[2] account_name=parameters[3] app_name=parameters[4] app_cmd_line=parameters[5]
+[RDP Session] ... type="BESTSAFE_SERVICE_LOG"
+[RDP Session] ... type="BUTTON_CLICKED" window= button=
+[RDP Session] ... type="CB_COPYING_PASTING_DATA_FROM_REMOTE_SESSION" format=format_av size=size_av
+[RDP Session] ... type="CB_COPYING_PASTING_DATA_FROM_REMOTE_SESSION" format=format_av size=size_av partial_data=utf8_string
+[RDP Session] ... type="CB_COPYING_PASTING_DATA_TO_REMOTE_SESSION" format=format_av size=size_av
+[RDP Session] ... type="CB_COPYING_PASTING_DATA_TO_REMOTE_SESSION" format=format_av size=size_av partial_data=utf8_string
+[RDP Session] ... type="CB_COPYING_PASTING_FILE_FROM_REMOTE_SESSION" file_name=file_contents_range.file_name size=file_size sha256=digest_str
+[RDP Session] ... type="CB_COPYING_PASTING_FILE_TO_REMOTE_SESSION" file_name=file_contents_range.file_name size=file_size sha256=digest_str
+[RDP Session] ... type="CERTIFICATE_CHECK_SUCCESS" description="Connection to server allowed"
+[RDP Session] ... type="CHECKBOX_CLICKED" window=parameters[0] checkbox=parameters[1] state=::button_state_to_string(unchecked_decimal_chars_to_int(parameters[2]))
+[RDP Session] ... type="CLIENT_EXECUTE_REMOTEAPP" exe_or_file=serpdu.ExeOrFile()
+[RDP Session] ... type="COMPLETED_PROCESS" command_line=parameters[0]
+[RDP Session] ... type="CONNECTION_FAILED"
+[RDP Session] ... type="DRIVE_REDIRECTION_DELETE" file_name=file_path
+[RDP Session] ... type="DRIVE_REDIRECTION_READ" file_name=file_path
+[RDP Session] ... type="DRIVE_REDIRECTION_READ" file_name=file_path size=file_size_str sha256=digest_str
+[RDP Session] ... type="DRIVE_REDIRECTION_RENAME" old_file_name=target_iter->file_path new_file_name=file_path
+[RDP Session] ... type="DRIVE_REDIRECTION_USE" device_name=device_name device_type=device_type_name
+[RDP Session] ... type="DRIVE_REDIRECTION_WRITE" file_name=file_path
+[RDP Session] ... type="DRIVE_REDIRECTION_WRITE" file_name=file_path size=file_size_str sha256=digest_str
+[RDP Session] ... type="DYNAMIC_CHANNEL_CREATION_ALLOWED" channel_name=channel_name)}
+[RDP Session] ... type="DYNAMIC_CHANNEL_CREATION_REJECTED" channel_name=channel_name)}
+[RDP Session] ... type="EDIT_CHANGED" window= edit=
+[RDP Session] ... type="EDIT_CHANGED" window= edit= value=
+[RDP Session] ... type="FILE_BLOCKED" direction=to_dlpav_str_direction(direction) file_name=file_name
+[RDP Session] ... type="FILE_VERIFICATION" direction=to_dlpav_str_direction(direction) file_name=file_name status=result_content
+[RDP Session] ... type="FILE_VERIFICATION_ERROR" icap_service=down_target_name status=msg
+[RDP Session] ... type="FILE_VERIFICATION_ERROR" icap_service=up_target_name status=msg
+[RDP Session] ... type="FOREGROUND_WINDOW_CHANGED" text=parameters[0] class_name=parameters[1] command_line=(parameters.size() == 2
+[RDP Session] ... type="GROUP_MEMBERSHIP" groups=
+[RDP Session] ... type="INPUT_LANGUAGE" identifier=parameters[0] display_name=parameters[1]
+[RDP Session] ... type="KBD_INPUT" data=this->kbd_stream.get_produced_bytes().as_chars()
+[RDP Session] ... type="KERBEROS_TICKET_CREATION" encryption_type=parameters[0] client_name=parameters[1] server_name=parameters[2] start_time=parameters[3] end_time=parameters[4] renew_time=parameters[5] flags=parameters[6]
+[RDP Session] ... type="KERBEROS_TICKET_DELETION" encryption_type=parameters[0] client_name=parameters[1] server_name=parameters[2] start_time=parameters[3] end_time=parameters[4] renew_time=parameters[5] flags=parameters[6]
+[RDP Session] ... type="KILL_PATTERN_DETECTED" pattern=chars_view(buf, p) data=data
+[RDP Session] ... type="NEW_PROCESS" command_line=parameters[0]
+[RDP Session] ... type="NOTIFY_PATTERN_DETECTED" pattern=chars_view(buf, p) data=data
+[RDP Session] ... type="OUTBOUND_CONNECTION_BLOCKED" rule= app_name=
+[RDP Session] ... type="OUTBOUND_CONNECTION_BLOCKED" rule=rule->description() app_name=parameters[1] app_cmd_line=parameters[2] dst_addr=parameters[3] dst_port=parameters[4]
+[RDP Session] ... type="OUTBOUND_CONNECTION_DETECTED" rule=parameters[0] app_name=parameters[1]
+[RDP Session] ... type="OUTBOUND_CONNECTION_DETECTED" rule=rule->description() app_name=parameters[1] app_cmd_line=parameters[2] dst_addr=parameters[3] dst_port=parameters[4]
+[RDP Session] ... type="PASSWORD_TEXT_BOX_GET_FOCUS" status=parameters[0]
+[RDP Session] ... type="PROCESS_BLOCKED" rule=rule->description() app_name=parameters[1] app_cmd_line=parameters[2]
+[RDP Session] ... type="PROCESS_DETECTED" rule=rule->description() app_name=parameters[1] app_cmd_line=parameters[2]
+[RDP Session] ... type="SELECT_CHANGED" window= edit= value=
+[RDP Session] ... type="SERVER_CERTIFICATE_ERROR" description="X.509 server certificate internal error: "
+[RDP Session] ... type="SERVER_CERTIFICATE_MATCH_FAILURE" description="X.509 server certificate match failure"
+[RDP Session] ... type="SERVER_CERTIFICATE_MATCH_SUCCESS" description="X.509 server certificate match"
+[RDP Session] ... type="SERVER_CERTIFICATE_NEW" description="New X.509 certificate created"
+[RDP Session] ... type="SESSION_CREATION_FAILED"
+[RDP Session] ... type="SESSION_DISCONNECTION" duration={duration_str, std::size_t(len)}),}
+[RDP Session] ... type="SESSION_ENDING_IN_PROGRESS"
+[RDP Session] ... type="SESSION_ESTABLISHED_SUCCESSFULLY"
+[RDP Session] ... type="SESSION_EVENT" level=parameters[0] id=parameters[1] details=parameters[2]
+[RDP Session] ... type="SESSION_INVITE_CONTROL_OWNERSHIP_CHANGED" new_control_owner=new_control_owner
+[RDP Session] ... type="SESSION_INVITE_GUEST_CONNECTION" guest=guest_front.sharing_ctx.name mode=guest_front.sharing_ctx.enable_shared_control ? "view-control"
+[RDP Session] ... type="SESSION_INVITE_GUEST_CONNECTION_REJECTED" name="guest-1" reason="bad password"
+[RDP Session] ... type="SESSION_INVITE_GUEST_DISCONNECTION" guest=guest_front.sharing_ctx.name duration={duration_str, std::size_t(len)}
+[RDP Session] ... type="SESSION_INVITE_GUEST_KILLED" name=this->sharing_ctx.name
+[RDP Session] ... type="SESSION_INVITE_GUEST_VIEW_CHANGED" state=state
+[RDP Session] ... type="SESSION_LOCKED" status=parameters[0]
+[RDP Session] ... type="STARTUP_APPLICATION_FAIL_TO_RUN" app_name=transformed_app_name.chars() raw_result=parameters[1]
+[RDP Session] ... type="STARTUP_APPLICATION_FAIL_TO_RUN" app_name=transformed_app_name.chars() raw_result=parameters[1] raw_result_message=parameters[2]
+[RDP Session] ... type="TEXT_VERIFICATION" direction=to_dlpav_str_direction(direction) copy_id=int_to_decimal_chars(underlying_cast(file_validator_id)) status=result_content
+[RDP Session] ... type="TITLE_BAR" source="OCR" window=title
+[RDP Session] ... type="TITLE_BAR" source="Probe" window=parameters[0]
+[RDP Session] ... type="UAC_PROMPT_BECOME_VISIBLE" status=parameters[0]
+[RDP Session] ... type="UNIDENTIFIED_INPUT_FIELD_GET_FOCUS" status=parameters[0]
+[RDP Session] ... type="WEB_ATTEMPT_TO_PRINT" url= title=
+[RDP Session] ... type="WEB_BEFORE_NAVIGATE" url= post=
+[RDP Session] ... type="WEB_DOCUMENT_COMPLETE" url= title=
+[RDP Session] ... type="WEB_ENCRYPTION_LEVEL_CHANGED" identifier= display_name=
+[RDP Session] ... type="WEB_NAVIGATE_ERROR" url= title= code= display_name=
+[RDP Session] ... type="WEB_NAVIGATION" url=
+[RDP Session] ... type="WEB_PRIVACY_IMPACTED" impacted=
+[RDP Session] ... type="WEB_THIRD_PARTY_URL_BLOCKED" url=
+
+[VNC Session] ... type="CERTIFICATE_CHECK_SUCCESS" description="Connection to server allowed"
+[VNC Session] ... type="CONNECTION_FAILED"
+[VNC Session] ... type="KBD_INPUT" data=this->kbd_stream.get_produced_bytes().as_chars()
+[VNC Session] ... type="KILL_PATTERN_DETECTED" pattern=chars_view(buf, p) data=data
+[VNC Session] ... type="NOTIFY_PATTERN_DETECTED" pattern=chars_view(buf, p) data=data
+[VNC Session] ... type="SERVER_CERTIFICATE_ERROR" description="X.509 server certificate internal error: "
+[VNC Session] ... type="SERVER_CERTIFICATE_MATCH_FAILURE" description="X.509 server certificate match failure"
+[VNC Session] ... type="SERVER_CERTIFICATE_MATCH_SUCCESS" description="X.509 server certificate match"
+[VNC Session] ... type="SERVER_CERTIFICATE_NEW" description="New X.509 certificate created"
+[VNC Session] ... type="SESSION_CREATION_FAILED"
+[VNC Session] ... type="SESSION_DISCONNECTION" duration={duration_str, std::size_t(len)}),}
+[VNC Session] ... type="SESSION_ESTABLISHED_SUCCESSFULLY"
+[VNC Session] ... type="SESSION_INVITE_CONTROL_OWNERSHIP_CHANGED" new_control_owner=new_control_owner
+[VNC Session] ... type="SESSION_INVITE_GUEST_CONNECTION" guest=guest_front.sharing_ctx.name mode=guest_front.sharing_ctx.enable_shared_control ? "view-control"
+[VNC Session] ... type="SESSION_INVITE_GUEST_CONNECTION_REJECTED" name="guest-1" reason="bad password"
+[VNC Session] ... type="SESSION_INVITE_GUEST_DISCONNECTION" guest=guest_front.sharing_ctx.name duration={duration_str, std::size_t(len)}
+[VNC Session] ... type="SESSION_INVITE_GUEST_KILLED" name=this->sharing_ctx.name
+[VNC Session] ... type="SESSION_INVITE_GUEST_VIEW_CHANGED" state=state
+[VNC Session] ... type="TITLE_BAR" source="OCR" window=title
+
