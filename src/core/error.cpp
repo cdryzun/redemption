@@ -23,7 +23,6 @@
 
 #include "utils/pp.hpp"
 
-#define NOT_UNDEF_EACH_ERROR
 #include "core/error.hpp"
 #include "cxx/cxx.hpp"
 #include "utils/string_c.hpp"
@@ -61,7 +60,7 @@ namespace
         REDEMPTION_DIAGNOSTIC_PUSH()
         REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wcovered-switch-default")
         switch (error) {
-            EACH_ERROR(MAKE_CASE, MAKE_CASE_V)
+            REDEMPTION_X_ERROR(MAKE_CASE, MAKE_CASE_V)
             default: return false;
         }
         REDEMPTION_DIAGNOSTIC_POP()
@@ -164,7 +163,7 @@ zstring_view Error::errmsg(bool with_id) const noexcept
                     jln::ull_to_string_c_t<int(e)>>::zstring() \
                 : "Exception " #e ""_zv;
         switch (this->id) {
-            EACH_ERROR(MAKE_CASE, MAKE_CASE_V)
+            REDEMPTION_X_ERROR(MAKE_CASE, MAKE_CASE_V)
         }
         #undef MAKE_CASE
         #undef MAKE_CASE_V

@@ -25,7 +25,7 @@
 
 #include "utils/sugar/zstring_view.hpp"
 
-#define EACH_ERROR(f, fv)                                    \
+#define REDEMPTION_X_ERROR(f, fv)                            \
     fv(NO_ERROR, 0)                                          \
                                                              \
     f(ERR_STREAM_MEMORY_TOO_SMALL)                           \
@@ -211,7 +211,7 @@
 #define MAKE_ENUM_V(e, x) e = x,
 enum error_type : unsigned
 {
-    EACH_ERROR(MAKE_ENUM, MAKE_ENUM_V)
+    REDEMPTION_X_ERROR(MAKE_ENUM, MAKE_ENUM_V)
 };
 #undef MAKE_ENUM
 #undef MAKE_ENUM_V
@@ -231,7 +231,3 @@ public:
 
     [[nodiscard]] zstring_view errmsg(bool with_id = true) const noexcept; /*NOLINT*/
 };
-
-#ifndef NOT_UNDEF_EACH_ERROR
-# undef EACH_ERROR
-#endif

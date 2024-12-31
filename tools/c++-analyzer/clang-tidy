@@ -17,21 +17,23 @@ else
   nolintend="// NOLINTEND($nolint)"
 
   {
+    echo '#define REDEMPTION_NO_FFMPEG 1'
     echo "$nolintbegin"
     find src/ -name '*.cpp' \
       -a \( -path 'src/main/headlessclient.cpp' -o -not -path 'src/main/*' \) \
       -a -not -path 'src/utils/crypto/*' \
       -a -not -path 'src/keyboard/keylayouts.cpp' \
-      -a -not -path 'src/core/error.cpp' \
-      -a -not -path 'src/utils/log_as_logprint.cpp' \
+      -a -not -path 'src/capture/capture.cpp' \
+      -a -not -path 'src/capture/video_capture.cpp' \
       -a -not -path 'src/lib/do_recorder.cpp' \
+      -a -not -path 'src/utils/log_as_logprint.cpp' \
     | sed -E 's/^src\/(.*)/#include "\1"/'
     echo "$nolintend"
   } > "$cpp_unity1"
 
   echo '
     '"$nolintbegin"'
-    #include "core/error.cpp"
+    #include "capture/video_capture.cpp"
     #include "lib/do_recorder.cpp"
     #include "main/mwrm3_editor.cpp"
     #include "utils/log_as_logprint.cpp"
