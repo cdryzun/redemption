@@ -1494,7 +1494,7 @@ void RdpNegociation::send_client_info_pdu()
                             , this->performanceFlags
                             , this->clientAddr
                             );
-    if (this->redirection_password_or_cookie.size())
+    if (!this->redirection_password_or_cookie.empty())
     {
         LOG_IF(bool(this->verbose & RDPVerbose::basic_trace), LOG_INFO,
             "RdpNegociation: Use redirection password or cookie");

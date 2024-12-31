@@ -160,7 +160,7 @@ constexpr bool ascii_contains_upper(chars_view str) noexcept
 // fast with long string
 constexpr struct ascii_to_upper_t {
     using tag_type = UpperTag;
-    constexpr inline char operator()(char c) const noexcept
+    constexpr char operator()(char c) const noexcept
     {
         return 'a' <= c && c <= 'z' ? (c - 'a' + 'A') : c;
     }
@@ -169,7 +169,7 @@ constexpr struct ascii_to_upper_t {
 // fast with long string
 constexpr struct ascii_to_lower_t {
     using tag_type = LowerTag;
-    constexpr inline char operator()(char c) const noexcept
+    constexpr char operator()(char c) const noexcept
     {
         return 'A' <= c && c <= 'Z' ? (c - 'A' + 'a') : c;
     }
@@ -178,7 +178,7 @@ constexpr struct ascii_to_lower_t {
 // fast with short string (/!\ cache miss)
 constexpr struct ascii_to_upper_with_table_t {
     using tag_type = UpperTag;
-    constexpr inline char operator()(char c) const noexcept
+    constexpr char operator()(char c) const noexcept
     {
         return detail::ascii_to_upper_table[static_cast<unsigned char>(c)];
     }
@@ -187,7 +187,7 @@ constexpr struct ascii_to_upper_with_table_t {
 // fast with short string (/!\ cache miss)
 constexpr struct ascii_to_lower_with_table_t {
     using tag_type = LowerTag;
-    constexpr inline char operator()(char c) const noexcept
+    constexpr char operator()(char c) const noexcept
     {
         return detail::ascii_to_lower_table[static_cast<unsigned char>(c)];
     }
@@ -340,7 +340,7 @@ namespace detail
     };
 
     template<class Transform>
-    constexpr inline char* unsafe_ascii_to(char* dest, chars_view src, Transform&& transform) noexcept
+    constexpr char* unsafe_ascii_to(char* dest, chars_view src, Transform&& transform) noexcept
     {
         for (char c : src) {
             *dest++ = transform(c);

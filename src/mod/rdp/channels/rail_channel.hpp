@@ -407,9 +407,9 @@ private:
                 ClientExecutePDU cepdu;
 
                 cepdu.Flags(this->windows_execute_shell_params.flags);
-                cepdu.ExeOrFile(this->windows_execute_shell_params.exe_or_file.c_str());
-                cepdu.WorkingDir(this->windows_execute_shell_params.working_dir.c_str());
-                cepdu.Arguments(this->windows_execute_shell_params.arguments.c_str());
+                cepdu.ExeOrFile(this->windows_execute_shell_params.exe_or_file);
+                cepdu.WorkingDir(this->windows_execute_shell_params.working_dir);
+                cepdu.Arguments(this->windows_execute_shell_params.arguments);
 
                 cepdu.emit(out_s);
 
@@ -1006,9 +1006,9 @@ public:
                     ClientExecutePDU cepdu;
 
                     cepdu.Flags(this->windows_execute_shell_params.flags);
-                    cepdu.ExeOrFile(this->windows_execute_shell_params.exe_or_file.c_str());
-                    cepdu.WorkingDir(this->windows_execute_shell_params.working_dir.c_str());
-                    cepdu.Arguments(this->windows_execute_shell_params.arguments.c_str());
+                    cepdu.ExeOrFile(this->windows_execute_shell_params.exe_or_file);
+                    cepdu.WorkingDir(this->windows_execute_shell_params.working_dir);
+                    cepdu.Arguments(this->windows_execute_shell_params.arguments);
 
                     cepdu.emit(out_s);
 
@@ -1340,7 +1340,7 @@ public:
             cepdu.Flags(flags);
             cepdu.ExeOrFile(exe_or_file.as<std::string_view>());
             cepdu.WorkingDir(working_dir.as<std::string_view>());
-            cepdu.Arguments(arguments_.c_str());
+            cepdu.Arguments(arguments_);
 
             cepdu.emit(out_s);
 
@@ -1478,9 +1478,9 @@ private:
         ClientExecutePDU cepdu;
 
         cepdu.Flags(this->windows_execute_shell_params_2.flags);
-        cepdu.ExeOrFile(this->windows_execute_shell_params_2.exe_or_file.c_str());
-        cepdu.WorkingDir(this->windows_execute_shell_params_2.working_dir.c_str());
-        cepdu.Arguments(this->windows_execute_shell_params_2.arguments.c_str());
+        cepdu.ExeOrFile(this->windows_execute_shell_params_2.exe_or_file);
+        cepdu.WorkingDir(this->windows_execute_shell_params_2.working_dir);
+        cepdu.Arguments(this->windows_execute_shell_params_2.arguments);
 
         cepdu.emit(out_s);
 

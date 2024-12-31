@@ -115,7 +115,7 @@ LanguageButton::LanguageButton(
 )
 : WidgetButton(
     drawable, nullptr,
-    [this] { return this->next_layout(); },
+    [this] { this->next_layout(); },
     theme.global.fgcolor, theme.global.bgcolor,
     theme.global.focus_color, language_button_border, font,
     language_button_padding, language_button_padding)

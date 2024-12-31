@@ -22,7 +22,6 @@
    main program
 */
 
-#include "capture/cryptofile.hpp"
 #include "capture/ocr/locale/locale_id.hpp"
 #include "capture/rdp_ppocr/get_ocr_constants_from_locale_id.hpp"
 
@@ -34,20 +33,19 @@
 #include "main/version.hpp"
 #include "system/scoped_crypto_init.hpp"
 #include "system/scoped_ssl_init.hpp"
-#include "transport/file_transport.hpp"
 
 #include "utils/fileutils.hpp"
 #include "utils/log.hpp"
 #include "utils/redemption_info_version.hpp"
 #include "utils/strutils.hpp"
 #include "utils/sugar/int_to_chars.hpp"
+#include "utils/sugar/unique_fd.hpp"
 #include "utils/cli.hpp"
 
 #include <iostream>
 #include <charconv>
 
 #include <cerrno>
-#include <cstddef>
 #include <cstdlib>
 #include <ctime>
 #include <csignal>
@@ -55,6 +53,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h> // sleep
+#include <fcntl.h>
 
 
 static bool write_pid_file(int pid)

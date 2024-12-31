@@ -56,7 +56,7 @@ struct RedirectionInfo {
             , this->session_id
             , this->host
             , this->username
-            , (this->password_or_cookie.size() == 0)?"<null>":"<hidden>"
+            , this->password_or_cookie.empty() ? "<null>" : "<hidden>"
             , this->domain
             , this->lb_info_length
             , this->dont_store_username?"true":"false"

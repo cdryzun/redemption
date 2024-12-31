@@ -215,7 +215,7 @@ public:
 
     void set_cropping(Rect cropping)
     {
-        return this->video_cap_ctx.set_cropping(cropping);
+        this->video_cap_ctx.set_cropping(cropping);
     }
 
     void frame_marker_event(

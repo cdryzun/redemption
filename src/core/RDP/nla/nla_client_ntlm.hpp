@@ -230,7 +230,7 @@ public:
 
                 uint32_t flags = flag_if(NTLMSSP_NEGOTIATE_56, this->NTLMv2)
                                | flag_if(NTLMSSP_NEGOTIATE_TARGET_INFO, this->UseMIC)
-                               | flag_if(NTLMSSP_NEGOTIATE_OEM_WORKSTATION_SUPPLIED, this->Workstation.size() != 0)
+                               | flag_if(NTLMSSP_NEGOTIATE_OEM_WORKSTATION_SUPPLIED, !this->Workstation.empty())
                                | flag_if(NTLMSSP_NEGOTIATE_KEY_EXCH ,server_challenge.negoFlags.flags & NTLMSSP_NEGOTIATE_KEY_EXCH)
                                | NTLMSSP_NEGOTIATE_SEAL
                                | NTLMSSP_NEGOTIATE_128

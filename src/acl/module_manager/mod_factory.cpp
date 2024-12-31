@@ -58,7 +58,7 @@ namespace
         bool is_up_and_running() const override { return false; }
     };
 
-    inline NoMod no_mod;
+    inline NoMod no_mod;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 }
 
 ModFactory::ModFactory(

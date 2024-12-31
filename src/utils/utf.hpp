@@ -427,7 +427,7 @@ decltype(auto) utf8_read_one_char(
     ChErrorFn&& err_fn,
     TruncatedFn&& truncated_fn)
 {
-    if (utf8.size() == 0) [[unlikely]] {
+    if (utf8.empty()) [[unlikely]] {
         return no_ch_fn();
     }
 

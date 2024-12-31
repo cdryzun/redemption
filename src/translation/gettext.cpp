@@ -72,7 +72,7 @@ namespace tokendesc
 #undef MK_TOKEN
 }
 
-bool IS_VALID_TRANSITIONS_TABLE[3][3]{
+constexpr bool IS_VALID_TRANSITIONS_TABLE[3][3]{
     // left / right = UnaryOp  BinaryOp  Expr
     /* UnaryOp */    {true,     false,   true},
     /* BinaryOp */   {true,     false,   true},

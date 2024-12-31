@@ -97,7 +97,7 @@ u8_array_view RecorderTransport::get_public_key() const
 
 void RecorderTransport::flush()
 {
-    return this->trans.flush();
+    this->trans.flush();
 }
 
 bool RecorderTransport::disconnect()

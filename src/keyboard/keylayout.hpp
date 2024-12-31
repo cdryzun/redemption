@@ -52,7 +52,7 @@ Author(s): Proxies Team
 
 struct KeyLayout
 {
-    static KeyLayout const& null_layout() noexcept;
+    static constexpr KeyLayout const& null_layout() noexcept;
 
     enum class KbdId : uint32_t;
 
@@ -243,7 +243,7 @@ namespace detail
     };
 } // namespace detail
 
-inline KeyLayout const& KeyLayout::null_layout() noexcept
+constexpr KeyLayout const& KeyLayout::null_layout() noexcept
 {
     return detail::null_layout_layout;
 }

@@ -356,7 +356,7 @@ public:
                     LOG_IF(this->verbose & 0x400, LOG_INFO, "NTLM_SSPI::DecryptMessage");
 
                     if (this->authentication_token.pubKeyAuth.size() < cbMaxSignature) {
-                        if (this->authentication_token.pubKeyAuth.size() == 0) {
+                        if (this->authentication_token.pubKeyAuth.empty()) {
                             // report_error
                             LOG(LOG_INFO, "Provided login/password is probably incorrect.");
                         }
@@ -397,7 +397,7 @@ public:
                         LOG(LOG_ERR, "Actual Signature:");
                         hexdump_c(this->authentication_token.pubKeyAuth.data(), 16);
 
-                        if (this->authentication_token.pubKeyAuth.size() == 0) {
+                        if (this->authentication_token.pubKeyAuth.empty()) {
                             // report_error
                             LOG(LOG_INFO, "Provided login/password is probably incorrect.");
                         }
@@ -626,7 +626,7 @@ public:
 
         // We should provide parameter to know if TARGET_TYPE is SERVER or DOMAIN
         // and set the matching flag accordingly
-        if (challenge_message.TargetName.buffer.size() > 0){
+        if (!challenge_message.TargetName.buffer.empty()){
             // forcing some flags
             negoFlags |= (NTLMSSP_TARGET_TYPE_SERVER);
         }
@@ -641,7 +641,7 @@ public:
 
         // NTLM: construct challenge target info
         // WIN7
-        if (this->avFieldsTags.size() == 0){
+        if (this->avFieldsTags.empty()){
             this->avFieldsTags = {MsvAvNbComputerName, MsvAvNbDomainName,
                                   MsvAvDnsComputerName, MsvAvDnsDomainName,
                                   MsvAvDnsTreeName, MsvAvFlags, MsvAvTimestamp,

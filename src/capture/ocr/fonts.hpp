@@ -88,7 +88,7 @@ namespace fonts {
 
     namespace internal {
         template<std::size_t N>
-        constexpr inline unsigned min_height(Font const (& fonts)[N]) noexcept
+        constexpr unsigned min_height(Font const (& fonts)[N]) noexcept
         {
             unsigned ret = fonts[0].min_height_char;
             for (unsigned i = 1; i < N; ++i) {
@@ -100,7 +100,7 @@ namespace fonts {
         }
 
         template<std::size_t N>
-        constexpr inline unsigned max_height(Font const (& fonts)[N]) noexcept
+        constexpr unsigned max_height(Font const (& fonts)[N]) noexcept
         {
             unsigned ret = 0;
             for (unsigned i = 0; i < N; ++i) {

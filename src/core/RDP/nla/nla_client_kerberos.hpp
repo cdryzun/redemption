@@ -100,7 +100,7 @@ public:
             return nullptr;
         }
 
-        if (!this->password_utf8.size())
+        if (this->password_utf8.empty())
         {
             return "";
         }
@@ -739,7 +739,7 @@ private:
             // LOG(LOG_INFO, "MAJOR CONTINUE NEEDED");
             (void) gss_release_buffer(&minor_status, &input_tok);
             this->client_auth_data.input_buffer.clear();
-            if (this->ts_request.negoTokens.size() > 0) {
+            if (!this->ts_request.negoTokens.empty()) {
                 LOG_IF(this->verbose, LOG_INFO, "rdpCredssp - Client Authentication : Sending Authentication Token");
                 LOG_IF(this->verbose, LOG_INFO, "rdpCredsspClientKerberos::send");
                 StaticOutStream<65536> ts_request_emit;

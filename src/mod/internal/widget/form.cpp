@@ -75,7 +75,7 @@ WidgetForm::WidgetForm(
     , notes(drawable, tr(trkeys::note_required),
             theme.global.fgcolor, theme.global.bgcolor, font)
     , confirm(drawable, tr(trkeys::confirm),
-              [this]{ return this->check_confirmation(); },
+              [this]{ this->check_confirmation(); },
               theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
               2, font, 6, 2)
     , tr(tr)

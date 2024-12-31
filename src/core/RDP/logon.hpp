@@ -848,7 +848,7 @@ public:
         *unicodeFieldSizesPos++ = out_unistr(stream, this->Domain, this->cbDomain);
         *unicodeFieldSizesPos++ = out_unistr(stream, this->UserName, this->cbUserName);
         if (flags & INFO_AUTOLOGON){
-            if (this->redirection_password_or_cookie.size() == 0){
+            if (this->redirection_password_or_cookie.empty()){
                 *unicodeFieldSizesPos++ = out_unistr(stream, this->Password, this->cbPassword);
             }
             else{

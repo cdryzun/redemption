@@ -417,24 +417,24 @@ namespace MCS
             }
         }
 
-        void set_out_ber_len_uint7(unsigned int v, size_t offset) const noexcept
+        void set_out_ber_len_uint7(uint8_t v, size_t offset) const noexcept
         {
             auto out_stream = this->stream.stream_at(offset);
             OutBerStream(out_stream).out_ber_len_uint7(v);
         }
 
-        void out_ber_len_uint7(unsigned int v) noexcept
+        void out_ber_len_uint7(uint8_t v) noexcept
         {
-            this->stream.out_uint8(static_cast<uint8_t>(v));
+            this->stream.out_uint8(v);
         }
 
-        void set_out_ber_len_uint16(unsigned int v, size_t offset) const noexcept
+        void set_out_ber_len_uint16(uint16_t v, size_t offset) const noexcept
         {
             auto out_stream = this->stream.stream_at(offset);
             OutBerStream(out_stream).out_ber_len_uint16(v);
         }
 
-        void out_ber_len_uint16(unsigned int v) noexcept
+        void out_ber_len_uint16(uint16_t v) noexcept
         {
             this->stream.out_uint8(0x82);
             this->stream.out_uint16_be(v);
@@ -445,14 +445,14 @@ namespace MCS
             return this->stream.get_offset();
         }
 
-        void out_uint16_be(unsigned int v) noexcept
+        void out_uint16_be(uint16_t v) noexcept
         {
-            return this->stream.out_uint16_be(v);
+            this->stream.out_uint16_be(v);
         }
 
-        void out_uint8(unsigned char v) noexcept
+        void out_uint8(uint8_t v) noexcept
         {
-            return this->stream.out_uint8(v);
+            this->stream.out_uint8(v);
         }
     };
 

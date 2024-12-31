@@ -129,6 +129,6 @@ struct HeadlessCommand
     // bool := '0'|'off' | '1'|'on'
     Result execute_command(chars_view cmd, RdpInput& mod);
 
-    chars_view help_all() const;
+    static chars_view help_all();
     chars_view help(chars_view cmd) const;
 };

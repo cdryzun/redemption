@@ -109,8 +109,9 @@ bool HeadlessRepl::execute_command(RdpInput& mod, chars_view cmd_line)
             break;
 
         case HeadlessCommand::Result::Connect:
-            if (!cmd_ctx.output_message.empty())
+            if (!cmd_ctx.output_message.empty()) {
                 ip_address = cmd_ctx.output_message.as<std::string_view>();
+            }
             [[fallthrough]];
         case HeadlessCommand::Result::Reconnect:
             disconnection = true;

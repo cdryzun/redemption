@@ -41,11 +41,11 @@ enum class accessmode {
     get_mutable_ref = 1 << 4,
 };
 
-constexpr inline accessmode operator | (accessmode x, accessmode y) {
+constexpr accessmode operator | (accessmode x, accessmode y) {
     return static_cast<accessmode>(underlying_cast(x) | underlying_cast(y));
 }
 
-constexpr inline accessmode operator & (accessmode x, accessmode y) {
+constexpr accessmode operator & (accessmode x, accessmode y) {
     return static_cast<accessmode>(underlying_cast(x) & underlying_cast(y));
 }
 

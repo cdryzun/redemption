@@ -24,8 +24,6 @@
 
 #include "core/RDP/x224.hpp"
 #include "core/RDP/nla/nla_server_ntlm.hpp"
-#include "core/RDP/nla/nla_client_ntlm.hpp"
-#include "core/RDP/nla/nla_client_kerberos.hpp"
 #include "core/RDP/gcc/userdata/cs_core.hpp"
 #include "core/RDP/gcc.hpp"
 #include "core/RDP/mcs.hpp"
@@ -35,8 +33,6 @@
 #include "transport/recorder_transport.hpp"
 #include "transport/socket_transport.hpp"
 #include "utils/cli.hpp"
-#include "utils/fixed_random.hpp"
-#include "utils/netutils.hpp"
 #include "utils/redemption_info_version.hpp"
 #include "utils/utf.hpp"
 #include "system/scoped_ssl_init.hpp"
@@ -51,11 +47,7 @@
 #include <cstring>
 #include <csignal>
 
-#include <netinet/tcp.h>
 #include <sys/select.h>
-#include <openssl/ssl.h>
-
-
 
 
 /** @brief the server that handles RDP connections */
@@ -81,7 +73,7 @@ class NLAServer
             u8user, u8domain,
             int(username.size()), username.data(), int(domain.size()), domain.data());
 
-        if (u8domain.size() == 0){
+        if (u8domain.empty()){
             auto [identity_username, identity_domain] = extract_user_domain(u8user.to_sv());
 
             bool user_match = (username == identity_username);
@@ -195,7 +187,7 @@ public:
             result << this->nego_server->credssp.authenticate_next(buffer);
         }
         st = this->nego_server->credssp.state;
-        if (result.size() > 0){ // If waiting for password, no data
+        if (!result.empty()){ // If waiting for password, no data
             trans.send(result);
         }
 

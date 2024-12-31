@@ -217,11 +217,11 @@ public:
 
     void in_copy_bytes(writable_buffer_view v) noexcept {
         assert(this->in_check_rem(v.size()));
-        return this->p.in_copy_bytes(v);
+        this->p.in_copy_bytes(v);
     }
 
     void in_copy_bytes(writable_byte_ptr v, size_t n) noexcept {
-        return this->in_copy_bytes({v, n});
+        this->in_copy_bytes({v, n});
     }
 
     [[nodiscard]] bytes_view view_bytes(unsigned int n) const noexcept {
@@ -345,7 +345,7 @@ public:
 
     void in_utf16(uint16_t utf16[], size_t length) noexcept
     {
-        return this->p.in_utf16(utf16, length);
+        this->p.in_utf16(utf16, length);
     }
 
     // extract a zero terminated UTF16 string from stream

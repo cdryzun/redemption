@@ -6,13 +6,11 @@
 #include <cerrno>
 #include <string_view>
 
-#include "capture/ocr/rgb8.hpp"
 #include "capture/ocr/bitmap_as_ocr_image.hpp"
 #include "capture/ocr/extract_bars.hh"
 #include "capture/ocr/io_char_box.hpp"
 #include "capture/ocr/extract_text_classification.hh"
 #include "utils/sugar/chars_to_int.hpp"
-#include "utils/bitmap_from_file.hpp"
 
 using namespace std::string_view_literals;
 

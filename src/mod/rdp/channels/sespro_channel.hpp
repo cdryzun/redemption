@@ -800,7 +800,7 @@ public:
             }
 
             else if (upper_param0 == "Get remote program windows and notification icons"_ascii_upper) {
-                if (this->windows_and_notification_icons.size()) {
+                if (!this->windows_and_notification_icons.empty()) {
                     send_client_message([this](OutStream & out_s) {
                         out_s.out_copy_bytes("RemotePrgramNewOrExistingWindowsAndNotificationIcons="_av);
                         bool bFirst = true;

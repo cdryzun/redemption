@@ -1423,12 +1423,12 @@ constexpr auto colorized_help_delay = make_colorized_string<
     count_help_replacement(help_delay), help_delay.size()
 >(help_delay);
 
-std::vector<char> help_sc_param_en;
-std::vector<char> help_sc_param_fr;
-std::vector<char> help_kbd_param_en;
-std::vector<char> help_kbd_param_fr;
-std::vector<char> help_mevent_param;
-std::vector<char> help_lock_param;
+std::vector<char> help_sc_param_en;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::vector<char> help_sc_param_fr;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::vector<char> help_kbd_param_en;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::vector<char> help_kbd_param_fr;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::vector<char> help_mevent_param;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::vector<char> help_lock_param;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 chars_view cmd_help_sc(std::vector<char>& out, chars_view named_physical_layout, array_view<ScancodePair> names_scancodes)
 {
@@ -1553,7 +1553,7 @@ HeadlessCommand::Result set_param_error(
 } // anonymous namespace
 
 
-chars_view HeadlessCommand::help_all() const
+chars_view HeadlessCommand::help_all()
 {
     return colorized_help;
 }

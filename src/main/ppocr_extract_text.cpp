@@ -6,7 +6,6 @@
 #include <cerrno>
 #include <string_view>
 
-#include "capture/ocr/rgb8.hpp"
 #include "capture/ocr/bitmap_as_ocr_image.hpp"
 #include "capture/ocr/extract_bars.hh"
 #include "capture/rdp_ppocr/extract_text.hpp"

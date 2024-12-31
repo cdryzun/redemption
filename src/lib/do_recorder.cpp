@@ -1031,7 +1031,7 @@ static inline int replay(
                 std::cout << "Duration (in seconds) : " << ((end_record - begin_record).count() + 1) << std::endl;
             }
 
-            if (rp.show_file_metadata && !rp.show_statistics && !rp.output_filename.length()) {
+            if (rp.show_file_metadata && !rp.show_statistics && rp.output_filename.empty()) {
                 result = 0;
             }
             else {
@@ -2007,7 +2007,7 @@ int do_main(int argc, char const ** argv,
                 }
             }
             else {
-                std::cerr << strerror(errno) << std::endl << std::endl;
+                std::cerr << strerror(errno) << '\n' << std::endl;
             }
 
             if (res == 0){

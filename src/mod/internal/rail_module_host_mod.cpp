@@ -147,5 +147,5 @@ Dimension RailModuleHostMod::get_dim() const
 
 void RailModuleHostMod::acl_update(AclFieldMask const& acl_fields)
 {
-    return this->module_host.get_managed_mod().acl_update(acl_fields);
+    this->module_host.get_managed_mod().acl_update(acl_fields);
 }

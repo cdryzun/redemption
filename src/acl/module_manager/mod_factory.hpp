@@ -98,7 +98,7 @@ public:
 
     void display_osd_message(std::string_view message)
     {
-        return mod_wrapper.display_osd_message(message);
+        mod_wrapper.display_osd_message(message);
     }
 
     void set_time_close(MonotonicTimePoint t)

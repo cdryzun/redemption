@@ -2193,10 +2193,10 @@ inline std::vector<uint8_t> emitNTLMNegotiateMessage()
     stream.out_uint8(NTLMSSP_REVISION_W2K3);
 
     // PAYLOAD
-    if (DomainName.size()){
+    if (!DomainName.empty()){
         stream.out_copy_bytes(DomainName);
     }
-    if (Workstation.size()){
+    if (!Workstation.empty()){
         stream.out_copy_bytes(Workstation);
     }
 

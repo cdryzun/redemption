@@ -195,8 +195,9 @@ class FunctionRef<Sig, R(Args...)>
               })
     {
         using F = decltype(f);
-        if constexpr (std::is_pointer_v<F> or std::is_member_pointer_v<F>)
+        if constexpr (std::is_pointer_v<F> or std::is_member_pointer_v<F>) {
             static_assert(f != nullptr, "NTTP callable must be usable");
+        }
     }
 
     // template<auto f, class U, class T = std::remove_reference_t<U>>

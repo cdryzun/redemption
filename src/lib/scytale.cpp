@@ -474,7 +474,7 @@ int scytale_reader_send_to(ScytaleReaderHandle * handle, int fd_out)
 
     // maybe throw
     auto send_to = [=]{
-        struct Free { void operator()(void* p) { return std::free(p); } };
+        struct Free { void operator()(void* p) { std::free(p); } };
         constexpr size_t bufsize = 64 * 1024;
         auto* ptr = static_cast<char*>(std::aligned_alloc(4096, bufsize));
         if (!ptr) {

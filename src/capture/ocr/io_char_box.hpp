@@ -56,7 +56,7 @@ struct PrintableBox
 {
     ppocr::Box box;
 
-    friend inline std::ostream& operator<<(std::ostream& ostr, PrintableBox const& pbox)
+    friend std::ostream& operator<<(std::ostream& ostr, PrintableBox const& pbox)
     {
         auto b = pbox.box;
         return ostr << "[(" << b.x() << "," << b.y() << ")..(+" << b.width() << ",+" << b.height() << ")]";

@@ -144,92 +144,92 @@ template<>
 inline constexpr bool is_null_terminated_v<zstring_view> = true;
 
 
-inline constexpr bool operator==(zstring_view const& lhs, zstring_view const& rhs) noexcept
+constexpr bool operator==(zstring_view const& lhs, zstring_view const& rhs) noexcept
 {
     return lhs.to_sv() == rhs.to_sv();
 }
 
-inline constexpr bool operator==(char const* lhs, zstring_view const& rhs) noexcept
+constexpr bool operator==(char const* lhs, zstring_view const& rhs) noexcept
 {
     return std::string_view(lhs) == rhs.to_sv();
 }
 
-inline constexpr bool operator==(zstring_view const& lhs, char const* rhs) noexcept
+constexpr bool operator==(zstring_view const& lhs, char const* rhs) noexcept
 {
     return lhs.to_sv() == std::string_view(rhs);
 }
 
-inline constexpr bool operator!=(zstring_view const& lhs, zstring_view const& rhs) noexcept
+constexpr bool operator!=(zstring_view const& lhs, zstring_view const& rhs) noexcept
 {
     return lhs.to_sv() != rhs.to_sv();
 }
 
-inline constexpr bool operator!=(char const* lhs, zstring_view const& rhs) noexcept
+constexpr bool operator!=(char const* lhs, zstring_view const& rhs) noexcept
 {
     return std::string_view(lhs) != rhs.to_sv();
 }
 
-inline constexpr bool operator!=(zstring_view const& lhs, char const* rhs) noexcept
+constexpr bool operator!=(zstring_view const& lhs, char const* rhs) noexcept
 {
     return lhs.to_sv() != std::string_view(rhs);
 }
 
-inline constexpr bool operator<(zstring_view const& lhs, zstring_view const& rhs) noexcept
+constexpr bool operator<(zstring_view const& lhs, zstring_view const& rhs) noexcept
 {
     return lhs.to_sv() < rhs.to_sv();
 }
 
-inline constexpr bool operator<(char const* lhs, zstring_view const& rhs) noexcept
+constexpr bool operator<(char const* lhs, zstring_view const& rhs) noexcept
 {
     return std::string_view(lhs) < rhs.to_sv();
 }
 
-inline constexpr bool operator<(zstring_view const& lhs, char const* rhs) noexcept
+constexpr bool operator<(zstring_view const& lhs, char const* rhs) noexcept
 {
     return lhs.to_sv() < std::string_view(rhs);
 }
 
-inline constexpr bool operator<=(zstring_view const& lhs, zstring_view const& rhs) noexcept
+constexpr bool operator<=(zstring_view const& lhs, zstring_view const& rhs) noexcept
 {
     return lhs.to_sv() <= rhs.to_sv();
 }
 
-inline constexpr bool operator<=(char const* lhs, zstring_view const& rhs) noexcept
+constexpr bool operator<=(char const* lhs, zstring_view const& rhs) noexcept
 {
     return std::string_view(lhs) <= rhs.to_sv();
 }
 
-inline constexpr bool operator<=(zstring_view const& lhs, char const* rhs) noexcept
+constexpr bool operator<=(zstring_view const& lhs, char const* rhs) noexcept
 {
     return lhs.to_sv() <= std::string_view(rhs);
 }
 
-inline constexpr bool operator>(zstring_view const& lhs, zstring_view const& rhs) noexcept
+constexpr bool operator>(zstring_view const& lhs, zstring_view const& rhs) noexcept
 {
     return lhs.to_sv() > rhs.to_sv();
 }
 
-inline constexpr bool operator>(char const* lhs, zstring_view const& rhs) noexcept
+constexpr bool operator>(char const* lhs, zstring_view const& rhs) noexcept
 {
     return std::string_view(lhs) > rhs.to_sv();
 }
 
-inline constexpr bool operator>(zstring_view const& lhs, char const* rhs) noexcept
+constexpr bool operator>(zstring_view const& lhs, char const* rhs) noexcept
 {
     return lhs.to_sv() > std::string_view(rhs);
 }
 
-inline constexpr bool operator>=(zstring_view const& lhs, zstring_view const& rhs) noexcept
+constexpr bool operator>=(zstring_view const& lhs, zstring_view const& rhs) noexcept
 {
     return lhs.to_sv() >= rhs.to_sv();
 }
 
-inline constexpr bool operator>=(char const* lhs, zstring_view const& rhs) noexcept
+constexpr bool operator>=(char const* lhs, zstring_view const& rhs) noexcept
 {
     return std::string_view(lhs) >= rhs.to_sv();
 }
 
-inline constexpr bool operator>=(zstring_view const& lhs, char const* rhs) noexcept
+constexpr bool operator>=(zstring_view const& lhs, char const* rhs) noexcept
 {
     return lhs.to_sv() >= std::string_view(rhs);
 }
