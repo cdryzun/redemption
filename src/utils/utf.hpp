@@ -327,7 +327,7 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, Trun
     auto source = utf8.begin();
     const auto last = utf8.end();
 
-#define UTF8_FOR_EACH_PROCESS(fn, ...) do {                              \
+#define UTF8_FOR_EACH_PROCESS(fn, ...)                                   \
     using result_type = decltype(fn(__VA_ARGS__));                       \
     if constexpr (std::is_same_v<utf8_decode_new_offset, result_type>) { \
         auto new_offset = fn(__VA_ARGS__);                               \
@@ -343,24 +343,23 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, Trun
     }                                                                    \
     else {                                                               \
         fn(__VA_ARGS__);                                                 \
-    }                                                                    \
-} while (0)
+    }
 
     while (source < last) {
         if (*source <= 0x7f) {
-            UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_1byte{source});
+            UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_1byte{source})
             source += 1;
             continue;
         }
         /* handle U+0080..U+07FF inline : 2 bytes sequences */
         else if (*source <= 0xDF) {
             if (*source <= 0xBF) [[unlikely]] {
-                UTF8_FOR_EACH_PROCESS(err_fn, utf8_char_invalid{{source, last}});
+                UTF8_FOR_EACH_PROCESS(err_fn, utf8_char_invalid{{source, last}})
                 source += 1;
                 continue;
             }
             else if (last - source >= 2) [[likely]] {
-                UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_2bytes{source});
+                UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_2bytes{source})
                 source += 2;
                 continue;
             }
@@ -368,14 +367,14 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn, ChErrorFn&& err_fn, Trun
         /* handle U+8FFF..U+FFFF inline : 3 bytes sequences */
         else if (*source <= 0xEF) {
             if (last - source >= 3) [[likely]] {
-                UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_3bytes{source});
+                UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_3bytes{source})
                 source += 3;
                 continue;
             }
         }
         else /*if (*source <= 0xFF)*/ {
             if (last - source >= 4) [[likely]] {
-                UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_4bytes{source});
+                UTF8_FOR_EACH_PROCESS(ch_fn, utf8_char_4bytes{source})
                 source += 4;
                 continue;
             }

@@ -528,6 +528,20 @@ RED_AUTO_TEST_CASE(Test_utf8_for_each)
         return result;
     };
 
+    auto utf8_for_each_c1 = [&](bytes_view utf8)
+    {
+        result.clear();
+        utf8_for_each(utf8,
+            [&](auto ch) {
+                push_utf8_char(result, '=')(ch);
+                return utf8_decode_new_offset{ch.bytes().data() + 1};
+            },
+            push_utf8_char(result, '!'),
+            push_utf_truncated
+        );
+        return result;
+    };
+
     RED_CHECK(utf8_for_each_fn("a"_av) == "=a[61]"_av);
     RED_CHECK(utf8_for_each_er("a"_av) == "=a[61]"_av);
     RED_CHECK(utf8_for_each_fn("abc"_av) == "=a[61]=b[62]=c[63]"_av);
@@ -570,6 +584,10 @@ RED_AUTO_TEST_CASE(Test_utf8_for_each)
     RED_CHECK(utf8_for_each_er("abc\xF0\xAA"_av) == "=a[61]=b[62]=c[63]?\xF0\xAA"_av);
     RED_CHECK(utf8_for_each_fn("abc\xA0""abcde"_av) == "=a[61]=b[62]=c[63]!\xA0[FFFD]=a[61]=b[62]=c[63]=d[64]=e[65]"_av);
     RED_CHECK(utf8_for_each_er("abc\xA0""abcde"_av) == "=a[61]=b[62]=c[63]!\xA0[FFFD]"_av);
+
+    RED_CHECK(utf8_for_each_c1("a"_av) == "=a[61]"_av);
+    RED_CHECK(utf8_for_each_c1("abc"_av) == "=a[61]=b[62]=c[63]"_av);
+    RED_CHECK(utf8_for_each_c1("€"_av) == "=€[20AC]!\x82[FFFD]!\xAC[FFFD]"_av);
 }
 
 RED_AUTO_TEST_CASE(Test_utf8_read_on_char)
