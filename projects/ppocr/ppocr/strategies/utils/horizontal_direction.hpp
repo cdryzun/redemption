@@ -58,6 +58,8 @@ void horizontal_direction_fn::compute(const Image& img)
     }
 }
 
-} } }
+} // namespace utils
+ } // namespace strategies
+ } // namespace ppocr
 
 #endif

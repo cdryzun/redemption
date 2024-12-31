@@ -79,7 +79,7 @@ namespace detail_ {
         pointer_iterator<typename std::remove_pointer<Iterator>::type>,
         Iterator
     >::type;
-}
+} // namespace detail_
 
 template<class IteratorBase, class Proxy>
 struct proxy_iterator : detail_::force_iterator_class<IteratorBase>, private Proxy
@@ -148,6 +148,6 @@ public:
     bool empty() const { return this->first_ == this->last_; }
 };
 
-}
+} // namespace ppocr
 
 #endif

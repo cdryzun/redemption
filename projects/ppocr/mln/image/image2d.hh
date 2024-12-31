@@ -173,6 +173,6 @@ namespace mln {
         }
 #endif
     };
-}
+} // namespace mln
 
 #endif

@@ -115,7 +115,7 @@ namespace detail
         && !__reference_converts_from_temporary(From, To)
         #endif
         ;
-}
+} // namespace detail
 
 template<class Sig, class = typename detail::qual_fn_sig<Sig>::function>
 struct FunctionRef;

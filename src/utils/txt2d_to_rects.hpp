@@ -117,7 +117,7 @@ constexpr std::size_t txt2d_to_rects_impl(
     return len;
 }
 
-}
+} // namespace detail
 
 #define TXT2D_TO_RECTS(...) txt2d_to_rects([]{ return std::array{__VA_ARGS__}; })
 

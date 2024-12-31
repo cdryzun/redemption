@@ -53,6 +53,7 @@ struct proportionality_zone
     static value_type load(Image const & img, Image const & img90, ctx_type& ctx);
 };
 
-} }
+} // namespace strategies
+ } // namespace ppocr
 
 #endif

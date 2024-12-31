@@ -68,6 +68,7 @@ private:
     std::vector<WordInfos> words_infos;
 };
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

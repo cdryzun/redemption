@@ -99,7 +99,7 @@ namespace details_ {
     template<class Relationship>
     constexpr std::false_type
     is_contiguous(unsigned) { return {}; }
-}
+} // namespace details_
 
 template<class Strategy>
 typename Strategy::value_type
@@ -248,6 +248,7 @@ void apply_from_datas(Datas<Strategies...> & datas, Fn fn) {
     (..., fn(datas.template get<Strategies>()));
 }
 
-} }
+} // namespace loader2
+} // namespace ppocr
 
 #endif

@@ -68,6 +68,6 @@ private:
 std::ostream & operator<<(std::ostream & os, Box const & box);
 std::istream & operator>>(std::istream & is, Box & box);
 
-}
+} // namespace ppocr
 
 #endif

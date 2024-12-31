@@ -110,8 +110,8 @@ struct alternations
 std::ostream & operator<<(std::ostream &, alternations::alternations_type const &);
 std::istream & operator>>(std::istream &, alternations::alternations_type &);
 
-}
+} // namespace strategies
 
-}
+} // namespace ppocr
 
 #endif

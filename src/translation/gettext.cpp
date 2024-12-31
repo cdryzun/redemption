@@ -79,7 +79,7 @@ constexpr bool IS_VALID_TRANSITIONS_TABLE[3][3]{
     /* Expr */       {false,    true,    false},
 };
 
-}
+} // namespace
 
 struct GettextPlural::ItemImpl : GettextPlural::Item
 {

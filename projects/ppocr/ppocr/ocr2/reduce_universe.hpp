@@ -94,6 +94,7 @@ void reduce_universe_by_word(
     resize_probabilities(probabilities, it);
 }
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

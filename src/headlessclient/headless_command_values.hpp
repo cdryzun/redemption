@@ -355,4 +355,4 @@ inline constexpr std::array names_mouse_flags = {
     MouseFlagPair{"-Wheel", MOUSE_FLAG_WHEEL | 0xFF},
 };
 
-}
+} // namespace headlessclient

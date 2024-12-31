@@ -51,6 +51,7 @@ struct zone {
     static value_type load(const Image & img, const Image & img90, ctx_type& ctx);
 };
 
-} }
+} // namespace strategies
+ } // namespace ppocr
 
 #endif

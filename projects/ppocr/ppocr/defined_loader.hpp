@@ -96,7 +96,7 @@ namespace details_
             typename ExclusifAlgos::ctx_type...
         >;
     };
-}
+} // namespace details_
 
 #define REGISTRY(name) \
     loader2::Strategy<strategies::name, loader2::PolicyLoader::img>
@@ -243,7 +243,7 @@ namespace details_ {
             }
         }
     };
-}
+} // namespace details_
 
 namespace details_ {
     template<class... Strategies>
@@ -264,8 +264,8 @@ namespace details_ {
         datas = PpOcrDatas(static_cast<Data<Strategies>&&>(t)...);
         return is;
     }
-}
+} // namespace details_
 
-}
+} // namespace ppocr
 
 #endif

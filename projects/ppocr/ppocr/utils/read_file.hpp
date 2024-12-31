@@ -69,6 +69,7 @@ T load_from_file(std::string const & filename) {
     return load_from_file<T>(filename.c_str());
 }
 
-} }
+} // namespace utils
+ } // namespace ppocr
 
 #endif

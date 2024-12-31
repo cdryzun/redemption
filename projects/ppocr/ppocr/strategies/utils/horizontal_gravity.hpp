@@ -76,6 +76,8 @@ inline void horizontal_gravity_fn::compute(const Image& img)
     top_bottom.bottom = horizontal_box_gravity(bnd, p, img.data_end(), false);
 }
 
-} } }
+} // namespace utils
+ } // namespace strategies
+ } // namespace ppocr
 
 #endif

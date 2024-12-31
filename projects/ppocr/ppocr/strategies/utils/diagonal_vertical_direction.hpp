@@ -58,7 +58,7 @@ namespace details_ {
         }
         return d;
     }
-}
+} // namespace details_
 
 inline unsigned diagonal_vertical_direction_area(const Image& img)
 {
@@ -103,6 +103,8 @@ inline void diagonal_vertical_direction_fn::compute(const Image& img)
     top_bottom.bottom = details_::count_diagonal_vertical_direction(bnd, p, img.data_end(), false);
 }
 
-} } }
+} // namespace utils
+ } // namespace strategies
+ } // namespace ppocr
 
 #endif

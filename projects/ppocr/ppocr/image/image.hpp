@@ -239,8 +239,8 @@ namespace rng
         }
         return it != last;
     }
-}
+} // namespace rng
 
-}
+} // namespace ppocr
 
 #endif

@@ -45,6 +45,7 @@ inline void replace_words(std::string & result, Replacements const & replacement
     }
 }
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

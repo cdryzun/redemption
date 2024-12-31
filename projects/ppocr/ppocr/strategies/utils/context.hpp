@@ -68,10 +68,10 @@ namespace details_
             OtherCtx...
         >
     {};
-}
+} // namespace details_
 
 template<class... Ctx>
 using unique_contexts_t = typename details_::unique_contexts_impl<
     details_::contexts_t<>, Ctx...>::type;
 
-}
+} // namespace ppocr

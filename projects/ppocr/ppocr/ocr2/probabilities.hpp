@@ -88,6 +88,7 @@ struct GtProb {
     }
 };
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

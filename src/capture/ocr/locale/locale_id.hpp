@@ -16,4 +16,4 @@ enum class LocaleId : unsigned
     max,
 };
 
-} // namespace locale::ocr
+} // namespace ocr::locale

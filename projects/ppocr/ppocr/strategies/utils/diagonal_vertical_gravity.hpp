@@ -45,7 +45,7 @@ namespace details_ {
         }
         return g;
     }
-}
+} // namespace details_
 
 inline unsigned diagonal_vertical_gravity_area(const Image& img)
 {
@@ -91,6 +91,8 @@ void diagonal_vertical_gravity_fn::compute(const Image& img)
     top_bottom.bottom = details_::count_diagonal_vertical_gravity(bnd, p, img.data_end(), false);
 }
 
-} } }
+} // namespace utils
+ } // namespace strategies
+ } // namespace ppocr
 
 #endif

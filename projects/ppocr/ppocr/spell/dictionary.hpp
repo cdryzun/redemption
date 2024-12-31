@@ -49,6 +49,7 @@ private:
 std::istream & operator >> (std::istream & is, Dictionary & dict);
 std::ostream & operator << (std::ostream & os, Dictionary const & dict);
 
-} }
+} // namespace spell
+ } // namespace ppocr
 
 #endif

@@ -36,7 +36,7 @@ namespace cli::parsers
     {
         static constexpr std::string_view default_argname = "<{width}x{height} | {width}x{height}x{bpp}>";
     };
-}
+} // namespace cli::parsers
 
 namespace cli::arg_parsers
 {

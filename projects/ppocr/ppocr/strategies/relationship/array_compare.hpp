@@ -59,6 +59,7 @@ struct array_compare_relationship
     }
 };
 
-} }
+} // namespace strategies
+ } // namespace ppocr
 
 #endif

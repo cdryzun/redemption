@@ -40,6 +40,7 @@ inline void insert_views(
     }
 }
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

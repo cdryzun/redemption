@@ -33,6 +33,6 @@ struct is_pix_letter_fn {
     { return is_pix_letter(pix); }
 };
 
-}
+} // namespace ppocr
 
 #endif

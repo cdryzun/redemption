@@ -53,6 +53,7 @@ struct equal_relationship
     }
 };
 
-} }
+} // namespace strategies
+ } // namespace ppocr
 
 #endif

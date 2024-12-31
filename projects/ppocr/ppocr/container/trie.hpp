@@ -24,7 +24,8 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace ppocr { namespace container {
+namespace ppocr::container
+{
 
 template<class T>
 struct trie
@@ -262,6 +263,6 @@ private:
     std::vector<node_type> elems_;
 };
 
-} }
+} // namespace ppocr::container
 
 #endif

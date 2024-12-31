@@ -59,6 +59,7 @@ struct WWordsLines : std::vector<WWordLines>
 std::istream & operator>>(std::istream & is, WWordsLines & wwords_lines);
 std::istream & operator>>(std::istream & is, WordLines & wlines);
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

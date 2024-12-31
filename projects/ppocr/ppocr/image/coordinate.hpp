@@ -81,6 +81,6 @@ std::istream & operator>>(std::istream & is, Index & idx);
 std::ostream & operator<<(std::ostream & os, Bounds const & bnd);
 std::istream & operator>>(std::istream & is, Bounds & bnd);
 
-}
+} // namespace ppocr
 
 #endif

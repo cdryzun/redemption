@@ -353,4 +353,4 @@ private:
     std::vector<not_null_ptr<gdi::GraphicApi>> gds;
 };
 
-}
+} // namespace gdi

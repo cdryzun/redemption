@@ -103,7 +103,7 @@ namespace
 
     constexpr uint16_t language_button_border = 2;
     constexpr uint16_t language_button_padding = 7;
-}
+} // namespace
 
 LanguageButton::LanguageButton(
     zstring_view enable_locales,

@@ -72,6 +72,7 @@ inline void sort_by_prop(ppocr::ocr2::Probabilities & probabilities) {
     std::sort(probabilities.begin(), probabilities.end(), ppocr::ocr2::GtProb{});
 }
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

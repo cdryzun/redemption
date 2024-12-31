@@ -53,6 +53,7 @@ struct interval_relationship
     }
 };
 
-} }
+} // namespace strategies
+ } // namespace ppocr
 
 #endif

@@ -247,6 +247,8 @@ namespace ppocr { namespace strategies { namespace utils
         }
     }
 
-} } }
+} // namespace utils
+ } // namespace strategies
+ } // namespace ppocr
 
 #endif

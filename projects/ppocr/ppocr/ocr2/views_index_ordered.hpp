@@ -51,6 +51,7 @@ inline std::vector<unsigned> get_views_indexes_ordered(Glyphs const & glyphs) {
     return id_views;
 }
 
-} }
+} // namespace ocr2
+ } // namespace ppocr
 
 #endif

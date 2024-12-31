@@ -1745,7 +1745,7 @@ HeadlessCommand::Result cmd_parse(
     return result;
 }
 
-}
+} // namespace
 
 HeadlessCommand::Result HeadlessCommand::execute_command(chars_view cmd, RdpInput& mod)
 {

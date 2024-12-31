@@ -35,6 +35,8 @@ unsigned compute_relationship(T const & a, T const & b, U const & interval)
     return unsigned(d);
 }
 
-} } }
+} // namespace utils
+ } // namespace strategies
+ } // namespace ppocr
 
 #endif

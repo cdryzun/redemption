@@ -54,8 +54,8 @@ fix=
 if [[ "$1" = '-fix' ]]; then
   fix=-fix
   shift
-  checkers='google-readability-namespace-comments,
-hicpp-uppercase-literal-suffix,
+  checkers='
+llvm-namespace-comment,
 '
 else
   checkers='*,
