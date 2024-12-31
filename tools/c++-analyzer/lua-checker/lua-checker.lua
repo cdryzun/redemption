@@ -1,6 +1,27 @@
 #!/usr/bin/env lua
+function load_mod_or_error(mod)
+    local ok, mod_or_err = pcall(require, mod)
+    if not ok then
+        io.stderr:write(mod_or_err .. [[
 
-local parser = require'argparse'(arg[0], "Lua ReDemPtion source checker")
+
+Maybe ?
+
+    apt install lua-argparse lua-lpeg
+
+or
+
+    apt install lua luarocks
+    luarocks --local install argparse
+    luarocks --local install lpeg
+    eval "$(luarocks path)"
+
+]])
+    end
+    return mod_or_err
+end
+
+local parser = load_mod_or_error'argparse'(arg[0], "Lua ReDemPtion source checker")
 
 function append_config(args, _, xs)
   local t = args[_]
@@ -13,6 +34,7 @@ end
 
 parser:argument('sources', 'Paths of source files'):args'*'
 parser:option('--checks', "Comma-separated list of globs with optional '-' prefix. Globs are processed in order of appearance in the list. Globs without '-' prefix add checks with matching names to the set, globs with the '-' prefix remove checks with matching names from the set of enabled checks.")
+    :default'*'
 parser:flag('--list-checks', "List all enabled checks and exit. Use with -checks=* to list all available checks")
 parser:option('--configs', 'Checker arguments', {}):argname{'<check>','<arguments>'}
     :count('*'):args(2):action(append_config)
@@ -27,6 +49,14 @@ local list_checkers = {
     trkeys = true,
     acl_report = true,
 }
+
+-- insert current path for require()
+-- @{
+local wcd = arg[0]:match('.*/')
+if wcd then
+    package.path = wcd .. '?.lua;' .. package.path
+end
+-- @}
 
 local utils = require'utils'
 
@@ -45,7 +75,7 @@ if args.checks then
         kcheckers[name] = false
     end
 
-    local lpeg = require'lpeg'
+    local lpeg = load_mod_or_error'lpeg'
     local ident = (1 - lpeg.S',\n ')^1
     local ws = lpeg.S'\n '^0
     local elem

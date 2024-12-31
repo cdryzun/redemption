@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ "$1" = '--help' ]]; then
+if [[ "$1" = '-h' || "$1" = '--help' ]]; then
   echo "$0 [-fix] [files...]"
   exit 1
 fi
@@ -20,7 +20,6 @@ else
     echo "$nolintbegin"
     find src/ -name '*.cpp' \
       -a \( -path 'src/main/headlessclient.cpp' -o -not -path 'src/main/*' \) \
-      -a -not -path 'src/capture/ocr/main/*' \
       -a -not -path 'src/utils/crypto/*' \
       -a -not -path 'src/keyboard/keylayouts.cpp' \
       -a -not -path 'src/core/error.cpp' \
@@ -41,8 +40,7 @@ else
 
   sources=(
     "$cpp_unity1"
-    "$cpp_unity1"
-    src/capture/ocr/main/*.cpp
+    "$cpp_unity2"
     $(find src/main -name '*.cpp' \
       -a -not -path 'src/main/mwrm3_editor.cpp' \
       -a -not -path 'src/main/headlessclient.cpp')

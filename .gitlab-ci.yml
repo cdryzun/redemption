@@ -54,49 +54,75 @@ branch-pages:
     - fi
 
 
-check-autogen:
+.analyzer_and_build:
   stage: build
   needs: []
   rules:
     - if: $CI_COMMIT_TAG
       when: never
     - when: on_success
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
+  # variables:
+  #   GIT_SUBMODULE_STRATEGY: recursive
   image: ${NEXUS_WAB_PROXIES_URL}/${IMAGE_REDEMPTION_ANALYZE}
+  artifacts:
+    when: always
+  timeout: 1h
+
+.big_memory:
+  variables:
+    JOB_REQUIRED_MEMORY: '8Gi'
+
+check-autogen_static-analyzer_test-python_test-lua:
+  extends:
+    - .analyzer_and_build
   script:
-    - ./tools/gitlab-check-autogen.sh
+    - ./tools/gitlab/gitlab-check-autogen.sh
+    - ./tools/c++-analyzer/redemption-analyzer.sh
+    - ./tools/cpp2ctypes/test.sh
+    - ./tools/python-analyzer/coverage.sh py_coverage.xml
+    - ./tools/python-analyzer/ruff.sh | tee ruff_report.txt || true
+    - ./tools/c++-analyzer/clang-tidy |& tee clang_tidy_report.txt
+    # ./tools/c++-analyzer/cppcheck-filtered 2>&1 1>/dev/null
+  artifacts:
+    paths:
+      - clang_tidy_report.txt
+      - ruff_report.txt
+      - py_coverage.xml
 
-
-build-analyze:
-  stage: build
-  needs: []
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - when: on_success
+build-analyze-release-valgrind:
+  extends:
+    - .analyzer_and_build
+    - .big_memory
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     JOB_REQUIRED_MEMORY: '8Gi'
-  image: ${NEXUS_WAB_PROXIES_URL}/${IMAGE_REDEMPTION_ANALYZE}
   script:
-    - TMPDIR_TEST="$TESTDIR" ./tools/gitlab-analyze.sh full
+    - TMPDIR_TEST="$TESTDIR" ./tools/gitlab/gitlab-analyze.sh gcc_release_valgrind |& tee report1.txt
   artifacts:
-    when: always
     paths:
-      - report.txt
-      - clang_tidy_report.txt
-      - gcovr_report.xml
+      - report1.txt
       - valgrind_reports/
-      - ruff_report.txt
-      - py_coverage.xml
       - "$TESTDIR"
-  timeout: 2h 30m
+
+build-analyze-san-coverage:
+  extends:
+    - .analyzer_and_build
+    - .big_memory
+  script:
+    - TMPDIR_TEST="$TESTDIR" ./tools/gitlab/gitlab-analyze.sh clang_san gcc_debug_coverage |& tee report2.txt
+  artifacts:
+    paths:
+      - report2.txt
+      - gcovr_report.xml
+      - "$TESTDIR"
 
 
 sonarqube-check:
   stage: build
-  needs: [build-analyze]
+  needs:
+    - check-autogen_static-analyzer_test-python_test-lua
+    - build-analyze-release-valgrind
+    - build-analyze-san-coverage
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: on_success
