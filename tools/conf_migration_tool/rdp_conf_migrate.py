@@ -44,7 +44,7 @@ class RedemptionVersion:
     def __le__(self, other: 'RedemptionVersion') -> bool:
         return self.__part() <= other.__part()
 
-    def __eq__(self, other: 'RedemptionVersion') -> bool:
+    def __eq__(self, other: 'RedemptionVersion') -> bool:  # type: ignore [override]
         return self.__part() == other.__part()
 
     def __hash__(self) -> int:
@@ -379,6 +379,7 @@ def migrate(fragments: List[ConfigurationFragment],
 
     # remove duplicate key and keep the last (i.e. remove moved keys that already exist).
     keys_visited = set()
+
     def filter_duplicate_key(fragment: ConfigurationFragment) -> bool:
         if fragment.kind == ConfigKind.KeyValue:
             key = fragment.value1
@@ -395,9 +396,11 @@ def migrate(fragments: List[ConfigurationFragment],
 
 
 def remove_ini_only_type(desc: MigrationDescType) -> MigrationDescType:
-    return {section: ({k: v for k, v in values_or_item.items() if type(v) != ToIniOnly}
+    return {section: ({k: v for k, v in values_or_item.items()
+                       if not isinstance(v, ToIniOnly)}
                       if isinstance(values_or_item, dict) else values_or_item)
-            for section, values_or_item in desc.items() if type(values_or_item) != ToIniOnly}
+            for section, values_or_item in desc.items()
+            if not isinstance(values_or_item, ToIniOnly)}
 
 
 def push_value_injection(injections: InjectionsType,
@@ -511,7 +514,7 @@ def migrate_file(
     return is_changed
 
 
-def dump_json(defs: List[MigrationType]) -> List[Any]:
+def dump_json(defs: Sequence[MigrationType]) -> List[Any]:
     """
     format: [
         {
@@ -585,10 +588,10 @@ def dump_json(defs: List[MigrationType]) -> List[Any]:
                      ) -> Dict[str, MigrationKeyOrderType | str]:
         data = {}
         for k, item in values.items():
-            obj = visitor[type(item)](item)  # type: ignore
+            obj = visitor[type(item)](item)  # type: ignore [operator]
             if obj:
                 data[k] = obj
-        return {'kind': 'values', 'values': data}  # type: ignore
+        return {'kind': 'values', 'values': data}  # type: ignore [dict-item]
 
     visitor = {
         RemoveItem: remove_to_dict,
@@ -602,7 +605,7 @@ def dump_json(defs: List[MigrationType]) -> List[Any]:
     for version, desc in defs:
         data = {}
         for section, values_or_item in desc.items():
-            obj = visitor[type(values_or_item)](values_or_item)  # type: ignore
+            obj = visitor[type(values_or_item)](values_or_item)  # type: ignore [operator]
             if obj:
                 data[section] = obj
         if data:
@@ -618,7 +621,7 @@ def main(
 ) -> int:
     if len(argv) == 2 and argv[1] == '--dump=json':
         import json  # noqa: PLC0415
-        print(json.dumps(dump_json(migration_defs)))  # type: ignore
+        print(json.dumps(dump_json(migration_defs)))
         return 0
 
     if len(argv) <= 1:
@@ -666,6 +669,7 @@ def to_int(value: str) -> int:
 
 _IniValue = TypeVar("_IniValue")
 
+
 def _get_values(fragments: Iterable[ConfigurationFragment],
                 desc: Sequence[Tuple[str, str, _IniValue, Callable[[str], _IniValue]]],
                 ) -> List[_IniValue]:
@@ -703,6 +707,7 @@ def _merge_session_log_format_10_5_31(_value: str,
 
 PerformanceFlagParts = Tuple[str, str, str, str, str, str, str]
 
+
 def _performance_flags_to_string(flags: int, enable: bool) -> PerformanceFlagParts:
     signs = ('-', '+')
     return (
@@ -714,6 +719,7 @@ def _performance_flags_to_string(flags: int, enable: bool) -> PerformanceFlagPar
         signs[not enable] + 'font_smoothing' if flags & 0x80 else '',
         signs[not enable] + 'desktop_composition' if flags & 0x100 else '',
     )
+
 
 def _merge_performance_flags_10_5_31(_value: str,
                                      fragments: Iterable[ConfigurationFragment],
@@ -731,8 +737,10 @@ def _merge_performance_flags_10_5_31(_value: str,
                                                     strict=True)
                     if not_present or present)
 
+
 def _server_cert_notif_12_0_1(value: str, _fragments: Iterable[ConfigurationFragment]) -> str:
     return f'{min(to_int(value), 1)}'
+
 
 _update_server_cert_notif_12_0_1 = UpdateItem(value_transformation=_server_cert_notif_12_0_1)
 
