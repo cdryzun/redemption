@@ -28,10 +28,6 @@ Author(s): Jonathan Poelen
 #include <iostream>
 #include <string_view>
 
-#if REDEMPTION_HAS_INCLUDE(<cxxabi.h>)
-#  include <cxxabi.h>
-#endif
-
 namespace
 {
 
