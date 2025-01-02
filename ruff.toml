@@ -26,24 +26,24 @@ select = [
 ]
 
 ignore = [
+    "COM812",  # Trailing comma missing
+    "E226",  # Missing whitespace around arithmetic operator
     "E501",  # Line too long
-    "T201", "T203",  # print, pprint
-    "PLR0912",  # Too many branches ({branches} > {max_branches})
-    "PLR0917",  # Too many positional arguments
-    "INP001",  # implicit-namespace-package
-    "I001",  # Import block is un-sorted or un-formatted
-    "PLR0913",  # Too many arguments to function call
-    "PLR2004",  # Magic value used in comparison, consider replacing XXX with a constant variable
+    "E741",  # ambiguous-variable-name
     "FBT001",  # Boolean positional arg in function definition
     "FBT002",  # Boolean default positional argument in function definition
-    "E741",  # ambiguous-variable-name
+    "FURB101",  # `open` and `read` should be replaced by `Path(filename).read_text(encoding='utf-8')`
+    "FURB103",  # `open` and `write` should be replaced by `Path(temporary_ini_filename).write_text(new_content, encoding='utf-8')`
+    "I001",  # Import block is un-sorted or un-formatted
+    "INP001",  # implicit-namespace-package
+    "PLR0912",  # Too many branches ({branches} > {max_branches})
+    "PLR0913",  # Too many arguments to function call
+    "PLR0917",  # Too many positional arguments
+    "PLR2004",  # Magic value used in comparison, consider replacing XXX with a constant variable
+    "S101",  # Use of assert detected
+    "SIM300",  # yoda-conditions
+    "T201", "T203",  # print, pprint
     "TD002",  # Missing author in TODO
     "TD003",  # Missing issue link on the line following this TODO
     "TD004",  # Missing colon in TODO
-    "COM812",  # Trailing comma missing
-    "SIM300",  # yoda-conditions
-    "S101",  # Use of assert detected
-    "E226",  # Missing whitespace around arithmetic operator
-    "FURB101",  # `open` and `read` should be replaced by `Path(filename).read_text(encoding='utf-8')`
-    "FURB103",  # `open` and `write` should be replaced by `Path(temporary_ini_filename).write_text(new_content, encoding='utf-8')`
 ]
