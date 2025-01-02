@@ -44,4 +44,6 @@ ignore = [
     "SIM300",  # yoda-conditions
     "S101",  # Use of assert detected
     "E226",  # Missing whitespace around arithmetic operator
+    "FURB101",  # `open` and `read` should be replaced by `Path(filename).read_text(encoding='utf-8')`
+    "FURB103",  # `open` and `write` should be replaced by `Path(temporary_ini_filename).write_text(new_content, encoding='utf-8')`
 ]
