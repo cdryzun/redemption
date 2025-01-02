@@ -6,7 +6,9 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
+#include "cxx/diagnostic.hpp"
 #include <type_traits>
+#include <cassert>
 
 
 template<auto V>
@@ -136,28 +138,41 @@ class FunctionRef<Sig, R(Args...)>
     fwd_t *fptr_ = nullptr;
     storage obj_;
 
-  public:
+public:
+    FunctionRef(FunctionRef const&) noexcept = default;
+
+    FunctionRef &operator=(FunctionRef const&) noexcept = default;
+
+    template<class T>
+    FunctionRef &operator=(T)
+        requires(detail::is_not_self_v<T, FunctionRef> && !std::is_pointer_v<T> &&
+                 !is_nontype_t_v<T>)
+        = delete;
+
+    REDEMPTION_DIAGNOSTIC_PUSH()
+    REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wcast-function-type-strict")
     template<class F>
-    FunctionRef(F *f) noexcept
+    FunctionRef(F * f) noexcept
         requires detail::is_convertible_without_dangle_ref_v<
-            // is_invocable_using
+            // fast invoke_result
             decltype(f(static_cast<Args(*)()>(nullptr)()...)), R
         >
         : fptr_(
             [](storage s, detail::fn_param_t<Args>... args) noexcept(noex) -> R
             {
-                return reinterpret_cast<F>(s.fp)(static_cast<decltype(args)>(args)...);
+                return reinterpret_cast<F*>(s.fp)(static_cast<decltype(args)>(args)...);
             }),
           obj_{.fp = reinterpret_cast<void(*)()>(f)}
     {
-        assert(f != nullptr && "must reference a function");
+        assert(f != nullptr && "must reference a not nullptr function pointer");
     }
+    REDEMPTION_DIAGNOSTIC_POP()
 
     template<class F>
-    constexpr FunctionRef(F &&f) noexcept
+    constexpr FunctionRef(F && f) noexcept
         requires(detail::is_not_self_v<F, FunctionRef>
             && detail::is_convertible_without_dangle_ref_v<
-                // is_invocable_using
+                // fast invoke_result for function object
                 decltype(f(static_cast<Args(*)()>(nullptr)()...)), R
             >
         )
@@ -175,18 +190,12 @@ class FunctionRef<Sig, R(Args...)>
           obj_(storage::from_obj(__builtin_addressof(f)))
     {}
 
-    template<class T>
-    FunctionRef &operator=(T)
-        requires(detail::is_not_self_v<T, FunctionRef> && !std::is_pointer_v<T> &&
-                 !is_nontype_t_v<T>)
-        = delete;
-
     // TODO member obj support
 
     template<auto f>
     constexpr FunctionRef(nontype_t<f>) noexcept
         requires detail::is_convertible_without_dangle_ref_v<
-            // is_invocable
+            // fast invoke_result for function object
             decltype(f(static_cast<Args(*)()>(nullptr)()...)), R
         >
         : fptr_(
