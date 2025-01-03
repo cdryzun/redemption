@@ -137,13 +137,11 @@
   do { if (condition) REDEMPTION_UNREACHABLE(); } while (0)
 #endif
 
-#if defined(__GNUC__) || defined(__clang__)
+#ifdef REDEMPTION_UNREACHABLE
+// noop
+#elif defined(__clang__) || defined(__GNUC__)
 // https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
-# if !defined(REDEMPTION_UNREACHABLE) \
-  && (REDEMPTION_WORKAROUND(REDEMPTION_COMP_GCC, >= 4500) \
-    || defined(__clang__))
-#  define REDEMPTION_UNREACHABLE() __builtin_unreachable()
-# endif
+# define REDEMPTION_UNREACHABLE() __builtin_unreachable()
 #else
 # ifdef _MSC_VER && _MSC_VER >= 1900
 #  if !defined REDEMPTION_UNREACHABLE && _MSC_VER >= 1900
