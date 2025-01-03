@@ -18,7 +18,7 @@ struct HeadlessCliOptions
     char const* username = "";
     char const* password = "";
     char const* ip_address = "";
-    int port = 3389;
+    unsigned port = 3389;
     int cert_check = 0;
 
     bool is_cmd_kbdmap_en = true;

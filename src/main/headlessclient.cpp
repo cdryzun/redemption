@@ -172,6 +172,7 @@ int main(int argc, char const** argv)
 
     HeadlessCommand& cmd_ctx = repl.cmd_ctx;
     cmd_ctx.is_kbdmap_en = options.is_cmd_kbdmap_en;
+    cmd_ctx.port = options.port;
     repl.enable_wrm = options.enable_wrm_capture;
     repl.enable_png = options.enable_png_capture;
     repl.enable_record_transport = options.enable_record_transport_capture;
