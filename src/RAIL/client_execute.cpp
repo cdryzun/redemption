@@ -864,12 +864,6 @@ ClientExecute::ClientExecute(
     LOG_IF(this->verbose, LOG_INFO, "ClientExecute::ClientExecute()");
 }
 
-ClientExecute::~ClientExecute()
-{
-    LOG_IF(this->verbose, LOG_INFO, "ClientExecute::~ClientExecute()");
-    this->reset(false);
-}
-
 void ClientExecute::enable_remote_program(bool enable)
 {
     LOG_IF(this->verbose, LOG_INFO, "ClientExecute::enable_remote_program()");

@@ -61,8 +61,6 @@ public:
         WindowListCaps const & window_list_caps,
         bool verbose);
 
-    ~ClientExecute();
-
     bool should_ignore_first_client_execute() const noexcept
     {
         return this->should_ignore_first_client_execute_;
