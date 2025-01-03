@@ -117,6 +117,9 @@ namespace detail
         && !__reference_converts_from_temporary(From, To)
         #endif
         ;
+
+    template<class From>
+    inline constexpr bool is_convertible_without_dangle_ref_v<From, void> = true;
 } // namespace detail
 
 template<class Sig, class = typename detail::qual_fn_sig<Sig>::function>
