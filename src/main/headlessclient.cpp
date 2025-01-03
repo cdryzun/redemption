@@ -184,7 +184,6 @@ int main(int argc, char const** argv)
     repl.password = options.password;
 
     repl.start_connection = *options.ip_address;
-    bool interactive = !repl.start_connection || options.interactive;
 
     null_mod mod;
     FrontAPI& front = repl;
@@ -200,7 +199,7 @@ int main(int argc, char const** argv)
          * Wait connect command / ready to connect event
          */
         if (!repl.start_connection && perform_automatic_reconnection == PerformAutomaticReconnection::No) {
-            if (!interactive) {
+            if (!options.interactive) {
                 break;
             }
 
@@ -305,6 +304,10 @@ int main(int argc, char const** argv)
                 }
             }
 
+            if (!options.persist && !options.interactive) {
+                break;
+            }
+
             if (!is_actif()) {
                 continue;
             }
@@ -322,20 +325,39 @@ int main(int argc, char const** argv)
             EventRef time_ev;
             EventRef input_ev;
 
+            auto command_reader = [
+                &reader,
+                write_eof = has_automation_script || options.interactive
+            ](auto execute_command) {
+                return [execute_command, &reader, write_eof](Event& e) mutable {
+                    auto line = reader.read_command();
+                    if (!reader.is_eof()) {
+                        execute_command(line);
+                    }
+                    else {
+                        e.garbage = true;
+                        if (write_eof) {
+                            LOG(LOG_INFO, "Headless Client: input: EOF");
+                        }
+                    }
+                };
+            };
+
             if (has_automation_script) {
                 auto timer_input = [&](Event& e) {
                     bool has_timer = repl_session_guard.execute_timer(e, input_collector, null_keymap);
                     input_ev.raw_event()->fd = has_timer ? -1 : input.fd();
                 };
 
-                auto read_auto_input = [&, line_number = std::size_t()](Event&) mutable {
-                    auto line = reader.read_command();
-                    ++line_number;
-                    LOG(LOG_INFO, "L.%zu: %.*s", line_number, int(line.size()), line.data());
-                    if (repl.execute_command(input_collector, line)) {
-                        timer_input(*time_ev.raw_event());
+                auto read_auto_input = command_reader(
+                    [&, line_number = std::size_t()](chars_view line) mutable {
+                        ++line_number;
+                        LOG(LOG_INFO, "L.%zu: %.*s", line_number, int(line.size()), line.data());
+                        if (repl.execute_command(input_collector, line)) {
+                            timer_input(*time_ev.raw_event());
+                        }
                     }
-                };
+                );
 
                 time_ev = event_container.event_creator()
                     .create_event_timeout("script-timer", nullptr, MonotonicTimePoint::duration(), timer_input);
@@ -344,14 +366,16 @@ int main(int argc, char const** argv)
                 input_ev = event_container.event_creator()
                     .create_event_fd_without_timeout("script", nullptr, input.fd(), read_auto_input);
             }
-            else {
+            else if (options.interactive) {
                 show_prompt();
 
-                auto read_input = [&](Event&) {
-                    if (repl.execute_command(*mod, reader.read_command())) {
-                        show_prompt();
+                auto read_input = command_reader(
+                    [&](chars_view line) {
+                        if (repl.execute_command(*mod, line)) {
+                            show_prompt();
+                        }
                     }
-                };
+                );
 
                 input_ev = event_container.event_creator()
                     .create_event_fd_without_timeout("stdin", nullptr, input.fd(), read_input);
@@ -407,7 +431,9 @@ int main(int argc, char const** argv)
             repl.start_connection = true;
         }
 
-        options.persist = false;
+        if (!options.interactive) {
+            options.persist = false;
+        }
     }
 
     update_times(event_manager);
