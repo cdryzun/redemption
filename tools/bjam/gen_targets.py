@@ -620,6 +620,16 @@ def generate(type, files, requirements, get_target_cb = get_target):
         deps.update(requirements)
         if target in target_requirements:
             deps.update(target_requirements[target])
+        deps -= remove_requirements[f.path]
+        for k in deps & remove_incompatible_requirements_keys:
+            deps -= remove_incompatible_requirements[k]
+
+        # move <library>... in source part
+        srcs = set()
+        for dep in deps:
+            if dep.startswith('<library>'):
+                srcs.add(dep)
+        deps -= srcs
 
         if type == 'test-run':
             iright = len(f.root)
@@ -630,16 +640,16 @@ def generate(type, files, requirements, get_target_cb = get_target):
         elif type == 'lib':
             src += '.lib.o'
 
-        print(type, ' ', target, ' :\n  ', src, '\n:', sep='')
+        src_sep = ('\n:\n  ' if type == 'test-run' else '\n  ') if srcs else ''
+        srcs_s = '\n  '.join(sorted((s[9:] for s in srcs),
+                                    key=lambda s: (
+                                        s.startswith('src/') or s.endswith('.o'),
+                                        s)))
 
-        deps -= remove_requirements[f.path]
-        for k in deps & remove_incompatible_requirements_keys:
-            deps -= remove_incompatible_requirements[k]
+        print(type, ' ', target, ' :\n  ', src, src_sep, srcs_s, '\n:', sep='')
 
         if deps:
-            # <library> following by <...other...>
-            ordered_deps = sorted(deps, key=lambda s: s if s.startswith('<library>') else 'Z'+s)
-            print('  ', '\n  '.join(ordered_deps), sep='')
+            print('  ', '\n  '.join(sorted(deps)), sep='')
         print(';')
 
 def inject_variable_prefix(path):

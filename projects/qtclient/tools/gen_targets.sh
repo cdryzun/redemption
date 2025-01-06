@@ -19,8 +19,9 @@ dirbase=projects/qtclient
     $(find $dirbase/src -mindepth 1 -type d | sed 's/^/--src /') \
 | sed -E '
     /^exe main_qt_client_redemption/,/^:/{
-        s/^exe /constant /
-        /\.o$/d
+        /main_qt_client_redemption\.o$/d;t
+        s/^exe /constant /;t
+        s/^(\s+)(\w)/\1<library>\2/
         s/^://
     }
     s#'"$dirbase"'/?##g;t

@@ -13,9 +13,8 @@ exe-js _dummy :
 ;
 exe-js js_client :
   src/main/js_client.bc
-:
-  app_path_exe.bc
   crypto.bc
+  app_path_exe.bc
   src/red_channels/clipboard.bc
   src/red_channels/js_channel.bc
   src/redjs/front.bc
@@ -55,13 +54,13 @@ exe-js js_client :
   src/utils/strutils.bc
   src/utils/sugar/multisz.bc
   src/utils/utf.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 :
   $(EXE_DEPENDENCIES)
 ;
 exe-js js_player :
   src/main/js_player.bc
-:
   src/redjs/graphics.bc
   src/redjs/image_conversions.bc
   src/client/common/rdp_pointer_to_rgba8888.bc
@@ -76,6 +75,7 @@ exe-js js_player :
   src/utils/hexadecimal_string_to_buffer.bc
   src/utils/rle.bc
   src/utils/stacktrace.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 :
   $(EXE_DEPENDENCIES)
@@ -94,12 +94,14 @@ test-run-js tests/red_channels/test_clipboard :
   src/utils/stacktrace.bc
   src/utils/strutils.bc
   src/utils/utf.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/red_channels/test_js_channel :
   tests/red_channels/test_js_channel.cpp
 :
   src/red_channels/js_channel.bc
+:
 ;
 test-run-js tests/redjs/test_front :
   tests/redjs/test_front.cpp
@@ -117,6 +119,7 @@ test-run-js tests/redjs/test_front :
   src/utils/bitmap_data_allocator.bc
   src/utils/rle.bc
   src/utils/stacktrace.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/redjs/test_graphics :
@@ -134,6 +137,7 @@ test-run-js tests/redjs/test_graphics :
   src/utils/bitmap_data_allocator.bc
   src/utils/rle.bc
   src/utils/stacktrace.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/redjs/test_image_conversions :
@@ -145,6 +149,7 @@ test-run-js tests/redjs/test_image_conversions :
   src/utils/bitmap_data_allocator.bc
   src/utils/rle.bc
   src/utils/stacktrace.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/redjs/test_transport :
@@ -153,6 +158,7 @@ test-run-js tests/redjs/test_transport :
   src/redjs/transport.bc
   src/core/error.bc
   src/utils/stacktrace.bc
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run-js tests/system/test_ssl_md4 :
@@ -167,6 +173,7 @@ test-run-js tests/system/test_ssl_mod_exp :
   tests/system/test_ssl_mod_exp.cpp
 :
   src/system/ssl_mod_exp.bc
+:
 ;
 test-run-js tests/system/test_ssl_rc4 :
   tests/system/test_ssl_rc4.cpp

@@ -270,7 +270,7 @@ actions exenode
     NODE_PATH="$PWD" node $params "$(>[0]:S=.js)" && : > "$(<)"
 }
 
-rule exe-js ( name : src : objs * : deps * )
+rule exe-js ( name : src * : objs * : deps * )
 {
     exejs $(name).em : $(src) $(objs) log_print.bc :
         $(deps)

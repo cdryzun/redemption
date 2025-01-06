@@ -18,38 +18,9 @@ REDEMPTION_CXXFLAGS +=
     <toolset>clang:<cxxflags>-Wno-overlength-strings
     <toolset>clang:<cxxflags>-Wno-disabled-macro-expansion
     <toolset>clang:<cxxflags>-Wno-documentation-unknown-command
+
+    <conditional>@flags
 ;
-
-import os ;
-
-local SPEED_BUILD = [ os.environ SPEED_BUILD ] ;
-if $(SPEED_BUILD) = 1
-{
-  REDEMPTION_CXXFLAGS += <conditional>@gflags ;
-
-  local GLOBAL_FLAGS_IS_INITIALIZED = 0 ;
-  local GLOBAL_FLAGS = ;
-  rule gflags ( properties * )
-  {
-    if $(GLOBAL_FLAGS_IS_INITIALIZED) = 1
-    {
-      local ps = [ property-set.create $(properties) ] ;
-      local toolset = [ $(ps).get <toolset> ] ;
-      if $(ORIGINAL_TOOLSET) = $(toolset)
-      {
-        return $(GLOBAL_FLAGS) ;
-      }
-    }
-
-    GLOBAL_FLAGS_IS_INITIALIZED = 1 ;
-    GLOBAL_FLAGS = [ flags $(properties) ] ;
-    return $(GLOBAL_FLAGS) ;
-  }
-}
-else
-{
-  REDEMPTION_CXXFLAGS += <conditional>@flags ;
-}
 
 # ./compiler-options.lua -f -stl_fix,analyzer,analyzer_too_complex_warning,analyzer_verbosity,diagnostics_format,msvc_conformance,msvc_crt_secure_no_warnings,msvc_diagnostics_format,msvc_isystem,msvc_isystem_with_template_from_non_external,windows_bigobj,exceptions,other_sanitizers,pie,rtti,coverage generators/bjam.lua cxx- >> cxxflags.jam
 # remove:
@@ -67,6 +38,7 @@ import modules ;
 import numbers ;
 import property-set ;
 import string ;
+import os ;
 
 JLN_BJAM_YEAR_VERSION = [ modules.peek : JAMVERSION ] ;
 

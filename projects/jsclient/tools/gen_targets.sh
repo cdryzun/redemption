@@ -48,14 +48,14 @@ done
     --lib '' \
     --test $d/tests \
     $disable_sources \
-| sed -E '
+| sed -E '/^  test_/!{
     /^  <variant>[^:]+:<library>dl$|^  <(covfile|variant)|^  \$\(GCOV_NO_BUILD\)|\.coverage ;$/d;
     s/^exe /exe-js /;t
     s@^test-run '$d'/@test-run-js @;t
     s/^obj ([^.]+).o/objjs \1.bc/;ta
-    s/^  <library>(.*)\.o/  \1.bc/;ta
+    s/^  <library>(.*)(\.o)?/  \1.bc/;ta
     s/^  (.*)\.o/  \1.bc/;ta
-    s/^  <library>(.*)/  \1.bc/;ta
+    s/^  (\w+)$/  \1.bc/;
     s/^  \$\(EXE_DEPENDENCIES\)/:\n&/;t
     '"$addjs_deps"'
     :a
@@ -63,6 +63,6 @@ done
     s@ : tests/@ : $(REDEMPTION_TEST_PATH)/@g
     s@ : projects/redemption_configs/@ : $(REDEMPTION_CONFIG_PATH)/@g
     s@ '$d'/@ @g
-'
+}'
 # s@^(objjs src/main/[^.]+\.bc : src/[^ ]+) ;$@\1 : <cxxflags>-fno-rtti\&\&-frtti ;@
 exit ${PIPESTATUS[0]}

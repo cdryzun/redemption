@@ -6,8 +6,6 @@
 #
 
 constant main_qt_client_redemption :
-
-  <library>app_path_exe.o
   <library>crypto
   <library>gssapi_krb5
   <library>krb5
@@ -16,6 +14,9 @@ constant main_qt_client_redemption :
   <library>libQtWidgets
   <library>openssl
   <library>png
+  <library>snappy
+  <library>z
+  <library>app_path_exe.o
   <library>src/client_redemption/client_channels/client_cliprdr_channel.o
   <library>src/client_redemption/client_channels/client_rdpdr_channel.o
   <library>src/client_redemption/client_channels/client_rdpsnd_channel.o
@@ -26,7 +27,6 @@ constant main_qt_client_redemption :
   <library>src/qt_input_output_api/graphics.o
   <library>src/qt_input_output_api/qt_input_output_clipboard.o
   <library>projects/redemption_configs/redemption_src/configs/config.o
-  <library>snappy
   <library>src/RAIL/client_execute.o
   <library>src/acl/kv_list_from_strings.o
   <library>src/capture/agent_data_extractor.o
@@ -110,7 +110,7 @@ constant main_qt_client_redemption :
   <library>src/utils/strutils.o
   <library>src/utils/sugar/multisz.o
   <library>src/utils/utf.o
-  <library>z
+
   $(BOOST_STACKTRACE_LINKFLAGS)
   $(EXE_DEPENDENCIES)
   <define>ZLIB_CONST
@@ -120,169 +120,173 @@ constant main_qt_client_redemption :
 test-run tests/client_redemption/client_channels/test_client_cliprdr_channel :
   tests/client_redemption/client_channels/test_client_cliprdr_channel.cpp
 :
-  <library>crypto
-  <library>png
-  <library>src/client_redemption/client_channels/client_cliprdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpsnd_channel.o
-  <library>src/client_redemption/client_channels/client_remoteapp_channel.o
-  <library>src/client_redemption/client_config/client_redemption_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_clipboard_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_disk_config.o
-  <library>snappy
-  <library>src/capture/agent_data_extractor.o
-  <library>src/capture/file_to_graphic.o
-  <library>src/core/RDP/rdp_pointer.o
-  <library>src/core/error.o
-  <library>src/core/font.o
-  <library>src/gdi/graphic_api.o
-  <library>src/keyboard/keylayouts.o
-  <library>src/keyboard/keymap.o
-  <library>src/mod/internal/replay_mod.o
-  <library>src/transport/crypto_transport.o
-  <library>src/transport/file_transport.o
-  <library>src/transport/gzip_compression_transport.o
-  <library>src/transport/in_multi_crypto_transport.o
-  <library>src/transport/mwrm_file_data.o
-  <library>src/transport/mwrm_reader.o
-  <library>src/transport/snappy_compression_transport.o
-  <library>src/utils/bitmap.o
-  <library>src/utils/bitmap_data_allocator.o
-  <library>src/utils/fileutils.o
-  <library>src/utils/hexadecimal_string_to_buffer.o
-  <library>src/utils/hexdump.o
-  <library>src/utils/png.o
-  <library>src/utils/rle.o
-  <library>src/utils/stacktrace.o
-  <library>src/utils/strutils.o
-  <library>src/utils/utf.o
-  <library>z
+  crypto
+  png
+  snappy
+  z
+  src/client_redemption/client_channels/client_cliprdr_channel.o
+  src/client_redemption/client_channels/client_rdpdr_channel.o
+  src/client_redemption/client_channels/client_rdpsnd_channel.o
+  src/client_redemption/client_channels/client_remoteapp_channel.o
+  src/client_redemption/client_config/client_redemption_config.o
+  src/client_redemption/client_input_output_api/rdp_clipboard_config.o
+  src/client_redemption/client_input_output_api/rdp_disk_config.o
+  src/capture/agent_data_extractor.o
+  src/capture/file_to_graphic.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/graphic_api.o
+  src/keyboard/keylayouts.o
+  src/keyboard/keymap.o
+  src/mod/internal/replay_mod.o
+  src/transport/crypto_transport.o
+  src/transport/file_transport.o
+  src/transport/gzip_compression_transport.o
+  src/transport/in_multi_crypto_transport.o
+  src/transport/mwrm_file_data.o
+  src/transport/mwrm_reader.o
+  src/transport/snappy_compression_transport.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/fileutils.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/hexdump.o
+  src/utils/png.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run tests/client_redemption/client_channels/test_client_rdpdr_channel :
   tests/client_redemption/client_channels/test_client_rdpdr_channel.cpp
 :
-  <library>crypto
-  <library>png
-  <library>src/client_redemption/client_channels/client_cliprdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpsnd_channel.o
-  <library>src/client_redemption/client_channels/client_remoteapp_channel.o
-  <library>src/client_redemption/client_config/client_redemption_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_clipboard_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_disk_config.o
-  <library>snappy
-  <library>src/capture/agent_data_extractor.o
-  <library>src/capture/file_to_graphic.o
-  <library>src/core/RDP/rdp_pointer.o
-  <library>src/core/error.o
-  <library>src/core/font.o
-  <library>src/gdi/graphic_api.o
-  <library>src/keyboard/keylayouts.o
-  <library>src/keyboard/keymap.o
-  <library>src/mod/internal/replay_mod.o
-  <library>src/transport/crypto_transport.o
-  <library>src/transport/file_transport.o
-  <library>src/transport/gzip_compression_transport.o
-  <library>src/transport/in_multi_crypto_transport.o
-  <library>src/transport/mwrm_file_data.o
-  <library>src/transport/mwrm_reader.o
-  <library>src/transport/snappy_compression_transport.o
-  <library>src/utils/bitmap.o
-  <library>src/utils/bitmap_data_allocator.o
-  <library>src/utils/fileutils.o
-  <library>src/utils/hexadecimal_string_to_buffer.o
-  <library>src/utils/hexdump.o
-  <library>src/utils/png.o
-  <library>src/utils/rle.o
-  <library>src/utils/stacktrace.o
-  <library>src/utils/strutils.o
-  <library>src/utils/utf.o
-  <library>z
+  crypto
+  png
+  snappy
+  z
+  src/client_redemption/client_channels/client_cliprdr_channel.o
+  src/client_redemption/client_channels/client_rdpdr_channel.o
+  src/client_redemption/client_channels/client_rdpsnd_channel.o
+  src/client_redemption/client_channels/client_remoteapp_channel.o
+  src/client_redemption/client_config/client_redemption_config.o
+  src/client_redemption/client_input_output_api/rdp_clipboard_config.o
+  src/client_redemption/client_input_output_api/rdp_disk_config.o
+  src/capture/agent_data_extractor.o
+  src/capture/file_to_graphic.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/graphic_api.o
+  src/keyboard/keylayouts.o
+  src/keyboard/keymap.o
+  src/mod/internal/replay_mod.o
+  src/transport/crypto_transport.o
+  src/transport/file_transport.o
+  src/transport/gzip_compression_transport.o
+  src/transport/in_multi_crypto_transport.o
+  src/transport/mwrm_file_data.o
+  src/transport/mwrm_reader.o
+  src/transport/snappy_compression_transport.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/fileutils.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/hexdump.o
+  src/utils/png.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run tests/client_redemption/client_channels/test_client_rdpsnd_channel :
   tests/client_redemption/client_channels/test_client_rdpsnd_channel.cpp
 :
-  <library>crypto
-  <library>png
-  <library>src/client_redemption/client_channels/client_cliprdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpsnd_channel.o
-  <library>src/client_redemption/client_channels/client_remoteapp_channel.o
-  <library>src/client_redemption/client_config/client_redemption_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_clipboard_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_disk_config.o
-  <library>snappy
-  <library>src/capture/agent_data_extractor.o
-  <library>src/capture/file_to_graphic.o
-  <library>src/core/RDP/rdp_pointer.o
-  <library>src/core/error.o
-  <library>src/core/font.o
-  <library>src/gdi/graphic_api.o
-  <library>src/keyboard/keylayouts.o
-  <library>src/keyboard/keymap.o
-  <library>src/mod/internal/replay_mod.o
-  <library>src/transport/crypto_transport.o
-  <library>src/transport/file_transport.o
-  <library>src/transport/gzip_compression_transport.o
-  <library>src/transport/in_multi_crypto_transport.o
-  <library>src/transport/mwrm_file_data.o
-  <library>src/transport/mwrm_reader.o
-  <library>src/transport/snappy_compression_transport.o
-  <library>src/utils/bitmap.o
-  <library>src/utils/bitmap_data_allocator.o
-  <library>src/utils/fileutils.o
-  <library>src/utils/hexadecimal_string_to_buffer.o
-  <library>src/utils/hexdump.o
-  <library>src/utils/png.o
-  <library>src/utils/rle.o
-  <library>src/utils/stacktrace.o
-  <library>src/utils/strutils.o
-  <library>src/utils/utf.o
-  <library>z
+  crypto
+  png
+  snappy
+  z
+  src/client_redemption/client_channels/client_cliprdr_channel.o
+  src/client_redemption/client_channels/client_rdpdr_channel.o
+  src/client_redemption/client_channels/client_rdpsnd_channel.o
+  src/client_redemption/client_channels/client_remoteapp_channel.o
+  src/client_redemption/client_config/client_redemption_config.o
+  src/client_redemption/client_input_output_api/rdp_clipboard_config.o
+  src/client_redemption/client_input_output_api/rdp_disk_config.o
+  src/capture/agent_data_extractor.o
+  src/capture/file_to_graphic.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/graphic_api.o
+  src/keyboard/keylayouts.o
+  src/keyboard/keymap.o
+  src/mod/internal/replay_mod.o
+  src/transport/crypto_transport.o
+  src/transport/file_transport.o
+  src/transport/gzip_compression_transport.o
+  src/transport/in_multi_crypto_transport.o
+  src/transport/mwrm_file_data.o
+  src/transport/mwrm_reader.o
+  src/transport/snappy_compression_transport.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/fileutils.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/hexdump.o
+  src/utils/png.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 test-run tests/client_redemption/client_channels/test_client_remoteapp_channel :
   tests/client_redemption/client_channels/test_client_remoteapp_channel.cpp
 :
-  <library>crypto
-  <library>png
-  <library>src/client_redemption/client_channels/client_cliprdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpdr_channel.o
-  <library>src/client_redemption/client_channels/client_rdpsnd_channel.o
-  <library>src/client_redemption/client_channels/client_remoteapp_channel.o
-  <library>src/client_redemption/client_config/client_redemption_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_clipboard_config.o
-  <library>src/client_redemption/client_input_output_api/rdp_disk_config.o
-  <library>snappy
-  <library>src/capture/agent_data_extractor.o
-  <library>src/capture/file_to_graphic.o
-  <library>src/core/RDP/rdp_pointer.o
-  <library>src/core/error.o
-  <library>src/core/font.o
-  <library>src/gdi/graphic_api.o
-  <library>src/keyboard/keylayouts.o
-  <library>src/keyboard/keymap.o
-  <library>src/mod/internal/replay_mod.o
-  <library>src/transport/crypto_transport.o
-  <library>src/transport/file_transport.o
-  <library>src/transport/gzip_compression_transport.o
-  <library>src/transport/in_multi_crypto_transport.o
-  <library>src/transport/mwrm_file_data.o
-  <library>src/transport/mwrm_reader.o
-  <library>src/transport/snappy_compression_transport.o
-  <library>src/utils/bitmap.o
-  <library>src/utils/bitmap_data_allocator.o
-  <library>src/utils/fileutils.o
-  <library>src/utils/hexadecimal_string_to_buffer.o
-  <library>src/utils/hexdump.o
-  <library>src/utils/png.o
-  <library>src/utils/rle.o
-  <library>src/utils/stacktrace.o
-  <library>src/utils/strutils.o
-  <library>src/utils/utf.o
-  <library>z
+  crypto
+  png
+  snappy
+  z
+  src/client_redemption/client_channels/client_cliprdr_channel.o
+  src/client_redemption/client_channels/client_rdpdr_channel.o
+  src/client_redemption/client_channels/client_rdpsnd_channel.o
+  src/client_redemption/client_channels/client_remoteapp_channel.o
+  src/client_redemption/client_config/client_redemption_config.o
+  src/client_redemption/client_input_output_api/rdp_clipboard_config.o
+  src/client_redemption/client_input_output_api/rdp_disk_config.o
+  src/capture/agent_data_extractor.o
+  src/capture/file_to_graphic.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/graphic_api.o
+  src/keyboard/keylayouts.o
+  src/keyboard/keymap.o
+  src/mod/internal/replay_mod.o
+  src/transport/crypto_transport.o
+  src/transport/file_transport.o
+  src/transport/gzip_compression_transport.o
+  src/transport/in_multi_crypto_transport.o
+  src/transport/mwrm_file_data.o
+  src/transport/mwrm_reader.o
+  src/transport/snappy_compression_transport.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/fileutils.o
+  src/utils/hexadecimal_string_to_buffer.o
+  src/utils/hexdump.o
+  src/utils/png.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
 

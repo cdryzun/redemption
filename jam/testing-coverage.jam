@@ -62,11 +62,11 @@ rule is_not_stacktrace_lib ( e )
 
 import sequence ;
 
-rule test-run ( target : source : requirements * : )
+rule test-run ( target : source : source_requirements * : requirements * : )
 {
-    if <library>src/core/error.o in $(requirements)
+    if src/core/error.o in $(source_requirements)
     {
-        requirements += <library>register_exception.o ;
+        source_requirements += register_exception.o ;
     }
 
     if "$(BOOST_STACKTRACE_LINKFLAGS)" != ""
@@ -78,5 +78,5 @@ rule test-run ( target : source : requirements * : )
         }
     }
 
-    unit-test $(target) : $(source) : $(TEST_DEPENDENCIES) $(requirements) <define>RED_TEST_MODULE=$(source) ;
+    unit-test $(target) : $(source) $(source_requirements) : $(TEST_DEPENDENCIES) $(requirements) <define>RED_TEST_MODULE=$(source) ;
 }
