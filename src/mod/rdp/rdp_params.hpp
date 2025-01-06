@@ -292,7 +292,6 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%u",     from_millisec,         session_probe_params.vc_params.disconnected_session_limit);
         RDP_PARAMS_LOG("%u",     from_millisec,         session_probe_params.vc_params.idle_session_limit);
         RDP_PARAMS_LOG("%s",     yes_or_no,             session_probe_params.customize_executable_name);
-        RDP_PARAMS_LOG("%s",     yes_or_no,             session_probe_params.vc_params.enable_log);
         RDP_PARAMS_LOG("%s",     yes_or_no,             session_probe_params.vc_params.enable_log_rotation);
         RDP_PARAMS_LOG("%d",     static_cast<int>,      session_probe_params.vc_params.log_level);
 

@@ -152,7 +152,6 @@ struct SessionProbeVirtualChannelParams
 
     bool bestsafe_integration = false;
 
-    bool enable_log = false;
     bool enable_log_rotation = true;
     SessionProbeLogLevel log_level = SessionProbeLogLevel::Debug;
 

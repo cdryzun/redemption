@@ -1002,7 +1002,7 @@ public:
                     "OtherVersion=%u.%u",
                 unsigned(major), unsigned(minor));
 
-            if (this->sespro_params.enable_log) {
+            if (this->sespro_params.log_level != SessionProbeLogLevel::Off) {
                 send_client_message([this](OutStream & out_s) {
                     out_s.out_copy_bytes("EnableLog=Yes"_av);
 
@@ -1016,12 +1016,10 @@ public:
                                 underlying_cast(this->sespro_params.log_level)));
                         }
                         else {
-                            if (this->sespro_params.log_level >= SessionProbeLogLevel::Off) {
-                                LOG(LOG_WARNING,
-                                    "SessionProbeVirtualChannel::process_server_message: "
-                                        "Log levels are not supported by Session Probe! OtherVersion=0x%X",
-                                    this->other_version);
-                            }
+                            LOG(LOG_WARNING,
+                                "SessionProbeVirtualChannel::process_server_message: "
+                                    "Log levels are not supported by Session Probe! OtherVersion=0x%X",
+                                this->other_version);
                         }
                     }
                     else {

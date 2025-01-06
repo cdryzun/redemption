@@ -366,9 +366,10 @@ inline static ModRdpSessionProbeParams get_session_probe_params(Inifile & ini)
         ProcessMonitorRules(ini.get<cfg::session_probe::process_monitoring_rules>());
     spp.vc_params.windows_of_these_applications_as_unidentified_input_field = ExtraSystemProcesses(
         ini.get<cfg::session_probe::windows_of_these_applications_as_unidentified_input_field>());
-    spp.vc_params.enable_log = ini.get<cfg::session_probe::enable_log>();
     spp.vc_params.enable_log_rotation = ini.get<cfg::session_probe::enable_log_rotation>();
-    spp.vc_params.log_level = ini.get<cfg::session_probe::log_level>();
+    spp.vc_params.log_level = ini.get<cfg::session_probe::enable_log>()
+        ? ini.get<cfg::session_probe::log_level>()
+        : SessionProbeLogLevel::Off;
     spp.vc_params.allow_multiple_handshake = ini.get<cfg::session_probe::allow_multiple_handshake>();
     spp.vc_params.enable_crash_dump = ini.get<cfg::session_probe::enable_crash_dump>();
     spp.vc_params.handle_usage_limit = ini.get<cfg::session_probe::handle_usage_limit>();
