@@ -413,6 +413,7 @@ template<> struct acl_and_spec_type<cfg::theme::selector_selected_bgcolor> { usi
 template<> struct acl_and_spec_type<cfg::theme::selector_selected_fgcolor> { using type = ::configs::spec_types::rgb; };
 template<> struct acl_and_spec_type<cfg::theme::selector_label_bgcolor> { using type = ::configs::spec_types::rgb; };
 template<> struct acl_and_spec_type<cfg::theme::selector_label_fgcolor> { using type = ::configs::spec_types::rgb; };
+template<> struct acl_and_spec_type<cfg::debug::primary_user> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::debug::fake_target_ip> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::debug::capture> { using type = uint32_t; };
 template<> struct acl_and_spec_type<cfg::debug::auth> { using type = uint32_t; };

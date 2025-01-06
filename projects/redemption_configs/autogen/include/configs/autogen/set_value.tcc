@@ -2505,6 +2505,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
     }
     else if (this->section_id == 23) {
         if (0) {}
+        else if (key == "primary_user"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::debug::primary_user&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
         else if (key == "fake_target_ip"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),

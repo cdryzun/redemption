@@ -480,6 +480,7 @@ namespace cfg
     };
 
     struct debug {
+        struct primary_user;
         struct fake_target_ip;
         struct capture;
         struct auth;

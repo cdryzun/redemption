@@ -652,6 +652,10 @@ selector_label_fgcolor = string(default="#FFFFFF")
 
 [debug]
 
+# Restrict target debugging to a specific primary user.
+#_advanced
+primary_user = string(default="")
+
 # - kbd / ocr when != 0<br/>
 # (Wrm)
 # - pointer             = 0x0004

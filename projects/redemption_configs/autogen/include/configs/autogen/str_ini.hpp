@@ -1788,6 +1788,10 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [debug]
 
+# Restrict target debugging to a specific primary user.
+#_advanced
+#primary_user = 
+
 #_display_name=Fake target IP
 #fake_target_ip = 
 

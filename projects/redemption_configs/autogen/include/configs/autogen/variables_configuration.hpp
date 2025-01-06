@@ -5094,6 +5094,15 @@ namespace cfg
         type value { 0xFFFFFF };
     };
 
+    /// Restrict target debugging to a specific primary user. <br/>
+    /// type: std::string <br/>
+    /// default: "" <br/>
+    struct debug::primary_user {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = std::string;
+        using mapped_type = std::string;
+        type value {  };
+    };
     /// type: std::string <br/>
     /// displayName: Fake target IP <br/>
     /// default: "" <br/>
@@ -5832,7 +5841,8 @@ struct theme
 { static constexpr bool is_section = true; };
 
 struct debug
-: cfg::debug::fake_target_ip
+: cfg::debug::primary_user
+, cfg::debug::fake_target_ip
 , cfg::debug::capture
 , cfg::debug::auth
 , cfg::debug::session

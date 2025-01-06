@@ -94,6 +94,64 @@ struct FinalSocketTransport final : ::SocketTransport
 
 class Session
 {
+#define X_DECL_NAME(f) \
+    f(capture)         \
+    f(session)         \
+    f(front)           \
+    f(mod_rdp)         \
+    f(mod_vnc)         \
+    f(mod_internal)    \
+    f(sck_mod)         \
+    f(sck_front)       \
+    f(password)        \
+    f(cache)           \
+    f(mod_rdp_use_failure_simulation_socket_transport)
+
+#define DECL_DEBUG_VAR(name) cfg::debug::name::type name;
+#define DEBUG_SAVE_AND_RESET(name) \
+    name = ini.get<cfg::debug::name>(); \
+    ini.set<cfg::debug::name>(cfg::debug::name::type{});
+#define DEBUG_RESTORE(name) ini.set<cfg::debug::name>(name);
+
+    struct DebugData
+    {
+        void save_and_reset_ini(Inifile& ini, std::string_view primary_user)
+        {
+            std::string_view s = ini.get<cfg::debug::primary_user>();
+            if (s.empty() || s == primary_user) {
+                return ;
+            }
+
+            X_DECL_NAME(DEBUG_SAVE_AND_RESET)
+            is_restored = false;
+        }
+
+        void restore(Inifile& ini, std::string_view primary_user)
+        {
+            if (is_restored) {
+                return ;
+            }
+
+            std::string_view s = ini.get<cfg::debug::primary_user>();
+            if (s.empty() || s != primary_user) {
+                return ;
+            }
+
+            X_DECL_NAME(DEBUG_RESTORE)
+            is_restored = true;
+        }
+
+    private:
+        bool is_restored = true;
+        X_DECL_NAME(DECL_DEBUG_VAR)
+    };
+
+#undef DEBUG_RESTORE
+#undef DEBUG_SAVE_AND_RESET
+#undef DECL_DEBUG_VAR
+
+#undef X_DECL_NAME
+
     struct AclReporter final : AclReportApi
     {
         AclReporter(Inifile& ini) : ini(ini) {}
@@ -335,6 +393,7 @@ class Session
     PidFile & pid_file;
     SessionVerbose verbose;
     AclUpdateSessionReport acl_update_session_report;
+    DebugData debug_data;
 
 private:
     enum class EndSessionResult
@@ -532,6 +591,7 @@ private:
         auto open_secondary_session = [&](SecondarySession::Type secondary_session_type){
             log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
             try {
+                debug_data.restore(ini, ini.get<cfg::globals::auth_user>());
                 switch (secondary_session_type)
                 {
                     case SecondarySession::Type::RDP:
@@ -1534,6 +1594,8 @@ public:
                     ini.set_acl<cfg::globals::front_connection_time>(
                         std::chrono::duration_cast<std::chrono::milliseconds>(
                             MonotonicTimePoint::clock::now() - sck_start_time));
+
+                    debug_data.save_and_reset_ini(ini, front.get_client_info().username);
                 }
                 else {
                     err_msg_ctx.set_msg(trkeys::err_sesman_unavailable);

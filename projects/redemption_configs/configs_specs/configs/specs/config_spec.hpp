@@ -2899,6 +2899,13 @@ _.section("websocket", [&]
 _.section("debug", [&]
 {
     _.member(MemberInfo{
+        .name = "primary_user",
+        .value = value<std::string>(),
+        .spec = global_spec(no_acl, spec::advanced),
+        .desc = "Restrict target debugging to a specific primary user.",
+    });
+
+    _.member(MemberInfo{
         .name = "fake_target_ip",
         .value = value<std::string>(),
         .spec = ini_only(no_acl),

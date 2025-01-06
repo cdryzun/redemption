@@ -4428,6 +4428,15 @@
     },
     {
       "section": "debug",
+      "name": "primary_user",
+      "type": "str",
+      "value": "",
+      "description": "Restrict target debugging to a specific primary user.",
+      "globalSpec": true,
+      "advanced": true
+    },
+    {
+      "section": "debug",
       "name": "fake_target_ip",
       "type": "str",
       "value": "",
