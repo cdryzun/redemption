@@ -2,6 +2,8 @@ exclude = [
     "__pycache__",
 ]
 
+target-version = "py311"
+
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
@@ -22,7 +24,7 @@ select = [
     "E", "F", "W", "I", "N", "ANN", "S", "BLE", "FBT", "B", "A", "COM", "C4",
     "DTZ", "EM", "EXE", "RUF", "ISC", "ICN", "G", "INP", "PIE", "PYI", "PT",
     "RSE", "RET", "SIM", "TID", "TCH", "INT", "ARG", "PD", "PGH", "PL", "TRY",
-    "NPY", "T20", "TRIO",
+    "NPY", "T20",
 ]
 
 ignore = [
