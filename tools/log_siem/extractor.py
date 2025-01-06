@@ -17,8 +17,10 @@ xml_comment_regex = re.compile(r'<!--([^-]+|-[^-]|--[^>])*')
 
 T = TypeVar('T')
 
+
 def identity(x: T) -> T:
     return x
+
 
 # {logtype: formats}
 # {'SESSION_SHARING_GUEST_DISCONNECTION': {
@@ -27,10 +29,12 @@ Params = list[str]
 OptionalParams = set[str]
 OriginalOrFormatedKVS = str
 
+
 class DataLog(NamedTuple):
     formated_logs: set[str]
     used_params: set[tuple[str, ...]]
     optional_params: set[str]
+
 
 LogFormatType = NewType('LogFormatType', dict[str, DataLog])
 
@@ -90,7 +94,6 @@ def check_prefix_parameters(d: LogFormatType, color: bool) -> True:
     return ok
 
 
-
 def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType,  # proxy
                                                                    LogFormatType,  # rdp
                                                                    LogFormatType,  # vnc
@@ -124,6 +127,7 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
     log6_regex = re.compile(r'\blog6\((?:(?!\bLogId:|[?]|;).)*(?:[?])?\s*\bLogId::([A-Z0-9_]+)[^,:)]*(?::\s*LogId::([A-Z0-9_]+)\s*\)?)?,\s*(?:KVLogList)?(\{(?:[^)]+|[)][^;])*)?', re.DOTALL)
     # KVLog("key"_av, value) with value "..." | "..."_av | ...
     kv_log6_regex = re.compile(r'KVLog[{(]"([^"]+)"_av,\s*((?:(?!"_av|[)}]?,?\n).)*(?:"(?=_av))?)')
+
     def log6_process(d, text):  # noqa: ANN001, ANN202
         return update_dict(d,
                            chain.from_iterable(
@@ -141,6 +145,7 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
             r'EXECUTABLE_LOG6_ID_AND_NAME\(\s*([A-Z0-9_]+)\s*\)'
         r')([^)]*)')
     kv_sesprobe_regex = re.compile(r'"([^"]+)"()')  # capture an empty value
+
     def sesprob_process(d, text):
         return update_dict(d,
                            ((m.group(1) or m.group(2), m.group(3))
@@ -153,6 +158,7 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
 
     log_siem_cpp_regex = re.compile(r'R"\(\[rdpproxy\].* type="([^"]+)"([^;]+)')
     kv_siem_cpp_regex = re.compile(r'(\w+)="([^"]+)"')
+
     def siem_cpp_process(d, text):  # noqa: ANN001, ANN202
         return update_dict(d, ((m.group(1), m.group(2)) for m in
                                log_siem_cpp_regex.finditer(text)),
@@ -161,6 +167,7 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
     log_id_enum_regex = re.compile(r'\n    f\(([A-Z0-9_]+),[^,]+, (DEPRECATED)?')
 
     dirpath = ''  # used in for
+
     def cppfile_from_dirpath(filename: str) -> str:
         return read_cppfile(path_join(dirpath, filename))
 
@@ -422,6 +429,7 @@ class DocSiemChecker:
         session_keys: str = ', '.join(colored_key(key) for key in (
             'session_id', 'client_ip', 'target_ip', 'user', 'device', 'service', 'account', 'type',
         ))
+
         def append_malformated_params(msg, ids, doc_logs, logs, keys):  # noqa: ANN001, ANN202
             def format_line(it, keys):
                 s = ', '.join(it)

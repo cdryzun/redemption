@@ -3,6 +3,7 @@ from typing import Optional, NamedTuple
 from kbd_parser import KeymapType, KeyLayout, DeadKey, parse_argv
 from collections import OrderedDict
 import re
+import operator
 
 
 class Key2(NamedTuple):
@@ -475,7 +476,7 @@ for keymap, idx in unique_keymap.items():
                 elif key.is_high:
                     if key.is_deadkey:
                         char_comment.append('   ')
-                        strings.append(f'DK|')
+                        strings.append('DK|')
                     c = codepoint_to_char_table.get(codepoint) or chr(codepoint)
                     c = f"HI|0x{codepoint:04x}"
                     strings.append(f'{c:>9}, ')
@@ -565,6 +566,7 @@ for dkeymap, idx in dktables.items():
         strings.append('\n')
     strings.append('};\n\n')
 
+
 def find_scancode(keymap, text: str, default: int) -> int:
     try:
         return next(i for i, k in enumerate(keymap) if k and k.text == text)
@@ -575,6 +577,7 @@ def find_scancode(keymap, text: str, default: int) -> int:
 def in_batches_of_32(ulayout, mods, prefix) -> str:
     l = (ulayout.setdefault((*mods[i:i+32],), len(ulayout)) for i in range(0, 128, 32))
     return ', '.join(f'{prefix}{i}' for i in l)
+
 
 # prepare keymap_mod and dkeymap_mod
 unique_layout_keymap = {}
@@ -618,7 +621,7 @@ for layout in layouts2:
 
     strings2.append('    KeyLayout{'
         f'KbdId(0x{layout.klid}), '
-        f'KeyLayout::RCtrlIsCtrl::{layout.has_right_ctrl_like_oem8 and "No " or "Yes"}, '
+        f'KeyLayout::RCtrlIsCtrl::{(layout.has_right_ctrl_like_oem8 and "No ") or "Yes"}, '
         f'Sc(0x{sc_R:x}), '
         f'Sc(0x{sc_C:x}), '
         f'Sc(0x{sc_V:x}),\n'
@@ -632,7 +635,7 @@ for layout in layouts2:
     keymap_by_names.append((display_name.upper(), f'    layouts[{len(keymap_by_names)}],\n'))
 strings2.append('};\n')
 
-keymap_by_names.sort(key=lambda p: p[0])
+keymap_by_names.sort(key=operator.itemgetter(0))
 strings2.extend((
     '\nstatic constexpr KeyLayout layouts_sorted_by_name[] {\n',
     ''.join(p[1] for p in keymap_by_names),

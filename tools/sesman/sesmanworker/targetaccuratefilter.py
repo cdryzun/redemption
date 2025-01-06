@@ -102,21 +102,25 @@ class SelectorFilterMode:
     NORMAL = 1
     ADVANCED = 2
 
+
 class FilterKeywordSyntaxError(RuntimeError):
     def __init__(self, keyword):
         super().__init__(
             self, f"unknown filter keyword with '{keyword}'")
+
 
 class FilterKeywordDuplicateError(RuntimeError):
     def __init__(self, keyword):
         super().__init__(
             self, f"duplicated filter keyword with '{keyword}'")
 
+
 class ParsingError(RuntimeError):
     def __init__(self, bad_string):
         super().__init__(
             self,
             f"'keyword{FILTER_KV_SEPARATOR}value' format parsing error with '{bad_string}'")
+
 
 def get_selector_filter_mode(pattern: str) -> int:
     if not pattern:
@@ -126,6 +130,7 @@ def get_selector_filter_mode(pattern: str) -> int:
     else:
         return SelectorFilterMode.ADVANCED
 
+
 def try_get_filter_keyword_without_kprefix(filter_keyword: str) -> Optional[str]:
     if filter_keyword.startswith(KEYWORD_PREFIX):
         filter_keyword_without_kprefix = filter_keyword[1:]
@@ -134,10 +139,12 @@ def try_get_filter_keyword_without_kprefix(filter_keyword: str) -> Optional[str]
             return filter_keyword_without_kprefix
     return None
 
+
 def filter_patterns_splitting(filter_patterns: str) -> List[str]:
     word_list = filter_patterns.split(FILTER_SEPARATOR)
     return [KEYWORD_PREFIX + filter_pattern if i != 0 else filter_pattern
             for i, filter_pattern in enumerate(word_list)]
+
 
 def get_filter_pattern_dict(filter_patterns: str) -> Dict[str, str]:
     filter_pattern_dict = {}
@@ -164,6 +171,7 @@ def get_filter_pattern_dict(filter_patterns: str) -> Dict[str, str]:
         else:
             raise FilterKeywordDuplicateError(filter_keyword)
     return filter_pattern_dict
+
 
 def is_filterable(filter_pattern_dict: Dict[str, str],
                   target_field_dict: Dict[str, str]) -> bool:

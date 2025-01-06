@@ -105,7 +105,9 @@ class ProtocolInfo:
 
 class ExtraInfo:
     __slots__ = (
-        "is_recorded", "is_critical", "has_approval",
+        "has_approval",
+        "is_critical",
+        "is_recorded",
     )
 
     def __init__(self, is_recorded: bool, is_critical: bool, has_approval: bool):
@@ -116,7 +118,10 @@ class ExtraInfo:
 
 class PhysicalTarget:
     __slots__ = (
-        "device_host", "account_login", "service_port", "device_id",
+        "account_login",
+        "device_host",
+        "device_id",
+        "service_port",
         "sharing_host",
     )
 
@@ -131,9 +136,17 @@ class PhysicalTarget:
 
 class LoginInfo:
     __slots__ = (
-        "account_login", "account_name", "domain_name", "service_name",
-        "target_name", "auth_name", "user_group_name", "target_group_name",
-        "device_host", "service_port", "conn_opts",
+        "account_login",
+        "account_name",
+        "auth_name",
+        "conn_opts",
+        "device_host",
+        "domain_name",
+        "service_name",
+        "service_port",
+        "target_group_name",
+        "target_name",
+        "user_group_name",
     )
 
     def __init__(self, account_login: str, account_name: str, domain_name: str, target_name: str,
@@ -1780,8 +1793,16 @@ class Engine:
 
 
 class DisplayInfo:
-    __slots__ = ("target_login", "target_name", "service_name", "protocol",
-                 "group", "subprotocols", "service_login", "host")
+    __slots__ = (
+        "group",
+        "host",
+        "protocol",
+        "service_login",
+        "service_name",
+        "subprotocols",
+        "target_login",
+        "target_name",
+    )
 
     def __init__(self, target_login: str, target_name: str, service_name: str,
                  protocol: str, group: str, subproto: Protocols, host: str):

@@ -100,9 +100,15 @@ def get_auth_priority(auth_state: str) -> str:
 
 class Authenticator:
     __slots__ = (
-        'checker', 'auth_x509', 'challenge',
-        'auth_state', 'auth_key', 'auth_ident', 'auth_challenge',
-        'removed_auth_state', 'current_login',
+        'auth_challenge',
+        'auth_ident',
+        'auth_key',
+        'auth_state',
+        'auth_x509',
+        'challenge',
+        'checker',
+        'current_login',
+        'removed_auth_state',
     )
 
     def __init__(self) -> None:

@@ -27,6 +27,25 @@ select = [
     "NPY", "T20",
 ]
 
+fixable = [
+    "E301",  # blank-line-between-methods
+    "E302",  # blank-lines-top-level
+    "E303",  # too-many-blank-lines
+    "E305",  # blank-lines-after-function-or-class
+    "E306",  # blank-lines-before-nested-definition
+    "E502",  # redundant-backslash
+    "F541",  # f-string-missing-placeholders
+    "FURB110",  # if-exp-instead-of-or-operator
+    "FURB118",  # reimplemented-operator
+    "PIE808",  # unnecessary-range-start
+    "PLR1730",  # if-stmt-min-max
+    "PLR5501",  # collapsible-else-if
+    "RUF021",  # parenthesize-chained-operators
+    "RUF023",  # unsorted-dunder-slots
+    "C400",  # unnecessary-generator-list
+    "C401",  # unnecessary-generator-set
+]
+
 ignore = [
     "COM812",  # Trailing comma missing
     "E226",  # Missing whitespace around arithmetic operator

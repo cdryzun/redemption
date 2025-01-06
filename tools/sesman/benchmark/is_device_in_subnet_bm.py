@@ -19,12 +19,12 @@ def _exec_fragment_code_bm(stmt):
 
     return stmt, res
 
+
 def _print_bm_func_results(bm_func):
     def inner():
         print("-------------------------------------------------"
               "-------------------------------------------------")
         print(f"benchmark test name : {bm_func.__name__}\n")
-
 
         stmt_res_list = bm_func()
         exec_average_time = 0
@@ -36,12 +36,10 @@ def _print_bm_func_results(bm_func):
         print(f"\nexecution number by fragment code -> {exec_nb}")
         print(f"average of execution time -> {exec_average_time / len(stmt_res_list)} seconds")
 
-
         print("-------------------------------------------------"
               "-------------------------------------------------\n")
 
     return inner
-
 
 
 @_print_bm_func_results
@@ -64,6 +62,7 @@ def _ipv4_matching_and_no_matching_bm():
             "is_device_in_subnet('192.168.1.15', '192.125.1.5/16')"),
     ]
 
+
 @_print_bm_func_results
 def _ipv6_matching_and_no_matching_bm():
     return [
@@ -84,6 +83,7 @@ def _ipv6_matching_and_no_matching_bm():
             "is_device_in_subnet('2001:db8:a88:85a3::ac1f:8001', '2001:db8:a88:2390::ac1f:8001')"),
     ]
 
+
 @_print_bm_func_results
 def _ipv4_to_ipv6_matching_and_no_matching_bm():
     return [
@@ -103,6 +103,7 @@ def _ipv4_to_ipv6_matching_and_no_matching_bm():
         _exec_fragment_code_bm(
             "is_device_in_subnet('180.20.50.40', '2001:db8:a88:85a3::ac1f:8001')"),
     ]
+
 
 @_print_bm_func_results
 def _ipv6_to_ipv4_matching_and_no_matching_bm():

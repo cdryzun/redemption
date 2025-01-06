@@ -20,9 +20,11 @@ with open(input_filename) as f:
 
 desintent_patt = re.compile(r'\n\s+')
 
+
 def msgid_fmt(s: str) -> str:
     s = desintent_patt.sub('\n', s.strip())
     return s if '\n' not in s else '""\n' + s
+
 
 nline = 1
 last_comment = ''
@@ -82,8 +84,8 @@ for m in re.finditer(
     nline += 1
     if m[1]:
         last_comment = m[1]
-        paths = set(path for mod in extract_mod.findall(last_comment)
-                    if (path := paths_mapping.get(''.join(mod))))
+        paths = {path for mod in extract_mod.findall(last_comment)
+                 if (path := paths_mapping.get(''.join(mod)))}
         if paths:
             tmp = "\n".join(sorted(paths))
             last_comment = f'{last_comment}\n{tmp}'

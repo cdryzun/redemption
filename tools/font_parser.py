@@ -148,8 +148,10 @@ if not output:
 def nbbytes(x: int) -> int:
     return (x + 7) // 8
 
+
 def align4(x: int) -> int:
     return (x + 3) & ~3
+
 
 def count_bit_padding(cx: int) -> int:
     return (8 - cx % 8) % 8
@@ -169,6 +171,7 @@ def mask_to_tuple(mask: PIL.Image.core) -> Pixels:
                            for iy in yseq
                            for ix in xseq))
 
+
 def load_truetype(fontpath: str, fontsize: int, unknown_unicode_for_glyphs: tuple[str]) -> FontInfo:
     print(f'load {fontpath}')
     font = truetype(fontpath, fontsize or global_fontsize)
@@ -180,6 +183,7 @@ def load_truetype(fontpath: str, fontsize: int, unknown_unicode_for_glyphs: tupl
                     font.getmetrics()[0],
                     )
 
+
 font_infos: list[FontInfo] = [
     load_truetype(fontpath, fontsize or global_fontsize, unknown_unicode_for_glyphs)
     for fontsize, fontpath, unknown_unicode_for_glyphs in font_descriptions
@@ -188,10 +192,12 @@ font_infos: list[FontInfo] = [
 max_ascent = max(font_info.ascent for font_info in font_infos)
 max_descent = max(font_info.font.getmetrics()[1] for font_info in font_infos)
 
+
 class GlyphType(IntEnum):
     Normal = 0
     Replacement = 1
     Unknown = 2
+
 
 GlyphInfo = tuple[GlyphType, Pixels, BBox, int, int]  # int, int = offsetx, offsety
 
@@ -212,6 +218,7 @@ replacement_char: GlyphInfo = (
     (bbox_font := font_infos[0].font.getbbox(replacement_unicode_char, mode='1'))[0],
     bbox_font[1] + max_ascent - font_infos[0].ascent,
 )
+
 
 def get_glyph_info(char: str) -> GlyphInfo:
     for font_info in font_infos:
@@ -237,10 +244,12 @@ def get_glyph_info(char: str) -> GlyphInfo:
         return GlyphType.Normal, pixels, bbox, offsetx, offsety
     return unknown_glyph
 
+
 def is_printable(char: str) -> bool:
     cat = category(char)
     general_cat = cat[0]
     return general_cat != 'C' and (general_cat != 'Z' or cat == 'Zs')
+
 
 def serialize_glyph(x1: int, y1: int, cx: int, cy: int, incby: int, offsetx: int, pixels: bytes) -> tuple[bytes, str]:
     data = b''
@@ -277,6 +286,7 @@ def serialize_glyph(x1: int, y1: int, cx: int, cy: int, incby: int, offsetx: int
 
     return data, line
 
+
 glyph_graph_adjust_y = {
     0x25b8,  # ▸
     0x25b9,  # ▹
@@ -287,6 +297,7 @@ glyph_graph_adjust_y = {
     0x25c4,  # ◄
     0x25c5,  # ◅
 }
+
 
 class Glyphs:
     def __init__(self) -> None:

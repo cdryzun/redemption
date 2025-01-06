@@ -3,6 +3,7 @@ import unittest
 
 from rdp_conf_migrate import RedemptionVersion, RedemptionVersionError, NoVersion
 
+
 class Test_RedemptionVersion(unittest.TestCase):
     def test_invalid_version(self):
         with self.assertRaises(RedemptionVersionError):
@@ -33,7 +34,6 @@ class Test_RedemptionVersion(unittest.TestCase):
         assert v_3_5_10 > NoVersion
         assert v_3_11_9 > NoVersion
         assert v_3_5_9d > NoVersion
-
 
     def test_operator_less_than(self):
         v_3_5_9 = RedemptionVersion("3.5.9")

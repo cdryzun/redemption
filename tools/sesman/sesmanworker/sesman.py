@@ -51,6 +51,7 @@ from .engine import (LOCAL_TRACE_PATH_RDP,
                      )
 
 from .logtime import logtimer, Steps as LogSteps, logtime_function_pause
+import operator
 
 
 _convert_to_int = lambda x: (int(x) if isinstance(x, str) else x)
@@ -78,6 +79,7 @@ KEEPALIVE_GRACEDELAY = 30
 KEEPALIVE_TIMEOUT = KEEPALIVE_INTERVAL + KEEPALIVE_GRACEDELAY
 
 WORKFLOW_POLL_INTERVAL = 5
+
 
 def mundane(value):
     if value == MAGICASK:
@@ -167,7 +169,7 @@ class BastionSignal(Exception):
 
 
 class RTManager:
-    __slots__ = ("sesman", "time_limit", "last_start")
+    __slots__ = ("last_start", "sesman", "time_limit")
 
     def __init__(self, sesman, time_limit: float):
         self.sesman = sesman
@@ -315,7 +317,6 @@ class Sesman():
 
         self.login_message = ("Warning! Unauthorized access to this system "
                               "is forbidden and will be prosecuted by law.")
-
 
         self.rtmanager = RTManager(
             self,
@@ -523,7 +524,7 @@ class Sesman():
             if DEBUG:
                 Logger().info(f"received_buffer (nfield) = {_nfield}")
 
-            for _ in range(0, _nfield):
+            for _ in range(_nfield):
                 _type, _n = _buffer.unpack("BB", 2)
                 _key = _buffer.extract_string(_n)
 
@@ -631,8 +632,8 @@ class Sesman():
         if not challenge:
             return _status
 
-        message = challenge.message if challenge.message else ""
-        link = challenge.link if challenge.link else False
+        message = challenge.message or ""
+        link = challenge.link or False
         timeout = challenge.timeout
 
         data_to_send = ({
@@ -1095,14 +1096,13 @@ class Sesman():
                             )
                             if _current_page >= _number_of_pages:
                                 _current_page = _number_of_pages - 1
-                            if _current_page < 0:
-                                _current_page = 0
+                            _current_page = max(_current_page, 0)
                             _start_of_page = _current_page * _lines_per_page
                             _end_of_page = _start_of_page + _lines_per_page
 
                             services = sorted(
                                 services,
-                                key=lambda x: x[1]
+                                key=operator.itemgetter(1)
                             )[_start_of_page:_end_of_page]
 
                             all_target_login = [s[0] for s in services]
@@ -1441,8 +1441,8 @@ class Sesman():
                     desc = self.shared.get('comment')
                     ticketno = self.shared.get('ticket')
                     duration = parse_duration(self.shared.get('duration'))
-                    ticket = {"description": desc if desc else None,
-                              "ticket": ticketno if ticketno else None,
+                    ticket = {"description": desc or None,
+                              "ticket": ticketno or None,
                               "duration": duration}
         return False, ""
 

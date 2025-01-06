@@ -91,7 +91,6 @@ class TestMigration(unittest.TestCase):
                 if type(v) == UpdateItem and v.section:
                     self.assertIn(v.section, sections)
 
-
     def test_parse_configuration(self):
         self.assertEqual(parse_configuration('[section]\n# bla bla\nkey = value'), [
             ConfigurationFragment('[section]', ConfigKind.Section, 'section'),
@@ -452,7 +451,6 @@ tata = titi
         os.remove(ini_filename)
         os.remove(saved_ini_filename)
 
-
     def test_extract_value_injections(self):
         value_injections = {
             'mod_rdp': {
@@ -581,7 +579,6 @@ tata = titi
                     extract_value_injections(value_injections, fragments_with_value, version),
                     result)
 
-
     def test_build_with_injected_values(self):
         mod_rdp = ConfigurationFragment(text='[mod_rdp]', kind=ConfigKind.Section,
                                         value1='mod_rdp', value2='')
@@ -645,7 +642,6 @@ tata = titi
             ]
         )
 
-
     def test_merge_session_log_format_10_5_31(self):
         migrate_def = {
             'session_log': {
@@ -683,7 +679,6 @@ tata = titi
             self.assertEqual(process_migrate(migrate_def, ini),
                              (True, f'[session_log]\n\nsyslog_format={r}\n'),
                              f'ini: {ini}')
-
 
     def test_merge_performance_flags_10_5_31(self):
         migrate_def = {
@@ -727,7 +722,6 @@ tata = titi
                              (True, f'[client]\n\nforce_performance_flags={r}\n'),
                              f'ini: {ini}')
 
-
     def test_migrate_10_5_31(self):
         migrate_def = find_migrade_def(RedemptionVersion("10.5.31"))
 
@@ -752,11 +746,10 @@ tata = titi
         self.assertEqual(process_migrate(migrate_def, '[video]\ndisable_file_system_log=4\n'),
                          (True, '[video]\ndisable_file_system_log=2\n'))
 
-
     def test_migrate_12_0_1(self):
         migrate_def = find_migrade_def(RedemptionVersion("12.0.1"))
 
-        self.assertEqual(process_migrate(migrate_def, '[server_cert]\n'\
+        self.assertEqual(process_migrate(migrate_def, '[server_cert]\n'
             'server_cert_create_message=0xa\nserver_cert_success_message=0xb\n'),
-        (True, '[server_cert]\n'\
+        (True, '[server_cert]\n'
             'server_cert_create_message=1\nserver_cert_success_message=1\n'))

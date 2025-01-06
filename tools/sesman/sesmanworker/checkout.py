@@ -48,6 +48,7 @@ KeyType = Tuple[
 # TODO AccountType as Enum
 AccountType = str
 
+
 class AccountInfos(NamedTuple):
     passwords: List[str]
     login: Optional[str]

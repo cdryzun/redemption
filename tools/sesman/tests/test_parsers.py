@@ -9,6 +9,7 @@ from sesmanworker.parsers import (
     parse_duration,
 )
 
+
 class Test_parsers(unittest.TestCase):
     def test_param(self):
         self.assertEqual(parse_param('my_account'), None)

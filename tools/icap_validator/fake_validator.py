@@ -6,6 +6,7 @@ import sys
 import os
 import struct
 
+
 def read_session_socket(session_socket, size_to_read: int) -> tuple[bool, bytes]:
     """
     Read exactly size_to_read bytes from socket and
@@ -22,6 +23,7 @@ def read_session_socket(session_socket, size_to_read: int) -> tuple[bool, bytes]
             break
 
     return size_to_read == 0, received_message
+
 
 def read_session_msg(client_socket) -> tuple[bool, bytes, int]:
     """
@@ -40,6 +42,7 @@ def read_session_msg(client_socket) -> tuple[bool, bytes, int]:
 
     return False, received_message, message_type
 
+
 ACCEPTED = 0x00
 REJECTED = 0x01
 
@@ -48,6 +51,7 @@ ACCEPTED_ON_EOF = 1
 REJECTED_ON_EOF = 2
 ACCEPTED_WITH_DELAY = 3
 REJECTED_WITH_DELAY = 4
+
 
 def send_response_message(socket, file_id: int, result: int, content: bytes) -> None:
     """
@@ -59,6 +63,7 @@ def send_response_message(socket, file_id: int, result: int, content: bytes) -> 
     msg += struct.pack(">BII", result, file_id, content_len)
     msg += content
     socket.send(msg)
+
 
 def process_new_data(message, client_socket, data: dict[int, int]) -> None:
     """
@@ -95,6 +100,7 @@ def process_new_data(message, client_socket, data: dict[int, int]) -> None:
     elif b'norep' not in msg_data:
         data[file_id] = REJECTED_ON_EOF if b'virus1' in msg_data else ACCEPTED_ON_EOF
 
+
 state_to_msg_table = [
     (ACCEPTED, b'ok'),
     (ACCEPTED, b'ok1'),
@@ -102,6 +108,7 @@ state_to_msg_table = [
     (ACCEPTED, b'ok2'),
     (REJECTED, b'virus2'),
 ]
+
 
 def process_eol(message, client_socket, data: dict[int, int]) -> None:
     """
@@ -119,6 +126,7 @@ def process_eol(message, client_socket, data: dict[int, int]) -> None:
         p = state_to_msg_table[state]
         send_response_message(client_socket, file_id, p[0], p[1])
         del data[file_id]
+
 
 process_abort_file = process_eol
 
@@ -155,6 +163,7 @@ def process_file_data(message, client_socket, data):
         elif b'n\0o\0r\0e\0p\0' in msg_data:
             del data[file_id]
 
+
 def parse_message(msg_type, message, client_socket, data):
     """
         Parse received data according to message type
@@ -186,6 +195,7 @@ def parse_message(msg_type, message, client_socket, data):
         print(f'invalid message type {type}')
 
     return True
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:

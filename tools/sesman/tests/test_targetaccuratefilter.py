@@ -16,7 +16,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
                 assert taf.get_selector_filter_mode(pattern) \
                     == expected_selector_filter_mode
 
-
         expect_is_selector_filter_mode_equal(
             None,
             taf.SelectorFilterMode.NONE)
@@ -36,14 +35,12 @@ class Test_targetaccuratefilter(unittest.TestCase):
             "?device=my_device&?account=my_account",
             taf.SelectorFilterMode.ADVANCED)
 
-
     def test_get_filter_pattern_dict_with_several_filter_patterns(self):
         def expect_is_filter_pattern_dict_equal(filter_patterns,
                                                 expected_filter_pattern_dict):
             with self.subTest(filter_patterns=filter_patterns):
                 assert taf.get_filter_pattern_dict(filter_patterns) \
                     == expected_filter_pattern_dict
-
 
         # with one filter
 
@@ -63,7 +60,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             "?service=ab&=cd",
             {"service": "ab&=cd"})
 
-
         # with two filters
 
         expect_is_filter_pattern_dict_equal(
@@ -75,7 +71,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             "?device=toto=tata&?account=titi&",
             {"device": "toto=tata",
              "account": "titi&"})
-
 
         # with three filters
 
@@ -90,7 +85,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             {"domain": "toto",
              "device": "tata",
              "account": "titi"})
-
 
         # with four filters
 
@@ -108,13 +102,11 @@ class Test_targetaccuratefilter(unittest.TestCase):
              "domain": "titi",
              "account": "abcd"})
 
-
     def test_is_filterable_with_several_filter_pattern_dicts(self):
         def expect_is_filterable_true(filter_pattern_dict,
                                       target_field_dict):
             with self.subTest(filter_pattern_dict=filter_pattern_dict):
                 assert taf.is_filterable(filter_pattern_dict, target_field_dict)
-
 
         # with one filter
 
@@ -151,7 +143,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
              "device": "my_device",
              "service": "toto"})
 
-
         # with two filters
 
         expect_is_filterable_true(
@@ -173,7 +164,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             {"account": "tata",
              "domain": "my_domain",
              "device": "toto"})
-
 
         # with three filters
 
@@ -198,7 +188,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             {"account": "titi",
              "domain": "toto",
              "device": "tata"})
-
 
         # with four filters
 
@@ -228,13 +217,11 @@ class Test_targetaccuratefilter(unittest.TestCase):
              "device": "tata",
              "service": "toto"})
 
-
     def test_is_filterable_with_filter_failure(self):
         def expect_is_filterable_false(filter_pattern_dict,
                                        target_field_dict):
             with self.subTest(filter_pattern_dict=filter_pattern_dict):
                 assert not taf.is_filterable(filter_pattern_dict, target_field_dict)
-
 
         expect_is_filterable_false(
             # filter_patterns:
@@ -275,7 +262,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
              "device": "my_device",
              "service": "my_service"})
 
-
     def test_get_filter_pattern_dict_with_filter_keyword_duplicate_error_on_filter_patterns(self):
         def expect_filter_keyword_duplicate_error(filter_patterns,
                                                   expected_filter_keyword_err):
@@ -292,7 +278,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             "?device=my_device&?device=my_device2&?device=my_device3",
             "?device")
 
-
     def test_get_filter_pattern_dict_with_filter_keyword_syntax_error_on_filter_patterns(self):
         def expect_filter_keyword_syntax_error(filter_patterns,
                                                expected_filter_keyword_err):
@@ -301,7 +286,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
                     taf.get_filter_pattern_dict(filter_patterns)
                 assert cm.exception.args[1] \
                     == f"unknown filter keyword with '{expected_filter_keyword_err}'"
-
 
         expect_filter_keyword_syntax_error(
             "?my_device=my_device",
@@ -322,7 +306,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
             "?domain=my_domain&??&account=my_account",
             "??&account")
 
-
     def test_get_filter_pattern_dict_with_parsing_error_on_filter_patterns(self):
         def expect_parsing_error(filter_patterns, expected_bad_string_err):
             with self.subTest(filter_patterns=filter_patterns):
@@ -331,7 +314,6 @@ class Test_targetaccuratefilter(unittest.TestCase):
                 assert cm.exception.args[1] \
                     == (f"'keyword{taf.FILTER_KV_SEPARATOR}value' "
                         f"format parsing error with '{expected_bad_string_err}'")
-
 
         expect_parsing_error(
             "?domain=my_domain&?",

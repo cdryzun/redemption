@@ -28,8 +28,10 @@ DEBUG = True
 if DEBUG:
     import pprint
 
+
 class AuthentifierSocketClosed(Exception):
     pass
+
 
 class AuthentifierSharedData():
     def __init__(self, conn):
@@ -227,8 +229,6 @@ class ACLPassthrough():
             # selector_current_page, .....
             pass
 
-
-
     def start(self):
         self.shared.receive_data()
 
@@ -340,7 +340,6 @@ class ACLPassthrough():
                     break
             Logger().debug("End Of Keep Alive")
 
-
         except AuthentifierSocketClosed:
             if DEBUG:
                 Logger().info("RDP/VNC connection terminated by client")
@@ -362,7 +361,6 @@ class ACLPassthrough():
                 Logger().info("<<<<%s>>>>" % traceback.format_exc())
     # END METHOD - START
 
-
     def kill_handler(self, signum, _frame):
         # Logger().info("KILL_HANDLER = %s" % signum)
         if signum == signal.SIGUSR1:
@@ -376,11 +374,11 @@ class ACLPassthrough():
             pass
 
 
-
 from socket import (AF_UNIX, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR)
 
 # if this value changes, it should be synchronized with `[globals] authfile` in rdpproxy.ini
 socket_path = '/tmp/redemption-sesman-sock'
+
 
 def standalone():
     print('open socket at', socket_path)
@@ -425,6 +423,7 @@ def standalone():
         Logger().info("Authentifier Socket Closed")
     # except Exception as e:
         # Logger().exception("%s" % e)
+
 
 if __name__ == '__main__':
     standalone()

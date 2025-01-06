@@ -7,6 +7,8 @@ from collections import defaultdict
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Iterable
+import operator
+
 
 class TimeRangeAction(argparse.Action):
     r"""
@@ -48,6 +50,7 @@ class TimeRangeAction(argparse.Action):
             (int(end_s) if end_s else 59)
             ) if end_h else 2**64
         setattr(namespace, self.dest, (start, end))
+
 
 parser = argparse.ArgumentParser(description='Log splitter')
 parser.add_argument('-t', '--time', action=TimeRangeAction,
@@ -113,6 +116,7 @@ rdpproxy_src_addr_reg = re.compile(r' -- src=([^ ]+)')
 time_reg = re.compile(r'(\d++):(\d++):(\d++)')
 date_reg = re.compile(r'^(\w+) (\d+) (\d+):(\d+):(\d+)')
 
+
 def extract_info(line: str) -> None | LineInfo:
     if m := progname_reg.search(line):
         progname, pid = m.group(1, 2)
@@ -124,6 +128,7 @@ def extract_info(line: str) -> None | LineInfo:
             t = -1
         return (t, progname, pid, line)
 
+
 def parse_time(s: str) -> int:
     """
     HH:MM:SS format to duration in seconds
@@ -133,12 +138,14 @@ def parse_time(s: str) -> int:
         return int(h) * 3600 + int(m) * 60 + int(s)
     return 0
 
+
 @dataclass
 class SessionData:
     pid: str
     lines: list[str]
     scr_addr: str = ''
     sesman_pid: str = ''
+
 
 class Splitter:
     finished_log: list[SessionData]
@@ -185,19 +192,17 @@ class Splitter:
                         data.lines.append(line)
 
                 # WAB
-                else:
-                    # push sesman log
-                    if proxy_pid := self.sesman_map.get(pid):
-                        self.data_by_pid[proxy_pid].lines.append(line)
-                    # new sesman session
-                    elif m := sesman_start_reg.search(line):
-                        addr = m.group(1)
-                        if proxy_pid := self.src_map.get(addr):
-                            if data := self.data_by_pid[proxy_pid]:
-                                self.sesman_map[pid] = proxy_pid
-                                self.src_map.pop(addr)
-                                data.sesman_pid = pid
-                                data.lines.append(line)
+                elif proxy_pid := self.sesman_map.get(pid):
+                    self.data_by_pid[proxy_pid].lines.append(line)
+                # new sesman session
+                elif m := sesman_start_reg.search(line):
+                    addr = m.group(1)
+                    if proxy_pid := self.src_map.get(addr):
+                        if data := self.data_by_pid[proxy_pid]:
+                            self.sesman_map[pid] = proxy_pid
+                            self.src_map.pop(addr)
+                            data.sesman_pid = pid
+                            data.lines.append(line)
 
         self.finished_log.extend(self.clean_session(data)
                                  for data in self.data_by_pid.values()
@@ -248,7 +253,7 @@ else:
 splitter = Splitter(min_ignore=args.min_ignore,
                     time_range=args.time)
 splitter.process(sorted(filter(None, map(extract_info, lines)),
-                        key=lambda t: t[0]))
+                        key=operator.itemgetter(0)))
 
 #
 # Create log by session
