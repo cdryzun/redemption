@@ -158,17 +158,22 @@ Edit `configs_specs/configs/specs/config_type.hpp`
 ```cpp
 // enum { a = 1, b = 2, c = 4, ... }
 e.enumeration_flags(enum_name[, enum_desc[, enum_info]])
-    .value(value_name[, value_desc])[.alias(alias_name)...][.exclude()...]
+    .value(value_name[, value_desc])[.alias(alias_name)...]
+    .reserved(value_name[, value_desc]) // not exposed in .spec
+    .invalid_value() // value no generated (for skip a value)
     ...
 
 // enum { a, b, c, ... }
 e.enumeration_list(enum_name[, enum_desc[, enum_info]])
-    .value(value_name[, value_desc])[.alias(alias_name)...][.exclude()...]
+    .value(value_name[, value_desc])[.alias(alias_name)...]
+    .reserved(value_name[, value_desc]) // not exposed in .spec
+    .invalid_value() // value no generated (for skip a value)
     ...
 
 // enum { a = v1, b = v2, c = v3, ... }
 e.enumeration_set(enum_name[, enum_desc[, enum_info]])
     .value(value_name, uint_val[, value_desc])[.alias(alias_name)...]
+    .reserved(value_name[, value_desc]) // not exposed in .spec
     ...
 
 // enum_info: description after values

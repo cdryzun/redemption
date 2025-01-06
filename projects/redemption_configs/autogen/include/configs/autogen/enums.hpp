@@ -512,8 +512,6 @@ enum class SessionProbeDisabledFeature : uint16_t
     msaa = 2,
     // MS UI Automation. General user activity monitoring (including detection of password fields). (new API)
     msuia = 4,
-    // Reserved (do not use)
-    r1 = 8,
     // Inspect Edge location URL. Basic web navigation monitoring.
     edge_inspection = 16,
     // Inspect Chrome Address/Search bar. Basic web navigation monitoring.
@@ -621,7 +619,7 @@ enum class SessionProbeLogLevel : uint8_t
 
 template<> struct is_valid_enum_value<SessionProbeLogLevel>
 {
-    constexpr static bool is_valid(uint64_t n) { return n <= 6; }
+    constexpr static bool is_valid(uint64_t n) { return n <= 6 && n != 0; }
 };
 
 enum class ModRdpUseFailureSimulationSocketTransport : uint8_t

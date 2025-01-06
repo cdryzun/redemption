@@ -14,7 +14,6 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "configs/generators/utils/multi_filename_writer.hpp"
 #include "configs/generators/utils/write_template.hpp"
 #include "configs/generators/utils/json.hpp"
-#include "configs/enumeration.hpp"
 #include "configs/type_name.hpp"
 #include "utils/sugar/array_view.hpp"
 #include "utils/file_permissions.hpp"
@@ -1438,8 +1437,14 @@ inline std::string enum_options_to_prefix_spec_type(type_enumeration const& e)
     ret.reserve(127);
     ret += "option("sv;
     for (type_enumeration::value_type const & v : e.values) {
-        if (!v.exclude) {
+        switch (v.prop) {
+        case type_enumeration::Prop::Value:
             str_append(ret, '\'', v.get_name(), "', "sv);
+            break;
+
+        case type_enumeration::Prop::NoValue:
+        case type_enumeration::Prop::Reserved:
+            break;
         }
     }
     return ret;
@@ -1456,7 +1461,8 @@ inline std::string enum_desc_with_values_in_desc(type_enumeration const& e, bool
     std::string str;
     str.reserve(128);
     for (type_enumeration::value_type const & v : e.values) {
-        if (!v.exclude) {
+        switch (v.prop) {
+        case type_enumeration::Prop::Value:
             str += "  ";
             str += v.get_name();
             str += ": ";
@@ -1465,6 +1471,11 @@ inline std::string enum_desc_with_values_in_desc(type_enumeration const& e, bool
             }
             str += v.desc;
             str += '\n';
+            break;
+
+        case type_enumeration::Prop::NoValue:
+        case type_enumeration::Prop::Reserved:
+            break;
         }
     }
     str += e.info;
@@ -1477,10 +1488,16 @@ inline std::string enum_as_string_ini_desc(type_enumeration const& e)
     str.reserve(128);
     std::string_view prefix = "values: ";
     for (type_enumeration::value_type const & v : e.values) {
-        if (!v.exclude) {
+        switch (v.prop) {
+        case type_enumeration::Prop::Value:
             str += prefix;
             str += v.get_name();
             prefix = ", ";
+            break;
+
+        case type_enumeration::Prop::NoValue:
+        case type_enumeration::Prop::Reserved:
+            break;
         }
     }
     str += e.info;
@@ -1536,8 +1553,14 @@ inline std::string enum_to_prefix_spec_type(type_enumeration const& e)
     ret.reserve(63);
     ret += "option(";
     for (type_enumeration::value_type const & v : e.values) {
-        if (!v.exclude) {
+        switch (v.prop) {
+        case type_enumeration::Prop::Value:
             str_append(ret, int_to_decimal_chars(v.val), ", "sv);
+            break;
+
+        case type_enumeration::Prop::NoValue:
+        case type_enumeration::Prop::Reserved:
+            break;
         }
     }
     return ret;
@@ -1555,7 +1578,8 @@ inline std::string numeric_enum_desc(type_enumeration const& e, bool use_disable
     auto show_values = [&](bool hexa)
     {
         for (type_enumeration::value_type const & v : e.values) {
-            if (!v.exclude) {
+            switch (v.prop) {
+            case type_enumeration::Prop::Value: {
                 str += "  ";
                 if (hexa) {
                     auto buf = int_to_fixed_hexadecimal_lower_chars(v.val);
@@ -1584,6 +1608,12 @@ inline std::string numeric_enum_desc(type_enumeration const& e, bool use_disable
                 }
 
                 str += '\n';
+                break;
+            }
+
+            case type_enumeration::Prop::NoValue:
+            case type_enumeration::Prop::Reserved:
+                break;
             }
         }
     };
@@ -1599,13 +1629,19 @@ inline std::string numeric_enum_desc(type_enumeration const& e, bool use_disable
             std::string note;
             uint64_t total = 0;
             for (type_enumeration::value_type const & v : e.values) {
-                if (!v.exclude) {
+                switch (v.prop) {
+                case type_enumeration::Prop::Value:
                     if (v.val) {
                         total |= v.val;
                         note += "0x";
                         note += int_to_hexadecimal_lower_chars(v.val);
                         note += " + ";
                     }
+                    break;
+
+                case type_enumeration::Prop::NoValue:
+                case type_enumeration::Prop::Reserved:
+                    break;
                 }
             }
 

@@ -35,6 +35,8 @@ struct type_enumeration
     enum class Category { autoincrement, flags, set };
     enum class DisplayNameOption : bool { WithoutNameWhenDescription, WithNameWhenDescription };
 
+    enum class Prop : unsigned char { Value, NoValue, Reserved, };
+
     struct value_type
     {
         std::string_view name;
@@ -42,7 +44,7 @@ struct type_enumeration
         std::string_view alias;
         uint64_t val;
         // bool is_negative;
-        bool exclude = false;
+        Prop prop = Prop::Value;
 
         std::string_view get_name() const { return alias.empty() ? name : alias; }
     };
@@ -111,17 +113,21 @@ struct type_enumeration_inc : type_enumeration
 
     type_enumeration_inc & value(std::string_view name, std::string_view desc = {})
     {
-        uint64_t value = this->values.size();
-        if (cat == Category::flags && value) {
-            value = 1ull << (value - 1u);
-        }
-        this->values.push_back({name, desc, std::string_view(), value});
+        _add_value(name, desc);
         return *this;
     }
 
-    type_enumeration_inc & exclude()
+    // not exposed to .spec
+    type_enumeration_inc & reserved(std::string_view name, std::string_view desc = {})
     {
-        this->values.back().exclude = true;
+        _add_value(name, desc).prop = Prop::Reserved;
+        return *this;
+    }
+
+    // skip a value
+    type_enumeration_inc & invalid_value()
+    {
+        _add_value(name, desc).prop = Prop::NoValue;
         return *this;
     }
 
@@ -130,6 +136,16 @@ struct type_enumeration_inc : type_enumeration
         this->_alias(s);
         return *this;
     }
+
+private:
+    value_type& _add_value(std::string_view name, std::string_view desc)
+    {
+        uint64_t value = this->values.size();
+        if (cat == Category::flags && value) {
+            value = 1ull << (value - 1u);
+        }
+        return this->values.emplace_back(value_type{name, desc, std::string_view(), value});
+    }
 };
 
 struct type_enumeration_set : type_enumeration
@@ -137,6 +153,13 @@ struct type_enumeration_set : type_enumeration
     type_enumeration_set & value(std::string_view name, unsigned long long val, std::string_view desc = {})
     {
         this->values.push_back({name, desc, std::string_view(), val});
+        return *this;
+    }
+
+    // not exposed to .spec
+    type_enumeration_set & reserved()
+    {
+        this->values.back().prop = Prop::Reserved;
         return *this;
     }
 

@@ -264,10 +264,17 @@ namespace cpp_enumeration_writer
                 << "enum class " << e.name << " : " << type << "\n"
                 "{\n";
 
-            for (auto & v : e.values) {
-                out << cpp_comment(v.desc, 4)
-                    << "    " << v.name << " = " << v.val << ",\n"
-                ;
+            for (auto const & v : e.values) {
+                switch (v.prop) {
+                case type_enumeration::Prop::Value:
+                case type_enumeration::Prop::Reserved:
+                    out << cpp_comment(v.desc, 4)
+                        << "    " << v.name << " = " << v.val << ",\n"
+                    ;
+                    break;
+                case type_enumeration::Prop::NoValue:
+                    break;
+                }
             }
 
             out << "};\n\n";
@@ -311,7 +318,19 @@ namespace cpp_enumeration_writer
                 out <<
                     "template<> struct is_valid_enum_value<" << e.name << ">\n"
                     "{\n"
-                    "    constexpr static bool is_valid(uint64_t n) { return n <= " << max << "; }\n"
+                    "    constexpr static bool is_valid(uint64_t n) { return n <= " << max
+                ;
+                for (auto const & v : e.values) {
+                    switch (v.prop) {
+                    case type_enumeration::Prop::Value:
+                        break;
+                    case type_enumeration::Prop::NoValue:
+                    case type_enumeration::Prop::Reserved:
+                        out << " && n != " << v.val;
+                        break;
+                    }
+                }
+                out << "; }\n"
                     "};\n\n"
                 ;
                 break;
@@ -324,8 +343,15 @@ namespace cpp_enumeration_writer
                     "    {\n"
                     "        switch (n) {\n"
                 ;
-                for (auto & v : e.values) {
-                    out << "        case " << v.val << "u:\n";
+                for (auto const & v : e.values) {
+                    switch (v.prop) {
+                    case type_enumeration::Prop::Value:
+                        out << "        case " << v.val << "u:\n";
+                        break;
+                    case type_enumeration::Prop::NoValue:
+                    case type_enumeration::Prop::Reserved:
+                        break;
+                    }
                 }
                 out <<
                     "            return true;\n"
@@ -372,10 +398,15 @@ namespace cpp_enumeration_writer
             str_append(json, ",\n  \"values\": [\n"_av);
 
             chars_view json_sep2 = "    "_av;
-            for (auto & v : e.values) {
-                if (v.exclude) {
+            for (auto const & v : e.values) {
+                switch (v.prop) {
+                case type_enumeration::Prop::Value:
+                    break;
+                case type_enumeration::Prop::NoValue:
+                case type_enumeration::Prop::Reserved:
                     continue;
                 }
+
                 str_append(json, json_sep2, "{"
                     "\n      \"name\": \""_av, v.name, "\","
                     "\n      \"value\": "_av, int_to_decimal_chars(v.val)
