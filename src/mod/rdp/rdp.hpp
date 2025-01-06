@@ -131,6 +131,7 @@ struct FileValidatorService;
 #include "mod/rdp/mod_rdp_factory.hpp"
 #include "mod/rdp/mod_rdp_variables.hpp"
 #include "mod/rdp/rdp_api.hpp"
+#include "mod/rdp/mod_rdp_callback.hpp"
 #include "mod/rdp/rdp_negociation_data.hpp"
 #include "mod/rdp/rdp_orders.hpp"
 #include "mod/rdp/rdp_params.hpp"
@@ -2172,7 +2173,7 @@ public:
                     return CertificateResult::Invalid;
                 }}
 #else
-            CertificateChecker{NullFunction{}}
+            CertificateChecker{NullFunctionWithDefaultResult{}}
 #endif
         );
 
