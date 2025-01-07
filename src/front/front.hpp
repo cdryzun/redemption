@@ -2925,6 +2925,7 @@ public:
         case credssp::State::Finish:
             LOG(LOG_INFO, "NLA NegoServer Done");
             this->state = BASIC_SETTINGS_EXCHANGE;
+            this->current_tpdu_type = TpduBuffer::PDU;
             break;
         }
     }
@@ -2950,9 +2951,12 @@ public:
         case credssp::State::Finish:
             LOG(LOG_INFO, "NLA NegoServer Done");
             this->state = BASIC_SETTINGS_EXCHANGE;
+            this->current_tpdu_type = TpduBuffer::PDU;
             break;
         }
     }
+
+    TpduBuffer::TpduType current_tpdu_type = TpduBuffer::PDU;
 
     void incoming(Callback & cb)
     {
@@ -2961,12 +2965,13 @@ public:
         if (this->state == TLS_CONNECTION_INITIATION) {
             if (this->tls_connection_initiation(this->ini.get<cfg::client::enable_nla>())) {
                 this->state = this->nego_server ? PRIMARY_AUTH_NLA : BASIC_SETTINGS_EXCHANGE;
+                if (PRIMARY_AUTH_NLA == this->state) { this->current_tpdu_type = TpduBuffer::CREDSSP; }
             }
             return;
         }
 
         this->buf.load_data(this->trans);
-        while (buf.next(TpduBuffer::PDU))
+        while (buf.next(this->current_tpdu_type))
         {
             bytes_view tpdu = this->buf.current_pdu_buffer();
             uint8_t current_pdu_type = this->buf.current_pdu_get_type();
@@ -2986,6 +2991,7 @@ public:
             case TLS_CONNECTION_INITIATION: {
                 if (this->tls_connection_initiation(this->ini.get<cfg::client::enable_nla>())) {
                     this->state = this->nego_server ? PRIMARY_AUTH_NLA : BASIC_SETTINGS_EXCHANGE;
+                if (PRIMARY_AUTH_NLA == this->state) { this->current_tpdu_type = TpduBuffer::CREDSSP; }
                 }
                 return;
             }
