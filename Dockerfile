@@ -17,14 +17,15 @@ COPY src /gcc/src
 COPY include /gcc/include
 COPY sys /gcc/sys
 # Build and install rdpproxy
-RUN bjam linkflags=-static-libstdc++ variant=release -q --toolset=gcc \
-    cxxflags='-DREDEMPTION_DISABLE_NO_BOOST_PREPROCESSOR_WARNING' cxx-lto=on \
-    -s NO_FFMPEG=1 -s FORCE_LOGPRINT=1 \
+RUN bjam variant=release -q --toolset=gcc \
+    cxx-lto=on \
+    -s NO_FFMPEG=1 \
+    -s FORCE_LOGPRINT=1 \
     --prefix=/usr/local \
-    -sETC_PREFIX=/usr/local/etc/rdpproxy \
-    -sVAR_PREFIX=/usr/local/etc/rdpproxy/var \
-    -sPID_PATH=/usr/local/etc/rdpproxy/var/pid \
-    -sSESSION_PREFIX=/usr/local/etc/rdpproxy/var/lib/redemption \
+    -s ETC_PREFIX=/usr/local/etc/rdpproxy \
+    -s VAR_PREFIX=/usr/local/etc/rdpproxy/var \
+    -s PID_PATH=/usr/local/etc/rdpproxy/var/pid \
+    -s SESSION_PREFIX=/usr/local/etc/rdpproxy/var/lib/redemption \
     install && echo "done"
 
 
