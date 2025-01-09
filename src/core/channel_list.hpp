@@ -70,7 +70,7 @@ namespace CHANNELS {
 
         void log(uint16_t index) const
         {
-            LOG(LOG_INFO, "ChannelDef[%u]::(name = %s, flags = 0x%8X, chanid = %u)",
+            LOG(LOG_INFO, "ChannelDef[%u]::(name = %s, flags = 0x%08X, chanid = %u)",
                 index, this->name, this->flags, this->chanid);
         }
     };
