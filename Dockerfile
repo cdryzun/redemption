@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 # Install build dependencies
 RUN apt-get -qq update && apt-get install -y g++ libboost-tools-dev libssl-dev libkrb5-dev \
-    libgssglue-dev libsnappy-dev libpng-dev libbz2-dev libhyperscan-dev git python3 gettext
+    libgssglue-dev libsnappy-dev libpng-dev libbz2-dev libhyperscan-dev python3 gettext
 # Create build directory
 RUN mkdir -p /gcc/
 # Set container working directory
@@ -10,15 +10,12 @@ WORKDIR /gcc/
 COPY Jamroot targets.jam /gcc/
 COPY jam /gcc/jam
 COPY projects/ocr1 /gcc/projects/ocr1
+COPY projects/ppocr /gcc/projects/ppocr
 COPY projects/redemption_configs /gcc/projects/redemption_configs
 COPY tools/i18n /gcc/tools/i18n
 COPY src /gcc/src
 COPY include /gcc/include
 COPY sys /gcc/sys
-# Clone ppocr repository; could be replaced with `git submodule update --init` but
-# if this runs from another git repository (a fork for example) the owner of the
-# fork must ensure they also fork ppocr and make sure that ../ppocr leads to the proper git repository
-RUN mkdir -p modules && cd modules && git clone https://github.com/wallix/ppocr.git ppocr
 # Build and install rdpproxy
 RUN bjam linkflags=-static-libstdc++ variant=release -q --toolset=gcc \
     cxxflags='-DREDEMPTION_DISABLE_NO_BOOST_PREPROCESSOR_WARNING' cxx-lto=on \
