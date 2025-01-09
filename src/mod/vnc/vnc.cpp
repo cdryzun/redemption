@@ -669,6 +669,8 @@ const char *mod_vnc::securityTypeString(int32_t t) {
     case VNC_AUTH_VNC: return "VNC";
     case VNC_AUTH_ULTRA: return "Ultra";
     case VNC_AUTH_TIGHT: return "TightVNC";
+    case VNC_AUTH_DIFFIE_HELLMAN: return "Diffie-Hellman (unsupported)";
+    case VNC_AUTH_APPLE: return "Apple (unsupported)";
     case VNC_AUTH_ULTRA_MsLogonIAuth: return "Ultra MsLogonIAuth";
     case VNC_AUTH_ULTRA_MsLogonIIAuth: return "Ultra MsLogon2Auth";
     case VNC_AUTH_ULTRA_SecureVNCPluginAuth: return "UtraVNC DSM old";

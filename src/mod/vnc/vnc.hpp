@@ -281,6 +281,8 @@ private:
         VNC_AUTH_ULTRA        = 17,
         VNC_AUTH_TLS         = 18,
         VNC_AUTH_VENCRYPT    = 19,
+        VNC_AUTH_DIFFIE_HELLMAN = 30,  // 0x1E  unsupported, update name in securityTypeString() when implemented
+        VNC_AUTH_APPLE = 33,  // 0x21  unsupported, update name in securityTypeString() when implemented
         VNC_AUTH_ULTRA_MsLogonIAuth = 112,
         VNC_AUTH_ULTRA_MsLogonIIAuth = 113,
         VNC_AUTH_ULTRA_SecureVNCPluginAuth = 114,
