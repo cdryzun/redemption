@@ -58,13 +58,21 @@ function init(args)
     end
 end
 
-function file(content)
+function file(content, filename)
     local r = patternVarSearch:match(content)
     local t
     if r then
         for _,v in ipairs(r) do
             if v[1] then
                 t = values[v[2]]
+                if not t then
+                    if v[2] ~= 'debug::name' or filename ~= 'src/core/session.cpp' then
+                        utils.print_error("unknown cfg variable: '" .. v[2]
+                                        .. "' in " .. filename .. '\n')
+                        return 1
+                    end
+                    t = {}  -- ignore error
+                end
                 t.used = true
                 if v[1] == 'get' then
                     t.get = true
@@ -97,11 +105,11 @@ function terminate()
                     local real_type = t.is_acl_to_proxy and t.is_proxy_to_acl
                         and 'acl_rw'
                         or 'acl_to_proxy'
-                    errors[#errors+1] = name .. " is " .. real_type .. " but never read (should be proxy_to_acl)"
+                    errors[#errors+1] = 'cfg::' .. name .. " is " .. real_type .. " but never read (should be proxy_to_acl)"
                 end
             end
             if not t.set and t.is_proxy_to_acl then
-                errors[#errors+1] = name .. " is proxy_to_acl but never write (should be acl_to_proxy)"
+                errors[#errors+1] = 'cfg::' .. name .. " is proxy_to_acl but never write (should be acl_to_proxy)"
             end
         end
     end
@@ -109,7 +117,7 @@ function terminate()
         errors[#errors+1] = ''
         utils.print_error(table.concat(errors,'\n'))
     end
-    return utils.count_error(types, "%s not used") + #errors
+    return utils.count_error(types, "cfg::%s not used") + #errors
 end
 
 return {init=init, file=file, terminate=terminate}

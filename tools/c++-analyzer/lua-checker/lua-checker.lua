@@ -113,8 +113,11 @@ end
 
 
 for i,checker in ipairs(checkers) do
-    checkers[i] = require('checkers/' .. checker)
-    checkers[i].init(args.configs[checker])
+    mod = require('checkers/' .. checker)
+    if (mod.init(args.configs[checker]) or 0) > 0 then
+        os.exit(1)
+    end
+    checkers[i] = {mod=mod, errcount=0}
 end
 
 function readall(fname)
@@ -132,12 +135,16 @@ local readall = utils.readall
 for _,filename in ipairs(args.sources) do
     content = readall(filename)
     for _,checker in ipairs(checkers) do
-        checker.file(content, filename)
+        checker.errcount = checker.errcount + (checker.mod.file(content, filename) or 0)
     end
 end
 
 local errcount = 0
 for _,checker in ipairs(checkers) do
-    errcount = errcount + checker.terminate()
+    if checker.errcount > 0 then
+        errcount = errcount + checker.errcount
+    else
+        errcount = errcount + checker.mod.terminate()
+    end
 end
 os.exit(math.min(errcount, 255))
