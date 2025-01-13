@@ -254,9 +254,10 @@ bool RdpNego::recv_next_data(TpduBuffer& tpdubuf, Transport& trans, CertificateC
             do {
                 LOG_IF(bool(this->verbose & Verbose::negotiation), LOG_INFO, "nego->state=RdpNego::NEGO_STATE_NEGOTIATE");
                 LOG(LOG_INFO, "RdpNego::NEGO_STATE_%s",
-                                    (this->nla) ? "NLA" :
-                                    (this->tls) ? "TLS" :
-                                                  "RDP");
+                    (this->enabled_protocols & RdpNegoProtocols::Nla) ? "NLA" :
+                    (this->enabled_protocols & RdpNegoProtocols::Tls) ? "TLS" :
+                    (this->enabled_protocols & RdpNegoProtocols::Rdp) ? "RDP" :
+                    "NONE");
                 this->state = this->recv_connection_confirm(trans, InStream(tpdubuf.current_pdu_buffer()), certificate_checker);
             } while (this->state == State::Negotiate && tpdubuf.next(TpduBuffer::PDU));
             return (this->state != State::Final);
