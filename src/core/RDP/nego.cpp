@@ -595,6 +595,11 @@ void RdpNego::send_negotiation_request(OutTransport trans)
         LOG(LOG_INFO, "Send %s:", this->lb_info ? "load_balance_info" : "cookie");
         hexdump_c(cookie_or_token, strlen(cookie_or_token));
     }
+    if (this->enabled_protocols == RdpNegoProtocols::None) {
+        LOG(LOG_ERR, "No Nego protocols enabled, abort connection.");
+        throw Error(ERR_NEGO_NO_PROTOCOL_ENABLED);
+    }
+    // X224::PROTOCOL_RDP = 0x00000000
     uint32_t rdp_neg_requestedProtocols = X224::PROTOCOL_RDP
         | ((this->enabled_protocols & RdpNegoProtocols::Nla) ?
            X224::PROTOCOL_HYBRID : 0)
