@@ -999,10 +999,10 @@
     },
     {
       "section": "mod_rdp",
-      "name": "force_display_resolution",
+      "name": "force_screen_resolution",
       "type": "ScreenResolution",
       "value": "",
-      "description": "Forces the screen size of an RDP target.\nThe format is {width}x{height}, e.g. 800x600.\nThis option is ignored when the value is 0x0 or empty.",
+      "description": "Force the screen resolution of a RDP target.\nThis option is ignored when the value is 0x0 or empty.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "aclToProxy": true,

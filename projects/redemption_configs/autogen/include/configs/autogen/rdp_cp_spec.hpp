@@ -131,11 +131,10 @@ allowed_dynamic_channels = string(default="*")
 #_advanced
 denied_dynamic_channels = string(default="")
 
-# Forces the screen size of an RDP target.
-# The format is {width}x{height}, e.g. 800x600.
+# Force the screen resolution of a RDP target.
 # This option is ignored when the value is 0x0 or empty.<br/>
 # (in {width}x{height} format (e.g. 800x600))
-force_display_resolution = string(default="")
+force_screen_resolution = string(default="")
 
 # The secondary target connection can be redirected to a specific session on another RDP server.
 #_display_name=Enable Server Redirection Support

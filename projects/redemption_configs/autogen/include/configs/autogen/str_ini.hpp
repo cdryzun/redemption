@@ -495,12 +495,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:denied_dynamic_channels)
 #denied_dynamic_channels = 
 
-# Forces the screen size of an RDP target.
-# The format is {width}x{height}, e.g. 800x600.
+# Force the screen resolution of a RDP target.
 # This option is ignored when the value is 0x0 or empty.
 # (in {width}x{height} format (e.g. 800x600))
-# (acl config: proxy ⇐ mod_rdp:force_display_resolution)
-#force_display_resolution = 
+# (acl config: proxy ⇐ mod_rdp:force_screen_resolution)
+#force_screen_resolution = 
 
 # Enables support of Client/Server Fast-Path Input/Update PDUs.
 # Fast-Path is required for Windows Server 2012 (or more recent)!

@@ -644,7 +644,7 @@ ModPack create_mod_rdp(
         rail_client_execute.reset(false);
     }
 
-    if (auto const& resolution = ini.get<cfg::mod_rdp::force_display_resolution>()
+    if (auto const& resolution = ini.get<cfg::mod_rdp::force_screen_resolution>()
       ; resolution.is_valid()
         && (!rap.enable_remote_program || rap.convert_remoteapp_to_desktop)
     ) {

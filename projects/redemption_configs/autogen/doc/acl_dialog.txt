@@ -108,9 +108,8 @@ cfg::mod_rdp::allowed_dynamic_channels ⇐ mod_rdp:allowed_dynamic_channels   [s
 cfg::mod_rdp::denied_dynamic_channels ⇐ mod_rdp:denied_dynamic_channels   [std::string]
     List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.
     An explicit name will have higher priority than '*' in [mod_rdp]allowed_dynamic_channels.
-cfg::mod_rdp::force_display_resolution ⇐ mod_rdp:force_display_resolution   [ScreenResolution]
-    Forces the screen size of an RDP target.
-    The format is {width}x{height}, e.g. 800x600.
+cfg::mod_rdp::force_screen_resolution ⇐ mod_rdp:force_screen_resolution   [ScreenResolution]
+    Force the screen resolution of a RDP target.
     This option is ignored when the value is 0x0 or empty.
     in {width}x{height} format (e.g. 800x600)
 cfg::mod_rdp::server_redirection_support ⇐ mod_rdp:server_redirection_support   [bool]

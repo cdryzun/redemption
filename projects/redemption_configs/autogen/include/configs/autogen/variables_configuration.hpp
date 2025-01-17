@@ -1152,14 +1152,13 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// Forces the screen size of an RDP target. <br/>
-    /// The format is {width}x{height}, e.g. 800x600. <br/>
+    /// Force the screen resolution of a RDP target. <br/>
     /// This option is ignored when the value is 0x0 or empty. <br/>
     /// type: ScreenResolution <br/>
     /// connpolicy -> proxy <br/>
-    /// aclName: mod_rdp:force_display_resolution <br/>
+    /// aclName: mod_rdp:force_screen_resolution <br/>
     /// default:  <br/>
-    struct mod_rdp::force_display_resolution {
+    struct mod_rdp::force_screen_resolution {
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
@@ -5459,7 +5458,7 @@ struct mod_rdp
 , cfg::mod_rdp::remoteapp_bypass_legal_notice_timeout
 , cfg::mod_rdp::effective_krb_armoring_user
 , cfg::mod_rdp::effective_krb_armoring_password
-, cfg::mod_rdp::force_display_resolution
+, cfg::mod_rdp::force_screen_resolution
 , cfg::mod_rdp::force_performance_flags
 , cfg::mod_rdp::auto_adjust_performance_flags
 , cfg::mod_rdp::rdp_compression
@@ -5927,7 +5926,7 @@ using VariablesAclPack = Pack<
 , cfg::mod_rdp::denied_channels
 , cfg::mod_rdp::allowed_dynamic_channels
 , cfg::mod_rdp::denied_dynamic_channels
-, cfg::mod_rdp::force_display_resolution
+, cfg::mod_rdp::force_screen_resolution
 , cfg::mod_rdp::server_redirection_support
 , cfg::mod_rdp::load_balance_info
 , cfg::mod_rdp::proxy_managed_drives
