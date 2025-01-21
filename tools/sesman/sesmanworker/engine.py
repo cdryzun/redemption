@@ -28,7 +28,7 @@ from wallixconst.account import AM_IL_DOMAIN
 from wallixconst.trace import LOCAL_TRACE_PATH_RDP
 from wallixredis import redis
 from wallixconst.configuration import IS_CLOUD_CONFIGURATION
-from typing import Optional, Union, Tuple, Dict, List, Any, Iterable, NamedTuple
+from typing import Optional, Union, Tuple, Dict, List, Any, Iterable, NamedTuple, Protocol
 
 from .logtime import logtime_function_pause
 import time
@@ -73,6 +73,18 @@ FINGERPRINT_SHA1_LEN = 20
 
 RightType = Dict[str, Any]
 Protocols = List[str]
+
+
+class TimeCtx(Protocol):
+    @property
+    def timezone(self) -> int: ...
+    @property
+    def altzone(self) -> int: ...
+    @property
+    def daylight(self) -> int: ...
+
+    def time(self) -> float:
+        ...
 
 
 class TargetContext:
@@ -1619,6 +1631,14 @@ class Engine:
         if self.is_sharing_session(target):
             return '-'
         return target['deconnection_time']
+
+    @staticmethod
+    def get_bastion_timezone(time_ctx: TimeCtx) -> str:
+        offset_seconds = time_ctx.altzone if time_ctx.daylight else time_ctx.timezone
+        offset_hours = abs(offset_seconds) // 3600
+        offset_minutes = abs(offset_seconds) % 3600 // 60
+        sign = '+' if offset_seconds <= 0 else '-'
+        return f"UTC{sign}{offset_hours:02}:{offset_minutes:02}"
 
     # NOTE [RDP] unused
     def get_server_pubkey_options(self, selected_target: Optional[RightType] = None):

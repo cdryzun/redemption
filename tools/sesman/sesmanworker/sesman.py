@@ -14,6 +14,7 @@ import traceback
 import json
 import re
 import itertools
+import time
 from wallix.logger import Logger
 
 from struct import unpack_from, pack
@@ -687,7 +688,7 @@ class Sesman():
 
         return _status, _error
 
-    def check_deconnection_time(self, selected_target) -> Tuple[Optional[int], bool, str]:
+    def check_deconnection_time(self, selected_target, time_ctx: engine.TimeCtx = time) -> Tuple[Optional[int], bool, str]:
         Logger().info("Checking timeframe")
         _status, _error = True, ""
         timeclose = None
@@ -702,17 +703,27 @@ class Sesman():
             deconnection_time = "2034-12-31 23:59:59"
             infinite_connection = True
 
-        now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-        if _status and not infinite_connection and now < deconnection_time:
+        if _status and not infinite_connection:
             # deconnection time to epoch
             tt = datetime.strptime(
                 deconnection_time, "%Y-%m-%d %H:%M:%S"
             ).timetuple()
-            timeclose = int(mktime(tt))
-            _status, _error = self.interactive_display_message(
-                {'message': TR(Sesmsg.SESSION_CLOSED_S) % deconnection_time}
-            )
+            timeclose_now = int(mktime(tt))
+            if time_ctx.time() < timeclose_now:
+                remaining_seconds = int(timeclose_now - time_ctx.time()) + 1
+                days = remaining_seconds // 86400
+                hours = (remaining_seconds % 86400) // 3600
+                minutes = (remaining_seconds % 3600) // 60
+                timezone = self.engine.get_bastion_timezone(time_ctx)
+                if days > 0:
+                    message = TR(Sesmsg.SESSION_CLOSED_S_DAYS) % (deconnection_time, timezone, days, hours, minutes)
+                else:
+                    message = TR(Sesmsg.SESSION_CLOSED_S) % (deconnection_time, timezone, hours, minutes)
+
+                _status, _error = self.interactive_display_message({'message': message})
+                timeclose = timeclose_now
         return timeclose, _status, _error
+
 
     def interactive_target(self, data_to_send: SharedDict) -> StatusError:
         data_to_send.update({'module': 'interactive_target'})
