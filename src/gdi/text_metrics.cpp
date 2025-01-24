@@ -336,6 +336,7 @@ int draw_text(
     int x,
     int y,
     uint16_t height,
+    DrawTextPadding padding,
     array_view<FontCharView const *> fcs,
     RDPColor fgcolor,
     RDPColor bgcolor,
@@ -344,6 +345,7 @@ int draw_text(
     auto it = fcs.begin();
     auto end = fcs.end();
 
+    x += padding.left;
     int x_start = clip.x;
 
     // skip invisible chars
@@ -360,11 +362,12 @@ int draw_text(
     }
 
     if (!(it < end)) {
-        return x;
+        return x - padding.left;
     }
 
+    y += padding.top;
+
     int x_end = clip.eright();
-    LOG(LOG_DEBUG, " -> %d / %d", x, x_end);
 
     while (it < end) {
         int total_width = 0;
@@ -391,9 +394,12 @@ int draw_text(
         int16_t glyph_x = checked_int(x);
         int16_t glyph_y = checked_int(y);
 
-        // TODO glyph_x => + min(x)
-        // TODO height => max_height - min(y) - max(cy)
-        Rect bk(glyph_x, glyph_y, checked_int(total_width + 1), height);
+        Rect bk(
+            checked_int(glyph_x - padding.left),
+            checked_int(glyph_y - padding.top),
+            checked_int(total_width + 1 + padding.left + padding.right),
+            checked_int(height + padding.top + padding.bottom)
+        );
 
         RDPGlyphIndex glyphindex(
             cacheId,  // cache_id
@@ -405,8 +411,8 @@ int draw_text(
             bk,       // bk
             bk,       // op
             RDPBrush(0, 0, 3, 0xaa, byte_ptr_cast("\xaa\x55\xaa\x55\xaa\x55\xaa\x55")),
-            glyph_x,
-            glyph_y,
+            checked_int(glyph_x),
+            checked_int(glyph_y),
             checked_int(data_it - data),
             data
         );
@@ -417,9 +423,11 @@ int draw_text(
         if (x > x_end) {
             break;
         }
+
+        padding.left = 0;
     }
 
-    return x + 1;
+    return x + 1 + padding.right;
 }
 
 } // namespace gdi

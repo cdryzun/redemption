@@ -29,12 +29,17 @@
 #include "utils/utf.hpp"
 
 
-WidgetText::WidgetText(const Font& font, Colors colors, chars_view text)
-    : colors(colors)
+[[nodiscard]]
+array_view<FontCharView const *> init_widget_text(
+    writable_array_view<FontCharView const *> fcs,
+    OutParam<uint16_t> width,
+    Font const & font,
+    chars_view text
+)
 {
     int w = 1;
-    auto out = std::begin(fc_buffer);
-    auto end_out = std::end(fc_buffer);
+    auto out = std::begin(fcs);
+    auto end_out = std::end(fcs);
     utf8_for_each(
         text,
         [&](uint32_t uc) {
@@ -47,24 +52,8 @@ WidgetText::WidgetText(const Font& font, Colors colors, chars_view text)
         [&]{ return out < end_out; }
     );
 
-    fc_buffer_len = checked_int(out - fc_buffer);
-
-    rect.cx = checked_int(w);
-    rect.cy = font.max_height();
-}
-
-void WidgetText::draw(gdi::GraphicApi & drawable, Rect clip)
-{
-    gdi::draw_text(
-        drawable,
-        rect.x,
-        rect.y,
-        rect.cy,
-        {fc_buffer, fc_buffer_len},
-        colors.fg,
-        colors.bg,
-        clip.intersect(rect)
-    );
+    width.out_value = checked_int(w);
+    return fcs.before(out);
 }
 
 

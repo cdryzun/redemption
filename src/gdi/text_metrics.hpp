@@ -95,12 +95,85 @@ void server_draw_text(
     Rect clip
 );
 
+
+struct DrawTextPadding
+{
+    uint16_t top;
+    uint16_t right;
+    uint16_t bottom;
+    uint16_t left;
+
+    struct Padding
+    {
+        uint16_t top_right_bottom_left;
+
+        Padding(uint16_t padding) noexcept : top_right_bottom_left{padding} {}
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = top_right_bottom_left,
+                .right = top_right_bottom_left,
+                .bottom = top_right_bottom_left,
+                .left = top_right_bottom_left,
+            };
+        }
+    };
+
+    struct Horizontal
+    {
+        uint16_t left_right;
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = 0,
+                .right = left_right,
+                .bottom = 0,
+                .left = left_right,
+            };
+        }
+    };
+
+    struct Vertical
+    {
+        uint16_t top_bottom;
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = top_bottom,
+                .right = 0,
+                .bottom = top_bottom,
+                .left = 0,
+            };
+        }
+    };
+
+    struct Padding2
+    {
+        uint16_t top_bottom;
+        uint16_t left_right;
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = top_bottom,
+                .right = left_right,
+                .bottom = top_bottom,
+                .left = left_right,
+            };
+        }
+    };
+};
+
 /// \return last pixel drawn
 int draw_text(
     GraphicApi & drawable,
     int x,
     int y,
     uint16_t height,
+    DrawTextPadding borders,
     array_view<FontCharView const *> fcs,
     RDPColor fgcolor,
     RDPColor bgcolor,

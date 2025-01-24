@@ -50,11 +50,11 @@ public:
         bool ask_device, bool ask_login, bool ask_password,
         Theme const & theme,
         chars_view caption,
-        chars_view text_device, chars_view device_str,
-        chars_view text_login, chars_view login_str,
-        chars_view text_password,
+        chars_view label_device, chars_view device_info,
+        chars_view label_login, chars_view text_login,
+        chars_view label_password,
         Font const & font,
-        WidgetButton * extra_button);
+        Widget * extra_button);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height);
 
@@ -66,21 +66,16 @@ private:
 
     WidgetLabel        caption_label;
     WidgetRect         separator;
-    WidgetLabel        device_label;
+
     WidgetLabel        device;
+
 public:
     WidgetEditValid    device_edit;
-private:
-    WidgetLabel        login_label;
-    WidgetLabel        login;
-public:
     WidgetEditValid    login_edit;
-private:
-    WidgetLabel        password_label;
-public:
     WidgetEditValid    password_edit;
+
 private:
-    WidgetButton * extra_button;
+    Widget * extra_button;
 
     Color fgcolor;
 

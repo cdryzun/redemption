@@ -23,6 +23,7 @@
 
 #include "mod/internal/widget/widget.hpp"
 #include "utils/sugar/array_view.hpp"
+#include "utils/out_param.hpp"
 
 
 class Font;
@@ -32,41 +33,47 @@ namespace gdi
     class ColorCtx;
 }
 
+[[nodiscard]]
+array_view<FontCharView const *> init_widget_text(
+    writable_array_view<FontCharView const *> fcs,
+    OutParam<uint16_t> width,
+    Font const & font,
+    chars_view text
+);
+
+template<std::size_t BufSize>
 class WidgetText
 {
 public:
-    struct Colors
-    {
-        Widget::Color fg;
-        Widget::Color bg;
-    };
+    using FontCharPtr = FontCharView const *;
 
-    WidgetText(Font const & font, Colors colors, chars_view text);
-
-    void set_xy(int16_t x, int16_t y) noexcept
+    WidgetText(Font const & font, chars_view text)
     {
-        rect.x = x;
-        rect.y = y;
+        set_text(font, text);
     }
 
-    Dimension get_optimal_dim() const noexcept { return {rect.cx, rect.cy}; }
-    Rect get_rect() const noexcept { return rect; }
+    void set_text(Font const & font, chars_view text)
+    {
+        _fc_buffer_len = checked_int(
+            init_widget_text(make_writable_array_view(_fc_buffer), OutParam(_width), font, text)
+            .size()
+        );
+    }
 
-    int16_t x() const noexcept { return rect.x; }
-    int16_t y() const noexcept { return rect.y; }
-    uint16_t cx() const noexcept { return rect.cx; }
-    uint16_t cy() const noexcept { return rect.cy; }
+    uint16_t width() const noexcept
+    {
+        return _width;
+    }
 
-    void draw(gdi::GraphicApi & drawable, Rect clip);
+    array_view<FontCharPtr> fcs() const noexcept
+    {
+        return {_fc_buffer, _fc_buffer_len};
+    }
 
 private:
-    using FontCharPtr = FontCharView const *;
-    static const size_t buffer_size = 255;
-
-    Rect rect;
-    Colors colors;
-    size_t fc_buffer_len = 0;
-    FontCharPtr fc_buffer[buffer_size];
+    uint16_t _width;
+    unsigned _fc_buffer_len = 0;
+    FontCharPtr _fc_buffer[BufSize];
 };
 
 class WidgetLabel : public Widget

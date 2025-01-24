@@ -54,7 +54,7 @@ RED_AUTO_TEST_CASE(WidgetNumberEditEventPushChar)
     );
     Dimension dim = wnumber_edit.get_optimal_dim();
     wnumber_edit.set_wh(100, dim.h);
-    wnumber_edit.set_text("123456"_av, WidgetEdit::Redraw::No);
+    wnumber_edit.set_text("123456"_av, {});
     wnumber_edit.init_focus();
 
     wnumber_edit.rdp_input_invalidate(wnumber_edit.get_rect());

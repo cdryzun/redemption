@@ -34,9 +34,9 @@ class Theme;
 
 class WidgetEdit : public Widget
 {
+public:
     static constexpr int max_capacity = 255;
 
-public:
     struct Colors
     {
         // TODO remove default constructor of Color
@@ -46,7 +46,7 @@ public:
         Color focus_border;
         Color cursor = Widget::Color(0x888888); // TODO remove default
 
-        static Colors from_theme(Theme const& theme);
+        static Colors from_theme(Theme const& theme) noexcept;
     };
 
     enum class Redraw : bool { No, Yes, };
@@ -58,37 +58,17 @@ public:
         KeepCursorPosition,
     };
 
-    struct SetSize
-    {
-        bool should_be_optimal;
-        uint16_t min_width = 0;  /// ignored when 0
-        uint16_t max_width = 0;  /// ignored when 0
-
-        static SetSize optimal(uint16_t min_width, uint16_t max_width)
-        {
-            return {true, min_width, max_width};
-        }
-
-        static SetSize optimal(uint16_t width)
-        {
-            return {true, width, width};
-        }
-    };
-
     struct TextOptions
     {
         Redraw redraw;
-        SetSize set_size {};
         CusorPosition cursor_position = CusorPosition::CursorToEnd;
+    };
 
-        static TextOptions initial_text(uint16_t max_width)
-        {
-            return TextOptions{
-              .redraw = Redraw::No,
-              .set_size = SetSize::optimal(max_width),
-              .cursor_position = CusorPosition::CursorToEnd,
-            };
-        }
+    struct Layout
+    {
+        int16_t x;
+        int16_t y;
+        uint16_t width;
     };
 
     using Text = static_string<max_capacity * 4>;
@@ -100,8 +80,7 @@ public:
 
     WidgetEdit(
         gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
-        chars_view text, uint16_t max_width,
-        Colors colors, WidgetEventNotifier onsubmit
+        chars_view text, Colors colors, WidgetEventNotifier onsubmit
     );
 
     ~WidgetEdit();
@@ -113,6 +92,8 @@ public:
     Colors get_colors() const noexcept { return colors; }
 
     void set_text(bytes_view text, TextOptions opts);
+
+    void update_layout(Layout layout);
 
     void insert_chars(array_view<uint32_t> ucs, Redraw redraw);
 
@@ -134,7 +115,7 @@ public:
 
     Dimension get_optimal_dim() const override;
 
-    void set_font(Font const & font);
+    void set_font(Font const & font, Redraw redraw);
 
     bool action_move_cursor_right(bool ctrl_is_pressed, Redraw redraw);
     bool action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw);
@@ -142,6 +123,13 @@ public:
     bool action_move_cursor_to_end_of_line(Redraw redraw);
     bool action_backspace(bool ctrl_is_pressed, Redraw redraw);
     bool action_delete(bool ctrl_is_pressed, Redraw redraw);
+    bool action_remove_right(Redraw redraw);
+    bool action_remove_left(Redraw redraw);
+
+    void submit()
+    {
+        onsubmit();
+    }
 
     void draw_current_cursor(Rect clip)
     {
@@ -178,8 +166,9 @@ private:
     int get_end_pos() const;
 
     Rect cursor_rect(int x_cursor) noexcept;
-    void draw_cursor(Rect clip, Color color);
     void draw_border(Rect clip, Color color);
+    void draw_cursor(Rect clip, Color color);
+    void draw_inner(Rect clip);
     void draw_text(Rect clip);
 
     struct RedrawInfo
@@ -201,6 +190,9 @@ private:
     void move_cursor_to_right_and_redraw(int shift, Redraw redraw);
     bool move_cursor_to_left(int shift);
     void move_cursor_to_left_and_redraw(int shift, Redraw redraw);
+
+    void remove_right(FontCharPtr const* old_position, int shift, Redraw redraw);
+    void remove_left(FontCharPtr const* old_position, int shift, Redraw redraw);
 
 
     int x_cursor;

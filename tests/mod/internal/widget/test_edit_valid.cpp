@@ -41,8 +41,11 @@ struct TestWidgetEditValid
     WidgetEditValid::Colors colors {
         .fg = NamedBGRColor::RED,
         .bg = NamedBGRColor::YELLOW,
+        .placeholder = NamedBGRColor::MEDIUM_GREY,
+        .edit_fg = NamedBGRColor::PINK,
+        .edit_bg = NamedBGRColor::CYAN,
         .border = NamedBGRColor::BLUE,
-        .focus_border = NamedBGRColor::GREEN,
+        .focus_border = NamedBGRColor::BROWN,
         .cursor = NamedBGRColor::GREY,
     };
     CopyPaste copy_paste {false};
@@ -95,7 +98,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     TestWidgetEditValid ctx{
         .drawable {150, 50},
         .opts {
-            .is_password = false,
+            .type = WidgetEditValid::Type::Edit,
             .label = "text"_av,
         }
     };
@@ -103,13 +106,12 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     auto edit = ctx.edit();
     edit.init_focus();
 
-    edit.update_layout(WidgetEditValid::Data{
+    edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
-        .edit_offset = checked_int(edit.label_width() + 20),
-        .edit_text = ""_av,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(false) + 20),
         .label_as_placeholder = false,
-        .max_width = 120,
     });
 
     edit.rdp_input_invalidate(edit.get_rect());
@@ -122,13 +124,13 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_1.png");
 
     gdi_clear_screen(ctx.drawable, {ctx.drawable.width(), ctx.drawable.height()});
-    edit.update_layout(WidgetEditValid::Data{
+    edit.set_text("Ylajali"_av, {});
+    edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
-        .edit_offset = checked_int(edit.label_width() + 30),
-        .edit_text = "Ylajali"_av,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(false) + 29),
         .label_as_placeholder = false,
-        .max_width = 120,
     });
 
     edit.rdp_input_invalidate(edit.get_rect());
@@ -151,7 +153,6 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     ctx.click_up(edit, 110, 15);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_4.png");
-
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
@@ -159,7 +160,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
     TestWidgetEditValid ctx{
         .drawable {150, 50},
         .opts {
-            .is_password = false,
+            .type = WidgetEditValid::Type::Edit,
             .label = "text"_av,
         }
     };
@@ -167,13 +168,12 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
     auto edit = ctx.edit();
     edit.init_focus();
 
-    edit.update_layout(WidgetEditValid::Data{
+    edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
-        .edit_offset = checked_int(edit.label_width() + 30),
-        .edit_text = ""_av,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
-        .max_width = 120,
     });
 
     edit.rdp_input_invalidate(edit.get_rect());
@@ -185,13 +185,13 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
     ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Backspace);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_1.png");
 
-    edit.update_layout(WidgetEditValid::Data{
+    edit.set_text("Ylajali"_av, {});
+    edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
-        .edit_offset = checked_int(edit.label_width() + 30),
-        .edit_text = "Ylajali"_av,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
-        .max_width = 120,
     });
 
     edit.rdp_input_invalidate(edit.get_rect());
@@ -221,7 +221,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
     TestWidgetEditValid ctx{
         .drawable {150, 50},
         .opts {
-            .is_password = true,
+            .type = WidgetEditValid::Type::Password,
             .label = "Password"_av,
         }
     };
@@ -229,13 +229,12 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
     auto edit = ctx.edit();
     edit.init_focus();
 
-    edit.update_layout(WidgetEditValid::Data{
+    edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
-        .edit_offset = checked_int(edit.label_width() + 30),
-        .edit_text = ""_av,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
-        .max_width = 120,
     });
 
     edit.rdp_input_invalidate(edit.get_rect());
@@ -247,13 +246,13 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
     ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Backspace);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_1.png");
 
-    edit.update_layout(WidgetEditValid::Data{
+    edit.set_text("Ylajaiiiii"_av, {});
+    edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
-        .edit_offset = checked_int(edit.label_width() + 30),
-        .edit_text = "Ylajaiiiii"_av,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
-        .max_width = 120,
     });
 
     edit.rdp_input_invalidate(edit.get_rect());
@@ -277,15 +276,77 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
     RED_CHECK(ctx.onsubmit.get_and_reset() == 1);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
 
-    ctx.click_down(edit, 90, 15);
+    ctx.click_down(edit, 95, 15);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_7.png");
 
-    ctx.click_up(edit, 90, 15);
+    ctx.click_up(edit, 95, 15);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_8.png");
 
-    ctx.click_down(edit, 90, 15);
+    ctx.click_down(edit, 95, 15);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_9.png");
 
-    ctx.click_up(edit, 90, 15);
+    ctx.click_up(edit, 95, 15);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
+}
+
+RED_AUTO_TEST_CASE(TraceWidgetEditTextWithLabel)
+{
+    TestWidgetEditValid ctx{
+        .drawable {150, 50},
+        .opts {
+            .type = WidgetEditValid::Type::Text,
+            .label = "Text"_av,
+            .edit = "My text"_av,
+        }
+    };
+
+    auto edit = ctx.edit();
+    edit.init_focus();
+
+    edit.update_layout(WidgetEditValid::Layout{
+        .x = 10,
+        .y = 10,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(true) + 20),
+        .label_as_placeholder = false,
+    });
+
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_1.png");
+
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Key_A);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_1.png");
+
+    ctx.keyboard(edit).send_scancode(kbdtypes::KeyCode::Backspace);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_1.png");
+
+    edit.set_text("Ylajaiiiii"_av, {});
+    edit.update_layout(WidgetEditValid::Layout{
+        .x = 10,
+        .y = 10,
+        .width = 120,
+        .edit_offset = checked_int(edit.label_width(true) + 29),
+        .label_as_placeholder = true,
+    });
+    gdi_clear_screen(ctx.drawable, {ctx.drawable.width(), ctx.drawable.height()});
+
+    edit.rdp_input_invalidate(edit.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
+
+    ctx.click(edit, 50, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
+
+    edit.blur();
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
+
+    edit.focus(0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
+
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    ctx.click_up(edit, 110, 15);
+    RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
+
+    ctx.click_down(edit, 95, 15);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
 }

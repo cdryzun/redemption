@@ -34,11 +34,11 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     bool ask_device, bool ask_login, bool ask_password,
     Theme const & theme,
     chars_view caption,
-    chars_view text_device, chars_view device_str,
-    chars_view text_login, chars_view login_str,
-    chars_view text_password,
+    chars_view label_device, chars_view device_info,
+    chars_view label_login, chars_view text_login,
+    chars_view label_password,
     Font const & font,
-    WidgetButton * extra_button
+    Widget * extra_button
 )
     : WidgetComposite(drawable, Focusable::Yes)
     , oncancel(events.oncancel)
@@ -46,32 +46,50 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     , caption_label(drawable, caption,
                     theme.global.fgcolor, theme.global.bgcolor, font)
     , separator(drawable, theme.global.separator_color)
-    , device_label(drawable, text_device,
-                    theme.global.fgcolor, theme.global.bgcolor, font)
-    , device(drawable, device_str,
-                theme.global.fgcolor, theme.global.bgcolor, font)
-    , device_edit(drawable, copy_paste, nullptr,
-                  (ask_login || ask_password)
-                    ? WidgetEventNotifier([this]{ this->next_focus(); })
-                    : events.onsubmit,
-                  theme.edit.fgcolor, theme.edit.bgcolor,
-                  theme.edit.focus_color, theme.global.bgcolor, font, nullptr, false, 1, 1)
-    , login_label(drawable, text_login,
-                  theme.global.fgcolor, theme.global.bgcolor, font)
-    , login(drawable, login_str,
-            theme.global.fgcolor, theme.global.bgcolor, font)
-    , login_edit(drawable, copy_paste, nullptr,
-                 [this]{ this->next_focus(); },
-                 theme.edit.fgcolor, theme.edit.bgcolor,
-                 theme.edit.focus_color, theme.global.bgcolor, font, nullptr, false, 1, 1)
-    , password_label(drawable, text_password,
-                        theme.global.fgcolor, theme.global.bgcolor, font)
-    , password_edit(drawable, copy_paste, nullptr,
-                    !(ask_login || ask_password)
-                        ? WidgetEventNotifier([this]{ this->next_focus(); })
-                        : events.onsubmit,
-                    theme.edit.fgcolor, theme.edit.bgcolor,
-                    theme.edit.focus_color, theme.global.bgcolor, font, nullptr, false, 1, 1, true)
+    , device(
+        drawable, device_info,
+        // TODO error context should be transfered instead of detected with string prefix (incompatible with translation)
+        ask_device && (utils::starts_with(device_info, "Error:"_av) ||
+                       utils::starts_with(device_info, "Erreur:"_av))
+            ? theme.global.error_color
+            : theme.global.fgcolor,
+        theme.global.bgcolor, font)
+    , device_edit(
+        drawable, font, copy_paste,
+        {
+            .type = ask_device
+                ? WidgetEditValid::Type::Edit
+                : WidgetEditValid::Type::Text,
+            .label = label_device,
+        },
+        WidgetEditValid::Colors::from_theme(theme),
+        (ask_login || ask_password)
+            ? WidgetEventNotifier([this]{ this->next_focus(); })
+            : events.onsubmit
+    )
+    , login_edit(
+        drawable, font, copy_paste,
+        {
+            .type = ask_login
+                ? WidgetEditValid::Type::Edit
+                : WidgetEditValid::Type::Text,
+            .label = label_login,
+            .edit = text_login,
+        },
+        WidgetEditValid::Colors::from_theme(theme),
+        [this]{ this->next_focus(); }
+    )
+    , password_edit(
+        drawable, font, copy_paste,
+        {
+            .type = WidgetEditValid::Type::Password,
+            .label = label_password,
+        },
+        WidgetEditValid::Colors::from_theme(theme),
+        !(ask_login || ask_password)
+            ? WidgetEventNotifier([this]{ this->next_focus(); })
+            : events.onsubmit
+    )
     , extra_button(extra_button)
     , fgcolor(theme.global.fgcolor)
     , ask_device(ask_device)
@@ -79,19 +97,6 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     , ask_password(ask_login || ask_password)
 {
     this->set_bg_color(theme.global.bgcolor);
-
-    Widget * device_show = &this->device;
-    if (ask_device) {
-        device_show = &this->device_edit;
-    }
-    Widget * login_show = &this->login;
-    if (ask_login) {
-        login_show = &this->login_edit;
-    }
-    Widget * password_show = nullptr;
-    if (this->ask_password) {
-        password_show = &this->password_edit;
-    }
 
     HasFocus device_has_focus = HasFocus::No;
     HasFocus login_has_focus = HasFocus::No;
@@ -110,22 +115,13 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     this->add_widget(this->caption_label);
     this->add_widget(this->separator);
 
-    this->add_widget(this->device_label);
-    this->add_widget(*device_show, device_has_focus);
+    this->add_widget(this->device_edit, device_has_focus);
     if (ask_device) {
         this->add_widget(this->device);
-        // TODO error context should be transfered instead of detected with string prefix (incompatible with translation)
-        if (utils::starts_with(device_str, "Error:"_av) ||
-            utils::starts_with(device_str, "Erreur:"_av)
-        ) {
-            this->device.fg_color = theme.global.error_color;
-        }
     }
-    this->add_widget(this->login_label);
-    this->add_widget(*login_show, login_has_focus);
-    if (password_show) {
-        this->add_widget(this->password_label);
-        this->add_widget(*password_show, password_has_focus);
+    this->add_widget(this->login_edit, login_has_focus);
+    if (this->ask_password) {
+        this->add_widget(this->password_edit, password_has_focus);
     }
 
     if (extra_button) {

@@ -251,10 +251,9 @@ RED_AUTO_TEST_CASE(WidgetEditMouse)
 RED_AUTO_TEST_CASE(WidgetEditSetText)
 {
     TestWidgetEditCtx ctx{
-      .drawable = TestGraphic{1, 1},
+      .drawable = TestGraphic{40, 82},
     };
 
-    using SetSize = WidgetEdit::SetSize;
     using CusorPosition = WidgetEdit::CusorPosition;
 
     struct D
@@ -264,67 +263,54 @@ RED_AUTO_TEST_CASE(WidgetEditSetText)
     };
 
     auto text = "abcdefg"_av;
-    auto text2 = "abcd"_av;
+    auto text2 = "abcde"_av;
 
-    auto make_edit = [&](uint16_t max_width){
-        return WidgetEdit(ctx.drawable, ctx.font, ctx.copy_paste, text, max_width, ctx.colors, ctx.onsubmit);
+    auto make_edit = [&](){
+        return WidgetEdit(ctx.drawable, ctx.font, ctx.copy_paste, text, ctx.colors, ctx.onsubmit);
     };
-
-    auto redraw = WidgetEdit::Redraw::Yes;
 
     WidgetEdit edits[]{
-        make_edit(0),
-        make_edit(0),
-        make_edit(0),
-        make_edit(40),
-        make_edit(40),
-        make_edit(40),
+        make_edit(),
+        make_edit(),
+        make_edit(),
     };
-
-    ctx.drawable.resize(edits[0].cx(), std::size(edits) * 30);
 
     int16_t y = 0;
 
     for (auto & edit : edits) {
         edit.init_focus();
         edit.set_xy(0, y);
-        edit.rdp_input_invalidate(edit.get_rect());
         y += 30;
     }
 
+    // right part is not redrawing
+    auto update_text = [](WidgetEdit& edit, chars_view text, CusorPosition cursor_position) {
+        edit.set_text(text, {WidgetEdit::Redraw::No, cursor_position});
+        edit.update_layout({edit.x(), edit.y(), 40});
+        edit.rdp_input_invalidate(edit.get_rect());
+    };
+
+    update_text(edits[0], text, CusorPosition::CursorToEnd);
+    update_text(edits[1], text, CusorPosition::CursorToBegin);
+    update_text(edits[2], text, CusorPosition::KeepCursorPosition);
+
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_init.png");
 
-    edits[2].action_move_cursor_left(false, redraw);
-    edits[5].action_move_cursor_left(false, redraw);
-
-    // right part is not redrawing
-    edits[0].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToEnd});
-    edits[1].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToBegin});
-    edits[2].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::KeepCursorPosition});
-    edits[3].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToEnd});
-    edits[4].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::CursorToBegin});
-    edits[5].set_text(text, {redraw, SetSize::optimal(40), CusorPosition::KeepCursorPosition});
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_optimal_size.png");
+    auto redraw = WidgetEdit::Redraw::Yes;
 
     edits[0].action_move_cursor_left(false, redraw);
-    edits[1].action_move_cursor_right(false, redraw);
-    edits[2].action_move_cursor_left(false, redraw);
-    edits[2].action_move_cursor_left(false, redraw);
 
-    edits[3].action_move_cursor_left(false, redraw);
-    edits[4].action_move_cursor_right(false, redraw);
-    edits[5].action_move_cursor_left(false, redraw);
-    edits[5].action_move_cursor_left(false, redraw);
+    edits[1].action_move_cursor_right(false, redraw);
+
+    edits[2].action_move_cursor_left(false, redraw);
+    edits[2].action_move_cursor_left(false, redraw);
+    edits[2].action_move_cursor_left(false, redraw);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_update_pos.png");
 
-    edits[0].set_text(text, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
-    edits[1].set_text(text, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
-    edits[2].set_text(text, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
-    edits[3].set_text(text2, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
-    edits[4].set_text(text2, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
-    edits[5].set_text(text2, {redraw, SetSize{}, CusorPosition::KeepCursorPosition});
+    update_text(edits[0], text2, CusorPosition::KeepCursorPosition);
+    update_text(edits[1], text2, CusorPosition::KeepCursorPosition);
+    update_text(edits[2], text2, CusorPosition::KeepCursorPosition);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_keep_pos.png");
 }

@@ -55,7 +55,6 @@ InteractiveTargetMod::InteractiveTargetMod(
     , vars(vars)
 {
     this->screen.add_widget(this->challenge, WidgetComposite::HasFocus::Yes);
-    this->challenge.password_edit.set_text(""_av);
     this->screen.init_focus();
     this->screen.rdp_input_invalidate(this->screen.get_rect());
 }

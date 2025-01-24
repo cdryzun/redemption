@@ -29,5 +29,9 @@ public:
     using WidgetEdit::WidgetEdit;
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
+
+    void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
+
+    void clipboard_insert_utf8(zstring_view text) override;
 };
 

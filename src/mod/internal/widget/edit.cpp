@@ -329,6 +329,7 @@ WidgetEdit::WidgetEdit(
 )
     : Widget(gd, Focusable::Yes)
     , x_cursor(start_x_cursor)
+    , x_text(0)
     , colors(colors)
     , font(&font)
     , h_text(font.max_height())
@@ -337,17 +338,18 @@ WidgetEdit::WidgetEdit(
 {
     buffer().init();
     pointer_flag = PointerType::Edit;
+    // set a "random" width
+    Widget::set_wh(compute_optimal_dim(h_text * 10, h_text));
 }
 
 WidgetEdit::WidgetEdit(
     gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
-    chars_view text, uint16_t max_width,
-    Colors colors, WidgetEventNotifier onsubmit
+    chars_view text, Colors colors, WidgetEventNotifier onsubmit
 )
     : WidgetEdit(gd, font, copy_paste, colors, onsubmit)
 {
     if (!text.empty()) {
-        set_text(text, TextOptions::initial_text(max_width));
+        set_text(text, {});
     }
 }
 
@@ -404,17 +406,6 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
         [&]{ return !buffer().is_full(); }
     );
 
-    if (opts.set_size.should_be_optimal) {
-        auto dim = compute_optimal_dim(shift, h_text);
-        if (opts.set_size.max_width) {
-            dim.w = std::min(dim.w, opts.set_size.max_width);
-        }
-        if (opts.set_size.min_width) {
-            dim.w = std::max(dim.w, opts.set_size.min_width);
-        }
-        Widget::set_wh(dim);
-    }
-
     switch (opts.cursor_position) {
         case CusorPosition::KeepCursorPosition: {
             auto const fcs = buffer().font_chars();
@@ -444,8 +435,19 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
     }
 
     if (opts.redraw == Redraw::Yes) {
-        rdp_input_invalidate(get_rect());
+        draw_inner(get_rect());
     }
+}
+
+void WidgetEdit::update_layout(Layout layout)
+{
+    Widget::set_xy(layout.x, layout.y);
+    Widget::set_wh(layout.width, (h_padding + border_len) * 2 + h_text);
+
+    int shift = x_text - start_x_cursor + x_cursor;
+    x_text = 0;
+    x_cursor = start_x_cursor;
+    move_cursor_to_right(shift);
 }
 
 void WidgetEdit::insert_chars(array_view<uint32_t> ucs, Redraw redraw)
@@ -467,17 +469,8 @@ void WidgetEdit::insert_chars(array_view<uint32_t> ucs, Redraw redraw)
 
 void WidgetEdit::rdp_input_invalidate(Rect clip)
 {
-    auto rect = get_rect().shrink(border_len).intersect(clip);
-    draw_rect(drawable, rect, colors.bg);
-
-    draw_text(rect);
-    if (has_focus) {
-        draw_border(clip, colors.focus_border);
-        draw_cursor(clip, colors.cursor);
-    }
-    else {
-        draw_border(clip, colors.border);
-    }
+    draw_inner(clip);
+    draw_border(clip, has_focus ? colors.focus_border : colors.border);
 }
 
 void WidgetEdit::rdp_input_scancode(
@@ -574,8 +567,6 @@ void WidgetEdit::rdp_input_mouse(uint16_t device_flags, uint16_t x_, uint16_t y)
     }
 
     int x = x_ - this->x();
-
-    LOG(LOG_DEBUG, "cur pos = %d %d", x, x_cursor);
 
     auto fc_mid = [](FontCharView const& fc){
         return fc.offsetx + (fc.width + 1) / 2 - 1;
@@ -762,17 +753,7 @@ bool WidgetEdit::action_backspace(bool ctrl_is_pressed, Redraw redraw)
             shift += buffer().move_to_left();
         }
 
-        buffer().remove_right(old_position);
-
-        auto old_x_text = x_text;
-        auto partial_update = move_cursor_to_left(shift);
-
-        // TODO redraw left when x_text updated
-
-        if (redraw == Redraw::Yes) {
-            maybe_redraw_left_empty_padding(old_x_text);
-            redraw_removed_right_text(partial_update, shift);
-        }
+        remove_left(old_position, shift, redraw);
 
         return true;
     }
@@ -784,8 +765,8 @@ bool WidgetEdit::action_delete(bool ctrl_is_pressed, Redraw redraw)
 {
     if (buffer().is_movable_to_right()) {
         auto const old_position = buffer().current();
-        int shift = 0;
 
+        int shift = 0;
         if (ctrl_is_pressed) {
             while (buffer().is_movable_to_right()
                 && buffer().get_current_unicode() != ' '
@@ -803,18 +784,74 @@ bool WidgetEdit::action_delete(bool ctrl_is_pressed, Redraw redraw)
             shift += buffer().move_to_right();
         }
 
-        buffer().remove_left(old_position);
-
-        // TODO redraw left when x_text updated
-
-        if (redraw == Redraw::Yes) {
-            redraw_removed_right_text(true, shift);
-        }
+        remove_right(old_position, shift, redraw);
 
         return true;
     }
 
     return false;
+}
+
+bool WidgetEdit::action_remove_left(Redraw redraw)
+{
+    if (buffer().is_movable_to_left()) {
+        auto const old_position = buffer().current();
+
+        int shift = 0;
+        while (buffer().is_movable_to_left()) {
+            shift += buffer().move_to_left();
+        }
+
+        remove_left(old_position, shift, redraw);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool WidgetEdit::action_remove_right(Redraw redraw)
+{
+    if (buffer().is_movable_to_right()) {
+        auto const old_position = buffer().current();
+
+        int shift = 0;
+        while (buffer().is_movable_to_right()) {
+            shift += buffer().move_to_right();
+        }
+
+        remove_right(old_position, shift, redraw);
+
+        return true;
+    }
+
+    return false;
+}
+
+void WidgetEdit::remove_left(FontCharPtr const* old_position, int shift, Redraw redraw)
+{
+    buffer().remove_right(old_position);
+
+    auto old_x_text = x_text;
+    auto partial_update = move_cursor_to_left(shift);
+
+    // TODO redraw left when x_text updated
+
+    if (redraw == Redraw::Yes) {
+        maybe_redraw_left_empty_padding(old_x_text);
+        redraw_removed_right_text(partial_update, shift);
+    }
+}
+
+void WidgetEdit::remove_right(FontCharPtr const* old_position, int shift, Redraw redraw)
+{
+    buffer().remove_left(old_position);
+
+    // TODO redraw left when x_text updated
+
+    if (redraw == Redraw::Yes) {
+        redraw_removed_right_text(true, shift);
+    }
 }
 
 Rect WidgetEdit::cursor_rect(int x_cursor) noexcept
@@ -827,15 +864,25 @@ Rect WidgetEdit::cursor_rect(int x_cursor) noexcept
     );
 }
 
-void WidgetEdit::draw_cursor(Rect clip, Color color)
-{
-    LOG(LOG_DEBUG, "cur = %d", x_cursor);
-    draw_rect(drawable, cursor_rect(x_cursor), color, clip);
-}
-
 void WidgetEdit::draw_border(Rect clip, Color color)
 {
     gdi_draw_border(drawable, color, this->get_rect(), border_len, clip, gdi::ColorCtx::depth24());
+}
+
+void WidgetEdit::draw_cursor(Rect clip, Color color)
+{
+    draw_rect(drawable, cursor_rect(x_cursor), color, clip);
+}
+
+void WidgetEdit::draw_inner(Rect clip)
+{
+    auto rect = get_rect().shrink(border_len).intersect(clip);
+    draw_rect(drawable, rect, colors.bg);
+    draw_text(rect);
+
+    if (has_focus) {
+        draw_cursor(clip, colors.cursor);
+    }
 }
 
 void WidgetEdit::draw_text(Rect clip)
@@ -847,6 +894,7 @@ void WidgetEdit::draw_text(Rect clip)
         x,
         y() + h_padding + border_len,
         font->max_height(),
+        gdi::DrawTextPadding::Padding(0),
         buffer().font_chars(),
         colors.fg,
         colors.bg,
@@ -877,6 +925,7 @@ int WidgetEdit::redraw_text(RedrawInfo redraw_info)
         x,
         y() + h_padding + border_len,
         font->max_height(),
+        gdi::DrawTextPadding::Padding(0),
         fcs,
         colors.fg,
         colors.bg,
@@ -962,7 +1011,6 @@ void WidgetEdit::move_cursor_to_right_and_redraw(int shift, Redraw redraw)
 
 bool WidgetEdit::move_cursor_to_left(int shift)
 {
-    LOG(LOG_DEBUG, "shift = %d | %d", shift, x_cursor - shift >= start_x_cursor);
     if (x_cursor - shift >= start_x_cursor) {
         x_cursor -= shift;
         return true;
@@ -1001,7 +1049,7 @@ WidgetEdit::Buffer const & WidgetEdit::buffer() const noexcept
     return Buffer::from_data(editable_buffer);
 }
 
-void WidgetEdit::set_font(Font const & font)
+void WidgetEdit::set_font(Font const & font, Redraw redraw)
 {
     auto uc_it = buffer().text().begin();
 
@@ -1029,9 +1077,15 @@ void WidgetEdit::set_font(Font const & font)
     else {
         move_cursor_to_right(shift);
     }
+
+    this->font = &font;
+
+    if (redraw == Redraw::Yes) {
+        draw_inner(get_rect());
+    }
 }
 
-WidgetEdit::Colors WidgetEdit::Colors::from_theme(const Theme& theme)
+WidgetEdit::Colors WidgetEdit::Colors::from_theme(const Theme& theme) noexcept
 {
     return {
         .fg = theme.edit.fgcolor,

@@ -41,27 +41,34 @@ WidgetPassword::WidgetPassword(
 
 WidgetPassword::WidgetPassword(
     gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
-    chars_view text, uint16_t max_width,
-    Colors colors, WidgetEventNotifier onsubmit
+    chars_view text, Colors colors, WidgetEventNotifier onsubmit
 )
-    : WidgetPasswordFont(font)
-    , WidgetEdit(gd, this->shadow_font, copy_paste, text, max_width, colors, onsubmit)
-    , font(font)
-{}
+    : WidgetPassword(gd, font, copy_paste, colors, onsubmit)
+{
+    if (!text.empty()) {
+        set_text(text, {});
+    }
+}
 
-void WidgetPassword::toggle_password_visibility(Rect rect)
+void WidgetPassword::toggle_password_visibility(Redraw redraw)
 {
     is_password_visible = !is_password_visible;
-    this->set_font(is_password_visible ? this->font : this->shadow_font);
-    this->rdp_input_invalidate(rect);
+    set_font(is_password_visible ? font : shadow_font, redraw);
 }
 
 void WidgetPassword::rdp_input_scancode(
     KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
 {
+    if (is_password_visible) {
+        WidgetEdit::rdp_input_scancode(flags, scancode, event_time, keymap);
+        return ;
+    }
+
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
     switch (keymap.last_kevent()) {
+    case Keymap::KEvent::None:
+        break;
 
     case Keymap::KEvent::LeftArrow:
     case Keymap::KEvent::UpArrow:
@@ -83,6 +90,24 @@ void WidgetPassword::rdp_input_scancode(
         }
         break;
 
+    case Keymap::KEvent::Backspace:
+        if (keymap.is_ctrl_pressed()) {
+            action_remove_left(Redraw::Yes);
+        }
+        else {
+            action_backspace(keymap.is_ctrl_pressed(), Redraw::Yes);
+        }
+        break;
+
+    case Keymap::KEvent::Delete:
+        if (keymap.is_ctrl_pressed()) {
+            action_remove_right(Redraw::Yes);
+        }
+        else {
+            action_delete(keymap.is_ctrl_pressed(), Redraw::Yes);
+        }
+        break;
+
     case Keymap::KEvent::Paste:
         copy_paste.paste(*this);
         break;
@@ -98,6 +123,7 @@ void WidgetPassword::rdp_input_scancode(
 
     default:
         WidgetEdit::rdp_input_scancode(flags, scancode, event_time, keymap);
+        break;
     }
     REDEMPTION_DIAGNOSTIC_POP()
 }

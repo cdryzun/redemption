@@ -42,11 +42,10 @@ public:
 
     WidgetPassword(
         gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
-        chars_view text, uint16_t max_width,
-        Colors colors, WidgetEventNotifier onsubmit
+        chars_view text, Colors colors, WidgetEventNotifier onsubmit
     );
 
-    void toggle_password_visibility(Rect rect);
+    void toggle_password_visibility(Redraw redraw);
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
 
