@@ -1539,6 +1539,10 @@ void Capture::relayout(MonitorLayoutPDU const & monitor_layout_pdu) {
     if (this->wrm_capture_obj) {
         this->wrm_capture_obj->relayout(monitor_layout_pdu);
     }
+
+    Rect const rect = monitor_layout_pdu.get_rect();
+    this->rail_screen_offset.x = -rect.x;
+    this->rail_screen_offset.y = -rect.y;
 }
 
 void Capture::force_flush(MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y)
