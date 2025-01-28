@@ -26,7 +26,7 @@
 
 namespace
 {
-    WidgetEventNotifier next_focus_notifier(WidgetInteractiveTarget & w)
+    WidgetEventNotifier next_focus_event(WidgetInteractiveTarget & w)
     {
         return WidgetEventNotifier([&w]{ w.next_focus(); });
     }
@@ -70,7 +70,7 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
         },
         WidgetEditValid::Colors::from_theme(theme),
         (ask_login || ask_password)
-            ? next_focus_notifier(*this)
+            ? next_focus_event(*this)
             : events.onsubmit
     )
     , login_edit(
@@ -83,7 +83,7 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
             .edit = ask_login ? ""_av : text_login,
         },
         WidgetEditValid::Colors::from_theme(theme),
-        next_focus_notifier(*this)
+        next_focus_event(*this)
     )
     , password_edit(
         drawable, font, copy_paste,
@@ -93,7 +93,7 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
         },
         WidgetEditValid::Colors::from_theme(theme),
         !(ask_login || ask_password)
-            ? next_focus_notifier(*this)
+            ? next_focus_event(*this)
             : events.onsubmit
     )
     , extra_button(extra_button)

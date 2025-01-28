@@ -124,7 +124,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_1.png");
 
     gdi_clear_screen(ctx.drawable, {ctx.drawable.width(), ctx.drawable.height()});
-    edit.set_text("Ylajali"_av, {});
+    edit.set_text("Yliajli"_av, {});
     edit.update_layout(WidgetEditValid::Layout{
         .x = 10,
         .y = 10,
@@ -307,7 +307,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditTextWithLabel)
         .x = 10,
         .y = 10,
         .width = 120,
-        .edit_offset = checked_int(edit.label_width(true) + 20),
+        .edit_offset = checked_int(edit.label_width(false) + 20),
         .label_as_placeholder = false,
     });
 

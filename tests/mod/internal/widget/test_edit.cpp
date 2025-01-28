@@ -239,10 +239,10 @@ RED_AUTO_TEST_CASE(WidgetEditMouse)
         RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH img_path)
 
     TEST_MOUSE(3, "mouse_abcdtrbi_3.png");
-    TEST_MOUSE(2, "mouse_abcdtrbi_2.png");
+    TEST_MOUSE(1, "mouse_abcdtrbi_2.png");
     TEST_MOUSE(47, "mouse_abcdtrbi_47.png");
     TEST_MOUSE(49, "mouse_abcdtrbi_48.png");
-    TEST_MOUSE(10, "mouse_abcdtrbi_10.png");
+    TEST_MOUSE(9, "mouse_abcdtrbi_10.png");
     TEST_MOUSE(25, "mouse_abcdtrbi_25.png");
 
     #undef TEST_MOUSE

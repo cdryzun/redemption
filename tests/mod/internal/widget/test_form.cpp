@@ -54,7 +54,5 @@ RED_AUTO_TEST_CASE(TestWidgetForm)
     form.move_xy(70, 70);
     form.rdp_input_invalidate(form.get_rect());
 
-    // drawable.save_to_png("ticket_form.png");
-
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "form_1.png");
 }

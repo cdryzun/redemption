@@ -51,25 +51,36 @@ WidgetLogin::WidgetLogin(
     , error_message_label(drawable, label_error_message,
                     theme.global.error_color, theme.global.bgcolor,
                     font)
-    , login_label(drawable, label_text_login,
-                    theme.global.fgcolor, theme.global.bgcolor, font)
-    , login_edit(drawable, copy_paste, login, events.onsubmit,
-                 theme.edit.fgcolor, theme.edit.bgcolor,
-                 theme.edit.focus_color, theme.global.bgcolor, font,
-                 label_text_login, (width <= 640), 1, 1, false)
-    , password_label(drawable, label_text_password,
-                     theme.global.fgcolor, theme.global.bgcolor,
-                     font)
-    , password_edit(drawable, copy_paste, password, events.onsubmit,
-                    theme.edit.fgcolor,
-                    theme.edit.bgcolor, theme.edit.focus_color, theme.global.bgcolor,
-                    font, label_text_password, (width <= 640), 1, 1, true)
-    , target_label(drawable, label_text_target,
-                   theme.global.fgcolor, theme.global.bgcolor, font)
-    , target_edit(drawable, copy_paste, target, events.onsubmit,
-                  theme.edit.fgcolor, theme.edit.bgcolor,
-                  theme.edit.focus_color, theme.global.bgcolor, font,
-                  label_text_target, (width <= 640), 1, 1, false)
+    , login_edit(
+        drawable, font, copy_paste,
+        {
+            .type = WidgetEditValid::Type::Edit,
+            .label = label_text_login,
+            .edit = login,
+        },
+        WidgetEditValid::Colors::from_theme(theme),
+        events.onsubmit
+      )
+    , password_edit(
+        drawable, font, copy_paste,
+        {
+            .type = WidgetEditValid::Type::Password,
+            .label = label_text_password,
+            .edit = password,
+        },
+        WidgetEditValid::Colors::from_theme(theme),
+        events.onsubmit
+    )
+    , target_edit(
+        drawable, font, copy_paste,
+        {
+            .type = WidgetEditValid::Type::Edit,
+            .label = label_text_target,
+            .edit = target,
+        },
+        WidgetEditValid::Colors::from_theme(theme),
+        events.onsubmit
+    )
     , message_label(drawable,
         login_message,
         theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
@@ -127,50 +138,12 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         widget.set_wh(widget.get_optimal_dim());
     };
 
-    if (width > 640) {
-        if (!this->labels_added) {
-            if (this->show_target) {
-                this->add_widget(this->target_label);
-            }
-            this->add_widget(this->login_label);
-            this->add_widget(this->password_label);
-
-            this->labels_added = true;
-        }
-
-        set_optimal_wh(this->login_label);
-        set_optimal_wh(this->target_label);
-        set_optimal_wh(this->password_label);
-    }
-    else {
-        if (this->labels_added) {
-            if (this->show_target) {
-                this->remove_widget(this->target_label);
-            }
-            this->remove_widget(this->login_label);
-            this->remove_widget(this->password_label);
-
-            this->labels_added = false;
-        }
-
-        this->target_label.set_wh(0, 0);
-        this->login_label.set_wh(0, 0);
-        this->password_label.set_wh(0, 0);
-    }
+    bool label_as_placeholder = (width <= 640);
 
     const Dimension edit_dim = {
         uint16_t((width >= 420) ? 400 : width - 20),
-        this->login_edit.get_optimal_dim().h
+        this->login_edit.cy()
     };
-
-    this->target_edit.use_title(width < 640);
-    this->target_edit.set_wh(edit_dim);
-
-    this->login_edit.use_title(width < 640);
-    this->login_edit.set_wh(edit_dim);
-
-    this->password_edit.use_title(width < 640);
-    this->password_edit.set_wh(edit_dim);
 
     this->error_message_label.set_wh(
         edit_dim.w,
@@ -183,10 +156,10 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
     set_optimal_wh(this->img);
 
     const int labels_w = std::max({
-        this->login_label.cx(),
-        this->password_label.cx(),
-        this->show_target ? this->target_label.cx() : uint16_t()
-    }) + ((width > 640) ? 10 : 0);
+        login_edit.label_width(label_as_placeholder),
+        password_edit.label_width(label_as_placeholder),
+        show_target ? target_edit.label_width(label_as_placeholder) : uint16_t()
+    }) + (label_as_placeholder ? 0 : 8);
 
     const int cbloc_w = labels_w + edit_dim.w;
     const int cbloc_x = (width - cbloc_w) / 2;
@@ -275,24 +248,25 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
     }
 
     int y = start_y + top;
-    auto set_xy_label = [&](WidgetLabel& label){
-        label.set_xy(left + cbloc_x, y);
-        y += edit_dim.h + space_h;
-    };
 
-    auto set_xy_label_and_edit = [&](WidgetEditValid& edit, WidgetLabel& label) {
-        set_xy_label(label);
-        y += extra_space_between_label_h;
-        edit.set_xy(left + cbloc_x + labels_w, label.y() - edit.get_border_height() - 3);
+    auto set_edit_layout = [&](WidgetEditValid& edit) {
+        edit.update_layout({
+            .x = checked_int(left + cbloc_x),
+            .y = checked_int(y),
+            .width = checked_int(cbloc_w),
+            .edit_offset = checked_int(labels_w),
+            .label_as_placeholder = label_as_placeholder,
+        });
+        y += extra_space_between_label_h + edit.cy() + space_h;
     };
 
     this->error_message_label.set_xy(left + cbloc_x + labels_w, y);
     y += edit_dim.h + space_h;
     if (this->show_target) {
-        set_xy_label_and_edit(this->target_edit, this->target_label);
+        set_edit_layout(this->target_edit);
     }
-    set_xy_label_and_edit(this->login_edit, this->login_label);
-    set_xy_label_and_edit(this->password_edit, this->password_label);
+    set_edit_layout(this->login_edit);
+    set_edit_layout(this->password_edit);
 
 
     // Bottom bloc positioning

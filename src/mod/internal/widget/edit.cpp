@@ -78,7 +78,7 @@ auto sanitized_char(F&& f)
 
 constexpr uint16_t w_cursor = 1;
 constexpr uint16_t h_padding = 2;
-constexpr uint16_t w_padding = 1;
+constexpr uint16_t w_padding = 2;
 constexpr uint16_t border_len = 1;
 constexpr uint16_t w_cursor_padding = 1;
 constexpr uint16_t start_x_cursor = w_padding + border_len + w_cursor_padding;
@@ -1090,9 +1090,9 @@ WidgetEdit::Colors WidgetEdit::Colors::from_theme(const Theme& theme) noexcept
     return {
         .fg = theme.edit.fgcolor,
         .bg = theme.edit.bgcolor,
-        .border = theme.global.bgcolor, // TODO
+        // .border = , // TODO
         .focus_border = theme.edit.focus_color,
-        // .cursor = // TODO
+        // .cursor = , // TODO
     };
 }
 

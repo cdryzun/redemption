@@ -29,8 +29,6 @@
 #include "gdi/text_metrics.hpp"
 #include "keyboard/keymap.hpp"
 
-#include <cstring>
-
 
 WidgetSelector::temporary_number_of_page::temporary_number_of_page(chars_view s)
     : len(s.size() + 1)
@@ -108,21 +106,9 @@ WidgetSelector::WidgetSelector(
     }
 }
 , edit_filters{
-    WidgetEdit{
-        drawable, copy_paste, nullptr, events.onfilter,
-        theme.edit.fgcolor, theme.edit.bgcolor,
-        theme.edit.focus_color, font, 1, 1
-    },
-    WidgetEdit{
-        drawable, copy_paste, nullptr, events.onfilter,
-        theme.edit.fgcolor, theme.edit.bgcolor,
-        theme.edit.focus_color, font, 1, 1
-    },
-    WidgetEdit{
-        drawable, copy_paste, nullptr, events.onfilter,
-        theme.edit.fgcolor, theme.edit.bgcolor,
-        theme.edit.focus_color, font, 1, 1
-    }
+    WidgetEdit{drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme), events.onfilter},
+    WidgetEdit{drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme), events.onfilter},
+    WidgetEdit{drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme), events.onfilter},
 }
 , selector_lines(drawable, tooltip_shower,
                  [this]{ this->ask_for_connection(); },
@@ -143,11 +129,9 @@ WidgetSelector::WidgetSelector(
 , prev_page(drawable, "◀"_av, events.onprev_page,
             theme.global.fgcolor, theme.global.bgcolor,
             theme.global.focus_color, 2, font, 6, 2, true)
-, current_page(drawable, copy_paste,
-               !current_page.empty() ? current_page : "XXXX"_av,
-               {events.oncurrent_page},
-               theme.edit.fgcolor, theme.edit.bgcolor,
-               theme.edit.focus_color, font, 1, 1)
+, current_page(drawable, font, copy_paste, current_page,
+               WidgetEdit::Colors::from_theme(theme),
+               events.oncurrent_page)
 , number_page(drawable,
               !number_of_page.empty() ? temporary_number_of_page(number_of_page) : "/XXX"_av,
               theme.global.fgcolor, theme.global.bgcolor, font)

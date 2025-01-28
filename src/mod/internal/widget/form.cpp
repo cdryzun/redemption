@@ -26,6 +26,14 @@
 
 using namespace std::chrono_literals;
 
+namespace
+{
+    WidgetEventNotifier check_confirmation_event(WidgetForm & w)
+    {
+        return [&w]{ w.check_confirmation(); };
+    }
+}
+
 WidgetForm::WidgetForm(
     gdi::GraphicApi & drawable, CopyPaste & copy_paste,
     int16_t left, int16_t top, int16_t width, int16_t height,
@@ -52,26 +60,20 @@ WidgetForm::WidgetForm(
     , duration_label(drawable,
                      tr((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration),
                      theme.global.fgcolor, theme.global.bgcolor, font)
-    , duration_edit(drawable, copy_paste, nullptr,
-                    {[this]{ this->check_confirmation(); }},
-                    theme.edit.fgcolor, theme.edit.bgcolor,
-                    theme.edit.focus_color, font, 1, 1)
+    , duration_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+                    check_confirmation_event(*this))
     , duration_format(drawable, tr(trkeys::note_duration_format),
                       theme.global.fgcolor, theme.global.bgcolor, font)
     , ticket_label(drawable,
                    tr((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket),
                    theme.global.fgcolor, theme.global.bgcolor, font)
-    , ticket_edit(drawable, copy_paste, nullptr,
-                  {[this]{ this->check_confirmation(); }},
-                  theme.edit.fgcolor, theme.edit.bgcolor,
-                  theme.edit.focus_color, font, 1, 1)
+    , ticket_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+                  check_confirmation_event(*this))
     , comment_label(drawable,
                     tr((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment),
                     theme.global.fgcolor, theme.global.bgcolor, font)
-    , comment_edit(drawable, copy_paste, nullptr,
-                   {[this]{ this->check_confirmation(); }},
-                   theme.edit.fgcolor, theme.edit.bgcolor,
-                   theme.edit.focus_color, font, 1, 1)
+    , comment_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+                   check_confirmation_event(*this))
     , notes(drawable, tr(trkeys::note_required),
             theme.global.fgcolor, theme.global.bgcolor, font)
     , confirm(drawable, tr(trkeys::confirm),
@@ -142,39 +144,45 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     this->warning_msg.set_xy(left + labelmaxwidth + 20, top);
 
     int y = 20;
+    int d = (duration_edit.cy() - dim.h) / 2;
 
     if (this->flags & DURATION_DISPLAY) {
-        this->duration_label.set_xy(left, top + y);
+        this->duration_label.set_xy(left, top + y + d);
 
         dim = this->duration_format.get_optimal_dim();
-        this->duration_format.set_wh(dim);
+        this->duration_format.set_wh(dim.w, dim.h);
 
-        dim = this->duration_edit.get_optimal_dim();
-        this->duration_edit.set_wh((width - labelmaxwidth - 20) - this->duration_format.cx() - 20,
-                                    dim.h);
-        this->duration_edit.set_xy(left + labelmaxwidth + 20, top + y);
+        duration_edit.update_layout({
+            .x = checked_int(left + labelmaxwidth + 20),
+            .y = checked_int(top + y),
+            .width = checked_int((width - labelmaxwidth - 20) - this->duration_format.cx() - 20),
+        });
 
-        this->duration_format.set_xy(this->duration_edit.eright() + 10, top + y + 2);
+        this->duration_format.set_xy(this->duration_edit.eright() + 10, top + y + d);
 
         y += 30;
     }
 
     if (this->flags & TICKET_DISPLAY) {
-        this->ticket_label.set_xy(left, top + y);
+        this->ticket_label.set_xy(left, top + y + d);
 
-        dim = this->ticket_edit.get_optimal_dim();
-        this->ticket_edit.set_wh(width - labelmaxwidth - 20, dim.h);
-        this->ticket_edit.set_xy(left + labelmaxwidth + 20, top + y);
+        ticket_edit.update_layout({
+            .x = checked_int(left + labelmaxwidth + 20),
+            .y = checked_int(top + y),
+            .width = checked_int(width - labelmaxwidth - 20),
+        });
 
         y += 30;
     }
 
     if (this->flags & COMMENT_DISPLAY) {
-        this->comment_label.set_xy(left, top + y);
+        this->comment_label.set_xy(left, top + y + d);
 
-        dim = this->comment_edit.get_optimal_dim();
-        this->comment_edit.set_wh(width - labelmaxwidth - 20, dim.h);
-        this->comment_edit.set_xy(left + labelmaxwidth + 20, top + y);
+        comment_edit.update_layout({
+            .x = checked_int(left + labelmaxwidth + 20),
+            .y = checked_int(top + y),
+            .width = checked_int(width - labelmaxwidth - 20),
+        });
 
         y += 30;
     }

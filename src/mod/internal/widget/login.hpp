@@ -24,6 +24,7 @@
 #include "mod/internal/widget/label.hpp"
 #include "mod/internal/widget/edit_valid.hpp"
 #include "mod/internal/widget/image.hpp"
+#include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/vertical_scroll_text.hpp"
 #include "translation/translation.hpp"
 #include "mod/internal/widget/multiline.hpp"
@@ -67,16 +68,9 @@ private:
     WidgetTooltipShower & tooltip_shower;
 
     WidgetLabel        error_message_label;
-    WidgetLabel        login_label;
 public:
     WidgetEditValid    login_edit;
-private:
-    WidgetLabel        password_label;
-public:
     WidgetEditValid    password_edit;
-private:
-    WidgetLabel        target_label;
-public:
     WidgetEditValid    target_edit;
 private:
     WidgetVerticalScrollText message_label;
@@ -89,6 +83,5 @@ private:
 
     Translator tr;
 
-    bool labels_added = false;
     bool show_target = false;
 };
