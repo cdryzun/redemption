@@ -110,7 +110,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
         .x = 10,
         .y = 10,
         .width = 120,
-        .edit_offset = checked_int(edit.label_width(false) + 20),
+        .edit_offset = checked_int(edit.label_width(false) + 19),
         .label_as_placeholder = false,
     });
 
@@ -129,7 +129,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
         .x = 10,
         .y = 10,
         .width = 120,
-        .edit_offset = checked_int(edit.label_width(false) + 29),
+        .edit_offset = checked_int(edit.label_width(false) + 28),
         .label_as_placeholder = false,
     });
 

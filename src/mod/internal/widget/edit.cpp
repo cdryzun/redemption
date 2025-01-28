@@ -77,7 +77,7 @@ auto sanitized_char(F&& f)
 }
 
 constexpr uint16_t w_cursor = 1;
-constexpr uint16_t h_padding = 1;
+constexpr uint16_t h_padding = 2;
 constexpr uint16_t w_padding = 1;
 constexpr uint16_t border_len = 1;
 constexpr uint16_t w_cursor_padding = 1;

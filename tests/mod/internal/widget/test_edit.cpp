@@ -251,7 +251,7 @@ RED_AUTO_TEST_CASE(WidgetEditMouse)
 RED_AUTO_TEST_CASE(WidgetEditSetText)
 {
     TestWidgetEditCtx ctx{
-      .drawable = TestGraphic{40, 82},
+      .drawable = TestGraphic{40, 84},
     };
 
     using CusorPosition = WidgetEdit::CusorPosition;

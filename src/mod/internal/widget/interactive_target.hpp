@@ -67,7 +67,7 @@ private:
     WidgetLabel        caption_label;
     WidgetRect         separator;
 
-    WidgetLabel        device;
+    WidgetLabel        device_info;
 
 public:
     WidgetEditValid    device_edit;

@@ -36,7 +36,7 @@ namespace
     constexpr uint32_t button_valid = 0x0000279c; // ➜
 
     constexpr uint16_t border_len = 1;
-    constexpr uint16_t button_padding = 3;
+    constexpr uint16_t w_button_padding = 3;
 
 
     void draw_rect(gdi::GraphicApi& gd, Rect clip, RDPColor color, int x, int y, int w, int h)
@@ -55,7 +55,7 @@ namespace
 
     int button_width(FontCharView const& fc)
     {
-        return fc.boxed_width() + button_padding * 2;
+        return fc.boxed_width() + w_button_padding * 2;
     }
 
     template<class T>
@@ -135,7 +135,14 @@ WidgetEditValid::WidgetEditValid(
             onsubmit,
         }}
     )
-{}
+{
+    if (opts.type == Type::Text) {
+        set_wh(edit_or_text.text.width(), edit_or_text.text.height());
+    }
+    else {
+        set_wh(edit_or_text.edit.cx(), edit_or_text.edit.cy());
+    }
+}
 
 // TODO remove that when EditOrText is trivial
 WidgetEditValid::~WidgetEditValid()
@@ -165,14 +172,19 @@ Dimension WidgetEditValid::get_optimal_dim() const
             buttons.valid_text->height
         };
 
-    dim.h += 2 /* border */;
+    dim.h += border_len * 2;
 
     return dim;
 }
 
 uint16_t WidgetEditValid::label_width(bool is_placeholder) const noexcept
 {
-    return label.text.width() + !is_placeholder * border_len;
+    return label.text.width() + border_len * 2 + is_placeholder /* shift cursor size */;
+}
+
+uint16_t WidgetEditValid::text_width() const noexcept
+{
+    return is_text_widget() ? edit_or_text.text.width() + border_len * 2 : 0;
 }
 
 void WidgetEditValid::set_text(bytes_view text, TextOptions opts)
@@ -195,7 +207,7 @@ void WidgetEditValid::update_layout(Layout layout)
     if (is_text_widget()) {
         edit_or_text.text.offset_x = label.is_placeholder ? 0 : layout.edit_offset;
         widget_h = edit_or_text.text.height();
-        widget_w = edit_or_text.text.offset_x + edit_or_text.text.width();
+        widget_w = edit_or_text.text.offset_x + edit_or_text.text.width() + border_len * 2;
     }
     else {
         int w = button_width(*buttons.valid_text) + border_len * 2;
@@ -264,14 +276,25 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
     Rect rect = clip.intersect(this->get_rect());
 
     if (!rect.isempty()) {
+        /*
+         * No editable text
+         */
         if (is_text_widget()) [[unlikely]] {
-            auto draw_text = [this, &clip](int x, array_view<FontCharView const*> fcs){
+            uint16_t h_text = edit_or_text.text.height();
+            int top_pad = (cy() - h_text) / 2;
+            int bottom_pad = cy() - h_text - top_pad;
+            auto draw_text = [&](int x, array_view<FontCharView const*> fcs, uint16_t left){
                 gdi::draw_text(
                     drawable,
                     x,
                     y(),
-                    edit_or_text.text.height(),
-                    gdi::DrawTextPadding::Padding(0),
+                    h_text,
+                    gdi::DrawTextPadding{
+                        .top = checked_int(top_pad),
+                        .right = cx(),
+                        .bottom = checked_int(bottom_pad),
+                        .left = left,
+                    },
                     fcs,
                     label.fg_color,
                     label.bg_color,
@@ -279,37 +302,45 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
                 );
             };
 
-            draw_text(x() + edit_or_text.text.offset_x, edit_or_text.text.fcs());
+            draw_text(x() + edit_or_text.text.offset_x, edit_or_text.text.fcs(), 0);
             if (!label.is_placeholder) {
-                draw_text(x(), label.text.fcs());
+                clip.cx = edit_or_text.text.offset_x;
+                draw_text(x(), label.text.fcs(), 1);
             }
             return ;
         }
 
+        /*
+         * Edit text
+         */
+
         edit_or_text.edit.rdp_input_invalidate(rect);
 
+        // placeholder
         if (label.is_placeholder) {
             if (!this->edit_or_text.edit.has_text()) {
                 draw_placeholder(clip);
             }
         }
+        // label
         else {
             uint16_t h_text = edit_or_text.edit.get_font().max_height();
+            uint16_t w_text = checked_int(edit_or_text.edit.x() - x());
             gdi::draw_text(
                 drawable,
                 x(),
-                y() + (cy() - h_text - border_len * 2) / 2,
-                checked_int(h_text + border_len * 2),
-                gdi::DrawTextPadding::Padding(border_len),
+                y(),
+                h_text,
+                gdi::DrawTextPadding{
+                    .top = checked_int((cy() - h_text) / 2),
+                    .right = cx(),
+                    .bottom = cy(),
+                    .left = 1,
+                },
                 label.text.fcs(),
                 label.fg_color,
                 label.bg_color,
-                Rect(
-                    x(),
-                    y(),
-                    checked_int(edit_or_text.edit.x() - x() + border_len * 2),
-                    cy() - border_len * 2
-                )
+                Rect(x(), y(), w_text, cy())
             );
         }
 
@@ -330,23 +361,26 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
         RDPColor border_color;
 
         if (this->has_focus) {
-            int y_button = y() + border_len * 2;
-            int cy_button = cy() - border_len * 4;
+            int const y_button = y() + border_len * 2;
+            int const cy_button = cy() - border_len * 4;
 
             auto draw_button = [this, y_button, cy_button, clip](
                 int x_button, bool is_pressed, FontCharView const* fc,
                 RDPColor fg, RDPColor bg, int adjust_border
             ) {
+                uint16_t h_text = edit_or_text.edit.get_font().max_height();
+                int top_pad = (cy_button - h_text) / 2 + is_pressed;
+                int bottom_pad = cy_button - h_text - top_pad;
                 return gdi::draw_text(
                     drawable,
                     checked_int(x_button),
                     y_button,
-                    fc->height,
+                    h_text,
                     gdi::DrawTextPadding{
-                        .top = checked_int(is_pressed),
-                        .right = checked_int(button_padding - is_pressed),
-                        .bottom = checked_int(cy_button - fc->height - is_pressed),
-                        .left = checked_int(button_padding + is_pressed - adjust_border),
+                        .top = checked_int(top_pad),
+                        .right = checked_int(w_button_padding - is_pressed),
+                        .bottom = checked_int(bottom_pad),
+                        .left = checked_int(w_button_padding + is_pressed - adjust_border),
                     },
                     array_view{&fc, 1},
                     fg, bg, clip
@@ -441,7 +475,7 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
                     auto rect = get_rect();
                     rect.x = checked_int(sx);
                     rect.y += border_len * 2;
-                    rect.cx = checked_int(fc->boxed_width() + button_padding * 2);
+                    rect.cx = checked_int(button_width(*fc));
                     rect.cy -= border_len * 4;
                     // TODO
                     rdp_input_invalidate(rect);
@@ -461,7 +495,7 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
                     auto rect = get_rect();
                     rect.x = checked_int(sx + (fc ? button_width(*fc) : 0));
                     rect.y += border_len * 2;
-                    rect.cx = checked_int(buttons.valid_text->boxed_width() + button_padding * 2);
+                    rect.cx = checked_int(button_width(*buttons.valid_text));
                     rect.cy -= border_len * 4;
                     // TODO
                     rdp_input_invalidate(rect);
@@ -514,7 +548,7 @@ void WidgetEditValid::draw_placeholder(Rect clip)
     auto edit_rect = edit_or_text.edit.get_rect();
     edit_rect.x += border_len + 1/*cursor width*/;
     edit_rect.y += border_len;
-    edit_rect.cx -= border_len * 2 - 2;
+    edit_rect.cx -= border_len * 2 - 1;
     edit_rect.cy -= border_len * 2;
     gdi::draw_text(
         drawable,

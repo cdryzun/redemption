@@ -21,6 +21,7 @@
 #include "gdi/text_metrics.hpp"
 #include "core/RDP/orders/RDPOrdersCommon.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryGlyphIndex.hpp"
+#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/RDP/caches/glyphcache.hpp"
 #include "utils/sugar/numerics/safe_conversions.hpp"
 #include "utils/utf.hpp"
@@ -362,6 +363,17 @@ int draw_text(
     }
 
     if (!(it < end)) {
+        int w = padding.left + padding.right;
+        if (w) {
+            Rect rect(
+                checked_int(x - padding.left),
+                checked_int(y),
+                checked_int(w),
+                checked_int(height + padding.top + padding.bottom)
+            );
+            drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
+            return rect.intersect(clip).eright();
+        }
         return x - padding.left;
     }
 
@@ -397,7 +409,7 @@ int draw_text(
         Rect bk(
             checked_int(glyph_x - padding.left),
             checked_int(glyph_y - padding.top),
-            checked_int(total_width + 1 + padding.left + padding.right),
+            checked_int(total_width + 1 + padding.left + padding.right), // TODO last loop only
             checked_int(height + padding.top + padding.bottom)
         );
 

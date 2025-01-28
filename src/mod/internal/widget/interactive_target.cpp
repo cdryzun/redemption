@@ -20,12 +20,17 @@
  */
 
 #include "mod/internal/widget/interactive_target.hpp"
+#include "keyboard/keymap.hpp"
 #include "utils/theme.hpp"
 #include "utils/strutils.hpp"
-#include "keyboard/keymap.hpp"
 
-#include <cstring>
-
+namespace
+{
+    WidgetEventNotifier next_focus_notifier(WidgetInteractiveTarget & w)
+    {
+        return WidgetEventNotifier([&w]{ w.next_focus(); });
+    }
+}
 
 WidgetInteractiveTarget::WidgetInteractiveTarget(
     gdi::GraphicApi & drawable, CopyPaste & copy_paste,
@@ -46,9 +51,9 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     , caption_label(drawable, caption,
                     theme.global.fgcolor, theme.global.bgcolor, font)
     , separator(drawable, theme.global.separator_color)
-    , device(
-        drawable, device_info,
-        // TODO error context should be transfered instead of detected with string prefix (incompatible with translation)
+    , device_info(
+        drawable, ask_device ? device_info : ""_av,
+        // TODO BUG error context should be transfered instead of detected with string prefix (incompatible with translation)
         ask_device && (utils::starts_with(device_info, "Error:"_av) ||
                        utils::starts_with(device_info, "Erreur:"_av))
             ? theme.global.error_color
@@ -61,10 +66,11 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
                 ? WidgetEditValid::Type::Edit
                 : WidgetEditValid::Type::Text,
             .label = label_device,
+            .edit = ask_device ? ""_av : device_info,
         },
         WidgetEditValid::Colors::from_theme(theme),
         (ask_login || ask_password)
-            ? WidgetEventNotifier([this]{ this->next_focus(); })
+            ? next_focus_notifier(*this)
             : events.onsubmit
     )
     , login_edit(
@@ -74,10 +80,10 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
                 ? WidgetEditValid::Type::Edit
                 : WidgetEditValid::Type::Text,
             .label = label_login,
-            .edit = text_login,
+            .edit = ask_login ? ""_av : text_login,
         },
         WidgetEditValid::Colors::from_theme(theme),
-        [this]{ this->next_focus(); }
+        next_focus_notifier(*this)
     )
     , password_edit(
         drawable, font, copy_paste,
@@ -87,7 +93,7 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
         },
         WidgetEditValid::Colors::from_theme(theme),
         !(ask_login || ask_password)
-            ? WidgetEventNotifier([this]{ this->next_focus(); })
+            ? next_focus_notifier(*this)
             : events.onsubmit
     )
     , extra_button(extra_button)
@@ -117,7 +123,7 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
 
     this->add_widget(this->device_edit, device_has_focus);
     if (ask_device) {
-        this->add_widget(this->device);
+        this->add_widget(this->device_info);
     }
     this->add_widget(this->login_edit, login_has_focus);
     if (this->ask_password) {
@@ -139,107 +145,82 @@ void WidgetInteractiveTarget::move_size_widget(int16_t left, int16_t top, uint16
     Dimension dim = this->caption_label.get_optimal_dim();
     this->caption_label.set_wh(dim);
 
-    dim = this->device.get_optimal_dim();
-    this->device.set_wh(dim);
-    Widget * device_show = &this->device;
-    if (this->ask_device) {
-        dim = this->device_edit.get_optimal_dim();
-        this->device_edit.set_wh(400, dim.h);
-        device_show = &this->device_edit;
-    }
-    dim = this->login.get_optimal_dim();
-    this->login.set_wh(dim);
-    Widget * login_show = &this->login;
-    if (this->ask_login) {
-        dim = this->login_edit.get_optimal_dim();
-        this->login_edit.set_wh(400, dim.h);
-        login_show = &this->login_edit;
-    }
-    if (this->ask_password) {
-        dim = this->password_edit.get_optimal_dim();
-        this->password_edit.set_wh(400, dim.h);
-    }
+    dim = this->device_info.get_optimal_dim();
+    this->device_info.set_wh(dim);
 
-    dim = this->device_label.get_optimal_dim();
-    this->device_label.set_wh(dim);
-
-    dim = this->login_label.get_optimal_dim();
-    this->login_label.set_wh(dim);
 
     // Center bloc positionning
     // Device, Login and Password boxes
-    int margin_w = std::max<int>(this->device_label.cx(),
-                                    this->login_label.cx());
-    if (this->ask_password) {
-        dim = this->password_label.get_optimal_dim();
-        this->password_label.set_wh(dim);
+    bool const is_placeholder = false;
 
-        margin_w = std::max<int>(margin_w,
-                                    this->password_label.cx());
+    uint16_t offset_edit = device_edit.label_width(is_placeholder);
+    offset_edit = std::max(offset_edit, login_edit.label_width(is_placeholder));
+    if (ask_password) {
+        offset_edit = std::max(offset_edit, password_edit.label_width(is_placeholder));
+    }
+    offset_edit += 20;
+
+    uint16_t edit_w = 400;
+    edit_w = std::max(edit_w, device_edit.text_width());
+    edit_w = std::max(edit_w, login_edit.text_width());
+    if (ask_device) {
+        edit_w = std::max(edit_w, device_info.cx());
+    }
+    if (ask_password) {
+        edit_w = std::max(edit_w, password_edit.text_width());
     }
 
-    int cbloc_w = std::max<int>(this->caption_label.cx(),
-                                margin_w + device_show->cx() + 20);
-    if (this->ask_device) {
-        cbloc_w = std::max<int>(cbloc_w,
-                                margin_w + this->device.cx() + 20);
-    }
-    cbloc_w = std::max<int>(cbloc_w,
-                            margin_w + login_show->cx() + 20);
-    if (this->ask_password) {
-        cbloc_w = std::max<int>(cbloc_w,
-                                margin_w + this->password_edit.cx() + 20);
-    }
+    uint16_t cbloc_w = std::max(
+        this->caption_label.cx(),
+        checked_cast<uint16_t>(edit_w + offset_edit)
+    );
+
+    constexpr int y_sep = 20;
 
     const int cbloc_h =
-        this->caption_label.cy() + 20 + 30 +
-        this->device_label.cy() + 30 +
-        (this->ask_device ? this->device.cy() + 30 : 0) +
-        this->login_label.cy() + 30 +
-        (this->ask_password ? this->password_edit.cy() + 20 : 0);
+        this->caption_label.cy() + y_sep +
+        y_sep +
+        this->device_edit.cy() + y_sep +
+        (this->ask_device ? this->device_info.cy() + y_sep - 10 : 0) +
+        this->login_edit.cy() +
+        (this->ask_password ? this->password_edit.cy() + y_sep : 0);
 
-    const int x_cbloc = (width  - cbloc_w) / 2;
+    const int16_t x_cbloc = checked_int(left + (width  - cbloc_w) / 2);
     const int y_cbloc = (height - cbloc_h) / 3;
 
     int y = y_cbloc;
 
     this->caption_label.set_xy(left + (width - this->caption_label.cx()) / 2, top + y);
+    y = this->caption_label.ebottom() + y_sep;
 
-    y = this->caption_label.ebottom() + 20;
-
-    this->separator.set_xy(left + x_cbloc, y);
+    this->separator.set_xy(x_cbloc, y);
     this->separator.set_wh(cbloc_w, 2);
+    y = this->separator.ebottom() + y_sep;
 
-    y = this->separator.ebottom() + 20;
+    auto update_edit_layout = [&](WidgetEditValid & w){
+        w.update_layout({
+            .x = checked_int(x_cbloc),
+            .y = checked_int(y),
+            .width = cbloc_w,
+            .edit_offset = offset_edit,
+            .label_as_placeholder = false,
+        });
 
-    this->device_label.set_xy(left + x_cbloc, y);
-    device_show->set_xy(left + x_cbloc + margin_w + 20, y - (this->ask_device ? this->device_edit.get_border_height() : 0));
+        return w.ebottom() + y_sep;
+    };
 
-    y = device_show->ebottom() + 20;
+    y = update_edit_layout(device_edit);
 
     if (this->ask_device) {
-        this->device.set_xy(left + x_cbloc + margin_w + 20, y - 10);
+        this->device_info.set_xy(x_cbloc + offset_edit, y - 10);
 
-        y = this->device.ebottom() + 20;
+        y = this->device_info.ebottom() + y_sep;
     }
 
-    this->login_label.set_xy(left + x_cbloc, y);
-    login_show->set_xy(left + x_cbloc + margin_w + 20, y - (this->ask_login ? this->login_edit.get_border_height() : 0));
-
-    y = login_show->ebottom() + 20;
+    y = update_edit_layout(login_edit);
 
     if (this->ask_password) {
-        this->password_label.set_xy(left + x_cbloc, y);
-        this->password_edit.set_xy(left + x_cbloc + margin_w + 20, y - this->password_edit.get_border_height());
-    }
-
-    this->device_label.set_xy(this->device_label.x(),
-        this->device_label.y() + (device_show->cy() - this->device_label.cy()) / 2);
-    this->login_label.set_xy(this->login_label.x(),
-        this->login_label.y() + (login_show->cy() - this->login_label.cy()) / 2);
-    if (this->ask_password) {
-        this->password_label.set_xy(this->password_label.x(),
-            this->password_label.y() + (this->password_edit.cy() - this->password_label.cy()) / 2);
+        update_edit_layout(password_edit);
     }
 
     if (this->extra_button) {
