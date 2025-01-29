@@ -460,6 +460,15 @@ void WidgetEditValid::blur()
     }
 }
 
+// TODO for edit pointer cursor
+Widget * WidgetEditValid::widget_at_pos(int16_t x, int16_t y)
+{
+    if (!is_text_widget() && edit_or_text.edit.get_rect().contains_pt(x, y)) {
+        return &edit_or_text.edit;
+    }
+    return nullptr;
+}
+
 void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
     if (!is_text_widget() && bool(device_flags & MOUSE_FLAG_BUTTON1))

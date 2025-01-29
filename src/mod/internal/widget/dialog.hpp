@@ -25,11 +25,11 @@
 #include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/image.hpp"
 #include "mod/internal/widget/label.hpp"
+#include "mod/internal/widget/password.hpp"
 #include "mod/internal/widget/vertical_scroll_text.hpp"
 #include "mod/internal/widget/delegated_copy.hpp"
 #include "mod/internal/widget/widget_rect.hpp"
 
-class WidgetEdit;
 class Theme;
 class CopyPaste;
 
@@ -45,6 +45,11 @@ public:
         bool msg_showed = false;
     };
 
+    struct WidgetChallenge
+    {
+        WidgetPassword edit;
+    };
+
     struct Events
     {
         WidgetEventNotifier onsubmit;
@@ -57,7 +62,7 @@ public:
         chars_view caption, chars_view text, WidgetButton * extra_button,
         Theme const & theme, Font const & font, chars_view ok_text,
         std::unique_ptr<WidgetButton> cancel,
-        std::unique_ptr<WidgetEdit> challenge,
+        WidgetEdit* challenge,
         WidgetLink* link);
 
     ~WidgetDialogBase();
@@ -79,7 +84,7 @@ private:
 // TODO private
 public:
     WidgetLink* link;
-    std::unique_ptr<WidgetEdit> challenge;
+    WidgetEdit* challenge;
 
     WidgetButton   ok;
 
@@ -110,7 +115,7 @@ public:
 };
 
 
-class WidgetDialogWithChallenge : public WidgetDialogBase
+class WidgetDialogWithChallenge : private WidgetDialogBase::WidgetChallenge, public WidgetDialogBase
 {
 public:
     using Events = WidgetDialogBase::Events;

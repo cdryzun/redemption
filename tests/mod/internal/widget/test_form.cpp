@@ -46,7 +46,7 @@ RED_AUTO_TEST_CASE(TestWidgetForm)
 
     flag += WidgetForm::DURATION_MANDATORY;
 
-    WidgetForm form(drawable, copy_paste, 0, 0, 600, 150,
+    WidgetForm form(drawable, copy_paste, 0, 0, 600, 160,
                     {WidgetEventNotifier(), WidgetEventNotifier()},
                     global_font_deja_vu_14(), colors,
                     MsgTranslationCatalog::default_catalog(), flag);

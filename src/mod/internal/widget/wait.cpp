@@ -89,7 +89,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     this->groupbox.set_wh(width, height);
 
     if (this->hasform) {
-        this->form.set_wh(width - 80, 150);
+        this->form.set_wh(width - 80, 156);
         this->form.set_xy(left, top);
     }
 

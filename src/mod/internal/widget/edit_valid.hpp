@@ -114,6 +114,8 @@ public:
 
     void init_focus() override;
 
+    Widget * widget_at_pos(int16_t x, int16_t y) override;
+
 private:
     void draw_placeholder(Rect clip);
 

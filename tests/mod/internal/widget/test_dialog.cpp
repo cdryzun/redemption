@@ -360,7 +360,7 @@ RED_AUTO_TEST_CASE(EventWidgetChallenge)
         "adipiscing et arcu."_av,
         WidgetDialogWithChallenge::ChallengeOpt::Echo);
 
-    ctx.flat_dialog.challenge->set_text("challenge_test"_av, WidgetEdit::Redraw::No);
+    ctx.flat_dialog.challenge->set_text("challenge_test"_av, {WidgetEdit::Redraw::No});
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);

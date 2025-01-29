@@ -36,7 +36,7 @@ WidgetDialogBase::WidgetDialogBase(
     chars_view caption, chars_view text, WidgetButton * extra_button,
     Theme const & theme, Font const & font, chars_view ok_text,
     std::unique_ptr<WidgetButton> cancel_,
-    std::unique_ptr<WidgetEdit> challenge_,
+    WidgetEdit* challenge_,
     WidgetLink* link
 )
     : WidgetComposite(drawable, Focusable::Yes)
@@ -48,7 +48,7 @@ WidgetDialogBase::WidgetDialogBase(
              theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
              font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
     , link(link)
-    , challenge(std::move(challenge_))
+    , challenge(challenge_)
     , ok(drawable, ok_text, events.onsubmit,
         theme.global.fgcolor, theme.global.bgcolor,
         theme.global.focus_color, 2, font, 6, 2)
@@ -313,22 +313,23 @@ WidgetDialogWithChallenge::WidgetDialogWithChallenge(
     chars_view ok_text,
     Font const & font, Theme const & theme, CopyPaste & copy_paste,
     ChallengeOpt challenge_opt)
-: WidgetDialogBase(
+: WidgetDialogBase::WidgetChallenge{
+    .edit = WidgetPassword{
+        drawable, font, copy_paste,
+        WidgetEdit::Colors::from_theme(theme), events.onsubmit
+    },
+}
+, WidgetDialogBase(
     drawable, widget_rect, events,
     caption, text, extra_button, theme, font,
     ok_text,
     nullptr,
-    (ChallengeOpt::Echo == challenge_opt)
-        ? std::make_unique<WidgetEdit>(
-            drawable, copy_paste, nullptr, events.onsubmit,
-            theme.edit.fgcolor, theme.edit.bgcolor,
-            theme.edit.focus_color, font, 1, 1
-        )
-        :  std::make_unique<WidgetPassword>(
-            drawable, copy_paste, nullptr, events.onsubmit,
-            theme.edit.fgcolor, theme.edit.bgcolor,
-            theme.edit.focus_color, font, 1, 1
-        ),
+    [&]{
+        if (ChallengeOpt::Echo == challenge_opt) {
+            edit.toggle_password_visibility(WidgetEdit::Redraw::No);
+        }
+        return &edit;
+    }(),
     nullptr
 )
 {}

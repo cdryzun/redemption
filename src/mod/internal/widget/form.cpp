@@ -139,9 +139,12 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
         labelmaxwidth = std::max(labelmaxwidth, this->comment_label.cx());
     }
 
+    constexpr uint8_t x_padding = 20;
+    constexpr uint8_t h_sep = 32;
+
     dim = this->warning_msg.get_optimal_dim();
-    this->warning_msg.set_wh(width - labelmaxwidth - 20, dim.h);
-    this->warning_msg.set_xy(left + labelmaxwidth + 20, top);
+    this->warning_msg.set_wh(width - labelmaxwidth - x_padding, dim.h);
+    this->warning_msg.set_xy(left + labelmaxwidth + x_padding, top);
 
     int y = 20;
     int d = (duration_edit.cy() - dim.h) / 2;
@@ -153,44 +156,44 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
         this->duration_format.set_wh(dim.w, dim.h);
 
         duration_edit.update_layout({
-            .x = checked_int(left + labelmaxwidth + 20),
+            .x = checked_int(left + labelmaxwidth + x_padding),
             .y = checked_int(top + y),
-            .width = checked_int((width - labelmaxwidth - 20) - this->duration_format.cx() - 20),
+            .width = checked_int((width - labelmaxwidth - x_padding) - this->duration_format.cx() - x_padding),
         });
 
         this->duration_format.set_xy(this->duration_edit.eright() + 10, top + y + d);
 
-        y += 30;
+        y += h_sep;
     }
 
     if (this->flags & TICKET_DISPLAY) {
         this->ticket_label.set_xy(left, top + y + d);
 
         ticket_edit.update_layout({
-            .x = checked_int(left + labelmaxwidth + 20),
+            .x = checked_int(left + labelmaxwidth + x_padding),
             .y = checked_int(top + y),
-            .width = checked_int(width - labelmaxwidth - 20),
+            .width = checked_int(width - labelmaxwidth - x_padding),
         });
 
-        y += 30;
+        y += h_sep;
     }
 
     if (this->flags & COMMENT_DISPLAY) {
         this->comment_label.set_xy(left, top + y + d);
 
         comment_edit.update_layout({
-            .x = checked_int(left + labelmaxwidth + 20),
+            .x = checked_int(left + labelmaxwidth + x_padding),
             .y = checked_int(top + y),
-            .width = checked_int(width - labelmaxwidth - 20),
+            .width = checked_int(width - labelmaxwidth - x_padding),
         });
 
-        y += 30;
+        y += h_sep;
     }
 
     if (this->flags & (COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY)) {
         dim = this->notes.get_optimal_dim();
-        this->notes.set_wh(width - labelmaxwidth - 20, dim.h);
-        this->notes.set_xy(left + labelmaxwidth + 20, top + y);
+        this->notes.set_wh(width - labelmaxwidth - x_padding, dim.h);
+        this->notes.set_xy(left + labelmaxwidth + x_padding, top + y);
     }
 
     dim = this->confirm.get_optimal_dim();
