@@ -409,22 +409,26 @@ int draw_text(
         Rect bk(
             checked_int(glyph_x - padding.left),
             checked_int(glyph_y - padding.top),
-            checked_int(total_width + 1 + padding.left + padding.right), // TODO last loop only
-            checked_int(height + padding.top + padding.bottom)
+            checked_int(total_width + 2 + padding.left + padding.right), // TODO last loop only
+            checked_int(height + 1 + padding.top + padding.bottom)
         );
+        // for freerdp because clip is ignored
+        // auto bk = clip.intersect(real_bk);
+        // glyph_x += bk.x - real_bk.x;
+        // glyph_y += bk.y - real_bk.y;
 
         RDPGlyphIndex glyphindex(
             cacheId,  // cache_id
             0x03,     // fl_accel
             0x0,      // ui_charinc
-            1,        // f_op_redundant,
+            0,        // f_op_redundant,
             fgcolor,  // BackColor (text color)
             bgcolor,  // ForeColor (color of the opaque rectangle)
             bk,       // bk
             bk,       // op
-            RDPBrush(0, 0, 3, 0xaa, byte_ptr_cast("\xaa\x55\xaa\x55\xaa\x55\xaa\x55")),
-            checked_int(glyph_x),
-            checked_int(glyph_y),
+            RDPBrush(0, 0, 0, 0),
+            glyph_x,
+            glyph_y,
             checked_int(data_it - data),
             data
         );
