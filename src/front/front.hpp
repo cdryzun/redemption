@@ -4752,8 +4752,8 @@ private:
                     }
 
                     if (fc) {
-                        const int16_t x = cmd.bk.x + draw_pos_ref + 1;
-                        const int16_t y = cmd.bk.y + fc.offsety;
+                        const int16_t x = draw_pos_ref + 1 + cmd.glyph_x;
+                        const int16_t y = fc.offsety + cmd.glyph_y;
 
                         contiguous_sub_rect_f(CxCy{fc.width, fc.height}, SubCxCy{64, 64}, [&](Rect rect){
                             const int16_t glyphx = rect.x + x;
