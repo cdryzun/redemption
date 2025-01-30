@@ -59,7 +59,7 @@ public:
 
     WidgetDialogBase(
         gdi::GraphicApi & drawable, Rect widget_rect, Events events,
-        chars_view caption, chars_view text, WidgetButton * extra_button,
+        chars_view caption, chars_view text, Widget * extra_button,
         Theme const & theme, Font const & font, chars_view ok_text,
         std::unique_ptr<WidgetButton> cancel,
         WidgetEdit* challenge,
@@ -93,7 +93,7 @@ public:
 
 private:
     WidgetImage         img;
-    WidgetButton*       extra_button;
+    Widget *            extra_button;
     WidgetEventNotifier oncancel;
 };
 
@@ -125,7 +125,7 @@ public:
     WidgetDialogWithChallenge(
         gdi::GraphicApi & drawable, Rect widget_rect, Events events,
         chars_view caption, chars_view text,
-        WidgetButton * extra_button,
+        Widget * extra_button,
         chars_view ok_text,
         Font const & font, Theme const & theme, CopyPaste & copy_paste,
         ChallengeOpt challenge);

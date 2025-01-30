@@ -45,7 +45,7 @@ public:
     WidgetWait(
         gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
         Events events, chars_view caption, chars_view text,
-        WidgetButton * extra_button,
+        Widget * extra_button,
         Font const & font, Theme const & theme, Translator tr,
         bool showform = false, unsigned flags = WidgetForm::NONE,
         std::chrono::minutes duration_max = std::chrono::minutes::zero()); /*NOLINT*/
@@ -69,7 +69,7 @@ private:
     WidgetButton goselector;
 
     WidgetButton   exit;
-    WidgetButton * extra_button;
+    Widget *       extra_button;
 
     bool hasform;
     bool hide_back_to_selector;

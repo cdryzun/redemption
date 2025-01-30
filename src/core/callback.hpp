@@ -31,7 +31,6 @@
 #include "keyboard/kbdtypes.hpp"
 #include "utils/rect.hpp"
 
-#include <string>
 
 class InStream;
 struct Keymap;

@@ -24,6 +24,7 @@
 #include "mod/internal/widget/widget.hpp"
 #include "mod/internal/widget/password.hpp"
 #include "mod/internal/widget/label.hpp"
+#include "mod/internal/button_state.hpp"
 #include "utils/colors.hpp"
 
 class WidgetEdit;
@@ -169,8 +170,8 @@ private:
     };
 
     Buttons buttons;
-    bool valid_pressed = false;
-    bool toggle_password_pressed = false;
+    ButtonState valid_pressed;
+    ButtonState toggle_password_pressed;
     Color password_toggle_color;
     Label label;
     EditOrText edit_or_text;

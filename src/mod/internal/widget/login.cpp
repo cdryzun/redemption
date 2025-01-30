@@ -40,7 +40,7 @@ WidgetLogin::WidgetLogin(
     chars_view label_text_target,
     chars_view label_error_message,
     chars_view login_message,
-    WidgetButton * extra_button,
+    Widget * extra_button,
     bool enable_target_field,
     Font const & font, Translator tr, Theme const & theme
 )

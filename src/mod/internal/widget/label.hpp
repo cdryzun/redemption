@@ -47,6 +47,9 @@ class WidgetText
 public:
     using FontCharPtr = FontCharView const *;
 
+    WidgetText() noexcept
+    {}
+
     WidgetText(Font const & font, chars_view text)
     {
         set_text(font, text);
@@ -71,7 +74,7 @@ public:
     }
 
 private:
-    uint16_t _width;
+    uint16_t _width = 0;
     unsigned _fc_buffer_len = 0;
     FontCharPtr _fc_buffer[BufSize];
 };

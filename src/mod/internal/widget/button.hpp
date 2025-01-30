@@ -24,7 +24,6 @@
 #include "mod/internal/widget/widget.hpp"
 #include "mod/internal/widget/event_notifier.hpp"
 
-
 class Font;
 namespace gdi
 {
@@ -34,6 +33,9 @@ namespace gdi
 class WidgetButton : public Widget
 {
 public:
+    static bool is_submit_event(Keymap const& keymap) noexcept;
+    static bool is_submit_event(KbdFlags flag, uint16_t unicode) noexcept;
+
     enum class State : bool
     {
         Normal,

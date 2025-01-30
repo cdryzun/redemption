@@ -20,11 +20,14 @@
  */
 
 #include "mod/internal/widget/language_button.hpp"
+#include "mod/internal/widget/button.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/front_api.hpp"
 #include "core/font.hpp"
 #include "keyboard/keylayouts.hpp"
 #include "gdi/graphic_api.hpp"
+#include "gdi/text_metrics.hpp"
+#include "gdi/draw_utils.hpp"
 #include "utils/log.hpp"
 #include "utils/theme.hpp"
 #include "utils/sugar/split.hpp"
@@ -60,49 +63,31 @@ namespace
         "##------------------------------------------------------------##",
         "################################################################",
     );
-    constexpr int16_t kbd_icon_cx = kbd_icon_rects.back().cx;
-    constexpr int16_t kbd_icon_cy = kbd_icon_rects.back().ebottom();
+    constexpr uint16_t kbd_icon_cx = kbd_icon_rects.back().cx;
+    constexpr uint16_t kbd_icon_cy = kbd_icon_rects.back().ebottom();
 
-    int get_space_size(Font const & font)
+    constexpr uint16_t button_border = 2;
+    constexpr uint16_t icon_w_padding = 6;
+    constexpr uint16_t icon_right_padding = 5;
+    constexpr uint16_t icon_h_padding = 6;
+
+    uint16_t compute_inner_height(Font const & font)
     {
-        auto const& fc = font.item(' ').view;
-        int w = fc.offsetx + fc.incby;
-        if (w <= 0) {
-            w = 8;
-        }
-        return w;
+        return std::max(font.max_height(), kbd_icon_cy);
     }
 
-    uint16_t kbd_icon_in_space(int w)
+    Dimension compute_optimial_dim(Font const & font, WidgetText<64> & text)
     {
-        auto spaces = static_cast<uint16_t>((kbd_icon_cx + w - 1) / w + 1);
-        return std::min(spaces, uint16_t{16});
+        uint16_t w = text.width()
+                   + icon_w_padding * 2
+                   + button_border * 2
+                   + kbd_icon_cx
+                   + icon_right_padding;
+        uint16_t h = compute_inner_height(font)
+                   + button_border * 2
+                   + icon_h_padding * 2;
+        return {w, h};
     }
-
-    // insert space for draw icon
-    struct LanguageButtonText
-    {
-        char text[128];
-        std::size_t text_len;
-
-        LanguageButtonText(chars_view str, unsigned spaces)
-        {
-            memset(text, ' ', spaces);
-
-            std::size_t remaining = std::size(text) - spaces - 1;
-            std::size_t len = std::min(remaining, str.size());
-            memcpy(text + spaces, str.data(), len);
-            text_len = spaces + len;
-        }
-
-        operator chars_view () const
-        {
-            return {text, text_len};
-        }
-    };
-
-    constexpr uint16_t language_button_border = 2;
-    constexpr uint16_t language_button_padding = 7;
 } // namespace
 
 LanguageButton::LanguageButton(
@@ -113,30 +98,26 @@ LanguageButton::LanguageButton(
     Font const & font,
     Theme const & theme
 )
-: WidgetButton(
-    drawable, nullptr,
-    [this] { this->next_layout(); },
-    theme.global.fgcolor, theme.global.bgcolor,
-    theme.global.focus_color, language_button_border, font,
-    language_button_padding, language_button_padding)
-, icon_size_in_space(kbd_icon_in_space(get_space_size(font)))
-, space_size(static_cast<uint16_t>(icon_size_in_space * get_space_size(font)))
+: Widget(drawable, Focusable::Yes)
+, colors{
+    .fg = theme.global.fgcolor,
+    .bg = theme.global.bgcolor,
+    .focus_bg = theme.global.focus_color,
+}
+, font(font)
 , front(front)
 , parent_redraw(parent_redraw)
 , front_layout(front.get_keylayout())
 {
-    using std::begin;
-    using std::end;
-
-    this->locales.push_back(bool(front_layout.kbdid)
-        ? Ref(this->front_layout)
+    locales.push_back(bool(front_layout.kbdid)
+        ? Ref(front_layout)
         : Ref(default_layout()));
 
     for (auto locale : split_with(enable_locales, ',')) {
         auto const name = trim(locale);
         if (auto const* layout = find_layout_by_name(name)) {
             if (layout->kbdid != front_layout.kbdid) {
-                this->locales.emplace_back(*layout);
+                locales.emplace_back(*layout);
             }
         }
         else {
@@ -145,10 +126,9 @@ LanguageButton::LanguageButton(
         }
     }
 
-    this->set_text(LanguageButtonText(this->locales.front().get().name, icon_size_in_space));
+    button_text.set_text(font, locales.front().get().name);
 
-    Dimension dim = this->get_optimal_dim();
-    this->set_wh(dim);
+    set_wh(compute_optimial_dim(font, button_text));
 }
 
 void LanguageButton::next_layout()
@@ -157,9 +137,9 @@ void LanguageButton::next_layout()
 
     this->selected_language = (this->selected_language + 1) % this->locales.size();
     KeyLayout const& layout = this->locales[this->selected_language];
-    this->set_text(LanguageButtonText(layout.name, icon_size_in_space));
+    button_text.set_text(font, layout.name);
 
-    Dimension dim = this->get_optimal_dim();
+    Dimension dim = compute_optimial_dim(font, button_text);
     this->set_wh(dim);
 
     rect.cx = std::max(rect.cx, this->cx());
@@ -171,17 +151,92 @@ void LanguageButton::next_layout()
 
 void LanguageButton::rdp_input_invalidate(Rect clip)
 {
-    WidgetButton::rdp_input_invalidate(clip);
+    auto h_text = font.max_height();
 
-    int ox = x() + language_button_border + (space_size - kbd_icon_cy - language_button_padding) / 2;
-    int oy = y() + (cy() - kbd_icon_cy) / 2;
+    int cy_inner = cy() - button_border * 2;
+    int y_padding = (cy_inner - h_text) / 2;
+    int is_pressed = button_state.is_pressed();
 
-    Rect rect_intersect = clip.intersect(Rect(ox, oy, kbd_icon_cx, kbd_icon_cy));
+    gdi_draw_border(
+        drawable, colors.fg, get_rect(),
+        button_border, clip,
+        gdi::ColorCtx::depth24()
+    );
+
+    gdi::draw_text(
+        drawable,
+        x() + button_border,
+        y() + button_border,
+        h_text,
+        gdi::DrawTextPadding{
+            .top = checked_int(y_padding + is_pressed),
+            .right = checked_int(icon_w_padding - is_pressed),
+            .bottom = checked_int(cy_inner - h_text - y_padding - is_pressed),
+            .left = checked_int(icon_w_padding + kbd_icon_cx + icon_right_padding + is_pressed),
+        },
+        button_text.fcs(),
+        colors.fg,
+        has_focus ? colors.focus_bg : colors.bg,
+        clip.intersect(get_rect().shrink(button_border))
+    );
+
+    int ox = x() + icon_w_padding;
+    int oy = y() + (cy() - compute_inner_height(font)) / 2;
+
+    Rect rect_intersect = clip.intersect(Rect(
+        checked_int(ox), checked_int(oy),
+        kbd_icon_cx, kbd_icon_cy
+    ));
+
     if (!rect_intersect.isempty()) {
         for (auto r : kbd_icon_rects) {
             r.x += ox;
             r.y += oy;
-            drawable.draw(RDPOpaqueRect(r, fg_color), rect_intersect, gdi::ColorCtx::depth24());
+            drawable.draw(RDPOpaqueRect(r, colors.fg), rect_intersect, gdi::ColorCtx::depth24());
         }
+    }
+}
+
+void LanguageButton::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
+{
+    button_state.update(
+        get_rect(), x, y, device_flags,
+        [this]{ next_layout(); },
+        // TODO
+        [this](Rect rect){ rdp_input_invalidate(rect); }
+    );
+}
+
+void LanguageButton::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, const Keymap& keymap)
+{
+    if (WidgetButton::is_submit_event(keymap)) {
+        next_layout();
+    }
+}
+
+void LanguageButton::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
+{
+    if (WidgetButton::is_submit_event(flag, unicode)) {
+        next_layout();
+    }
+}
+
+void LanguageButton::focus(int reason)
+{
+    (void)reason;
+    if (!has_focus){
+        has_focus = true;
+        // TODO
+        rdp_input_invalidate(get_rect());
+    }
+}
+
+void LanguageButton::blur()
+{
+    if (has_focus) {
+        has_focus = false;
+        button_state.pressed(false);
+        // TODO
+        rdp_input_invalidate(get_rect());
     }
 }

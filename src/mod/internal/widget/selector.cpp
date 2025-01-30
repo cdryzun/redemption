@@ -45,7 +45,7 @@ WidgetSelector::WidgetSelector(
     Events events,
     chars_view current_page,
     chars_view number_of_page,
-    WidgetButton * extra_button,
+    Widget * extra_button,
     WidgetSelectorParams const & selector_params,
     Font const & font, Theme const & theme, Translator tr,
     bool has_target_helpicon /* for unit test only */)

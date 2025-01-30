@@ -21,7 +21,8 @@
 
 #pragma once
 
-#include "mod/internal/widget/button.hpp"
+#include "mod/internal/widget/label.hpp"
+#include "mod/internal/button_state.hpp"
 #include "keyboard/keylayout.hpp"
 #include "utils/ref.hpp"
 #include "utils/sugar/zstring_view.hpp"
@@ -31,7 +32,7 @@
 class FrontAPI;
 class Theme;
 
-class LanguageButton : public WidgetButton
+class LanguageButton : public Widget
 {
 public:
     LanguageButton(
@@ -43,16 +44,34 @@ public:
         Theme const & theme
     );
 
-    void rdp_input_invalidate(Rect clip) override;
-
     void next_layout();
 
+    void rdp_input_invalidate(Rect clip) override;
+
+    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
+
+    void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
+
+    void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
+
+    void focus(int reason) override;
+    void blur() override;
+
 private:
+    struct Colors
+    {
+        Color fg;
+        Color bg;
+        Color focus_bg;
+    };
+
     unsigned selected_language = 0;
-    uint16_t icon_size_in_space = 0;
-    uint16_t space_size = 0;
+    ButtonState button_state;
+    Colors colors;
+    Font const & font;
     FrontAPI & front;
     Widget & parent_redraw;
     std::vector<CRef<KeyLayout>> locales;
     KeyLayout front_layout;
+    WidgetText<64> button_text;
 };

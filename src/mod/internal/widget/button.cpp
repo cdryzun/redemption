@@ -150,31 +150,29 @@ void WidgetButton::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y
     }
 }
 
-void WidgetButton::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
+bool WidgetButton::is_submit_event(const Keymap& keymap) noexcept
 {
-    REDEMPTION_DIAGNOSTIC_PUSH()
-    REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
-    switch (keymap.last_kevent()){
-        case Keymap::KEvent::Enter:
-            this->onsubmit();
-            break;
+    auto kevt = keymap.last_kevent();
+    return kevt == Keymap::KEvent::Enter
+        || (kevt == Keymap::KEvent::KeyDown
+            && keymap.last_decoded_keys().uchars[0] == ' ');
+}
 
-        case Keymap::KEvent::KeyDown:
-            if (keymap.last_decoded_keys().uchars[0] == ' ') {
-                this->onsubmit();
-            }
-            break;
+bool WidgetButton::is_submit_event(KbdFlags flag, uint16_t unicode) noexcept
+{
+    return !bool(flag & KbdFlags::Release) && unicode == ' ';
+}
 
-        default:
-            Widget::rdp_input_scancode(flags, scancode, event_time, keymap);
-            break;
+void WidgetButton::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, Keymap const& keymap)
+{
+    if (is_submit_event(keymap)) {
+        this->onsubmit();
     }
-    REDEMPTION_DIAGNOSTIC_POP()
 }
 
 void WidgetButton::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
 {
-    if (!bool(flag & KbdFlags::Release) && (unicode == ' ')) {
+    if (is_submit_event(flag, unicode)) {
         this->onsubmit();
     }
     else {

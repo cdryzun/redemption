@@ -398,7 +398,8 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
             int adjust_border = border_len;
             if (auto * fc = buttons.visibility_visible) {
                 draw_button(
-                    x_button - border_len, toggle_password_pressed,
+                    x_button - border_len,
+                    toggle_password_pressed.is_pressed(),
                     edit_or_text.edit.password_is_visible()
                         ? buttons.visibility_visible
                         : buttons.visibility_hidden,
@@ -410,7 +411,9 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
                 adjust_border = 0;
             }
             draw_button(
-                x_button, valid_pressed, buttons.valid_text,
+                x_button,
+                valid_pressed.is_pressed(),
+                buttons.valid_text,
                 edit_or_text.edit.get_colors().bg,
                 edit_or_text.edit.get_colors().focus_border,
                 w_button_valid_padding, adjust_border
@@ -452,8 +455,8 @@ void WidgetEditValid::blur()
 {
     if (!is_text_widget() && has_focus) {
         has_focus = false;
-        toggle_password_pressed = false;
-        valid_pressed = false;
+        toggle_password_pressed.pressed(false);
+        valid_pressed.pressed(false);
         edit_or_text.edit.blur();
         // TODO
         rdp_input_invalidate(get_rect());
@@ -474,53 +477,51 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
     if (!is_text_widget() && bool(device_flags & MOUSE_FLAG_BUTTON1))
     {
         int sx = edit_or_text.edit.eright();
-        if (sx <= x) {
-            auto * fc = buttons.visibility_visible;
+        int btn1 = sx;
+        int btn2 = sx;
+
+        // valid button
+        if (auto * fc = buttons.valid_text)
+        {
             // toggle visibility button
-            if (fc && x <= sx + button_toggle_width(*fc) - border_len)
+            if (auto * fc = buttons.visibility_visible)
             {
-                if ((device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)
-                        && !toggle_password_pressed)
-                 || (device_flags == MOUSE_FLAG_BUTTON1 && toggle_password_pressed)
-                ) {
-                    toggle_password_pressed = !toggle_password_pressed;
-                    if (device_flags == MOUSE_FLAG_BUTTON1) {
-                        edit_or_text.edit.toggle_password_visibility(WidgetEdit::Redraw::Yes);
-                    }
+                int w = button_toggle_width(*fc) - border_len;
 
-                    auto rect = get_rect();
-                    rect.x = checked_int(sx);
-                    rect.y += border_len * 2;
-                    rect.cx = checked_int(button_toggle_width(*fc));
-                    rect.cy -= border_len * 4;
-                    // TODO
-                    rdp_input_invalidate(rect);
-                }
-            }
-            // valid button
-            else
-            {
-                if ((device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN) && !valid_pressed)
-                 || (device_flags == MOUSE_FLAG_BUTTON1 && valid_pressed)
-                ) {
-                    valid_pressed = !valid_pressed;
-                    if (device_flags == MOUSE_FLAG_BUTTON1) {
-                        edit_or_text.edit.submit();
-                    }
+                auto rect = Rect(
+                    checked_int(btn1),
+                    this->y(),
+                    checked_int(w),
+                    cy()
+                );
 
-                    auto rect = get_rect();
-                    rect.x = checked_int(sx + (fc ? button_valid_width(*fc) : 0));
-                    rect.y += border_len * 2;
-                    rect.cx = checked_int(button_valid_width(*buttons.valid_text));
-                    rect.cy -= border_len * 4;
+                btn2 += button_toggle_width(*fc);
+
+                toggle_password_pressed.update(
+                    rect, x, y, device_flags,
+                    [this]{ edit_or_text.edit.toggle_password_visibility(WidgetEdit::Redraw::Yes); },
                     // TODO
-                    rdp_input_invalidate(rect);
-                }
+                    [this](Rect rect){ rdp_input_invalidate(rect); }
+                );
             }
+
+            auto rect = Rect(
+                checked_int(btn2),
+                this->y(),
+                checked_int(button_toggle_width(*fc) - border_len),
+                cy()
+            );
+
+            valid_pressed.update(
+                rect, x, y, device_flags,
+                [this]{ edit_or_text.edit.submit(); },
+                // TODO
+                [this](Rect rect){ rdp_input_invalidate(rect); }
+            );
+
         }
-        else if (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)
-              && edit_or_text.edit.get_rect().contains_pt(x,y)
-        ) {
+
+        if (sx > x && device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)) {
             edit_or_text.edit.rdp_input_mouse(device_flags, x, y);
         }
     }
