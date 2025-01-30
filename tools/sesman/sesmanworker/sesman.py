@@ -14,7 +14,7 @@ import traceback
 import json
 import re
 import itertools
-import time
+import time as time_mod
 from wallix.logger import Logger
 
 from struct import unpack_from, pack
@@ -688,7 +688,7 @@ class Sesman():
 
         return _status, _error
 
-    def check_deconnection_time(self, selected_target, time_ctx: engine.TimeCtx = time) -> Tuple[Optional[int], bool, str]:
+    def check_deconnection_time(self, selected_target, time_ctx: engine.TimeCtx = time_mod) -> Tuple[Optional[int], bool, str]:
         Logger().info("Checking timeframe")
         _status, _error = True, ""
         timeclose = None
