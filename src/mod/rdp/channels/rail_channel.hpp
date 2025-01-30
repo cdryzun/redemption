@@ -279,7 +279,7 @@ private:
         }
 
         chars_view exe_of_file = cepdu.get_windows_execute_shell_params().exe_or_file;
-        auto exe_of_file_upper = ascii_to_limited_upper<32>(exe_of_file);
+        auto exe_of_file_upper = ascii_to_limited_upper<256>(exe_of_file);
         static_assert(sizeof(DUMMY_REMOTEAPP ":") <= 16);
 
         if (exe_of_file_upper.starts_with(DUMMY_REMOTEAPP ":"_ascii_upper))
