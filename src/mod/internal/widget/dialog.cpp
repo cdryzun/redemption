@@ -42,7 +42,7 @@ WidgetDialogBase::WidgetDialogBase(
     : WidgetComposite(drawable, Focusable::Yes)
     , onctrl_shift(events.onctrl_shift)
     , title(drawable, caption,
-            theme.global.fgcolor, theme.global.bgcolor, font, 5)
+            theme.global.fgcolor, theme.global.bgcolor, font)
     , separator(drawable, theme.global.separator_color)
     , dialog(drawable, text,
              theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
