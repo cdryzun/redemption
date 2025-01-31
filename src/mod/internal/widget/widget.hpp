@@ -85,6 +85,9 @@ public:
         constexpr operator BGRColor () const noexcept { return rdp_color_.as_bgr(); }
         constexpr operator BGRasRGBColor () const noexcept { return rdp_color_.as_rgb(); }
 
+        bool operator==(Color const&) const noexcept = default;
+        bool operator!=(Color const&) const noexcept = default;
+
     private:
         RDPColor rdp_color_;
     };

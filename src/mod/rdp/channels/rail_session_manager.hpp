@@ -26,18 +26,22 @@
 #include "core/channel_list.hpp"
 #include "core/channel_names.hpp"
 #include "core/front_api.hpp"
+#include "core/font.hpp"
 #include "gdi/clip_from_cmd.hpp"
 #include "gdi/graphic_api.hpp"
+#include "gdi/draw_utils.hpp"
 #include "gdi/text_metrics.hpp"
 #include "gdi/protected_graphics.hpp"
 #include "RAIL/client_execute.hpp"
-#include "mod/internal/widget/button.hpp"
+#include "mod/internal/widget/label.hpp"
+#include "mod/internal/button_state.hpp"
 #include "mod/mod_api.hpp"
 #include "mod/rdp/channels/rail_window_id_manager.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
 #include "mod/rdp/windowing_api.hpp"
 #include "utils/rect.hpp"
 #include "utils/theme.hpp"
+#include "utils/strutils.hpp"
 #include "utils/timebase.hpp"
 #include "utils/sugar/not_null_ptr.hpp"
 #include "translation/trkeys.hpp"
@@ -203,8 +207,8 @@ public:
             }
 
             this->waiting_screen_draw(this->disconnect_now_button_clicked
-                ? WidgetButton::State::Pressed
-                : WidgetButton::State::Normal);
+                ? ButtonState::State::Pressed
+                : ButtonState::State::Normal);
 
             if (!(device_flags & SlowPath::PTRFLAGS_DOWN)
              && this->disconnect_now_button_rect.contains_pt(x, y)
@@ -448,7 +452,7 @@ public:
                     ) {
                         LOG(LOG_INFO, "RemoteProgramsSessionManager::draw(ActivelyMonitoredDesktop): Create waiting screen.");
                         this->dialog_box_create(DialogBoxType::WAITING_SCREEN);
-                        this->waiting_screen_draw(WidgetButton::State::Normal);
+                        this->waiting_screen_draw(ButtonState::State::Normal);
                     }
                     event.garbage = true;
                 });
@@ -632,7 +636,7 @@ private:
                               );
     }
 
-    void waiting_screen_draw(WidgetButton::State state) {
+    void waiting_screen_draw(ButtonState::State state) {
         if (!this->drawable) return;
 
         this->drawable->draw(
@@ -655,9 +659,15 @@ private:
 
         const int xtext = 6;
         const int ytext = 2;
+        const int border_width = 2;
 
         const auto disconnect_msg = this->tr(trkeys::disconnect_now);
-        const Dimension dim_button = WidgetButton::get_optimal_dim(2, this->font, disconnect_msg, xtext, ytext);
+        WidgetText<64> text{this->font, disconnect_msg};
+        auto const h_text = this->font.max_height();
+        const Dimension dim_button = {
+            checked_int(text.width() + (xtext + border_width) * 2),
+            checked_int(h_text + ytext * 2 + border_width * 2),
+        };
 
         const uint32_t interspace = 60;
 
@@ -683,24 +693,33 @@ private:
         this->disconnect_now_button_rect.cx = dim_button.w;
         this->disconnect_now_button_rect.cy = dim_button.h;
 
-        WidgetButton::draw(this->protected_rect,
-                               this->disconnect_now_button_rect,
-                               *this->drawable,
-                               false,   // logo
-                               true,    // has_focus
-                               disconnect_msg,
-                               this->theme.global.fgcolor,
-                               this->theme.global.bgcolor,
-                               this->theme.global.focus_color,
-                               gdi::ColorCtx::depth24(),
-                               Rect(),
-                               state,
-                               2,
-                               this->font,
-                               xtext,
-                               ytext
-                               );
+        gdi_draw_border(
+            *this->drawable,
+            encode_color24()(this->theme.global.fgcolor),
+            this->disconnect_now_button_rect,
+            border_width,
+            this->protected_rect,
+            gdi::ColorCtx::depth24()
+        );
 
+        int const is_pressed = ButtonState::State::Pressed == state;
+
+        gdi::draw_text(
+            *this->drawable,
+            this->disconnect_now_button_rect.x + border_width,
+            this->disconnect_now_button_rect.y + border_width,
+            h_text,
+            gdi::DrawTextPadding{
+                .top = checked_int(ytext + is_pressed),
+                .right = checked_int(xtext - is_pressed),
+                .bottom = checked_int(ytext - is_pressed),
+                .left = checked_int(xtext + is_pressed),
+            },
+            text.fcs(),
+            encode_color24()(this->theme.global.fgcolor),
+            encode_color24()(this->theme.global.focus_color),
+            this->disconnect_now_button_rect.shrink(border_width)
+        );
     }
 
     ///////////////////

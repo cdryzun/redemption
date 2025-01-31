@@ -66,9 +66,7 @@ private:
     struct BackToSelectorCtx
     {
         WidgetEventNotifier onback_to_selector;
-        BGRColor fgcolor;
-        BGRColor bgcolor;
-        BGRColor focus_color;
+        WidgetButton::Colors colors;
     };
 
     WidgetEventNotifier oncancel;

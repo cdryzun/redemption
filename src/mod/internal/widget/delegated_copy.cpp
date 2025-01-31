@@ -29,9 +29,9 @@
 
 namespace
 {
-    constexpr int XTEXT = 5;
-    constexpr int YTEXT = 3;
-    constexpr int BORDER_WIDTH = 2;
+    constexpr int x_text = 5;
+    constexpr int y_text = 3;
+    constexpr int border_width = 2;
 }
 
 WidgetDelegatedCopy::Colors WidgetDelegatedCopy::Colors::from_theme(const Theme& theme) noexcept
@@ -53,8 +53,8 @@ WidgetDelegatedCopy::WidgetDelegatedCopy(
 {
     auto const& glyph = font.item('E').view;
     set_wh(
-        checked_int{glyph.width + 4 + (BORDER_WIDTH + XTEXT) * 2},
-        checked_int{glyph.height + 3 + (BORDER_WIDTH + YTEXT) * 2}
+        checked_int{glyph.width + 4 + (border_width + x_text) * 2},
+        checked_int{glyph.height + 3 + (border_width + y_text) * 2}
     );
 }
 
@@ -73,12 +73,12 @@ void WidgetDelegatedCopy::rdp_input_invalidate(Rect clip)
 
     drawable.draw(RDPOpaqueRect(rect, bg), clip, color_ctx);
 
-    gdi_draw_border(drawable, fg, rect.x, rect.y, rect.cx, rect.cy, BORDER_WIDTH, clip, color_ctx);
+    gdi_draw_border(drawable, fg, rect.x, rect.y, rect.cx, rect.cy, border_width, clip, color_ctx);
 
-    rect.x += BORDER_WIDTH + XTEXT;
-    rect.y += BORDER_WIDTH + YTEXT;
-    rect.cx -= (BORDER_WIDTH + XTEXT) * 2;
-    rect.cy -= (BORDER_WIDTH + YTEXT) * 2;
+    rect.x += border_width + x_text;
+    rect.y += border_width + y_text;
+    rect.cx -= (border_width + x_text) * 2;
+    rect.cy -= (border_width + y_text) * 2;
 
     if (button_state.is_pressed()) {
         rect.x++;

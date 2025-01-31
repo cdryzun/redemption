@@ -26,6 +26,7 @@
 
 
 class Font;
+class FontCharView;
 
 class WidgetScrollBar : public Widget
 {
@@ -57,6 +58,13 @@ public:
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
 private:
+    struct Chars
+    {
+        FontCharView const & up_left;
+        FontCharView const & down_right;
+        FontCharView const & cursor;
+    };
+
     void compute_step_value();
 
     void update_cursor_button_rects();
@@ -70,7 +78,8 @@ private:
     const Color bg_color;
     const Color focus_color;
 
-    Font const & font;
+    Chars chars;
+    uint16_t h_text;
 
     Rect left_or_top_button_rect;
     Rect right_or_bottom_button_rect;

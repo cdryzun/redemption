@@ -76,10 +76,8 @@ WidgetForm::WidgetForm(
                    check_confirmation_event(*this))
     , notes(drawable, tr(trkeys::note_required),
             theme.global.fgcolor, theme.global.bgcolor, font)
-    , confirm(drawable, tr(trkeys::confirm),
-              [this]{ this->check_confirmation(); },
-              theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
-              2, font, 6, 2)
+    , confirm(drawable, font, tr(trkeys::confirm), WidgetButton::Colors::from_theme(theme),
+              [this]{ return this->check_confirmation(); })
     , tr(tr)
     , flags(flags)
     , duration_max(duration_max == 0min ? 60000min : duration_max)
@@ -196,8 +194,6 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
         this->notes.set_xy(left + labelmaxwidth + x_padding, top + y);
     }
 
-    dim = this->confirm.get_optimal_dim();
-    this->confirm.set_wh(dim);
     this->confirm.set_xy(left + width - this->confirm.cx(), top + y + 10);
 }
 

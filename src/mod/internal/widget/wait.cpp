@@ -27,7 +27,6 @@
 #include "translation/trkeys.hpp"
 #include "utils/theme.hpp"
 
-
 constexpr unsigned HIDE_BACK_TO_SELECTOR = 0x10000;
 
 WidgetWait::WidgetWait(
@@ -48,12 +47,10 @@ WidgetWait::WidgetWait(
              WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
     , form(drawable, copy_paste, {events.onconfirm, events.onrefused},
            font, theme, tr, flags & ~HIDE_BACK_TO_SELECTOR, duration_max)
-    , goselector(drawable, tr(trkeys::back_selector), events.onaccept,
-                 theme.global.fgcolor, theme.global.bgcolor,
-                 theme.global.focus_color, 2, font, 6, 2)
-    , exit(drawable, tr(trkeys::exit), events.onrefused,
-           theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color, 2, font,
-           6, 2)
+    , goselector(drawable, font, tr(trkeys::back_selector),
+                 WidgetButton::Colors::from_theme(theme), events.onaccept)
+    , exit(drawable, font, tr(trkeys::exit), WidgetButton::Colors::from_theme(theme),
+           events.onrefused)
     , extra_button(extra_button)
     , hasform(showform)
     , hide_back_to_selector(flags & HIDE_BACK_TO_SELECTOR)
@@ -96,8 +93,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     int y = 20;
 
     this->dialog.set_text(this->message_dialog, width - 60);
-    Dimension dim = this->dialog.get_optimal_dim();
-    this->dialog.set_wh(dim);
+    this->dialog.set_wh(this->dialog.get_optimal_dim());
     this->dialog.set_xy(left + 30, top + y + 10);
 
     y = this->dialog.y() + this->dialog.cy() + 20;
@@ -108,13 +104,9 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
         y = this->form.ebottom() + 10;
     }
 
-    dim = this->exit.get_optimal_dim();
-    this->exit.set_wh(dim);
     this->exit.set_xy(left + width - 40 - this->exit.cx(), y);
 
     if (!this->hide_back_to_selector) {
-        dim = this->goselector.get_optimal_dim();
-        this->goselector.set_wh(dim);
         this->goselector.set_xy(this->exit.x() - (this->goselector.cx() + 10), y);
     }
 

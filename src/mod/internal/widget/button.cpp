@@ -1,153 +1,118 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "mod/internal/widget/button.hpp"
-#include "mod/internal/widget/label.hpp"
-#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "gdi/draw_utils.hpp"
-#include "utils/sugar/cast.hpp"
-#include "utils/utf.hpp"
+#include "gdi/text_metrics.hpp"
+#include "utils/theme.hpp"
+#include "core/font.hpp"
 #include "keyboard/keymap.hpp"
 
 
+struct WidgetButton::D
+{
+    static const int x_text = 5;
+    static const int y_text = 2;
+    static const int border_width = 2;
+};
+
+WidgetButton::Colors WidgetButton::Colors::from_theme(const Theme& theme) noexcept
+{
+    return {
+        .focus = {
+            .fg = theme.global.fgcolor,
+            .bg = theme.global.focus_color,
+            .border = theme.global.fgcolor,
+        },
+        .blur = {
+            .fg = theme.global.fgcolor,
+            .bg = theme.global.bgcolor,
+            .border = theme.global.fgcolor,
+        },
+    };
+}
+
+WidgetButton::Colors WidgetButton::Colors::no_border_from_theme(const Theme& theme) noexcept
+{
+    return {
+        .focus = {
+            .fg = theme.global.fgcolor,
+            .bg = theme.global.bgcolor,
+            .border = theme.global.bgcolor,
+        },
+        .blur = {
+            .fg = theme.global.focus_color,
+            .bg = theme.global.bgcolor,
+            .border = theme.global.bgcolor,
+        },
+    };
+}
+
 WidgetButton::WidgetButton(
-    gdi::GraphicApi & drawable,
-    chars_view text, WidgetEventNotifier onsubmit,
-    Color fg_color, Color bg_color, Color focus_color,
-    unsigned border_width, Font const & font, int xtext, int ytext,
-    bool logo)
+    gdi::GraphicApi & drawable, Font const & font,
+    chars_view text, Colors colors, WidgetEventNotifier onsubmit)
 : Widget(drawable, Focusable::Yes)
-, x_text(xtext)
-, y_text(ytext)
-, border_width(border_width)
+, h_text(font.max_height())
+, colors(colors)
 , onsubmit(onsubmit)
-, state(State::Normal)
-, fg_color(fg_color)
-, bg_color(bg_color)
-, focus_color(focus_color)
-, logo(logo)
-, font(font)
+, button_text(font, text)
 {
-    this->set_text(text);
-}
-
-WidgetButton::~WidgetButton() = default;
-
-void WidgetButton::set_xy(int16_t x, int16_t y)
-{
-    Widget::set_xy(x, y);
-    this->label_rect.x = x + (this->border_width - 1);
-    this->label_rect.y = y + (this->border_width - 1);
-}
-
-void WidgetButton::set_wh(uint16_t w, uint16_t h)
-{
-    Widget::set_wh(w, h);
-    this->label_rect.cx = w - (this->border_width * 2 - 1);
-    this->label_rect.cy = h - (this->border_width * 2 - 1);
-}
-
-void WidgetButton::set_text(chars_view text)
-{
-    this->buffer[0] = 0;
-    if (!text.empty()) {
-        const size_t remain_n = buffer_size - 1;
-        const size_t n = text.size();
-        const size_t max = ((remain_n >= n) ? n : UTF8StringAdjustedNbBytes(text, remain_n));
-        memcpy(this->buffer, text.data(), max);
-        this->buffer[max] = 0;
-    }
+    set_wh(
+        checked_int{button_text.width() + (D::border_width + D::x_text) * 2},
+        checked_int{h_text + (D::border_width + D::y_text) * 2}
+    );
 }
 
 void WidgetButton::rdp_input_invalidate(Rect clip)
 {
-    Rect rect_intersect = clip.intersect(this->get_rect());
+    Rect rect_intersect = clip.intersect(get_rect());
 
-    if (!rect_intersect.isempty()) {
-        this->draw(
-            rect_intersect, this->get_rect(), this->drawable, this->logo, this->has_focus, std::string_view(this->buffer),
-            this->fg_color, this->bg_color, this->focus_color, gdi::ColorCtx::depth24(),
-            this->label_rect, this->state, this->border_width, this->font, this->x_text, this->y_text);
-    }
-}
-
-void WidgetButton::draw(
-    Rect const clip, Rect const rect, gdi::GraphicApi& drawable,
-    bool logo, bool has_focus, chars_view text,
-    Color fg_color, Color bg_color, Color focuscolor, gdi::ColorCtx color_ctx,
-    Rect label_rect, State state, unsigned border_width, Font const& font, int xtext, int ytext)
-{
-    if (label_rect.isempty()) {
-        label_rect = rect;
-        label_rect.x  += (border_width + 1);
-        label_rect.y  += (border_width + 1);
-        label_rect.cx -= (border_width * 2 + 1);
-        label_rect.cy -= (border_width * 2 + 1);
-    }
-
-    if (state == State::Pressed) {
-        label_rect.x++;
-        label_rect.y++;
-        label_rect.cx--;
-        label_rect.cy--;
-    }
-
-    // Label color
-    if (logo) {
-        fg_color = has_focus ? focuscolor : fg_color;
-    }
-    else {
-        bg_color = has_focus ? focuscolor : bg_color;
-    }
-    // background
-    drawable.draw(RDPOpaqueRect(clip.intersect(rect), bg_color), rect, color_ctx);
-
-    WidgetLabel::draw(clip, label_rect, drawable, text, fg_color, bg_color, color_ctx, font, xtext, ytext);
-
-    if (logo) {
+    if (rect_intersect.isempty()) [[unlikely]] {
         return;
     }
 
-    // border
-    if (border_width) {
-        gdi_draw_border(drawable, fg_color, rect, border_width, clip, color_ctx);
+    auto const current_colors = colors.current_colors(has_focus);
+    int const is_pressed = button_state.is_pressed();
+    int d = (current_colors.border == current_colors.bg) ? 0 : D::border_width;
+    int padx = D::x_text + D::border_width - d;
+    int pady = D::y_text + D::border_width - d;
+
+    gdi::draw_text(
+        drawable,
+        x() + d,
+        y() + d,
+        h_text,
+        gdi::DrawTextPadding{
+            .top = checked_int(pady + is_pressed),
+            .right = checked_int(padx - is_pressed),
+            .bottom = checked_int(pady - is_pressed),
+            .left = checked_int(padx + is_pressed),
+        },
+        button_text.fcs(),
+        current_colors.fg,
+        current_colors.bg,
+        get_rect().shrink(D::border_width).intersect(rect_intersect)
+    );
+
+    if (d) {
+        gdi_draw_border(
+            drawable, current_colors.border, get_rect(),
+            D::border_width, rect_intersect,
+            gdi::ColorCtx::depth24()
+        );
     }
 }
 
 void WidgetButton::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
-    if (device_flags == (MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN) && this->state == State::Normal) {
-        this->state = State::Pressed;
-        this->rdp_input_invalidate(this->get_rect());
-    }
-    else if (device_flags == MOUSE_FLAG_BUTTON1 && this->state == State::Pressed) {
-        this->state = State::Normal;
-        if (this->get_rect().contains_pt(x, y)) {
-            this->onsubmit();
-        }
-        this->rdp_input_invalidate(this->get_rect());
-    }
-    else {
-        this->Widget::rdp_input_mouse(device_flags, x, y);
-    }
+    button_state.update(
+        get_rect(), x, y, device_flags,
+        onsubmit,
+        // TODO
+        [this](Rect rect){ rdp_input_invalidate(rect); }
+    );
 }
 
 bool WidgetButton::is_submit_event(const Keymap& keymap) noexcept
@@ -178,16 +143,4 @@ void WidgetButton::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
     else {
         Widget::rdp_input_unicode(flag, unicode);
     }
-}
-
-Dimension WidgetButton::get_optimal_dim() const
-{
-    Dimension dm = WidgetLabel::get_optimal_dim(this->font, std::string_view(this->buffer), this->x_text, this->y_text);
-    return Dimension(dm.w + (this->border_width * 2 - 1), dm.h + (this->border_width * 2 - 1));
-}
-
-Dimension WidgetButton::get_optimal_dim(unsigned border_width, Font const& font, chars_view text, int xtext, int ytext)
-{
-    Dimension dm = WidgetLabel::get_optimal_dim(font, text, xtext, ytext);
-    return Dimension(dm.w + (border_width * 2 - 1), dm.h + (border_width * 2 - 1));
 }

@@ -36,39 +36,44 @@ namespace
 {
 struct ButtonContextTest
 {
+    NotifyTrace notifier;
     TestGraphic drawable;
     WidgetButton wbutton;
 
     ButtonContextTest(
         chars_view text,
         int16_t x, int16_t y,
-        int xtext = 0, int ytext = 0,
         int16_t dx = 0, int16_t dy = 0,
-        uint16_t cx = 0, uint16_t cy = 0,
-        unsigned border_width = 2
+        uint16_t cx = 0, uint16_t cy = 0
     )
-    : ButtonContextTest(
-        800, 600, text, x, y, xtext, ytext, dx, dy, cx, cy, border_width)
+    : ButtonContextTest(100, 50, text, x, y, dx, dy, cx, cy)
     {}
 
     ButtonContextTest(
-        int16_t w, int16_t h,
+        uint16_t w, uint16_t h,
         chars_view text,
         int16_t x, int16_t y,
-        int xtext = 0, int ytext = 0,
         int16_t dx = 0, int16_t dy = 0,
-        uint16_t cx = 0, uint16_t cy = 0,
-        unsigned border_width = 2
+        uint16_t cx = 0, uint16_t cy = 0
     )
     : drawable(w, h)
-    , wbutton{drawable, text, WidgetEventNotifier(),
-              /*fg_color=*/NamedBGRColor::RED,
-              /*bg_color=*/NamedBGRColor::YELLOW,
-              /*focus_color=*/NamedBGRColor::WINBLUE,
-              border_width, global_font_deja_vu_14(), xtext, ytext}
+    , wbutton{
+        drawable, global_font_deja_vu_14(), text,
+        WidgetButton::Colors{
+            .focus = {
+              .fg = NamedBGRColor::YELLOW,
+              .bg = NamedBGRColor::RED,
+              .border = NamedBGRColor::WINBLUE,
+            },
+            .blur = {
+              .fg = NamedBGRColor::RED,
+              .bg = NamedBGRColor::YELLOW,
+              .border = NamedBGRColor::GREEN,
+            }
+        },
+        notifier
+    }
     {
-        Dimension dim = wbutton.get_optimal_dim();
-        wbutton.set_wh(dim);
         wbutton.set_xy(x, y);
 
         // ask to widget to redraw at it's current position
@@ -86,19 +91,19 @@ struct ButtonContextTest
 
 RED_AUTO_TEST_CASE(TraceWidgetButton)
 {
-    RED_CHECK_IMG(ButtonContextTest("test1"_av, 0, 0, 4, 1).drawable, IMG_TEST_PATH "button_1.png");
-    RED_CHECK_IMG(ButtonContextTest("test2"_av, 10, 100).drawable, IMG_TEST_PATH "button_2.png");
-    RED_CHECK_IMG(ButtonContextTest("test3"_av, -10, 500).drawable, IMG_TEST_PATH "button_3.png");
-    RED_CHECK_IMG(ButtonContextTest("test4"_av, 770, 500).drawable, IMG_TEST_PATH "button_4.png");
+    RED_CHECK_IMG(ButtonContextTest("test1"_av, 0, 0).drawable, IMG_TEST_PATH "button_1.png");
+    RED_CHECK_IMG(ButtonContextTest("test2"_av, 10, 10).drawable, IMG_TEST_PATH "button_2.png");
+    RED_CHECK_IMG(ButtonContextTest("test3"_av, -20, 10).drawable, IMG_TEST_PATH "button_3.png");
+    RED_CHECK_IMG(ButtonContextTest("test4"_av, 70, 30).drawable, IMG_TEST_PATH "button_4.png");
     RED_CHECK_IMG(ButtonContextTest("test5"_av, -20, -7).drawable, IMG_TEST_PATH "button_5.png");
-    RED_CHECK_IMG(ButtonContextTest("test6"_av, 760, -7).drawable, IMG_TEST_PATH "button_6.png");
-    RED_CHECK_IMG(ButtonContextTest("test6"_av, 760, -7, 0, 0, 20).drawable, IMG_TEST_PATH "button_7.png");
-    RED_CHECK_IMG(ButtonContextTest("test6"_av, 0, 0, 0, 0, 20, 5, 30, 10).drawable, IMG_TEST_PATH "button_8.png");
+    RED_CHECK_IMG(ButtonContextTest("test6"_av, 60, -7).drawable, IMG_TEST_PATH "button_6.png");
+    RED_CHECK_IMG(ButtonContextTest("test6"_av, 60, -7, 20).drawable, IMG_TEST_PATH "button_7.png");
+    RED_CHECK_IMG(ButtonContextTest("test6"_av, 0, 0, 20, 5, 30, 10).drawable, IMG_TEST_PATH "button_8.png");
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetButtonDownAndUp)
 {
-    ButtonContextTest button("test6"_av, 10, 10, 4, 1);
+    ButtonContextTest button("test6"_av, 10, 10);
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_9.png");
 
     auto& wbutton = button.wbutton;
@@ -112,100 +117,107 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonDownAndUp)
 
 RED_AUTO_TEST_CASE(TraceWidgetButtonEvent)
 {
-    TestGraphic drawable(800, 600);
+    const int16_t x = 0;
+    const int16_t y = 0;
 
-    NotifyTrace notifier;
-
-    int16_t x = 0;
-    int16_t y = 0;
-
-    WidgetButton wbutton(drawable, ""_av, notifier, NamedBGRColor::WHITE,
-                         NamedBGRColor::BG_BLUE, NamedBGRColor::WINBLUE, 2,
-                         global_font_deja_vu_14());
-    Dimension dim = wbutton.get_optimal_dim();
-    wbutton.set_wh(dim);
-    wbutton.set_xy(x, y);
+    ButtonContextTest ctx(""_av, x, y);
+    auto & wbutton = ctx.wbutton;
 
     wbutton.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
-    RED_CHECK(notifier.get_and_reset() == 0);
+    RED_CHECK(ctx.notifier.get_and_reset() == 0);
 
     wbutton.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
-    RED_CHECK(notifier.get_and_reset() == 0);
+    RED_CHECK(ctx.notifier.get_and_reset() == 0);
 
     wbutton.rdp_input_mouse(MOUSE_FLAG_BUTTON1, x, y);
-    RED_CHECK(notifier.get_and_reset() == 1);
+    RED_CHECK(ctx.notifier.get_and_reset() == 1);
 
     wbutton.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
-    RED_CHECK(notifier.get_and_reset() == 0);
+    RED_CHECK(ctx.notifier.get_and_reset() == 0);
 
     Keymap keymap(*find_layout_by_id(KeyLayout::KbdId(0x040C)));
     using KFlags = Keymap::KbdFlags;
     using Scancode = Keymap::Scancode;
 
-    keymap.event(KFlags(), Scancode(0x10)); // 'a'
-    wbutton.rdp_input_scancode(KFlags(), Scancode(0x10), 0, keymap);
-    RED_CHECK(notifier.get_and_reset() == 0);
+    keymap.event(KFlags(), Scancode::A);
+    wbutton.rdp_input_scancode(KFlags(), Scancode::A, 0, keymap);
+    RED_CHECK(ctx.notifier.get_and_reset() == 0);
 
-    keymap.event(KFlags(), Scancode(0x39)); // ' '
-    wbutton.rdp_input_scancode(KFlags(), Scancode(0x39), 0, keymap);
-    RED_CHECK(notifier.get_and_reset() == 1);
+    keymap.event(KFlags(), Scancode::Space);
+    wbutton.rdp_input_scancode(KFlags(), Scancode::Space, 0, keymap);
+    RED_CHECK(ctx.notifier.get_and_reset() == 1);
 
-    keymap.event(KFlags(), Scancode(0x1c)); // Enter
-    wbutton.rdp_input_scancode(KFlags(), Scancode(0x1c), 0, keymap);
-    RED_CHECK(notifier.get_and_reset() == 1);
+    keymap.event(KFlags(), Scancode::Enter);
+    wbutton.rdp_input_scancode(KFlags(), Scancode::Enter, 0, keymap);
+    RED_CHECK(ctx.notifier.get_and_reset() == 1);
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetButtonAndComposite)
 {
-    TestGraphic drawable(800, 600);
+    TestGraphic drawable(300, 200);
 
     WidgetEventNotifier notifier2;
 
     WidgetComposite wcomposite(drawable, Widget::Focusable::No);
-    wcomposite.set_wh(800, 600);
+    wcomposite.set_wh(300, 200);
     wcomposite.set_xy(0, 0);
 
-    WidgetButton wbutton1(drawable, "abababab"_av, notifier2,
-                          NamedBGRColor::YELLOW, NamedBGRColor::BLACK, NamedBGRColor::WINBLUE,
-                          2, global_font_deja_vu_14());
-    Dimension dim = wbutton1.get_optimal_dim();
-    wbutton1.set_wh(dim);
+    auto colors = [](Widget::Color fg, Widget::Color bg, Widget::Color focus) {
+        return WidgetButton::Colors{
+            .focus = {
+                .fg = fg,
+                .bg = bg,
+                .border = fg,
+            },
+            .blur = {
+                .fg = fg,
+                .bg = bg,
+                .border = fg,
+            },
+        };
+    };
+
+    WidgetButton wbutton1(
+        drawable, global_font_deja_vu_14(), "abababab"_av,
+        colors(NamedBGRColor::YELLOW, NamedBGRColor::BLACK, NamedBGRColor::WINBLUE),
+        notifier2
+    );
     wbutton1.set_xy(0, 0);
 
-    WidgetButton wbutton2(drawable, "ggghdgh"_av, notifier2,
-                          NamedBGRColor::WHITE, NamedBGRColor::RED, NamedBGRColor::WINBLUE,
-                          2, global_font_deja_vu_14());
-    dim = wbutton2.get_optimal_dim();
-    wbutton2.set_wh(dim);
-    wbutton2.set_xy(0, 100);
+    WidgetButton wbutton2(
+        drawable, global_font_deja_vu_14(), "ggghdgh"_av,
+        colors(NamedBGRColor::WHITE, NamedBGRColor::RED, NamedBGRColor::WINBLUE),
+        notifier2
+    );
+    wbutton2.set_xy(0, 50);
 
-    WidgetButton wbutton3(drawable, "lldlslql"_av, notifier2,
-                          NamedBGRColor::BLUE, NamedBGRColor::RED, NamedBGRColor::WINBLUE,
-                          2, global_font_deja_vu_14());
-    dim = wbutton3.get_optimal_dim();
-    wbutton3.set_wh(dim);
-    wbutton3.set_xy(100, 100);
+    WidgetButton wbutton3(
+        drawable, global_font_deja_vu_14(), "lldlslql"_av,
+        colors(NamedBGRColor::BLUE, NamedBGRColor::RED, NamedBGRColor::WINBLUE),
+        notifier2
+    );
+    wbutton3.set_xy(100, 50);
 
-    WidgetButton wbutton4(drawable, "LLLLMLLM"_av, notifier2,
-                          NamedBGRColor::PINK, NamedBGRColor::DARK_GREEN, NamedBGRColor::WINBLUE,
-                          2, global_font_deja_vu_14());
-    dim = wbutton4.get_optimal_dim();
-    wbutton4.set_wh(dim);
-    wbutton4.set_xy(300, 300);
+    WidgetButton wbutton4(
+        drawable, global_font_deja_vu_14(), "LLLLMLLM"_av,
+        colors(NamedBGRColor::PINK, NamedBGRColor::DARK_GREEN, NamedBGRColor::WINBLUE),
+        notifier2
+    );
+    wbutton4.set_xy(150, 130);
 
-    WidgetButton wbutton5(drawable, "dsdsdjdjs"_av, notifier2,
-                          NamedBGRColor::LIGHT_GREEN, NamedBGRColor::DARK_BLUE, NamedBGRColor::WINBLUE,
-                          2, global_font_deja_vu_14());
-    dim = wbutton5.get_optimal_dim();
-    wbutton5.set_wh(dim);
-    wbutton5.set_xy(700, -10);
+    WidgetButton wbutton5(
+        drawable, global_font_deja_vu_14(), "dsdsdjdjs"_av,
+        colors(NamedBGRColor::LIGHT_GREEN, NamedBGRColor::DARK_BLUE, NamedBGRColor::WINBLUE),
+        notifier2
+    );
+    wbutton5.set_xy(250, -10);
 
-    WidgetButton wbutton6(drawable, "xxwwp"_av, notifier2,
-                          NamedBGRColor::ANTHRACITE, NamedBGRColor::PALE_GREEN, NamedBGRColor::WINBLUE,
-                          2, global_font_deja_vu_14());
-    dim = wbutton6.get_optimal_dim();
-    wbutton6.set_wh(dim);
-    wbutton6.set_xy(-10, 550);
+    WidgetButton wbutton6(
+        drawable, global_font_deja_vu_14(), "xxwwp"_av,
+        colors(NamedBGRColor::ANTHRACITE, NamedBGRColor::PALE_GREEN, NamedBGRColor::WINBLUE),
+        notifier2
+    );
+    wbutton6.set_xy(-10, 175);
 
     wcomposite.add_widget(wbutton1);
     wcomposite.add_widget(wbutton2);
@@ -214,20 +226,18 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonAndComposite)
     wcomposite.add_widget(wbutton5);
     wcomposite.add_widget(wbutton6);
 
-    // ask to widget to redraw at position 100,25 and of size 100x100.
-    wcomposite.rdp_input_invalidate(Rect(100, 25, 100, 100));
+    wcomposite.rdp_input_invalidate(Rect(50, 25, 100, 100));
 
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "button_12.png");
 
-    // ask to widget to redraw at it's current position
-    wcomposite.rdp_input_invalidate(Rect(0, 0, wcomposite.cx(), wcomposite.cy()));
+    wcomposite.rdp_input_invalidate(wcomposite.get_rect());
 
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "button_13.png");
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetButtonFocus)
 {
-    ButtonContextTest button(72, 40, "test7"_av, 10, 10, 4, 1);
+    ButtonContextTest button(72, 40, "test7"_av, 10, 10);
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_14.png");
 
     auto& wbutton = button.wbutton;
@@ -240,26 +250,4 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonFocus)
 
     wbutton.focus(Widget::focus_reason_tabkey);
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_15.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetButtonLite)
-{
-    ButtonContextTest button("test1"_av, 0, 0, 4, 1, 0, 0, 0, 0, /*border_width=*/1);
-    RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button18.png");
-
-    auto& wbutton = button.wbutton;
-
-    wbutton.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, wbutton.x() + 2, wbutton.y() + 2);
-    RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button19.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetButtonStrong)
-{
-    ButtonContextTest button("test1"_av, 0, 0, 4, 1, 0, 0, 0, 0, /*border_width=*/5);
-    RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button20.png");
-
-    auto& wbutton = button.wbutton;
-
-    wbutton.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, wbutton.x() + 2, wbutton.y() + 2);
-    RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button21.png");
 }

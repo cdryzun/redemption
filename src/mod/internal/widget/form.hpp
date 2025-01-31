@@ -74,21 +74,21 @@ public:
 private:
     Events events;
 
-    WidgetLabel      warning_msg;
-    WidgetLabel      duration_label;
+    WidgetLabel  warning_msg;
+    WidgetLabel  duration_label;
 public:
-    WidgetEdit       duration_edit;
+    WidgetEdit   duration_edit;
 private:
-    WidgetLabel      duration_format;
-    WidgetLabel      ticket_label;
+    WidgetLabel  duration_format;
+    WidgetLabel  ticket_label;
 public:
-    WidgetEdit       ticket_edit;
+    WidgetEdit   ticket_edit;
 private:
-    WidgetLabel      comment_label;
+    WidgetLabel  comment_label;
 public:
-    WidgetEdit       comment_edit;
+    WidgetEdit   comment_edit;
 private:
-    WidgetLabel      notes;
+    WidgetLabel  notes;
     WidgetButton confirm;
 
     Translator tr;

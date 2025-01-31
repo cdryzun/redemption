@@ -55,10 +55,8 @@ WidgetWabClose::WidgetWabClose(
                 theme.global.fgcolor, theme.global.bgcolor, font)
 , timeleft_value(drawable, ""_av,
                  theme.global.fgcolor, theme.global.bgcolor, font)
-, cancel(drawable, tr(trkeys::close),
-         events.oncancel,
-         theme.global.fgcolor, theme.global.bgcolor,
-         theme.global.focus_color, 2, font, 6, 2)
+, cancel(drawable, font, tr(trkeys::close), WidgetButton::Colors::from_theme(theme),
+         events.oncancel)
 , img(drawable,
       theme.enable_theme ? theme.logo_path.c_str() :
       app_path(AppPath::LoginWabBlue),
@@ -69,9 +67,7 @@ WidgetWabClose::WidgetWabClose(
 , font(font)
 , back_to_selector_ctx{
     .onback_to_selector = events.onback_to_selector,
-    .fgcolor = theme.global.fgcolor,
-    .bgcolor = theme.global.bgcolor,
-    .focus_color = theme.global.focus_color,
+    .colors = WidgetButton::Colors::from_theme(theme),
 }
 , back(back_to_selector ? make_back_to_selector() : std::unique_ptr<WidgetButton>())
 , diagnostic_text(std::move(diagnostic_text))
@@ -109,12 +105,9 @@ WidgetWabClose::WidgetWabClose(
 std::unique_ptr<WidgetButton> WidgetWabClose::make_back_to_selector()
 {
     return std::make_unique<WidgetButton>(
-        drawable, tr(trkeys::back_selector),
-        back_to_selector_ctx.onback_to_selector,
-        back_to_selector_ctx.fgcolor,
-        back_to_selector_ctx.bgcolor,
-        back_to_selector_ctx.focus_color, 2, font,
-        6, 2
+        drawable, font, tr(trkeys::back_selector),
+        back_to_selector_ctx.colors,
+        back_to_selector_ctx.onback_to_selector
     );
 }
 
@@ -134,7 +127,6 @@ Rect WidgetWabClose::set_back_to_selector(bool back_to_selector)
         }
         else {
             this->back = make_back_to_selector();
-            this->back->set_wh(this->back->get_optimal_dim());
 
             this->add_widget(*this->back);
 
@@ -259,14 +251,6 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
         this->timeleft_value.set_xy(x + this->diagnostic_label.x(), top + y);
 
         y += this->timeleft_label.cy() + 20;
-    }
-
-    dim = this->cancel.get_optimal_dim();
-    this->cancel.set_wh(dim);
-
-    if (this->back) {
-        dim = this->back->get_optimal_dim();
-        this->back->set_wh(dim);
     }
 
     int const back_width = this->back ? this->back->cx() + 10 : 0;

@@ -93,9 +93,8 @@ WidgetLogin::WidgetLogin(
                     theme.global.fgcolor, theme.global.bgcolor,
                     font)
     // TODO button without notifier
-    , helpicon(drawable, "?"_av, WidgetEventNotifier(),
-               theme.global.fgcolor, theme.global.bgcolor,
-               theme.global.focus_color, 2, font, 6, 2)
+    , helpicon(drawable, font, "?"_av, WidgetButton::Colors::from_theme(theme),
+               WidgetEventNotifier())
     , extra_button(extra_button)
     , tr(tr)
     , show_target(enable_target_field)
@@ -150,8 +149,6 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         this->error_message_label.get_optimal_dim().h);
 
     set_optimal_wh(this->version_label);
-
-    set_optimal_wh(this->helpicon);
 
     set_optimal_wh(this->img);
 

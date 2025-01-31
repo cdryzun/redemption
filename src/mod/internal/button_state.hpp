@@ -12,6 +12,20 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 struct ButtonState
 {
+    enum class State
+    {
+        Normal,
+        Pressed,
+    };
+
+    ButtonState() noexcept = default;
+    ButtonState(State state) noexcept : _is_pressed(state == State::Pressed) {}
+
+    State state() const noexcept
+    {
+        return _is_pressed ? State::Pressed : State::Normal;
+    }
+
     bool is_pressed() const noexcept
     {
         return _is_pressed;

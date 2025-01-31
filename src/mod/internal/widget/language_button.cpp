@@ -66,7 +66,7 @@ namespace
     constexpr uint16_t kbd_icon_cx = kbd_icon_rects.back().cx;
     constexpr uint16_t kbd_icon_cy = kbd_icon_rects.back().ebottom();
 
-    constexpr uint16_t button_border = 2;
+    constexpr uint16_t border_width = 2;
     constexpr uint16_t icon_w_padding = 6;
     constexpr uint16_t icon_right_padding = 5;
     constexpr uint16_t icon_h_padding = 6;
@@ -80,11 +80,11 @@ namespace
     {
         uint16_t w = text.width()
                    + icon_w_padding * 2
-                   + button_border * 2
+                   + border_width * 2
                    + kbd_icon_cx
                    + icon_right_padding;
         uint16_t h = compute_inner_height(font)
-                   + button_border * 2
+                   + border_width * 2
                    + icon_h_padding * 2;
         return {w, h};
     }
@@ -153,20 +153,20 @@ void LanguageButton::rdp_input_invalidate(Rect clip)
 {
     auto h_text = font.max_height();
 
-    int cy_inner = cy() - button_border * 2;
+    int cy_inner = cy() - border_width * 2;
     int y_padding = (cy_inner - h_text) / 2;
     int is_pressed = button_state.is_pressed();
 
     gdi_draw_border(
         drawable, colors.fg, get_rect(),
-        button_border, clip,
+        border_width, clip,
         gdi::ColorCtx::depth24()
     );
 
     gdi::draw_text(
         drawable,
-        x() + button_border,
-        y() + button_border,
+        x() + border_width,
+        y() + border_width,
         h_text,
         gdi::DrawTextPadding{
             .top = checked_int(y_padding + is_pressed),
@@ -177,7 +177,7 @@ void LanguageButton::rdp_input_invalidate(Rect clip)
         button_text.fcs(),
         colors.fg,
         has_focus ? colors.focus_bg : colors.bg,
-        clip.intersect(get_rect().shrink(button_border))
+        clip.intersect(get_rect().shrink(border_width))
     );
 
     int ox = x() + icon_w_padding;

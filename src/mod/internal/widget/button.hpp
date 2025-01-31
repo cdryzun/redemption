@@ -21,14 +21,12 @@
 
 #pragma once
 
-#include "mod/internal/widget/widget.hpp"
+#include "mod/internal/button_state.hpp"
+#include "mod/internal/widget/label.hpp"
 #include "mod/internal/widget/event_notifier.hpp"
 
 class Font;
-namespace gdi
-{
-    class ColorCtx;
-}
+class Theme;
 
 class WidgetButton : public Widget
 {
@@ -36,34 +34,32 @@ public:
     static bool is_submit_event(Keymap const& keymap) noexcept;
     static bool is_submit_event(KbdFlags flag, uint16_t unicode) noexcept;
 
-    enum class State : bool
+    struct Colors
     {
-        Normal,
-        Pressed,
+        struct Box
+        {
+            Color fg;
+            Color bg;
+            Color border;
+        };
+
+        Box focus;
+        Box blur;
+
+        Box current_colors(bool has_focus) const noexcept
+        {
+            return has_focus ? focus : blur;
+        }
+
+        static Colors from_theme(Theme const& theme) noexcept;
+        static Colors no_border_from_theme(Theme const& theme) noexcept;
     };
 
-    WidgetButton(gdi::GraphicApi & drawable,
-                 chars_view text, WidgetEventNotifier onsubmit,
-                 Color fg_color, Color bg_color, Color focus_color,
-                 unsigned border_width, Font const & font,
-                 int xtext = 0, int ytext = 0, bool logo = false); /*NOLINT*/
-
-    ~WidgetButton();
-
-    void set_xy(int16_t x, int16_t y) override;
-
-    void set_wh(uint16_t w, uint16_t h) override;
-
-    using Widget::set_wh;
-
-    void set_text(chars_view text);
+    WidgetButton(gdi::GraphicApi & drawable, Font const & font,
+                 chars_view text, Colors colors,
+                 WidgetEventNotifier onsubmit);
 
     void rdp_input_invalidate(Rect clip) override;
-
-    static void draw(Rect const clip, Rect const rect, gdi::GraphicApi& drawable,
-                     bool logo, bool has_focus, chars_view text,
-                     Color fg_color, Color bg_color, Color focuscolor, gdi::ColorCtx color_ctx,
-                     Rect label_rect, State state, unsigned border_width, Font const& font, int xtext, int ytext);
 
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
@@ -71,33 +67,13 @@ public:
 
     void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
 
-    Dimension get_optimal_dim() const override;
-
-    static Dimension get_optimal_dim(unsigned border_width, Font const& font, chars_view text, int xtext = 0, int ytext = 0);
-
 private:
-    static const size_t buffer_size = 256;
+    struct D;
+    friend D;
 
-    char buffer[buffer_size];
-
-    int x_text;
-    int y_text;
-
-    unsigned border_width;
-
+    uint16_t h_text;
+    ButtonState button_state;
+    Colors colors;
     WidgetEventNotifier onsubmit;
-
-public:
-    State state;
-
-    const Color fg_color;
-    const Color bg_color;
-    const Color focus_color;
-
-private:
-    const bool logo;
-
-    Font const & font;
-
-    Rect label_rect;
+    WidgetText<64> button_text;
 };

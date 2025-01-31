@@ -123,38 +123,30 @@ WidgetSelector::WidgetSelector(
                  theme.selector_selected.fgcolor,
                  font, 2)
 //BEGIN WidgetPager
-, first_page(drawable, "◀◂"_av, events.onfirst_page,
-             theme.global.fgcolor, theme.global.bgcolor,
-             theme.global.focus_color, 2, font, 6, 2, true)
-, prev_page(drawable, "◀"_av, events.onprev_page,
-            theme.global.fgcolor, theme.global.bgcolor,
-            theme.global.focus_color, 2, font, 6, 2, true)
+, first_page(drawable, font, "◀◂"_av, WidgetButton::Colors::no_border_from_theme(theme),
+             events.onfirst_page)
+, prev_page(drawable, font, "◀"_av, WidgetButton::Colors::no_border_from_theme(theme),
+            events.onprev_page)
 , current_page(drawable, font, copy_paste, current_page,
                WidgetEdit::Colors::from_theme(theme),
                events.oncurrent_page)
 , number_page(drawable,
               !number_of_page.empty() ? temporary_number_of_page(number_of_page) : "/XXX"_av,
               theme.global.fgcolor, theme.global.bgcolor, font)
-, next_page(drawable, "▶"_av, events.onnext_page,
-            theme.global.fgcolor, theme.global.bgcolor,
-            theme.global.focus_color, 2, font, 6, 2, true)
-, last_page(drawable, "▸▶"_av, events.onlast_page,
-            theme.global.fgcolor, theme.global.bgcolor,
-            theme.global.focus_color, 2, font, 6, 2, true)
+, next_page(drawable, font, "▶"_av, WidgetButton::Colors::no_border_from_theme(theme),
+            events.onnext_page)
+, last_page(drawable, font, "▸▶"_av, WidgetButton::Colors::no_border_from_theme(theme),
+            events.onlast_page)
 //END WidgetPager
-, logout(drawable, tr(trkeys::logout), events.oncancel,
-         theme.global.fgcolor, theme.global.bgcolor,
-         theme.global.focus_color, 2, font, 6, 2)
-, apply(drawable, tr(trkeys::filter), events.onfilter,
-        theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, 2, font, 6, 2)
-, connect(drawable, tr(trkeys::connect), events.onconnect,
-          theme.global.fgcolor, theme.global.bgcolor,
-          theme.global.focus_color, 2, font, 6, 2)
+, logout(drawable, font, tr(trkeys::logout), WidgetButton::Colors::from_theme(theme),
+         events.oncancel)
+, apply(drawable, font, tr(trkeys::filter), WidgetButton::Colors::from_theme(theme),
+        events.onfilter)
+, connect(drawable, font, tr(trkeys::connect), WidgetButton::Colors::from_theme(theme),
+          events.onconnect)
 // TODO button without notifier
-, target_helpicon(drawable, "?"_av, WidgetEventNotifier(),
-                  theme.selector_label.fgcolor, theme.selector_label.bgcolor,
-                  theme.global.focus_color, 1, font, 3, 0)
+, target_helpicon(drawable, font, "?"_av, WidgetButton::Colors::no_border_from_theme(theme),
+                  WidgetEventNotifier())
 , tr(tr)
 , font(font)
 , left(left)
@@ -218,38 +210,8 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
         this->edit_filters[i].set_wh(dim);
     }
 
-    dim = this->first_page.get_optimal_dim();
-    this->first_page.set_wh(dim);
-
-    dim = this->prev_page.get_optimal_dim();
-    this->prev_page.set_wh(dim);
-
-
     dim = this->current_page.get_optimal_dim();
     this->current_page.set_wh(this->first_page.cy() + 2, dim.h);
-
-    dim = this->number_page.get_optimal_dim();
-    this->number_page.set_wh(dim);
-
-    dim = this->next_page.get_optimal_dim();
-    this->next_page.set_wh(dim);
-
-    dim = this->last_page.get_optimal_dim();
-    this->last_page.set_wh(dim);
-
-
-    dim = this->logout.get_optimal_dim();
-    this->logout.set_wh(dim);
-
-    dim = this->apply.get_optimal_dim();
-    this->apply.set_wh(dim);
-
-    dim = this->connect.get_optimal_dim();
-    this->connect.set_wh(dim);
-
-    dim = this->target_helpicon.get_optimal_dim();
-    this->target_helpicon.set_wh(dim);
-
 
     this->less_than_800 = (this->cx() < 800);
 

@@ -20,13 +20,22 @@
  */
 
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
+#include "core/font.hpp"
 #include "gdi/graphic_api.hpp"
 #include "mod/internal/widget/scroll.hpp"
 #include "mod/internal/widget/button.hpp"
 
 namespace
 {
-    Dimension get_optimal_button_dim(const Font& font, bool is_horizontal)
+    constexpr int32_t scroll_up_text = 0x25B2;  // ▲
+    constexpr int32_t scroll_down_text = 0x25BC;  // ▼
+    constexpr int32_t scroll_vertical_cursor_text = 0x25A5;  // ▥
+
+    constexpr int32_t scroll_left_text = 0x25C0;  // ◀
+    constexpr int32_t scroll_right_text = 0x25B6;  // ▶
+    constexpr int32_t scroll_horizontal_cursor_text = 0x25A4;  // ▤
+
+    Dimension get_optimal_button_dim(FontCharView const & c)
     {
         Dimension dim = WidgetButton::get_optimal_dim(1, font,
             is_horizontal ? "▶"_av : "▲"_av, 3, 2);
@@ -49,11 +58,20 @@ WidgetScrollBar::WidgetScrollBar(
 , fg_color(fg_color)
 , bg_color(bg_color)
 , focus_color(focus_color)
-, font(font)
+, chars(horizontal
+    ? Chars{
+        .up_left = font.item(scroll_left_text).view,
+        .down_right = font.item(scroll_right_text).view,
+        .cursor = font.item(scroll_horizontal_cursor_text).view,
+    }
+    : Chars{
+        .up_left = font.item(scroll_up_text).view,
+        .down_right = font.item(scroll_down_text).view,
+        .cursor = font.item(scroll_vertical_cursor_text).view,
+    })
+, h_text(font.max_height())
 , max_value(maxvalue)
-, button_width_or_height(this->horizontal
-    ? get_optimal_button_dim(this->font, this->horizontal).w
-    : get_optimal_button_dim(this->font, this->horizontal).h)
+, button_width_or_height(checked_int(chars.up_left.boxed_width() + 6))
 , rail_style(rail_style)
 {}
 
@@ -255,7 +273,7 @@ void WidgetScrollBar::set_wh(uint16_t w, uint16_t h)
 
 Dimension WidgetScrollBar::get_optimal_dim() const
 {
-    return get_optimal_button_dim(this->font, this->horizontal);
+    return {button_width_or_height, checked_int(h_text + 6)};
 }
 
 // RdpInput

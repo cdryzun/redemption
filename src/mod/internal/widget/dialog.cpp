@@ -49,9 +49,7 @@ WidgetDialogBase::WidgetDialogBase(
              font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
     , link(link)
     , challenge(challenge_)
-    , ok(drawable, ok_text, events.onsubmit,
-        theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, 2, font, 6, 2)
+    , ok(drawable, font, ok_text, WidgetButton::Colors::from_theme(theme), events.onsubmit)
     , cancel(std::move(cancel_))
     , img(drawable,
           theme.enable_theme ? theme.logo_path.c_str() :
@@ -202,12 +200,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         y += 5;
     }
 
-    dim = this->ok.get_optimal_dim();
-    this->ok.set_wh(dim);
-
     if (this->cancel) {
-        dim = this->cancel->get_optimal_dim();
-        this->cancel->set_wh(dim);
         this->cancel->set_xy(this->dialog.x() + total_width - (this->cancel->cx() + 10), y);
 
         this->ok.set_xy(this->cancel->x() - (this->ok.cx() + 10), y);
@@ -294,9 +287,8 @@ WidgetDialog::WidgetDialog(
     caption, text, nullptr, theme, font, ok_text,
     !cancel_text.empty()
         ? std::make_unique<WidgetButton>(
-            drawable, cancel_text, events.oncancel,
-            theme.global.fgcolor, theme.global.bgcolor,
-            theme.global.focus_color, 2, font, 6, 2
+            drawable, font, cancel_text, WidgetButton::Colors::from_theme(theme),
+            events.oncancel
         )
         : std::unique_ptr<WidgetButton>(),
     nullptr, nullptr
