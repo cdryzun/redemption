@@ -179,16 +179,15 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         y += 5;
 
         const auto label_dim = this->link->label.get_optimal_dim();
-        const auto button_dim = this->link->copy.get_optimal_dim();
+        const auto button_dim_h = this->link->copy.cy();
         const auto msg_dim = this->link->copied_msg.get_optimal_dim();
-        const int dy = std::max(label_dim.h, button_dim.h);
+        const int dy = std::max(label_dim.h, button_dim_h);
         const int label_dy = (dy - label_dim.h) / 2;
-        const int button_dy = (dy - button_dim.h) / 2;
+        const int button_dy = (dy - button_dim_h) / 2;
 
         this->link->label.set_wh(label_dim);
         this->link->label.set_xy(this->separator.x() + WIDGET_MULTILINE_BORDER_X, y + label_dy);
 
-        this->link->copy.set_wh(button_dim);
         this->link->copy.set_xy(this->link->label.x() + label_dim.w + 2, y + button_dy);
 
         y            += dy + 10;
@@ -354,8 +353,7 @@ WidgetDialogWithCopyableLink::WidgetDialogWithCopyableLink(
             this->show_copied_msg();
             this->next_focus();
         },
-        theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, font)
+        WidgetDelegatedCopy::Colors::from_theme(theme), font)
 }
 , WidgetDialogBase(
     drawable, widget_rect,

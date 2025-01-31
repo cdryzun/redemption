@@ -25,7 +25,6 @@
 #include "mod/internal/button_state.hpp"
 #include "keyboard/keylayout.hpp"
 #include "utils/ref.hpp"
-#include "utils/sugar/zstring_view.hpp"
 
 #include <vector>
 
@@ -41,6 +40,7 @@ public:
         gdi::GraphicApi & drawable,
         FrontAPI & front,
         Font const & font,
+        // TODO use Colors ?
         Theme const & theme
     );
 
@@ -58,6 +58,7 @@ public:
     void blur() override;
 
 private:
+    // TODO WidgetButton::Colors
     struct Colors
     {
         Color fg;

@@ -22,7 +22,9 @@
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
 #include "mod/internal/widget/delegated_copy.hpp"
+#include "mod/internal/widget/button.hpp"
 #include "gdi/draw_utils.hpp"
+#include "utils/theme.hpp"
 
 
 namespace
@@ -32,38 +34,44 @@ namespace
     constexpr int BORDER_WIDTH = 2;
 }
 
+WidgetDelegatedCopy::Colors WidgetDelegatedCopy::Colors::from_theme(const Theme& theme) noexcept
+{
+    return {
+        .fg = theme.global.fgcolor,
+        .bg = theme.global.bgcolor,
+        .active_bg = theme.global.focus_color,
+    };
+}
 
 WidgetDelegatedCopy::WidgetDelegatedCopy(
     gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
-    Color fgcolor, Color bgcolor, Color activecolor, Font const & font
+    Colors colors, Font const & font
 )
-    : WidgetButton(
-        drawable, ""_av, onsubmit, fgcolor, bgcolor,
-        activecolor, BORDER_WIDTH, font, XTEXT, YTEXT)
-    , optimal_glyph_dim(get_optimal_dim(font))
+    : Widget(drawable, Focusable::Yes)
+    , colors(colors)
+    , onsubmit(onsubmit)
 {
+    auto const& glyph = font.item('E').view;
+    set_wh(
+        checked_int{glyph.width + 4 + (BORDER_WIDTH + XTEXT) * 2},
+        checked_int{glyph.height + 3 + (BORDER_WIDTH + YTEXT) * 2}
+    );
 }
 
 void WidgetDelegatedCopy::rdp_input_invalidate(Rect clip)
 {
-    Rect rect_intersect = clip.intersect(this->get_rect());
+    Rect rect = clip.intersect(this->get_rect());
 
-    if (!rect_intersect.isempty()) {
-        this->draw(
-            clip, this->get_rect(), this->drawable, this->has_focus,
-            this->fg_color, this->bg_color, this->focus_color,
-            this->state
-        );
+    if (rect.isempty()) {
+        return ;
     }
-}
 
-void WidgetDelegatedCopy::draw(
-    Rect clip, Rect rect, gdi::GraphicApi & drawable, bool has_focus,
-    Color fg, Color bg, Color focus_color, State state)
-{
     const auto color_ctx = gdi::ColorCtx::depth24();
 
-    drawable.draw(RDPOpaqueRect(rect, has_focus ? focus_color : bg), clip, color_ctx);
+    auto fg = colors.fg;
+    auto bg = has_focus ? colors.active_bg : colors.bg;
+
+    drawable.draw(RDPOpaqueRect(rect, bg), clip, color_ctx);
 
     gdi_draw_border(drawable, fg, rect.x, rect.y, rect.cx, rect.cy, BORDER_WIDTH, clip, color_ctx);
 
@@ -72,7 +80,7 @@ void WidgetDelegatedCopy::draw(
     rect.cx -= (BORDER_WIDTH + XTEXT) * 2;
     rect.cy -= (BORDER_WIDTH + YTEXT) * 2;
 
-    if (state == State::Pressed) {
+    if (button_state.is_pressed()) {
         rect.x++;
         rect.y++;
     }
@@ -90,16 +98,46 @@ void WidgetDelegatedCopy::draw(
     drawRect(rect.x + 2, rect.y + (rect.cy - 6) / 3 * 2 + 4, rect.cx - 4, 1);
 }
 
-Dimension WidgetDelegatedCopy::get_optimal_dim() const
+void WidgetDelegatedCopy::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
-    return this->optimal_glyph_dim;
+    button_state.update(
+        get_rect(), x, y, device_flags,
+        onsubmit,
+        // TODO
+        [this](Rect rect){ rdp_input_invalidate(rect); }
+    );
 }
 
-Dimension WidgetDelegatedCopy::get_optimal_dim(Font const & font)
+void WidgetDelegatedCopy::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, const Keymap& keymap)
 {
-    auto const& glyph = font.item('E').view;
-    return Dimension{
-        checked_int{glyph.width + 4 + (BORDER_WIDTH + XTEXT) * 2},
-        checked_int{glyph.height + 3 + (BORDER_WIDTH + YTEXT) * 2},
-    };
+    if (WidgetButton::is_submit_event(keymap)) {
+        onsubmit();
+    }
+}
+
+void WidgetDelegatedCopy::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
+{
+    if (WidgetButton::is_submit_event(flag, unicode)) {
+        onsubmit();
+    }
+}
+
+void WidgetDelegatedCopy::focus(int reason)
+{
+    (void)reason;
+    if (!has_focus){
+        has_focus = true;
+        // TODO
+        rdp_input_invalidate(get_rect());
+    }
+}
+
+void WidgetDelegatedCopy::blur()
+{
+    if (has_focus) {
+        has_focus = false;
+        button_state.pressed(false);
+        // TODO
+        rdp_input_invalidate(get_rect());
+    }
 }

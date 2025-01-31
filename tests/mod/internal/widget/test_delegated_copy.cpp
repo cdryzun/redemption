@@ -41,14 +41,15 @@ RED_AUTO_TEST_CASE(TraceWidgetDelegatedCopy)
 
     WidgetScreen screen(gd, w, h, font, Theme{});
 
-    BGRColor fg_color = NamedBGRColor::RED;
-    BGRColor bg_color = NamedBGRColor::YELLOW;
-    BGRColor focus_color = NamedBGRColor::BLUE;
+    WidgetDelegatedCopy::Colors colors{
+        .fg = NamedBGRColor::RED,
+        .bg = NamedBGRColor::YELLOW,
+        .active_bg = NamedBGRColor::BLUE,
+    };
 
     NotifyTrace notifier;
-    WidgetDelegatedCopy delegated(gd, notifier, fg_color, bg_color, focus_color, font);
+    WidgetDelegatedCopy delegated(gd, notifier, colors, font);
 
-    delegated.set_wh(delegated.get_optimal_dim());
     delegated.set_xy(5, 5);
 
     screen.add_widget(delegated);

@@ -20,28 +20,44 @@ Author(s): Proxies Team
 
 #pragma once
 
-#include "mod/internal/widget/button.hpp"
+#include "mod/internal/button_state.hpp"
+#include "mod/internal/widget/label.hpp"
+#include "mod/internal/widget/event_notifier.hpp"
 
 
 class Font;
+class Theme;
 
-class WidgetDelegatedCopy : public WidgetButton
+class WidgetDelegatedCopy : public Widget
 {
 public:
+    // TODO WidgetButton::Colors
+    struct Colors
+    {
+        Color fg;
+        Color bg;
+        Color active_bg;
+
+        static Colors from_theme(Theme const& theme) noexcept;
+    };
+
     WidgetDelegatedCopy(
         gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
-        Color fgcolor, Color bgcolor, Color activecolor, Font const & font);
-
-    Dimension get_optimal_dim() const override;
-
-    static Dimension get_optimal_dim(Font const & font);
+        Colors colors, Font const & font);
 
     void rdp_input_invalidate(Rect clip) override;
 
-    static void draw(
-        Rect clip, Rect rect, gdi::GraphicApi & drawable, bool has_focus,
-        Color fg, Color bg, Color focus_color, State state);
+    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
+
+    void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
+
+    void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
+
+    void focus(int reason) override;
+    void blur() override;
 
 private:
-    Dimension optimal_glyph_dim;
+    ButtonState button_state;
+    Colors colors;
+    WidgetEventNotifier onsubmit;
 };
