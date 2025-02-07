@@ -26,6 +26,8 @@
 #include "mod/internal/widget/scroll.hpp"
 #include "utils/bitfu.hpp"
 
+#define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/scroll/"
+
 
 struct TestScrollCtx
 {
@@ -33,25 +35,30 @@ struct TestScrollCtx
     WidgetScrollBar scroll;
     unsigned pos = 0;
 
-    TestScrollCtx(bool is_horizontal, bool rail_style = false, int16_t x =  0, int16_t y = 0)
+    TestScrollCtx(WidgetScrollBar::ScrollDirection scroll_direction)
     : drawable(1, 1)
     , scroll(
-        this->drawable, [this]{
+        this->drawable, global_font_deja_vu_14(), scroll_direction,
+        WidgetScrollBar::Colors{
+            .fg = NamedBGRColor::RED,
+            .bg = NamedBGRColor::YELLOW,
+            .bg_focus = NamedBGRColor::WINBLUE,
+        },
+        [this]{
             auto new_pos = this->scroll.get_current_value();
             RED_TEST(this->pos != new_pos);
             this->pos = new_pos;
-        }, is_horizontal,
-        /*fg_color=*/NamedBGRColor::RED,
-        /*bg_color=*/NamedBGRColor::YELLOW,
-        /*focus_color=*/NamedBGRColor::WINBLUE,
-        global_font_deja_vu_14(), rail_style, 50)
+        }
+    )
     {
+        scroll.set_max_value(50);
         Dimension dim = this->scroll.get_optimal_dim();
-        this->drawable.resize(
-            align4(is_horizontal ? 200 : dim.w) + x*2,
-            (is_horizontal ? dim.h : 200) + y*2);
-        this->scroll.set_wh(this->drawable.width() - x*2, this->drawable.height() - y*2);
-        this->scroll.set_xy(x, y);
+        dim = (scroll_direction == WidgetScrollBar::ScrollDirection::Horizontal)
+            ? Dimension{200, dim.h}
+            : Dimension{dim.w, 200}
+            ;
+        this->drawable.resize(align4(dim.w), dim.h);
+        this->scroll.set_wh(this->drawable.width(), this->drawable.height());
         this->scroll.rdp_input_invalidate(this->scroll.get_rect());
     }
 
@@ -66,12 +73,10 @@ struct TestScrollCtx
     }
 };
 
-#define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/scroll/"
-
 
 RED_AUTO_TEST_CASE(TestWidgetHScrollBar)
 {
-    TestScrollCtx ctx(true);
+    TestScrollCtx ctx(WidgetScrollBar::ScrollDirection::Horizontal);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "hscroll_1.png");
 
@@ -118,7 +123,7 @@ RED_AUTO_TEST_CASE(TestWidgetHScrollBar)
 
 RED_AUTO_TEST_CASE(TestWidgetVScrollBar)
 {
-    TestScrollCtx ctx(false);
+    TestScrollCtx ctx(WidgetScrollBar::ScrollDirection::Vertical);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "vscroll_1.png");
 
@@ -161,30 +166,4 @@ RED_AUTO_TEST_CASE(TestWidgetVScrollBar)
     ctx.down(5, ctx.drawable.height() - 5);
     RED_TEST(ctx.pos == 50);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "vscroll_9.png");
-}
-
-RED_AUTO_TEST_CASE(TestWidgetHScrollBarRail)
-{
-    int16_t x = 10;
-    int16_t y = 10;
-    TestScrollCtx ctx(true, true, x, y);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "hscroll_rail_1.png");
-
-    ctx.down(x + 5, y + 5);
-    RED_TEST(ctx.pos == 0);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "hscroll_rail_2.png");
-}
-
-RED_AUTO_TEST_CASE(TestWidgetVScrollBarRail)
-{
-    int16_t x = 10;
-    int16_t y = 10;
-    TestScrollCtx ctx(false, true, x, y);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "vscroll_rail_1.png");
-
-    ctx.down(x + 5, y + 5);
-    RED_TEST(ctx.pos == 0);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "vscroll_rail_2.png");
 }

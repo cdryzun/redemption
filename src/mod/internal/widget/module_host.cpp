@@ -290,9 +290,9 @@ WidgetModuleHost::WidgetModuleHost(
 , drawable(drawable)
 , screen(screen)
 , hscroll(drawable, [this]{ Impl::scroll(*this, true); }, true,
-    BGRColor(0x606060), BGRColor(0xF0F0F0), BGRColor(0xCDCDCD), font, true)
+    BGRColor(0x606060), BGRColor(0xF0F0F0), BGRColor(0xCDCDCD), font)
 , vscroll(drawable, [this]{ Impl::scroll(*this, false); }, false,
-    BGRColor(0x606060), BGRColor(0xF0F0F0), BGRColor(0xCDCDCD), font, true)
+    BGRColor(0x606060), BGRColor(0xF0F0F0), BGRColor(0xCDCDCD), font)
 , monitors(cs_monitor)
 , current_cache_pointer_index(gdi::CachePointerIndex(PredefinedPointer::Normal))
 {

@@ -22,65 +22,88 @@
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
 #include "gdi/graphic_api.hpp"
+#include "gdi/text_metrics.hpp"
+#include "gdi/draw_utils.hpp"
 #include "mod/internal/widget/scroll.hpp"
 #include "mod/internal/widget/button.hpp"
 
-namespace
+struct WidgetScrollBar::D
 {
-    constexpr int32_t scroll_up_text = 0x25B2;  // ▲
-    constexpr int32_t scroll_down_text = 0x25BC;  // ▼
-    constexpr int32_t scroll_vertical_cursor_text = 0x25A5;  // ▥
+    static const uint32_t scroll_up_text = 0x25B2;  // ▲
+    static const uint32_t scroll_down_text = 0x25BC;  // ▼
+    // static const uint32_t scroll_vertical_cursor_text = 0x25A5;  // ▥
 
-    constexpr int32_t scroll_left_text = 0x25C0;  // ◀
-    constexpr int32_t scroll_right_text = 0x25B6;  // ▶
-    constexpr int32_t scroll_horizontal_cursor_text = 0x25A4;  // ▤
+    static const uint32_t scroll_left_text = 0x25C0;  // ◀
+    static const uint32_t scroll_right_text = 0x25B6;  // ▶
+    // static const uint32_t scroll_horizontal_cursor_text = 0x25A4;  // ▤
 
-    Dimension get_optimal_button_dim(FontCharView const & c)
+    static const uint16_t x_text = 4;
+    static const uint16_t y_text = 5;
+
+    struct Rects
     {
-        Dimension dim = WidgetButton::get_optimal_dim(1, font,
-            is_horizontal ? "▶"_av : "▲"_av, 3, 2);
+        WidgetScrollBar & self;
 
-        dim.w += 1;
-        dim.h += 2;
+        Rect const left_or_top_button = Rect(
+            self.x(),
+            self.y(),
+            self.horizontal ? self.icon_width + D::x_text * 2 : self.cx(),
+            self.horizontal ? self.cy() : self.icon_height + D::y_text * 2
+        );
 
-        return dim;
-    }
-} // anonymous namespace
+        int x_bar = self.horizontal ? self.icon_width + D::x_text * 2 : 0;
+        int y_bar = self.horizontal ? 0 : self.icon_height + D::y_text * 2;
+
+        Rect const right_or_bottom_button = left_or_top_button.offset(
+            checked_int(self.horizontal ? self.cx() - x_bar : 0),
+            checked_int(self.horizontal ? 0 : self.cy() - y_bar)
+        );
+
+        Rect const cursor_button = left_or_top_button.offset(
+            checked_int(self.horizontal
+                ? x_bar + (self.cx() - x_bar * 3) * self.current_value / self.max_value
+                : 0
+            ),
+            checked_int(self.horizontal
+                ? 0
+                : y_bar + (self.cy() - y_bar * 3) * self.current_value / self.max_value
+            )
+        );
+
+        Rect rect_bar() const
+        {
+            return Rect{
+                checked_int(self.x() + x_bar),
+                checked_int(self.y() + y_bar),
+                checked_int(self.horizontal ? self.cx() - x_bar * 2 : self.cx()),
+                checked_int(self.horizontal ? self.cy() : self.cy() - y_bar * 2),
+            };
+        }
+    };
+};
 
 WidgetScrollBar::WidgetScrollBar(
-    gdi::GraphicApi & drawable,
-    WidgetEventNotifier onscroll, bool horizontal,
-    Color fg_color, Color bg_color, Color focus_color,
-    Font const & font, bool rail_style, int maxvalue)
+    gdi::GraphicApi & drawable, Font const & font,
+    ScrollDirection scroll_direction, Colors colors,
+    WidgetEventNotifier onscroll)
 : Widget(drawable, Focusable::No)
 , onscroll(onscroll)
-, horizontal(horizontal)
-, fg_color(fg_color)
-, bg_color(bg_color)
-, focus_color(focus_color)
-, chars(horizontal
-    ? Chars{
-        .up_left = font.item(scroll_left_text).view,
-        .down_right = font.item(scroll_right_text).view,
-        .cursor = font.item(scroll_horizontal_cursor_text).view,
-    }
-    : Chars{
-        .up_left = font.item(scroll_up_text).view,
-        .down_right = font.item(scroll_down_text).view,
-        .cursor = font.item(scroll_vertical_cursor_text).view,
-    })
+, horizontal(scroll_direction == ScrollDirection::Horizontal)
+, colors(colors)
+, top_left_fc(font.item(horizontal ? D::scroll_left_text : D::scroll_up_text).view)
+, bottom_right_fc(font.item(horizontal ? D::scroll_right_text : D::scroll_down_text).view)
 , h_text(font.max_height())
-, max_value(maxvalue)
-, button_width_or_height(checked_int(chars.up_left.boxed_width() + 6))
-, rail_style(rail_style)
+, icon_width{std::max(top_left_fc.width, bottom_right_fc.width)}
+, icon_height{std::max(top_left_fc.height, bottom_right_fc.height)}
 {}
 
 void WidgetScrollBar::compute_step_value()
 {
-    this->step_value =
-        (this->horizontal ?
-            ((this->scroll_bar_rect.cx - cursor_button_rect.cx) / this->max_value) :
-            ((this->scroll_bar_rect.cy - cursor_button_rect.cy) / this->max_value));
+    auto len = this->horizontal
+        ? cx() - (icon_width + D::x_text * 2) * 3
+        : cy() - (icon_height + D::y_text * 2) * 3
+        ;
+    this->step_value = len / max_value;
 }
 
 unsigned int WidgetScrollBar::get_current_value() const
@@ -90,8 +113,7 @@ unsigned int WidgetScrollBar::get_current_value() const
 
 void WidgetScrollBar::set_current_value(unsigned int cv)
 {
-    this->current_value = static_cast<int>(
-        std::min<int>(cv, this->max_value));
+    this->current_value = std::min(checked_cast<int>(cv), this->max_value);
 }
 
 void WidgetScrollBar::set_max_value(unsigned int maxvalue)
@@ -101,179 +123,86 @@ void WidgetScrollBar::set_max_value(unsigned int maxvalue)
     this->compute_step_value();
 }
 
-void WidgetScrollBar::update_cursor_button_rects()
-{
-    if (this->horizontal) {
-        if (!this->cx()) {
-            return;
-        }
-
-        this->cursor_button_rect.x  = this->x() + this->button_width_or_height - (this->rail_style ? 0 : 1) +
-                                            (this->cx() - this->button_width_or_height * 2 + ((this->rail_style ? 0 : 1) * 2) - this->button_width_or_height) *
-                                                this->current_value / this->max_value;
-        this->cursor_button_rect.y  = this->y() + (this->rail_style ? 0 : 1);
-        this->cursor_button_rect.cx = this->button_width_or_height;
-        this->cursor_button_rect.cy = this->cy() - ((this->rail_style ? 0 : 1) * 2);
-    }
-    else {
-        if (!this->cy()) {
-            return;
-        }
-
-        this->cursor_button_rect.x  = this->x() + (this->rail_style ? 0 : 1);
-        this->cursor_button_rect.y  = this->y() + this->button_width_or_height - (this->rail_style ? 0 : 1) +
-                                            (this->cy() - this->button_width_or_height * 2 + ((this->rail_style ? 0 : 1) * 2) - this->button_width_or_height) *
-                                                this->current_value / this->max_value;
-        this->cursor_button_rect.cx = this->cx() - ((this->rail_style ? 0 : 1) * 2);
-        this->cursor_button_rect.cy = this->button_width_or_height;
-    }
-}
-
-void WidgetScrollBar::update_rects()
-{
-    if (this->horizontal) {
-        this->left_or_top_button_rect.x  = this->x();
-        this->left_or_top_button_rect.y  = this->y();
-        this->left_or_top_button_rect.cx = this->button_width_or_height;
-        this->left_or_top_button_rect.cy = this->cy();
-
-        this->right_or_bottom_button_rect.x  = this->x() + this->cx() - this->button_width_or_height;
-        this->right_or_bottom_button_rect.y  = this->y();
-        this->right_or_bottom_button_rect.cx = this->button_width_or_height;
-        this->right_or_bottom_button_rect.cy = this->cy();
-
-        this->scroll_bar_rect.x  = this->x() + this->button_width_or_height;
-        this->scroll_bar_rect.y  = this->y();
-        this->scroll_bar_rect.cx = this->cx() - this->button_width_or_height * 2;
-        this->scroll_bar_rect.cy = this->cy();
-    }
-    else {
-        this->left_or_top_button_rect.x  = this->x();
-        this->left_or_top_button_rect.y  = this->y();
-        this->left_or_top_button_rect.cx = this->cx();
-        this->left_or_top_button_rect.cy = this->button_width_or_height;
-
-        this->right_or_bottom_button_rect.x  = this->x();
-        this->right_or_bottom_button_rect.y  = this->y() + this->cy() - this->button_width_or_height;
-        this->right_or_bottom_button_rect.cx = this->cx();
-        this->right_or_bottom_button_rect.cy = this->button_width_or_height;
-
-        this->scroll_bar_rect.x  = this->x();
-        this->scroll_bar_rect.y  = this->y() + this->button_width_or_height;
-        this->scroll_bar_rect.cx = this->cx();
-        this->scroll_bar_rect.cy = this->cy() - this->button_width_or_height * 2;
-    }
-
-    this->update_cursor_button_rects();
-
-    this->compute_step_value();
-}
-
-// Widget
-
 void WidgetScrollBar::rdp_input_invalidate(Rect clip)
 {
     Rect rect_intersect = clip.intersect(this->get_rect());
 
     if (!rect_intersect.isempty()) {
-        auto draw_button = [&](Rect const& rect, bool has_focus, chars_view button){
-            WidgetButton::draw(rect_intersect, rect, this->drawable,
-                false, (this->mouse_down && has_focus), button,
-                this->fg_color, this->bg_color,
-                this->focus_color, gdi::ColorCtx::depth24(),
-                Rect(),
-                WidgetButton::State::Normal,
-                (this->rail_style ? 0 : 2),
-                this->font,
-                (this->rail_style ? 2 : 0),
-                (this->rail_style ? 1 : -1));
-        };
+        D::Rects rects{*this};
 
-        auto draw_cursor_button = [&](bool has_focus, chars_view button, int xtext, int ytext){
-            WidgetButton::draw(rect_intersect, this->cursor_button_rect, this->drawable,
-                false, (this->mouse_down && has_focus), button,
-                this->fg_color, this->bg_color,
-                this->focus_color, gdi::ColorCtx::depth24(),
-                Rect(),
-                WidgetButton::State::Normal,
-                (this->rail_style ? 0 : 1),
-                this->font,
-                xtext,
-                ytext);
-        };
+        enum Orientation { LeftTop, RightBottom };
 
-        auto draw_rect = [&](RDPColor color, Rect const& rect){
-            this->drawable.draw(
-                RDPOpaqueRect(rect_intersect.intersect(rect), color),
-                this->get_rect(),
-                gdi::ColorCtx::depth24()
+        auto draw_button = [&](Orientation orientation, bool has_focus, const FontCharView* fc) {
+            auto fg = colors.fg;
+            auto bg = has_focus ? colors.bg_focus : colors.bg;
+
+            auto left_pad = icon_width - fc->width + 1 - orientation;
+            auto right_pad = icon_width - fc->width + orientation;
+            auto top_pad = icon_height - fc->height + 1 - orientation;
+            auto bottom_pad = icon_height - fc->height + orientation;
+
+            auto clip = orientation
+                ? rects.right_or_bottom_button
+                : rects.left_or_top_button;
+
+            gdi::draw_text(
+                drawable,
+                clip.x - fc->offsetx,
+                clip.y - fc->offsety,
+                h_text,
+                gdi::DrawTextPadding{
+                    .top = checked_int(top_pad / 2 + D::y_text),
+                    .right = checked_int(right_pad / 2 + D::x_text),
+                    .bottom = checked_int(bottom_pad / 2 + D::y_text),
+                    .left = checked_int(left_pad / 2 + D::x_text),
+                },
+                array_view{&fc, 1},
+                fg,
+                bg,
+                clip.intersect(rect_intersect)
             );
         };
 
-        if (this->horizontal) {
-            draw_button(this->left_or_top_button_rect,
-                        this->selected_button == BUTTON_LEFT_OR_TOP, "◀"_av);
-            draw_button(this->right_or_bottom_button_rect,
-                        this->selected_button == BUTTON_RIGHT_OR_BOTTOM, "▶"_av);
+        // left / top button
+        draw_button(LeftTop, selected_button == SelectedButton::LeftOrTop, &top_left_fc);
 
-            draw_rect(this->bg_color, this->scroll_bar_rect);
+        // right / bottom button
+        draw_button(RightBottom, selected_button == SelectedButton::RightOrBottom, &bottom_right_fc);
 
-            if (!this->rail_style) {
-                auto rect = this->scroll_bar_rect;
+        // scroll bar
+        drawable.draw(
+            RDPOpaqueRect(rect_intersect.intersect(rects.rect_bar()), colors.bg),
+            get_rect(),
+            gdi::ColorCtx::depth24()
+        );
 
-                rect.cy = 1;
-                draw_rect(this->fg_color, rect);
-
-                rect.y += this->cy() - 1;
-                draw_rect(this->fg_color, rect);
-
-                draw_cursor_button(this->selected_button == BUTTON_CURSOR, "▤"_av, 0, -1);
-            }
-            else {
-                draw_rect(this->fg_color, this->cursor_button_rect);
-            }
-        }
-        else {
-            draw_button(this->left_or_top_button_rect,
-                        this->selected_button == BUTTON_LEFT_OR_TOP, "▲"_av);
-            draw_button(this->right_or_bottom_button_rect,
-                        this->selected_button == BUTTON_RIGHT_OR_BOTTOM, "▼"_av);
-
-            draw_rect(this->bg_color, this->scroll_bar_rect);
-
-            if (!this->rail_style) {
-                auto rect = this->scroll_bar_rect;
-
-                rect.cx = 1;
-                draw_rect(this->fg_color, rect);
-
-                rect.x += this->cx() - 1;
-                draw_rect(this->fg_color, rect);
-
-                draw_cursor_button(this->selected_button == BUTTON_CURSOR, "▥"_av, -1, 0);
-            }
-            else {
-                draw_rect(this->fg_color, this->cursor_button_rect);
-            }
-        }
+        // scroll bar cursor
+        drawable.draw(
+            RDPOpaqueRect(rect_intersect.intersect(rects.cursor_button), colors.fg),
+            get_rect(),
+            gdi::ColorCtx::depth24()
+        );
     }
 }
 
 void WidgetScrollBar::set_xy(int16_t x, int16_t y)
 {
     Widget::set_xy(x, y);
-    this->update_rects();
+    this->compute_step_value();
 }
 
 void WidgetScrollBar::set_wh(uint16_t w, uint16_t h)
 {
     Widget::set_wh(w, h);
-    this->update_rects();
+    this->compute_step_value();
 }
 
 Dimension WidgetScrollBar::get_optimal_dim() const
 {
-    return {button_width_or_height, checked_int(h_text + 6)};
+    return {
+        checked_int(icon_width + D::x_text * 2),
+        checked_int(icon_height + D::y_text * 2),
+    };
 }
 
 // RdpInput
@@ -282,8 +211,10 @@ void WidgetScrollBar::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
     if (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)) {
         this->mouse_down = true;
 
-        if (this->left_or_top_button_rect.contains_pt(x, y)) {
-            this->selected_button = BUTTON_LEFT_OR_TOP;
+        D::Rects rects{*this};
+
+        if (rects.left_or_top_button.contains_pt(x, y)) {
+            this->selected_button = SelectedButton::LeftOrTop;
 
             const int old_value = this->current_value;
 
@@ -294,19 +225,17 @@ void WidgetScrollBar::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             }
 
             if (old_value != this->current_value) {
-                this->update_cursor_button_rects();
-
                 this->onscroll();
             }
         }
-        else if (this->cursor_button_rect.contains_pt(x, y)) {
-            this->selected_button = BUTTON_CURSOR;
+        else if (rects.cursor_button.contains_pt(x, y)) {
+            this->selected_button = SelectedButton::Cursor;
 
             this->old_mouse_x_or_y         = (this->horizontal ? x : y);
-            this->old_cursor_button_x_or_y = (this->horizontal ? this->cursor_button_rect.x : this->cursor_button_rect.y);
+            this->old_cursor_button_x_or_y = (this->horizontal ? rects.cursor_button.x : rects.cursor_button.y);
         }
-        if (this->right_or_bottom_button_rect.contains_pt(x, y)) {
-            this->selected_button = BUTTON_RIGHT_OR_BOTTOM;
+        if (rects.right_or_bottom_button.contains_pt(x, y)) {
+            this->selected_button = SelectedButton::RightOrBottom;
 
             const int old_value = this->current_value;
 
@@ -317,8 +246,6 @@ void WidgetScrollBar::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             }
 
             if (old_value != this->current_value) {
-                this->update_cursor_button_rects();
-
                 this->onscroll();
             }
         }
@@ -327,19 +254,25 @@ void WidgetScrollBar::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
     }
     else if (device_flags == MOUSE_FLAG_BUTTON1) {
         this->mouse_down               = false;
-        this->selected_button          = BUTTON_NONE;
+        this->selected_button          = SelectedButton::None;
         this->old_mouse_x_or_y         = 0;
         this->old_cursor_button_x_or_y = 0;
 
         this->rdp_input_invalidate(this->get_rect());
     }
     else if (device_flags == MOUSE_FLAG_MOVE) {
-        if (this->mouse_down && (BUTTON_CURSOR == this->selected_button)) {
+        if (this->mouse_down && (SelectedButton::Cursor == this->selected_button)) {
             const int old_value = this->current_value;
 
-            const int min_button_x_or_y = (this->horizontal ? this->x() : this->y()) + this->button_width_or_height - 1;
-            const int max_button_x_or_y = min_button_x_or_y +
-                                            ((this->horizontal ? this->cx() : this->cy()) - this->button_width_or_height * 2 + 2 - this->button_width_or_height);
+            const int min_button_x_or_y = this->horizontal
+                ? this->x() + icon_width + D::x_text * 2 - 1
+                : this->y() + icon_height + D::y_text * 2 - 1
+                ;
+            const int max_button_x_or_y = min_button_x_or_y
+                + (this->horizontal
+                    ? this->cx() - icon_width * 3 - 2
+                    : this->cy() - icon_height * 3 - 2
+                );
 
             const int min_x_or_y = min_button_x_or_y + (this->old_mouse_x_or_y - this->old_cursor_button_x_or_y);
             const int max_x_or_y = max_button_x_or_y + (this->old_mouse_x_or_y - this->old_cursor_button_x_or_y);
@@ -356,8 +289,6 @@ void WidgetScrollBar::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             }
 
             if (old_value != this->current_value) {
-                this->update_cursor_button_rects();
-
                 this->onscroll();
             }
 

@@ -31,10 +31,22 @@ class FontCharView;
 class WidgetScrollBar : public Widget
 {
 public:
-    WidgetScrollBar(gdi::GraphicApi & drawable,
-                    WidgetEventNotifier onscroll, bool horizontal,
-                    Color fg_color, Color bg_color, Color focus_color,
-                    Font const & font, bool rail_style, int maxvalue = 100); /*NOLINT*/
+    enum class ScrollDirection : bool
+    {
+        Horizontal,
+        Vertical,
+    };
+
+    struct Colors
+    {
+        Color fg;
+        Color bg;
+        Color bg_focus;
+    };
+
+    WidgetScrollBar(gdi::GraphicApi & drawable, Font const & font,
+                    ScrollDirection scroll_direction, Colors colors,
+                    WidgetEventNotifier onscroll);
 
     [[nodiscard]] unsigned int get_current_value() const;
 
@@ -58,33 +70,19 @@ public:
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
 private:
-    struct Chars
-    {
-        FontCharView const & up_left;
-        FontCharView const & down_right;
-        FontCharView const & cursor;
-    };
+    struct D;
+    friend D;
 
     void compute_step_value();
-
-    void update_cursor_button_rects();
-
-    void update_rects();
 
     WidgetEventNotifier onscroll;
     const bool horizontal;
 
-    const Color fg_color;
-    const Color bg_color;
-    const Color focus_color;
+    Colors colors;
 
-    Chars chars;
+    FontCharView const & top_left_fc;
+    FontCharView const & bottom_right_fc;
     uint16_t h_text;
-
-    Rect left_or_top_button_rect;
-    Rect right_or_bottom_button_rect;
-    Rect scroll_bar_rect;
-    Rect cursor_button_rect;
 
     int current_value = 0;
     int max_value     = 100;
@@ -93,18 +91,20 @@ private:
 
     bool mouse_down = false;
 
-    enum {
-        BUTTON_NONE,
+    enum class SelectedButton
+    {
+        None,
 
-        BUTTON_LEFT_OR_TOP,
-        BUTTON_CURSOR,
-        BUTTON_RIGHT_OR_BOTTOM
-    } selected_button = BUTTON_NONE;
+        LeftOrTop,
+        Cursor,
+        RightOrBottom,
+    };
+
+    SelectedButton selected_button = SelectedButton::None;
 
     int old_mouse_x_or_y         = 0;
     int old_cursor_button_x_or_y = 0;
 
-    const uint16_t button_width_or_height = 0;
-
-    const bool rail_style;
+    const uint8_t icon_width;
+    const uint8_t icon_height;
 };
