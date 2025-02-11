@@ -708,7 +708,7 @@ class Sesman():
             tt = datetime.strptime(
                 deconnection_time, "%Y-%m-%d %H:%M:%S"
             ).timetuple()
-            timeclose_now = int(mktime(tt))
+            timeclose_now = int(time_ctx.mktime(tt))
             if time_ctx.time() < timeclose_now:
                 remaining_seconds = int(timeclose_now - time_ctx.time()) + 1
                 days = remaining_seconds // 86400

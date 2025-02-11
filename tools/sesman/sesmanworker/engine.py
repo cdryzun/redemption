@@ -83,8 +83,8 @@ class TimeCtx(Protocol):
     @property
     def daylight(self) -> int: ...
 
-    def time(self) -> float:
-        ...
+    def time(self) -> float: ...
+    def mktime(self, struct_time) -> float: ...
 
 
 class TargetContext:
@@ -1634,7 +1634,7 @@ class Engine:
 
     @staticmethod
     def get_bastion_timezone(time_ctx: TimeCtx) -> str:
-        offset_seconds = time_ctx.altzone if time_ctx.daylight else time_ctx.timezone
+        offset_seconds = time_ctx.altzone if (time_ctx.localtime().tm_isdst and time_ctx.daylight) else time_ctx.timezone
         offset_hours = abs(offset_seconds) // 3600
         offset_minutes = abs(offset_seconds) % 3600 // 60
         sign = '+' if offset_seconds <= 0 else '-'
