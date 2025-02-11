@@ -65,18 +65,30 @@ RED_AUTO_TEST_CASE(TraceWidgetGrid)
             std::unique_ptr<Widget> w;
             if ((line_index == 2) && (column_index == 3)) {
                 w = std::make_unique<WidgetButton>(
-                    drawable, text, WidgetEventNotifier(),
-                    NamedBGRColor::WHITE, NamedBGRColor::MEDIUM_BLUE, NamedBGRColor::LIGHT_BLUE,
-                    2, global_font_deja_vu_14(), 2, 2);
+                    drawable, global_font_deja_vu_14(), text,
+                    WidgetButton::Colors{
+                        .focus = {
+                            .fg = NamedBGRColor::WHITE,
+                            .bg = NamedBGRColor::LIGHT_BLUE,
+                            .border = NamedBGRColor::WHITE,
+                        },
+                        .blur = {
+                            .fg = NamedBGRColor::WHITE,
+                            .bg = NamedBGRColor::MEDIUM_BLUE,
+                            .border = NamedBGRColor::WHITE,
+                        },
+                    },
+                    WidgetEventNotifier()
+                );
             }
             else {
                 w = std::make_unique<WidgetLabel>(
                     drawable, text, fg_color, bg_color,
                     global_font_deja_vu_14());
+                Dimension dim = w->get_optimal_dim();
+                w->set_wh(dim);
             }
 
-            Dimension dim = w->get_optimal_dim();
-            w->set_wh(dim);
 
             wgrid.set_widget(line_index, column_index, std::move(w));
         }

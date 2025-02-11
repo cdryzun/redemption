@@ -289,10 +289,12 @@ WidgetModuleHost::WidgetModuleHost(
 , managed_mod(&managed_mod.get())
 , drawable(drawable)
 , screen(screen)
-, hscroll(drawable, [this]{ Impl::scroll(*this, true); }, true,
-    BGRColor(0x606060), BGRColor(0xF0F0F0), BGRColor(0xCDCDCD), font)
-, vscroll(drawable, [this]{ Impl::scroll(*this, false); }, false,
-    BGRColor(0x606060), BGRColor(0xF0F0F0), BGRColor(0xCDCDCD), font)
+, hscroll(drawable, font, WidgetScrollBar::ScrollDirection::Horizontal,
+    {.fg = BGRColor(0x606060), .bg = BGRColor(0xF0F0F0), .bg_focus = BGRColor(0xCDCDCD)},
+    [this]{ Impl::scroll(*this, true); })
+, vscroll(drawable, font, WidgetScrollBar::ScrollDirection::Vertical,
+    {.fg = BGRColor(0x606060), .bg = BGRColor(0xF0F0F0), .bg_focus = BGRColor(0xCDCDCD)},
+    [this]{ Impl::scroll(*this, false); })
 , monitors(cs_monitor)
 , current_cache_pointer_index(gdi::CachePointerIndex(PredefinedPointer::Normal))
 {

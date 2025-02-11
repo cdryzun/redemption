@@ -56,8 +56,7 @@ public:
     };
 
     WidgetButton(gdi::GraphicApi & drawable, Font const & font,
-                 chars_view text, Colors colors,
-                 WidgetEventNotifier onsubmit);
+                 chars_view text, Colors colors, WidgetEventNotifier onsubmit);
 
     void rdp_input_invalidate(Rect clip) override;
 

@@ -15,7 +15,7 @@ struct WidgetButton::D
 {
     static const int x_text = 5;
     static const int y_text = 2;
-    static const int border_width = 2;
+    static const int border_len = 2;
 };
 
 WidgetButton::Colors WidgetButton::Colors::from_theme(const Theme& theme) noexcept
@@ -38,12 +38,12 @@ WidgetButton::Colors WidgetButton::Colors::no_border_from_theme(const Theme& the
 {
     return {
         .focus = {
-            .fg = theme.global.fgcolor,
+            .fg = theme.global.focus_color,
             .bg = theme.global.bgcolor,
             .border = theme.global.bgcolor,
         },
         .blur = {
-            .fg = theme.global.focus_color,
+            .fg = theme.global.fgcolor,
             .bg = theme.global.bgcolor,
             .border = theme.global.bgcolor,
         },
@@ -60,8 +60,8 @@ WidgetButton::WidgetButton(
 , button_text(font, text)
 {
     set_wh(
-        checked_int{button_text.width() + (D::border_width + D::x_text) * 2},
-        checked_int{h_text + (D::border_width + D::y_text) * 2}
+        checked_int{button_text.width() + (D::border_len + D::x_text) * 2},
+        checked_int{h_text + (D::border_len + D::y_text) * 2}
     );
 }
 
@@ -75,9 +75,15 @@ void WidgetButton::rdp_input_invalidate(Rect clip)
 
     auto const current_colors = colors.current_colors(has_focus);
     int const is_pressed = button_state.is_pressed();
-    int d = (current_colors.border == current_colors.bg) ? 0 : D::border_width;
-    int padx = D::x_text + D::border_width - d;
-    int pady = D::y_text + D::border_width - d;
+    int d = (current_colors.border == current_colors.bg) ? 0 : D::border_len;
+    int padx = D::x_text + D::border_len - d;
+    int pady = D::y_text + D::border_len - d;
+
+    auto rect_text = get_rect();
+    rect_text.x += d;
+    rect_text.y += d;
+    rect_text.cx -= d * 2;
+    rect_text.cy -= d * 2;
 
     gdi::draw_text(
         drawable,
@@ -93,13 +99,13 @@ void WidgetButton::rdp_input_invalidate(Rect clip)
         button_text.fcs(),
         current_colors.fg,
         current_colors.bg,
-        get_rect().shrink(D::border_width).intersect(rect_intersect)
+        rect_text.intersect(rect_intersect)
     );
 
     if (d) {
         gdi_draw_border(
             drawable, current_colors.border, get_rect(),
-            D::border_width, rect_intersect,
+            D::border_len, rect_intersect,
             gdi::ColorCtx::depth24()
         );
     }

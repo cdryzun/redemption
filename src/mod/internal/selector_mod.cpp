@@ -181,7 +181,7 @@ SelectorMod::SelectorMod(
         ini.is_asked<cfg::context::selector_number_of_pages>()
             ? ""_av
             : int_to_decimal_zchars(ini.get<cfg::context::selector_number_of_pages>()),
-        &this->language_button, this->selector_params, font, theme, tr, true)
+        &this->language_button, this->selector_params, font, theme, tr)
 
     , current_page(unchecked_decimal_chars_to_int(this->selector.current_page.get_text()))
     , number_page(unchecked_decimal_chars_to_int(this->selector.number_page.get_text().from_offset(1)))

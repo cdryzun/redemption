@@ -1,33 +1,18 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2013
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan, Jennifer Inthavong
- *
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "mod/internal/widget/selector.hpp"
 #include "translation/translation.hpp"
 #include "translation/trkeys.hpp"
 #include "utils/theme.hpp"
 #include "utils/sugar/buf_maker.hpp"
+#include "gdi/draw_utils.hpp"
 #include "gdi/graphic_api.hpp"
 #include "gdi/text_metrics.hpp"
 #include "keyboard/keymap.hpp"
+#include "core/font.hpp"
 
 
 WidgetSelector::temporary_number_of_page::temporary_number_of_page(chars_view s)
@@ -35,6 +20,53 @@ WidgetSelector::temporary_number_of_page::temporary_number_of_page(chars_view s)
 {
     this->buffer[0] = '/';
     memcpy(this->buffer + 1, s.data(), std::min(s.size(), std::size(buffer) - 1));
+}
+
+struct WidgetSelector::WidgetHelpIcon::D
+{
+    static const int border_len = 1;
+    static const int pad_x = 2;
+
+    static int right_pad(const FontCharView * fc)
+    {
+        return pad_x + border_len + fc->offsetx + fc->incby - fc->width;
+    }
+};
+
+WidgetSelector::WidgetHelpIcon::WidgetHelpIcon(
+    gdi::GraphicApi & drawable, const Font& font, const Theme& theme
+)
+    : Widget(drawable, Focusable::No)
+    , fc(&font.item('?').view)
+    , fg(theme.global.fgcolor)
+    , bg(theme.selector_label.bgcolor)
+{
+    set_wh(
+        checked_int(fc->boxed_width() + D::border_len + D::pad_x + D::right_pad(fc)),
+        checked_int(font.max_height() + D::border_len * 2)
+    );
+}
+
+void WidgetSelector::WidgetHelpIcon::rdp_input_invalidate(Rect clip)
+{
+    gdi::draw_text(
+        drawable,
+        x(),
+        y(),
+        cy() - D::border_len * 2,
+        gdi::DrawTextPadding{
+          .top = D::border_len,
+          .right = checked_int(D::right_pad(fc)),
+          .bottom = D::border_len,
+          .left = D::border_len + D::pad_x,
+        },
+        {&fc, 1},
+        fg,
+        bg,
+        get_rect().intersect(clip)
+    );
+
+    gdi_draw_border(drawable, fg, get_rect(), D::border_len, clip, gdi::ColorCtx::depth24());
 }
 
 WidgetSelector::WidgetSelector(
@@ -47,8 +79,7 @@ WidgetSelector::WidgetSelector(
     chars_view number_of_page,
     Widget * extra_button,
     WidgetSelectorParams const & selector_params,
-    Font const & font, Theme const & theme, Translator tr,
-    bool has_target_helpicon /* for unit test only */)
+    Font const & font, Theme const & theme, Translator tr)
 : WidgetComposite(drawable, Focusable::Yes)
 , tooltip_shower(*this)
 , tooltip_shower_parent(tooltip_shower)
@@ -78,31 +109,28 @@ WidgetSelector::WidgetSelector(
 }
 , column_expansion_buttons{
     WidgetButton{
-        drawable, ""_av, [this]{
+        drawable, font, ""_av, WidgetButton::Colors::from_theme(theme),
+        [this]{
             this->priority_column_index = 0;
             this->rearrange();
             this->rdp_input_invalidate(this->get_rect());
         },
-        theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, 1, font, 6, 2
     },
     WidgetButton{
-        drawable, ""_av, [this]{
+        drawable, font, ""_av, WidgetButton::Colors::from_theme(theme),
+        [this]{
             this->priority_column_index = 1;
             this->rearrange();
             this->rdp_input_invalidate(this->get_rect());
         },
-        theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, 1, font, 6, 2
     },
     WidgetButton{
-        drawable, ""_av, [this]{
+        drawable, font, ""_av, WidgetButton::Colors::from_theme(theme),
+        [this]{
             this->priority_column_index = 2;
             this->rearrange();
             this->rdp_input_invalidate(this->get_rect());
         },
-        theme.global.fgcolor, theme.global.bgcolor,
-        theme.global.focus_color, 1, font, 6, 2
     }
 }
 , edit_filters{
@@ -144,9 +172,7 @@ WidgetSelector::WidgetSelector(
         events.onfilter)
 , connect(drawable, font, tr(trkeys::connect), WidgetButton::Colors::from_theme(theme),
           events.onconnect)
-// TODO button without notifier
-, target_helpicon(drawable, font, "?"_av, WidgetButton::Colors::no_border_from_theme(theme),
-                  WidgetEventNotifier())
+, target_helpicon(drawable, font, theme)
 , tr(tr)
 , font(font)
 , left(left)
@@ -176,11 +202,9 @@ WidgetSelector::WidgetSelector(
     this->add_widget(this->last_page);
     this->add_widget(this->logout);
     this->add_widget(this->connect);
+    this->add_widget(this->target_helpicon);
 
-    if (has_target_helpicon) {
-        this->target_helpicon.set_unfocusable();
-        this->add_widget(this->target_helpicon);
-    }
+    number_page.set_wh(number_page.get_optimal_dim());
 
     if (extra_button) {
         this->add_widget(*extra_button);
@@ -290,7 +314,7 @@ void WidgetSelector::rearrange()
 
         this->target_helpicon.set_xy(target_header_label.x()
                                      + target_header_label.get_optimal_dim().w + 4,
-                                     labels_y);
+                                     labels_y - WidgetHelpIcon::D::border_len);
     }
 
     {

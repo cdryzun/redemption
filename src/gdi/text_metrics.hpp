@@ -152,8 +152,8 @@ struct DrawTextPadding
 
     struct Padding2
     {
-        uint16_t left_right;
         uint16_t top_bottom;
+        uint16_t left_right;
 
         operator DrawTextPadding () const noexcept
         {

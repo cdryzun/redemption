@@ -38,11 +38,21 @@ struct TestWidgetGroupBoxCtx
     TestWidgetGroupBoxCtx(chars_view text)
     : wgroupbox(drawable, text,
                 /*fg_color=*/NamedBGRColor::RED, /*bg_color=*/NamedBGRColor::YELLOW, global_font_deja_vu_14())
-    , wbutton(drawable, "Button 1"_av, WidgetEventNotifier(),
-              /*fg_color=*/NamedBGRColor::RED,
-              /*bg_color=*/NamedBGRColor::YELLOW,
-              /*focuscolor*/NamedBGRColor::LIGHT_YELLOW, 2,
-              global_font_deja_vu_14(), 4, 1)
+    , wbutton(
+        drawable, global_font_deja_vu_14(), "Button 1"_av,
+        {
+            .focus = {
+                .fg = NamedBGRColor::RED,
+                .bg = NamedBGRColor::LIGHT_YELLOW,
+                .border = NamedBGRColor::RED,
+            },
+            .blur = {
+                .fg = NamedBGRColor::RED,
+                .bg = NamedBGRColor::YELLOW,
+                .border = NamedBGRColor::RED,
+            },
+        },
+        WidgetEventNotifier())
     {
         int16_t x = 200;
         int16_t y = 100;
@@ -50,7 +60,6 @@ struct TestWidgetGroupBoxCtx
         wgroupbox.set_wh(150, 200);
         wgroupbox.set_xy(x, y);
 
-        wbutton.set_wh(wbutton.get_optimal_dim());
         wbutton.set_xy(x + 10, y + 20);
 
         wgroupbox.add_widget(wbutton);

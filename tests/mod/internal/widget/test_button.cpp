@@ -166,7 +166,7 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonAndComposite)
         return WidgetButton::Colors{
             .focus = {
                 .fg = fg,
-                .bg = bg,
+                .bg = focus,
                 .border = fg,
             },
             .blur = {

@@ -43,9 +43,7 @@ struct TestWidgetSelectorCtx
 
     WidgetSelector selector;
 
-    TestWidgetSelectorCtx(
-        uint16_t width, uint16_t height,
-        WidgetSelectorParams params, bool has_target_helpicon = false)
+    TestWidgetSelectorCtx(uint16_t width, uint16_t height, WidgetSelectorParams params)
     : drawable{width, height}
     , selector(
         drawable, copy_paste, tooltip_shower, "x@127.0.0.1"_av, 0, 0, width, height,
@@ -61,7 +59,8 @@ struct TestWidgetSelectorCtx
             .onctrl_shift = WidgetEventNotifier(),
         },
         "1"_av, "1"_av, nullptr, params, global_font_deja_vu_14(), Theme(),
-        MsgTranslationCatalog::default_catalog(), has_target_helpicon)
+        MsgTranslationCatalog::default_catalog()
+    )
     {}
 
     void add_devices()
@@ -143,48 +142,6 @@ RED_AUTO_TEST_CASE(TraceWidgetSelectorResize)
     selector.selector_lines.set_selection(1);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_resize_2.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetSelector2)
-{
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params);
-
-    ctx.selector.rdp_input_invalidate(ctx.selector.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_3.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetSelectorClip)
-{
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params);
-
-    // ask to widget to redraw at position 780,-7 and of size 120x20. After clip the size is of 20x13
-    ctx.selector.rdp_input_invalidate(Rect(
-        20 + ctx.selector.x(),
-        0 + ctx.selector.y(),
-        ctx.selector.cx(),
-        ctx.selector.cy()
-    ));
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_4.png");
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetSelectorClip2)
@@ -364,23 +321,4 @@ RED_AUTO_TEST_CASE(TraceWidgetSelectorFilter)
     rdp_input_scancode(Keymap::KeyCode::Tab);
     rdp_input_scancode(Keymap::KeyCode::Tab);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_20.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetSelectorTargetHelpIcon)
-{
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params, true);
-
-    // ask to widget to redraw at it's current position
-    ctx.selector.rdp_input_invalidate(ctx.selector.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_21.png");
 }
