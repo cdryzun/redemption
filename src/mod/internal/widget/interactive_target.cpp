@@ -48,17 +48,19 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     : WidgetComposite(drawable, Focusable::Yes)
     , oncancel(events.oncancel)
     , onctrl_shift(events.onctrl_shift)
-    , caption_label(drawable, caption,
-                    theme.global.fgcolor, theme.global.bgcolor, font)
+    , caption_label(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     , separator(drawable, theme.global.separator_color)
     , device_info(
-        drawable, ask_device ? device_info : ""_av,
+        drawable, font, ask_device ? device_info : ""_av,
         // TODO BUG error context should be transfered instead of detected with string prefix (incompatible with translation)
-        ask_device && (utils::starts_with(device_info, "Error:"_av) ||
-                       utils::starts_with(device_info, "Erreur:"_av))
-            ? theme.global.error_color
-            : theme.global.fgcolor,
-        theme.global.bgcolor, font)
+        {
+            .fg = ask_device && (utils::starts_with(device_info, "Error:"_av)
+                              || utils::starts_with(device_info, "Erreur:"_av))
+                ? theme.global.error_color
+                : theme.global.fgcolor,
+            .bg =  theme.global.bgcolor
+        }
+    )
     , device_edit(
         drawable, font, copy_paste,
         {
@@ -141,13 +143,6 @@ void WidgetInteractiveTarget::move_size_widget(int16_t left, int16_t top, uint16
 {
     this->set_xy(left, top);
     this->set_wh(width, height);
-
-    Dimension dim = this->caption_label.get_optimal_dim();
-    this->caption_label.set_wh(dim);
-
-    dim = this->device_info.get_optimal_dim();
-    this->device_info.set_wh(dim);
-
 
     // Center bloc positionning
     // Device, Login and Password boxes

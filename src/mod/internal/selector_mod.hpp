@@ -79,14 +79,15 @@ private:
     SelectorModVariables ini;
 
     gdi::OsdApi& osd;
-
-    LanguageButton language_button;
-
-    WidgetSelectorParams selector_params;
-    WidgetSelector selector;
+    Font const& font;
 
     int current_page;
     int number_page;
 
     int selector_lines_per_page_saved = 0;
+
+    LanguageButton language_button;
+
+    WidgetSelectorParams selector_params;
+    WidgetSelector selector;
 };

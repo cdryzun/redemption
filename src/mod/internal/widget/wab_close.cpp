@@ -37,24 +37,21 @@ WidgetWabClose::WidgetWabClose(
     Translator tr, bool back_to_selector)
 : WidgetComposite(drawable, Focusable::Yes)
 , oncancel(events.oncancel)
-, connection_closed_label(drawable, tr(trkeys::connection_closed),
-                          theme.global.fgcolor, theme.global.bgcolor, font)
+, connection_closed_label(drawable, font, tr(trkeys::connection_closed),
+                          WidgetLabel::Colors::from_theme(theme))
 , separator(drawable, theme.global.separator_color)
-, username_label(drawable, tr(trkeys::wab_close_username),
-                 theme.global.fgcolor, theme.global.bgcolor, font)
-, username_value(drawable, username,
-                 theme.global.fgcolor, theme.global.bgcolor, font)
-, target_label(drawable, tr(trkeys::wab_close_target),
-               theme.global.fgcolor, theme.global.bgcolor, font)
-, target_value(drawable, target,
-               theme.global.fgcolor, theme.global.bgcolor, font)
-, diagnostic_label(drawable, tr(trkeys::wab_close_diagnostic),
-                   theme.global.fgcolor, theme.global.bgcolor, font)
+, username_label(drawable, font, tr(trkeys::wab_close_username),
+                 WidgetLabel::Colors::from_theme(theme))
+, username_value(drawable, font, username, WidgetLabel::Colors::from_theme(theme))
+, target_label(drawable, font, tr(trkeys::wab_close_target),
+               WidgetLabel::Colors::from_theme(theme))
+, target_value(drawable, font, target, WidgetLabel::Colors::from_theme(theme))
+, diagnostic_label(drawable, font, tr(trkeys::wab_close_diagnostic),
+                   WidgetLabel::Colors::from_theme(theme))
 , diagnostic_value(drawable, theme.global.fgcolor, theme.global.bgcolor, font)
-, timeleft_label(drawable, tr(trkeys::wab_close_timeleft),
-                theme.global.fgcolor, theme.global.bgcolor, font)
-, timeleft_value(drawable, ""_av,
-                 theme.global.fgcolor, theme.global.bgcolor, font)
+, timeleft_label(drawable, font, tr(trkeys::wab_close_timeleft),
+                WidgetLabel::Colors::from_theme(theme))
+, timeleft_value(drawable, font, ""_av, WidgetLabel::Colors::from_theme(theme))
 , cancel(drawable, font, tr(trkeys::close), WidgetButton::Colors::from_theme(theme),
          events.oncancel)
 , img(drawable,
@@ -160,8 +157,6 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     int16_t y = 10;
 
-    Dimension dim = this->connection_closed_label.get_optimal_dim();
-    this->connection_closed_label.set_wh(dim);
     this->connection_closed_label.set_xy(
         left + (this->cx() - this->connection_closed_label.cx()) / 2, top + y);
     y += this->connection_closed_label.cy();
@@ -176,45 +171,33 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     uint16_t x = 0;
 
-    if (!this->username_value.get_text().empty()) {
-        dim = this->username_label.get_optimal_dim();
-        this->username_label.set_wh(dim);
+    if (!this->username_value.is_empty()) {
         this->username_label.set_xy(left + dx, this->username_label.y());
         x = std::max<uint16_t>(this->username_label.cx(), x);
 
-        dim = this->target_label.get_optimal_dim();
-        this->target_label.set_wh(dim);
         this->target_label.set_xy(left + dx, this->target_label.y());
         x = std::max<uint16_t>(this->target_label.cx(), x);
     }
 
-    dim = this->diagnostic_label.get_optimal_dim();
-    this->diagnostic_label.set_wh(dim);
     this->diagnostic_label.set_xy(left + dx, this->diagnostic_label.y());
     x = std::max<uint16_t>(this->diagnostic_label.cx(), x);
 
     if (this->showtimer) {
-        dim = this->timeleft_label.get_optimal_dim();
-        this->timeleft_label.set_wh(dim);
         this->timeleft_label.set_xy(left + dx, this->timeleft_label.y());
         x = std::max<uint16_t>(this->timeleft_label.cx(), x);
     }
 
     x += 10;
 
-    if (!this->username_value.get_text().empty()) {
+    if (!this->username_value.is_empty()) {
         this->username_label.set_xy(this->username_label.x(), top + y);
 
-        dim = this->username_value.get_optimal_dim();
-        this->username_value.set_wh(dim);
         this->username_value.set_xy(x + this->diagnostic_label.x(), top + y);
 
         y += this->username_label.cy() + 20;
 
         this->target_label.set_xy(this->target_label.x(), top + y);
 
-        dim = this->target_value.get_optimal_dim();
-        this->target_value.set_wh(dim);
         this->target_value.set_xy(x + this->diagnostic_label.x(), top + y);
 
         y += this->target_label.cy() + 20;
@@ -229,7 +212,7 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
         this->font, this->diagnostic_text,
         short_diag ? this->cx() : this->separator.cx() - x
     ));
-    dim = this->diagnostic_value.get_optimal_dim();
+    auto dim = this->diagnostic_value.get_optimal_dim();
     this->diagnostic_value.set_wh(dim);
 
     if (short_diag) {
@@ -246,8 +229,6 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
     if (this->showtimer) {
         this->timeleft_label.set_xy(this->timeleft_label.x(), top + y);
 
-        dim = this->timeleft_value.get_optimal_dim();
-        this->timeleft_value.set_wh(dim);
         this->timeleft_value.set_xy(x + this->diagnostic_label.x(), top + y);
 
         y += this->timeleft_label.cy() + 20;
@@ -291,14 +272,9 @@ std::chrono::seconds WidgetWabClose::refresh_timeleft(std::chrono::seconds remai
             ? TrFmt(tr, trkeys::close_box_second_timer, duration)
             : TrFmt(tr, trkeys::close_box_minute_timer, duration);
 
-        Rect old = this->timeleft_value.get_rect();
-        this->timeleft_value.set_text(nullptr);
-        this->rdp_input_invalidate(old);
-        this->timeleft_value.set_text(text);
-
-        Dimension dim = this->timeleft_value.get_optimal_dim();
-        this->timeleft_value.set_wh(dim);
-
+        auto old_width = this->timeleft_value.cx();
+        this->timeleft_value.set_text(font, text);
+        this->timeleft_value.set_wh(std::max(timeleft_value.cx(), old_width), timeleft_value.cy());
         this->rdp_input_invalidate(this->timeleft_value.get_rect());
 
         this->prev_time = tl;

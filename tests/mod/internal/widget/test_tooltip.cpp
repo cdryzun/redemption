@@ -34,7 +34,7 @@
 
 RED_AUTO_TEST_CASE(TraceWidgetTooltip)
 {
-    TestGraphic drawable(800, 600);
+    TestGraphic drawable(300, 150);
 
     BGRColor fg_color = NamedBGRColor::RED;
     BGRColor bg_color = NamedBGRColor::YELLOW;
@@ -55,23 +55,19 @@ RED_AUTO_TEST_CASE(TraceWidgetTooltip)
 
 RED_AUTO_TEST_CASE(TraceWidgetTooltipScreen)
 {
-    TestGraphic drawable(800, 600);
+    TestGraphic drawable(400, 150);
     int x = 50;
     int y = 20;
 
     // WidgetTooltip is a tooltip widget at position 0,0 in it's parent context
     WidgetScreen parent(drawable, 800, 600, global_font_deja_vu_14(), Theme{});
 
-    WidgetLabel label(drawable, "TOOLTIPTEST"_av,
-                      NamedBGRColor::BLACK, NamedBGRColor::WHITE, global_font_deja_vu_14());
-    Dimension dim = label.get_optimal_dim();
-    label.set_wh(dim);
+    WidgetLabel label(drawable, global_font_deja_vu_14(), "TOOLTIPTEST"_av,
+                      {NamedBGRColor::BLACK, NamedBGRColor::WHITE});
     label.set_xy(x, y);
 
-    WidgetLabel label2(drawable, "TOOLTIPTESTMULTI"_av,
-                       NamedBGRColor::BLACK, NamedBGRColor::WHITE, global_font_deja_vu_14());
-    dim = label2.get_optimal_dim();
-    label2.set_wh(dim);
+    WidgetLabel label2(drawable, global_font_deja_vu_14(), "TOOLTIPTESTMULTI"_av,
+                       {NamedBGRColor::BLACK, NamedBGRColor::WHITE});
     label2.set_xy(x + 50, y + 90);
 
     parent.add_widget(label);

@@ -1,23 +1,7 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #pragma once
 
@@ -28,6 +12,7 @@
 
 class Font;
 class FontCharView;
+class Theme;
 namespace gdi
 {
     class ColorCtx;
@@ -79,39 +64,33 @@ private:
     FontCharPtr _fc_buffer[BufSize];
 };
 
+
 class WidgetLabel : public Widget
 {
 public:
-    WidgetLabel(gdi::GraphicApi & drawable, chars_view text,
-                Color fgcolor, Color bgcolor, Font const & font,
-                int xtext = 0, int ytext = 0); /*NOLINT*/
+    struct Colors
+    {
+        Color fg;
+        Color bg;
 
-    void set_text(chars_view text);
+        static Colors from_theme(Theme const& theme) noexcept;
+    };
 
-    [[nodiscard]] chars_view get_text() const;
+    WidgetLabel(gdi::GraphicApi & drawable, Font const & font, chars_view text, Colors colors);
+
+    bool is_empty() const noexcept
+    {
+        return text_label.fcs().empty();
+    }
+
+    void set_text(Font const & font, chars_view text);
 
     void rdp_input_invalidate(Rect clip) override;
-
-    static void draw(Rect const clip, Rect const rect, gdi::GraphicApi& drawable,
-                     chars_view text, Color fgcolor, Color bgcolor, gdi::ColorCtx color_ctx,
-                     Font const & font, int xtext, int ytext);
-
-    Dimension get_optimal_dim() const override;
-
-    static Dimension get_optimal_dim(Font const & font, chars_view text, int xtext, int ytext);
-
-    void set_color(Color bg_color, Color fg_color) override;
 
 public:
     static const size_t buffer_size = 256;
 
-    char buffer[buffer_size];
+    Colors colors;
 
-    int x_text;
-    int y_text;
-    Color bg_color;
-    Color fg_color;
-
-private:
-    Font const * font;
+    WidgetText<buffer_size> text_label;
 };

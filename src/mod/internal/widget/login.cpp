@@ -48,9 +48,8 @@ WidgetLogin::WidgetLogin(
     , oncancel(events.oncancel)
     , onctrl_shift(events.onctrl_shift)
     , tooltip_shower(tooltip_shower)
-    , error_message_label(drawable, label_error_message,
-                    theme.global.error_color, theme.global.bgcolor,
-                    font)
+    , error_message_label(drawable, font, label_error_message,
+                          WidgetLabel::Colors::from_theme(theme))
     , login_edit(
         drawable, font, copy_paste,
         {
@@ -89,9 +88,7 @@ WidgetLogin::WidgetLogin(
           theme.enable_theme ? theme.logo_path.c_str() :
           app_path(AppPath::LoginWabBlue),
           theme.global.bgcolor)
-    , version_label(drawable, caption,
-                    theme.global.fgcolor, theme.global.bgcolor,
-                    font)
+    , version_label(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     // TODO button without notifier
     , helpicon(drawable, font, "?"_av, WidgetButton::Colors::from_theme(theme),
                WidgetEventNotifier())
@@ -133,10 +130,6 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
     this->set_xy(left, top);
     this->set_wh(width, height);
 
-    auto set_optimal_wh = [](auto& widget){
-        widget.set_wh(widget.get_optimal_dim());
-    };
-
     bool label_as_placeholder = (width <= 640);
 
     const Dimension edit_dim = {
@@ -144,13 +137,9 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         this->login_edit.cy()
     };
 
-    this->error_message_label.set_wh(
-        edit_dim.w,
-        this->error_message_label.get_optimal_dim().h);
+    this->error_message_label.set_wh(edit_dim.w, this->error_message_label.cy());
 
-    set_optimal_wh(this->version_label);
-
-    set_optimal_wh(this->img);
+    this->img.set_wh(this->img.get_optimal_dim());
 
     const int labels_w = std::max({
         login_edit.label_width(label_as_placeholder),

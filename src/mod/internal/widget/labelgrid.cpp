@@ -29,9 +29,8 @@ namespace
     {
         WidgetLabelWithTooltip(
             gdi::GraphicApi & drawable, WidgetTooltipShower & tooltip_shower,
-            chars_view text, Color fgcolor, Color bgcolor, Font const & font,
-            int xtext, int ytext)
-        : WidgetLabel(drawable, text, fgcolor, bgcolor, font, xtext, ytext)
+            chars_view text, Color fgcolor, Color bgcolor, Font const & font)
+        : WidgetLabel(drawable, font, text, {fgcolor, bgcolor})
         , tooltip_shower(tooltip_shower)
         {}
 

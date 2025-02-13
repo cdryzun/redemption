@@ -638,7 +638,6 @@ test-run tests/acl/test_license_api :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o
@@ -1074,7 +1073,6 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o
@@ -1148,7 +1146,6 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o
@@ -1222,7 +1219,6 @@ test-run tests/client_mods/test_rdp_client_wab :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o
@@ -2192,7 +2188,6 @@ test-run tests/front/test_front :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o
@@ -2900,7 +2895,6 @@ test-run tests/mod/internal/widget/test_button :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/label.o
@@ -2962,7 +2956,6 @@ test-run tests/mod/internal/widget/test_delegated_copy :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/delegated_copy.o
@@ -3158,7 +3151,6 @@ test-run tests/mod/internal/widget/test_grid :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/grid.o
   src/mod/internal/widget/label.o
@@ -3192,7 +3184,6 @@ test-run tests/mod/internal/widget/test_group_box :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/group_box.o
@@ -3291,9 +3282,7 @@ test-run tests/mod/internal/widget/test_label :
   src/gdi/clip_from_cmd.o
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
-  src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/label.o
   src/utils/bitmap.o
@@ -3325,7 +3314,6 @@ test-run tests/mod/internal/widget/test_labelgrid :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/grid.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/labelgrid.o
@@ -3509,7 +3497,6 @@ test-run tests/mod/internal/widget/test_screen :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/label.o
@@ -3546,7 +3533,6 @@ test-run tests/mod/internal/widget/test_scroll :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/scroll.o
@@ -3623,7 +3609,6 @@ test-run tests/mod/internal/widget/test_tooltip :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
@@ -3660,7 +3645,6 @@ test-run tests/mod/internal/widget/test_vertical_scroll_text :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/vertical_scroll_text.o
@@ -3694,7 +3678,6 @@ test-run tests/mod/internal/widget/test_wab_close :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/image.o
@@ -3840,7 +3823,6 @@ test-run tests/mod/rdp/channels/test_rail_session_manager :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/text_metrics.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -3952,7 +3934,6 @@ test-run tests/mod/rdp/test_rdp :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/copy_paste.o
   src/mod/internal/widget/label.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o

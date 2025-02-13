@@ -386,11 +386,10 @@ int draw_text(
         uint8_t data[256];
         data[1] = 0;
         auto data_it = std::begin(data);
-        const auto data_end = std::end(data)-2;
-        auto partial_end = it + std::min((end - it), (data_end - data_it));
+        auto data_end = it + std::min(end - it, (std::end(data) - 2 - data_it) / 2);
 
         const int cacheId = 7;
-        for (; it < partial_end && x + total_width <= x_end; ++it) {
+        for (; it < data_end && x + total_width <= x_end; ++it) {
             int cacheIndex = 0;
 
             const GlyphCache::t_glyph_cache_result cache_result =

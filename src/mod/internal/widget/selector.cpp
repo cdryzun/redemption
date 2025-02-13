@@ -88,23 +88,19 @@ WidgetSelector::WidgetSelector(
 , onctrl_shift(events.onctrl_shift)
 , less_than_800(width < 800)
 , nb_columns(std::min(selector_params.nb_columns, WidgetSelectorParams::nb_max_columns))
-, device_label(drawable, device_name,
-               theme.global.fgcolor, theme.global.bgcolor, font)
+, device_label(drawable, font, device_name, WidgetLabel::Colors::from_theme(theme))
 , header_labels{
     WidgetLabel{
-        drawable, selector_params.label[0],
-        theme.selector_label.fgcolor,
-        theme.selector_label.bgcolor, font, 5
+        drawable, font, selector_params.label[0],
+        {.fg = theme.selector_label.fgcolor, .bg = theme.selector_label.bgcolor}
     },
     WidgetLabel{
-        drawable, selector_params.label[1],
-        theme.selector_label.fgcolor,
-        theme.selector_label.bgcolor, font, 5
+        drawable, font, selector_params.label[1],
+        {.fg = theme.selector_label.fgcolor, .bg = theme.selector_label.bgcolor}
     },
     WidgetLabel{
-        drawable, selector_params.label[2],
-        theme.selector_label.fgcolor,
-        theme.selector_label.bgcolor, font, 5
+        drawable, font, selector_params.label[2],
+        {.fg = theme.selector_label.fgcolor, .bg = theme.selector_label.bgcolor}
     }
 }
 , column_expansion_buttons{
@@ -158,9 +154,9 @@ WidgetSelector::WidgetSelector(
 , current_page(drawable, font, copy_paste, current_page,
                WidgetEdit::Colors::from_theme(theme),
                events.oncurrent_page)
-, number_page(drawable,
+, number_page(drawable, font,
               !number_of_page.empty() ? temporary_number_of_page(number_of_page) : "/XXX"_av,
-              theme.global.fgcolor, theme.global.bgcolor, font)
+              WidgetLabel::Colors::from_theme(theme))
 , next_page(drawable, font, "▶"_av, WidgetButton::Colors::no_border_from_theme(theme),
             events.onnext_page)
 , last_page(drawable, font, "▸▶"_av, WidgetButton::Colors::no_border_from_theme(theme),

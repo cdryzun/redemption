@@ -74,6 +74,12 @@ public:
 private:
     Events events;
 
+    Font const& font;
+    Translator tr;
+
+    unsigned flags;
+    std::chrono::minutes duration_max;
+
     WidgetLabel  warning_msg;
     WidgetLabel  duration_label;
 public:
@@ -90,9 +96,4 @@ public:
 private:
     WidgetLabel  notes;
     WidgetButton confirm;
-
-    Translator tr;
-
-    unsigned flags;
-    std::chrono::minutes duration_max;
 };

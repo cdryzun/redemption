@@ -55,32 +55,31 @@ WidgetForm::WidgetForm(
 )
     : WidgetComposite(drawable, Focusable::Yes)
     , events(events)
-    , warning_msg(drawable, ""_av,
-                  theme.global.error_color, theme.global.bgcolor, font)
-    , duration_label(drawable,
-                     tr((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration),
-                     theme.global.fgcolor, theme.global.bgcolor, font)
-    , duration_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
-                    check_confirmation_event(*this))
-    , duration_format(drawable, tr(trkeys::note_duration_format),
-                      theme.global.fgcolor, theme.global.bgcolor, font)
-    , ticket_label(drawable,
-                   tr((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket),
-                   theme.global.fgcolor, theme.global.bgcolor, font)
-    , ticket_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
-                  check_confirmation_event(*this))
-    , comment_label(drawable,
-                    tr((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment),
-                    theme.global.fgcolor, theme.global.bgcolor, font)
-    , comment_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
-                   check_confirmation_event(*this))
-    , notes(drawable, tr(trkeys::note_required),
-            theme.global.fgcolor, theme.global.bgcolor, font)
-    , confirm(drawable, font, tr(trkeys::confirm), WidgetButton::Colors::from_theme(theme),
-              [this]{ return this->check_confirmation(); })
+    , font(font)
     , tr(tr)
     , flags(flags)
     , duration_max(duration_max == 0min ? 60000min : duration_max)
+    , warning_msg(drawable, font, ""_av, WidgetLabel::Colors::from_theme(theme))
+    , duration_label(drawable, font,
+                     tr((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration),
+                     WidgetLabel::Colors::from_theme(theme))
+    , duration_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+                    check_confirmation_event(*this))
+    , duration_format(drawable, font, tr(trkeys::note_duration_format),
+                      WidgetLabel::Colors::from_theme(theme))
+    , ticket_label(drawable, font,
+                   tr((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket),
+                   WidgetLabel::Colors::from_theme(theme))
+    , ticket_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+                  check_confirmation_event(*this))
+    , comment_label(drawable, font,
+                    tr((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment),
+                    WidgetLabel::Colors::from_theme(theme))
+    , comment_edit(drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+                   check_confirmation_event(*this))
+    , notes(drawable, font, tr(trkeys::note_required), WidgetLabel::Colors::from_theme(theme))
+    , confirm(drawable, font, tr(trkeys::confirm), WidgetButton::Colors::from_theme(theme),
+              [this]{ return this->check_confirmation(); })
 {
     this->set_bg_color(theme.global.bgcolor);
 
@@ -112,46 +111,31 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     this->set_xy(left, top);
     this->set_wh(width, height);
 
-    Dimension dim;
-
     uint16_t labelmaxwidth = 0;
 
     if (this->flags & DURATION_DISPLAY) {
-        dim = this->duration_label.get_optimal_dim();
-        this->duration_label.set_wh(dim);
-
         labelmaxwidth = std::max(labelmaxwidth, this->duration_label.cx());
     }
 
     if (this->flags & TICKET_DISPLAY) {
-        dim = this->ticket_label.get_optimal_dim();
-        this->ticket_label.set_wh(dim);
-
         labelmaxwidth = std::max(labelmaxwidth, this->ticket_label.cx());
     }
 
     if (this->flags & COMMENT_DISPLAY) {
-        dim = this->comment_label.get_optimal_dim();
-        this->comment_label.set_wh(dim);
-
         labelmaxwidth = std::max(labelmaxwidth, this->comment_label.cx());
     }
 
     constexpr uint8_t x_padding = 20;
     constexpr uint8_t h_sep = 32;
 
-    dim = this->warning_msg.get_optimal_dim();
-    this->warning_msg.set_wh(width - labelmaxwidth - x_padding, dim.h);
+    this->warning_msg.set_wh(width - labelmaxwidth - x_padding, this->warning_msg.cy());
     this->warning_msg.set_xy(left + labelmaxwidth + x_padding, top);
 
     int y = 20;
-    int d = (duration_edit.cy() - dim.h) / 2;
+    int d = (duration_edit.cy() - this->warning_msg.cy()) / 2;
 
     if (this->flags & DURATION_DISPLAY) {
         this->duration_label.set_xy(left, top + y + d);
-
-        dim = this->duration_format.get_optimal_dim();
-        this->duration_format.set_wh(dim.w, dim.h);
 
         duration_edit.update_layout({
             .x = checked_int(left + labelmaxwidth + x_padding),
@@ -189,8 +173,7 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     }
 
     if (this->flags & (COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY)) {
-        dim = this->notes.get_optimal_dim();
-        this->notes.set_wh(width - labelmaxwidth - x_padding, dim.h);
+        this->notes.set_wh(width - labelmaxwidth - x_padding, this->notes.cy());
         this->notes.set_xy(left + labelmaxwidth + x_padding, top + y);
     }
 
@@ -244,7 +227,7 @@ namespace
 void WidgetForm::check_confirmation()
 {
     auto set_warning_buffer = [this](auto k, TrKey field, auto... args) {
-        this->warning_msg.set_text(Translator::FmtMsg<512>(tr, k, tr(field).c_str(), args...));
+        this->warning_msg.set_text(font, Translator::FmtMsg<256>(tr, k, tr(field).c_str(), args...));
     };
 
     auto has_flags = [this](unsigned m){

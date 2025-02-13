@@ -63,7 +63,7 @@ namespace
         while (*p != '\x01' && *p != '\n' && *p) {
             p++;
         }
-        return p - list;
+        return checked_int(p - list);
     }
 
     constexpr int nb_max_row = 1024;
@@ -83,6 +83,13 @@ SelectorMod::SelectorMod(
     , tr(tr)
     , ini(ini)
     , osd(osd)
+    , font(font)
+    , current_page(checked_int(ini.is_asked<cfg::context::selector_current_page>()
+        ? 0
+        : ini.get<cfg::context::selector_current_page>()))
+    , number_page(checked_int(ini.is_asked<cfg::context::selector_number_of_pages>()
+        ? 0
+        : ini.get<cfg::context::selector_number_of_pages>()))
     , language_button(
         ini.get<cfg::internal_mod::keyboard_layout_proposals>(),
         this->selector, drawable, front, font, theme)
@@ -182,9 +189,6 @@ SelectorMod::SelectorMod(
             ? ""_av
             : int_to_decimal_zchars(ini.get<cfg::context::selector_number_of_pages>()),
         &this->language_button, this->selector_params, font, theme, tr)
-
-    , current_page(unchecked_decimal_chars_to_int(this->selector.current_page.get_text()))
-    , number_page(unchecked_decimal_chars_to_int(this->selector.number_page.get_text().from_offset(1)))
 {
     this->screen.add_widget(this->selector, WidgetComposite::HasFocus::Yes);
     this->screen.init_focus();
@@ -209,7 +213,7 @@ void SelectorMod::acl_update(AclFieldMask const& acl_fields)
 
     if (acl_fields.has<cfg::context::selector_number_of_pages>()) {
         this->number_page = this->ini.get<cfg::context::selector_number_of_pages>();
-        this->selector.number_page.set_text(WidgetSelector::temporary_number_of_page(
+        this->selector.number_page.set_text(font, WidgetSelector::temporary_number_of_page(
             int_to_decimal_chars(this->number_page)));
     }
 

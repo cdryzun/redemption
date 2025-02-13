@@ -41,8 +41,7 @@ WidgetDialogBase::WidgetDialogBase(
 )
     : WidgetComposite(drawable, Focusable::Yes)
     , onctrl_shift(events.onctrl_shift)
-    , title(drawable, caption,
-            theme.global.fgcolor, theme.global.bgcolor, font)
+    , title(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     , separator(drawable, theme.global.separator_color)
     , dialog(drawable, text,
              theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
@@ -104,8 +103,6 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     int16_t y            = top;
     int16_t total_height = 0;
 
-    Dimension dim = this->title.get_optimal_dim();
-    this->title.set_wh(dim);
     this->title.set_xy(left + (width - this->title.cx()) / 2, y);
     y            += this->title.cy();
     total_height += this->title.cy();
@@ -157,8 +154,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     total_height += this->dialog.cy() + 10;
 
     if (this->challenge) {
-        dim = this->challenge->get_optimal_dim();
-        this->challenge->set_wh(total_width - 20, dim.h);
+        this->challenge->set_wh(total_width - 20, this->challenge->cy());
         this->challenge->set_xy(this->separator.x() + 10, y);
 
         y            += this->challenge->cy() + 10;
@@ -176,14 +172,13 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
 
         y += 5;
 
-        const auto label_dim = this->link->label.get_optimal_dim();
+        const auto label_dim = this->link->label.dimension();
         const auto button_dim_h = this->link->copy.cy();
-        const auto msg_dim = this->link->copied_msg.get_optimal_dim();
+        const auto msg_dim = this->link->copied_msg.dimension();
         const int dy = std::max(label_dim.h, button_dim_h);
         const int label_dy = (dy - label_dim.h) / 2;
         const int button_dy = (dy - button_dim_h) / 2;
 
-        this->link->label.set_wh(label_dim);
         this->link->label.set_xy(this->separator.x() + WIDGET_MULTILINE_BORDER_X, y + label_dy);
 
         this->link->copy.set_xy(this->link->label.x() + label_dim.w + 2, y + button_dy);
@@ -216,7 +211,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         this->link->copied_msg.move_xy(0, (height - total_height) / 2);
     }
 
-    dim = this->img.get_optimal_dim();
+    auto dim = this->img.get_optimal_dim();
     this->img.set_wh(dim);
 
     this->img.set_xy(left + (width - this->img.cx()) / 2,
@@ -337,8 +332,9 @@ WidgetDialogWithCopyableLink::WidgetDialogWithCopyableLink(
     .show = WidgetVerticalScrollText(drawable, link_value,
                 theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
                 font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y),
-    .copied_msg = WidgetLabel(drawable, copied_msg_label, theme.global.fgcolor, theme.global.bgcolor, font),
-    .label = WidgetLabel(drawable, link_label, theme.global.fgcolor, theme.global.bgcolor, font),
+    .copied_msg = WidgetLabel(drawable, font, copied_msg_label,
+                              WidgetLabel::Colors::from_theme(theme)),
+    .label = WidgetLabel(drawable, font, link_label, WidgetLabel::Colors::from_theme(theme)),
     .copy = WidgetDelegatedCopy(
         drawable, [this]{
             this->copy_paste.copy(this->show.get_text());

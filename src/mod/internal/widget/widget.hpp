@@ -293,6 +293,12 @@ public:
         return this->rect.cy;
     }
 
+    ///Return cx() and cy()
+    [[nodiscard]] Dimension dimension() const
+    {
+        return {cx(), cy()};
+    }
+
     ///Return x()+cx()
     [[nodiscard]] int16_t eright() const
     {
