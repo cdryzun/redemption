@@ -700,7 +700,6 @@ class Sesman():
             _status = False
         if (deconnection_time == "-"
             or deconnection_time[0:4] >= "2034"):
-            deconnection_time = "2034-12-31 23:59:59"
             infinite_connection = True
 
         if _status and not infinite_connection:
@@ -714,11 +713,10 @@ class Sesman():
                 days = remaining_seconds // 86400
                 hours = (remaining_seconds % 86400) // 3600
                 minutes = (remaining_seconds % 3600) // 60
-                timezone = self.engine.get_bastion_timezone(time_ctx)
                 if days > 0:
-                    message = TR(Sesmsg.SESSION_CLOSED_S_DAYS) % (deconnection_time, timezone, days, hours, minutes)
+                    message = TR(Sesmsg.SESSION_CLOSED_S_DAYS) % (deconnection_time, days, hours, minutes)
                 else:
-                    message = TR(Sesmsg.SESSION_CLOSED_S) % (deconnection_time, timezone, hours, minutes)
+                    message = TR(Sesmsg.SESSION_CLOSED_S) % (deconnection_time, hours, minutes)
 
                 _status, _error = self.interactive_display_message({'message': message})
                 timeclose = timeclose_now

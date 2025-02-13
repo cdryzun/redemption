@@ -56,7 +56,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-13 15:11:12 UTC+00:00 (in 11h49m)",
+            expect_message="Your session will close at 2024-12-13 15:11:12 (in 11h49m)",
             time_for_tests=TimeTest(
                 timezone=0, altzone=0, daylight=1, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -65,7 +65,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-15 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-15 15:11:12 UTC+00:00 (in 2d11h49m)",
+            expect_message="Your session will close at 2024-12-15 15:11:12 (in 2d11h49m)",
             time_for_tests=TimeTest(
                 timezone=0, altzone=0, daylight=1, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 2 * (24*3600) - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -74,7 +74,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-13 15:11:12 UTC-00:30 (in 11h49m)",
+            expect_message="Your session will close at 2024-12-13 15:11:12 (in 11h49m)",
             time_for_tests=TimeTest(
                 timezone=0, altzone=3600 // 2, daylight=1, localtime=lambda: struct_time_isdst, time=lambda: base_time - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -83,7 +83,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-13 15:11:12 UTC+05:30 (in 11h49m)",
+            expect_message="Your session will close at 2024-12-13 15:11:12 (in 11h49m)",
             time_for_tests=TimeTest(
                 timezone=-19800, altzone=-19800, daylight=0, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -92,7 +92,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-13 15:11:12 UTC+01:00 (in 11h49m)",
+            expect_message="Your session will close at 2024-12-13 15:11:12 (in 11h49m)",
             time_for_tests=TimeTest(
                 timezone=-3600, altzone=0, daylight=0, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -101,7 +101,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-13 15:11:12 UTC-01:00 (in 11h49m)",
+            expect_message="Your session will close at 2024-12-13 15:11:12 (in 11h49m)",
             time_for_tests=TimeTest(
                 timezone=3600, altzone=0, daylight=0, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -117,7 +117,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-13 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-13 15:11:12 UTC+02:00 (in 11h49m)",
+            expect_message="Your session will close at 2024-12-13 15:11:12 (in 11h49m)",
             time_for_tests=TimeTest(
                 timezone=-3600 * 2, altzone=0, daylight=0, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),
@@ -126,7 +126,7 @@ class TestSesmanCheckDeconnectionTime(TestCase):
             DecoContext(getdeco=mock_getdeco, interdsiplay=mock_interdsiplay),
             deco_time="2024-12-23 15:11:12",
             expect_result=(base_time, True, ""),
-            expect_message="Your session will close at 2024-12-23 15:11:12 UTC+02:00 (in 10d11h49m)",
+            expect_message="Your session will close at 2024-12-23 15:11:12 (in 10d11h49m)",
             time_for_tests=TimeTest(
                 timezone=-3600 * 2, altzone=0, daylight=0, localtime=lambda: struct_time_isnotdst, time=lambda: base_time - 10 * (24*3600) - 11 * 3600 - 49 * 60.0, mktime=lambda x: base_time
             ),

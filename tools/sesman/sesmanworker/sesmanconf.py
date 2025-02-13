@@ -23,8 +23,8 @@ def TR(key: str) -> str:
 
 
 class Sesmsg:
-    SESSION_CLOSED_S = 'session_closed_at %s %s %s %s'
-    SESSION_CLOSED_S_DAYS = 'session_closed_at %s %s %s %s %s'
+    SESSION_CLOSED_S = 'session_closed_at %s %s %s'
+    SESSION_CLOSED_S_DAYS = 'session_closed_at %s %s %s %s'
     LICENCE_BLOCKER = 'licence_blocker'
     AUTH_FAILED_WAB_S = 'auth_failed_wab %s'
     ERROR_RECORD_PATH = 'error_getting_record_path'
@@ -91,8 +91,8 @@ class SesmanConfig:
                 'selector_filters_case_sensitive': False,
             },
             'fr': {
-                Sesmsg.SESSION_CLOSED_S: "Votre session sera fermée à %s %s (dans %sh%sm)",
-                Sesmsg.SESSION_CLOSED_S_DAYS: "Votre session sera fermée à %s %s (dans %sj%sh%sm)",
+                Sesmsg.SESSION_CLOSED_S: "Votre session sera fermée à %s (dans %sh%sm)",
+                Sesmsg.SESSION_CLOSED_S_DAYS: "Votre session sera fermée à %s (dans %sj%sh%sm)",
                 Sesmsg.LICENCE_BLOCKER: (
                     "Connexion refusée (par rapport à votre licence)"
                 ),
@@ -195,8 +195,8 @@ class SesmanConfig:
                 ),
             },
             'en': {
-                Sesmsg.SESSION_CLOSED_S: "Your session will close at %s %s (in %sh%sm)",
-                Sesmsg.SESSION_CLOSED_S_DAYS: "Your session will close at %s %s (in %sd%sh%sm)",
+                Sesmsg.SESSION_CLOSED_S: "Your session will close at %s (in %sh%sm)",
+                Sesmsg.SESSION_CLOSED_S_DAYS: "Your session will close at %s (in %sd%sh%sm)",
                 Sesmsg.LICENCE_BLOCKER: (
                     "Connection rejected (due to licence limitation)"
                 ),
