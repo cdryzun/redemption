@@ -9,6 +9,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/sugar/zstring_view.hpp"
 
 #include <cstdio>
+#include <cassert>
 #include <cstdarg>
 
 
@@ -58,6 +59,8 @@ struct SNPrintf
         res = std::vsnprintf(buf, N, format, ap);
         REDEMPTION_DIAGNOSTIC_POP()
         va_end(ap);
+
+        assert(res >= 0);
 
         n = static_cast<unsigned>(res);
         // ignore null terminated char when buf is too short

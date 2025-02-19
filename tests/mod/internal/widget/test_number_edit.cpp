@@ -60,19 +60,20 @@ RED_AUTO_TEST_CASE(WidgetNumberEditEventPushChar)
     wnumber_edit.rdp_input_invalidate(wnumber_edit.get_rect());
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "number_edit_1.png");
 
-    Keymap keymap(*find_layout_by_id(KeyLayout::KbdId(0x040C)));
+    Keymap keymap(*find_layout_by_id(KeyLayout::KbdId(0x409))); // en-US
     using KFlags = Keymap::KbdFlags;
     using Scancode = Keymap::Scancode;
 
-    keymap.event(KFlags(), Scancode(0x10)); // 'a'
-    wnumber_edit.rdp_input_scancode(KFlags(), Scancode(0x10), 0, keymap);
+    keymap.event(KFlags(), Scancode::A);
+    wnumber_edit.rdp_input_scancode(KFlags(), Scancode::A, 0, keymap);
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "number_edit_1.png");
     RED_CHECK(onsubmit.get_and_reset() == 0);
 
-    keymap.event(KFlags(), Scancode(0x2a)); // shift
-    wnumber_edit.rdp_input_scancode(KFlags(), Scancode(0x2a), 0, keymap);
-    keymap.event(KFlags(), Scancode(0x03)); // '2'
-    wnumber_edit.rdp_input_scancode(KFlags(), Scancode(0x03), 0, keymap);
+    keymap.event(KFlags(), Scancode::Digit2);
+    wnumber_edit.rdp_input_scancode(KFlags(), Scancode::Digit2, 0, keymap);
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "number_edit_3.png");
     RED_CHECK(onsubmit.get_and_reset() == 0);
+
+    RED_CHECK(wnumber_edit.get_text() == "1234562"_av);
+    RED_CHECK(wnumber_edit.get_text_as_uint() == 1234562);
 }

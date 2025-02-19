@@ -20,7 +20,7 @@ Author(s): Proxies Team
 
 #pragma once
 
-#include "mod/internal/button_state.hpp"
+#include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/label.hpp"
 #include "mod/internal/widget/event_notifier.hpp"
 
@@ -28,7 +28,7 @@ Author(s): Proxies Team
 class Font;
 class Theme;
 
-class WidgetDelegatedCopy : public Widget
+class WidgetDelegatedCopy final : public WidgetButtonEvent
 {
 public:
     // TODO WidgetButton::Colors
@@ -47,17 +47,6 @@ public:
 
     void rdp_input_invalidate(Rect clip) override;
 
-    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
-
-    void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
-
-    void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
-
-    void focus(int reason) override;
-    void blur() override;
-
 private:
-    ButtonState button_state;
     Colors colors;
-    WidgetEventNotifier onsubmit;
 };

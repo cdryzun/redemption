@@ -144,7 +144,7 @@ void WidgetInteractiveTarget::move_size_widget(int16_t left, int16_t top, uint16
     this->set_xy(left, top);
     this->set_wh(width, height);
 
-    // Center bloc positionning
+    // Center bloc positioning
     // Device, Login and Password boxes
     bool const is_placeholder = false;
 

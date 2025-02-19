@@ -498,9 +498,8 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
                 btn2 += button_toggle_width(*fc);
 
                 toggle_password_pressed.update(
-                    rect, x, y, device_flags,
+                    rect, x, y, device_flags, ButtonState::RedrawOnSubmit::Yes,
                     [this]{ edit_or_text.edit.toggle_password_visibility(WidgetEdit::Redraw::Yes); },
-                    // TODO
                     [this](Rect rect){ rdp_input_invalidate(rect); }
                 );
             }
@@ -513,9 +512,8 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             );
 
             valid_pressed.update(
-                rect, x, y, device_flags,
+                rect, x, y, device_flags, ButtonState::RedrawOnSubmit::Yes,
                 [this]{ edit_or_text.edit.submit(); },
-                // TODO
                 [this](Rect rect){ rdp_input_invalidate(rect); }
             );
 

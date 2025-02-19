@@ -1,23 +1,7 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 #include "test_only/test_framework/check_img.hpp"
@@ -27,6 +11,7 @@
 #include "mod/internal/widget/selector.hpp"
 #include "keyboard/keymap.hpp"
 #include "keyboard/keylayouts.hpp"
+#include "utils/strutils.hpp"
 #include "utils/theme.hpp"
 
 #include "test_only/gdi/test_graphic.hpp"
@@ -43,10 +28,20 @@ struct TestWidgetSelectorCtx
 
     WidgetSelector selector;
 
-    TestWidgetSelectorCtx(uint16_t width, uint16_t height, WidgetSelectorParams params)
+    TestWidgetSelectorCtx(uint16_t width, uint16_t height)
     : drawable{width, height}
     , selector(
-        drawable, copy_paste, tooltip_shower, "x@127.0.0.1"_av, 0, 0, width, height,
+        drawable, global_font_deja_vu_14(), copy_paste, Theme(),
+        tooltip_shower, MsgTranslationCatalog::default_catalog(),
+        nullptr, Rect(0, 0, width, height),
+        {
+            .headers = {
+                .authorization = "Authorization"_av,
+                .target = "Target"_av,
+                .protocol = "Protocol"_av,
+            },
+            .device_name = "x@127.0.0.1"_av,
+        },
         {
             .onconnect = WidgetEventNotifier(),
             .oncancel = WidgetEventNotifier(),
@@ -56,269 +51,240 @@ struct TestWidgetSelectorCtx
             .oncurrent_page = WidgetEventNotifier(),
             .onnext_page = WidgetEventNotifier(),
             .onlast_page = WidgetEventNotifier(),
+            .onprev_page_on_grid = WidgetEventNotifier(),
+            .onnext_page_on_grid = WidgetEventNotifier(),
             .onctrl_shift = WidgetEventNotifier(),
-        },
-        "1"_av, "1"_av, nullptr, params, global_font_deja_vu_14(), Theme(),
-        MsgTranslationCatalog::default_catalog()
+        }
     )
-    {}
+    {
+        selector.init_focus();
+    }
 
     void add_devices()
     {
-        chars_view const add1[] = {
-            "rdp"_av, "qa\\administrateur@10.10.14.111"_av, "RDP"_av};
-        selector.add_device(add1);
-
-        chars_view const add2[] = {
-            "rdp"_av, "administrateur@qa@10.10.14.111"_av, "RDP"_av};
-        selector.add_device(add2);
-
-        chars_view const add3[] = {
-            "rdp"_av, "administrateur@qa@10.10.14.27"_av, "RDP"_av};
-        selector.add_device(add3);
-
-        chars_view const add4[] = {
-            "rdp"_av, "administrateur@qa@10.10.14.103"_av, "RDP"_av};
-        selector.add_device(add4);
-
-        chars_view const add5[] = {
-            "rdp"_av, "administrateur@qa@10.10.14.33"_av, "RDP"_av};
-        selector.add_device(add5);
+        selector.set_page({
+            .authorizations = "rdp\nvnc\nrdp\nrdp\nvnc"_av,
+            .targets =
+                "qa\\administrateur@10.10.14.111\n"
+                "administrateur@qa@10.10.14.111\n"
+                "administrateur@qa@10.10.14.27\n"
+                "administrateur@qa@10.10.14.103\n"
+                "administrateur@qa@10.10.14.33\n"
+                ""_av,
+            .protocols = "RDP\nVNC\nRDP\nVNC\nRDP"_av,
+            .current_page = 1,
+            .number_of_page = 1,
+        });
     }
+
+    struct Kbd
+    {
+        TestWidgetSelectorCtx & ctx;
+        Keymap keymap {*find_layout_by_id(KeyLayout::KbdId(0x040C))};
+
+        void rdp_input_scancode(Keymap::KeyCode keycode)
+        {
+            auto ukeycode = underlying_cast(keycode);
+            auto scancode = Keymap::Scancode(ukeycode & 0x7F);
+            auto flags = (ukeycode & 0x80) ? Keymap::KbdFlags::Extended : Keymap::KbdFlags();
+            keymap.event(flags, scancode);
+            ctx.selector.rdp_input_scancode(flags, scancode, 0, keymap);
+        }
+    };
 };
 
 RED_AUTO_TEST_CASE(TraceWidgetSelector)
 {
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params);
+    TestWidgetSelectorCtx ctx(800, 600);
     auto& selector = ctx.selector;
 
-    ctx.add_devices();
+    auto line1 = "rdp|qa\\administrateur@10.10.14.111"_av;
+    auto line2 = "vnc|administrateur@qa@10.10.14.111"_av;
+    auto line3 = "rdp|administrateur@qa@10.10.14.27"_av;
+    auto line4 = "rdp|administrateur@qa@10.10.14.103"_av;
+    auto line5 = "vnc|administrateur@qa@10.10.14.33"_av;
 
-    selector.selector_lines.set_selection(0);
+    auto selected_line = [&]{
+        auto line = selector.selected_line();
+        return str_concat(line.authorization, '|', line.target);
+    };
 
-    selector.move_size_widget(selector.x(), selector.y(), selector.cx(), selector.cy());
+    RED_CHECK(selector.max_line_per_page() == 17);
 
-    // ask to widget to redraw at it's current position
-    selector.rdp_input_invalidate(selector.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_1.png");
-
-    selector.selector_lines.set_selection(1);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_2.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetSelectorResize)
-{
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(640, 480, params);
-    auto& selector = ctx.selector;
-
-    ctx.add_devices();
-
-    selector.selector_lines.set_selection(0);
-
-    selector.move_size_widget(selector.x(), selector.y(), selector.cx(), selector.cy());
-
-    // ask to widget to redraw at it's current position
-    selector.rdp_input_invalidate(selector.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_resize_1.png");
-
-    selector.selector_lines.set_selection(1);
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_resize_2.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetSelectorClip2)
-{
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params);
-
-    // ask to widget to redraw at position 30,12 and of size 30x10.
-    ctx.selector.rdp_input_invalidate(Rect(
-        20 + ctx.selector.x(),
-        5 + ctx.selector.y(),
+    selector.rdp_input_invalidate(Rect(
+        20 + selector.x(),
+        5 + selector.y(),
         30,
         10
     ));
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_5.png");
-}
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_0.png");
 
-RED_AUTO_TEST_CASE(TraceWidgetSelectorEventSelect)
-{
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params);
-    auto& selector = ctx.selector;
-
-    ctx.add_devices();
-
-    selector.set_widget_focus(selector.selector_lines, Widget::focus_reason_tabkey);
-    selector.selector_lines.set_selection(0);
-
-    selector.move_size_widget(selector.x(), selector.y(), selector.cx(), selector.cy());
-
-    selector.selector_lines.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN,
-                                            selector.selector_lines.x() + 20,
-                                            selector.selector_lines.y() + 40);
+    RED_CHECK("|" == selected_line());
 
     selector.rdp_input_invalidate(selector.get_rect());
 
+    // no line
+    selector.set_page({});
+    RED_CHECK("|" == selected_line());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_nodata.png");
+    RED_CHECK(selector.max_line_per_page() == 17);
+
+    ctx.add_devices();
+    RED_CHECK(selector.max_line_per_page() == 17);
+
+    RED_CHECK(line1 == selected_line());
+
+    selector.rdp_input_invalidate(selector.get_rect());
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_1.png");
+
+    TestWidgetSelectorCtx::Kbd kbd{ctx};
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::End);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_2.png");
+    RED_CHECK(line5 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::DownArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_1.png");
+    RED_CHECK(line1 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::DownArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_3.png");
+    RED_CHECK(line2 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::DownArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_4.png");
+    RED_CHECK(line3 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::DownArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_5.png");
+    RED_CHECK(line4 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::UpArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_4.png");
+    RED_CHECK(line3 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::Home);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_1.png");
+    RED_CHECK(line1 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::UpArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_2.png");
+    RED_CHECK(line5 == selected_line());
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::UpArrow);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_6.png");
+    RED_CHECK(line4 == selected_line());
 
-    Keymap keymap(*find_layout_by_id(KeyLayout::KbdId(0x040C)));
-
-    auto rdp_input_scancode = [&](Keymap::KeyCode keycode){
-        auto ukeycode = underlying_cast(keycode);
-        auto scancode = Keymap::Scancode(ukeycode & 0x7F);
-        auto flags = (ukeycode & 0x80) ? Keymap::KbdFlags::Extended : Keymap::KbdFlags();
-        keymap.event(flags, scancode);
-        selector.rdp_input_scancode(flags, scancode, 0, keymap);
-    };
-
-    rdp_input_scancode(Keymap::KeyCode::UpArrow);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_7.png");
-
-    rdp_input_scancode(Keymap::KeyCode::End);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_8.png");
-
-    rdp_input_scancode(Keymap::KeyCode::DownArrow);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_7.png");
-
-    rdp_input_scancode(Keymap::KeyCode::DownArrow);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_6.png");
-
-    rdp_input_scancode(Keymap::KeyCode::Home);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_7.png");
+    RED_CHECK(line4 == selected_line());
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetSelectorFilter)
 {
-    WidgetSelectorParams params;
-    params.nb_columns = 3;
-    params.weight[0] = 33;
-    params.weight[1] = 34;
-    params.weight[2] = 33;
-    params.label[0] = "Authorization"_av;
-    params.label[1] = "Target"_av;
-    params.label[2] = "Protocol"_av;
-
-    TestWidgetSelectorCtx ctx(800, 600, params);
+    TestWidgetSelectorCtx ctx(800, 600);
     auto& selector = ctx.selector;
 
-    chars_view const add1[] = {
-        "reptile"_av, "snake@10.10.14.111"_av, "RDP"_av,
-        ""_av, ""_av, ""_av, ""_av, ""_av, ""_av, ""_av};
-    selector.add_device(add1);
+    selector.rdp_input_invalidate(selector.get_rect());
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_0.png");
 
-    chars_view const add2[] = {
-        "bird"_av, "raven@10.10.14.111"_av, "RDP"_av,
-        ""_av, ""_av, ""_av, ""_av, ""_av, ""_av, ""_av};
-    selector.add_device(add2);
+    selector.set_page({
+        .authorizations = "reptile\nbird\nreptile\nfish\nbird"_av,
+        .targets =
+            "snake@10.10.14.111\n"
+            "raven@10.10.14.111\n"
+            "lezard@10.10.14.27\n"
+            "shark@10.10.14.103\n"
+            "eagle@10.10.14.33\n"
+            ""_av,
+        .protocols = "RDP\nRDP\nVNC\nRDP\nVNC"_av,
+        .current_page = 1,
+        .number_of_page = 1,
+    });
 
-    chars_view const add3[] = {
-        "reptile"_av, "lezard@10.10.14.27"_av, "VNC"_av,
-        ""_av, ""_av, ""_av, ""_av, ""_av, ""_av, ""_av};
-    selector.add_device(add3);
-
-    chars_view const add4[] = {
-        "fish"_av, "shark@10.10.14.103"_av, "RDP"_av,
-        ""_av, ""_av, ""_av, ""_av, ""_av, ""_av, ""_av};
-    selector.add_device(add4);
-
-    chars_view const add5[] = {
-        "bird"_av, "eagle@10.10.14.33"_av, "VNC"_av,
-        ""_av, ""_av, ""_av, ""_av, ""_av, ""_av, ""_av};
-    selector.add_device(add5);
-
-    int curx = 0;
-    int cury = 0;
-
-    selector.move_size_widget(selector.x(), selector.y(), selector.cx(), selector.cy());
-
-    selector.selector_lines.set_selection(0);
-
-    curx = selector.edit_filters[0].x() + 2;
-    cury = selector.edit_filters[0].y() + 2;
-    selector.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN,
-                             curx, cury);
-    selector.rdp_input_mouse(MOUSE_FLAG_BUTTON1,
-                             curx, cury);
+    // authorization edit
+    selector.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, 15, 66);
 
     selector.rdp_input_invalidate(selector.get_rect());
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_12.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_1.png");
 
-    Keymap keymap(*find_layout_by_id(KeyLayout::KbdId(0x040C)));
+    TestWidgetSelectorCtx::Kbd kbd{ctx};
 
-    auto rdp_input_scancode = [&](Keymap::KeyCode keycode){
-        auto ukeycode = underlying_cast(keycode);
-        auto scancode = Keymap::Scancode(ukeycode & 0x7F);
-        auto flags = (ukeycode & 0x80) ? Keymap::KbdFlags::Extended : Keymap::KbdFlags();
-        keymap.event(flags, scancode);
-        selector.rdp_input_scancode(flags, scancode, 0, keymap);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_2.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_3.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_4.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::End);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_5.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::UpArrow);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_6.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_7.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_8.png");
+
+    kbd.rdp_input_scancode(Keymap::KeyCode::RightArrow);
+    kbd.rdp_input_scancode(Keymap::KeyCode::LeftArrow);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Enter);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    kbd.rdp_input_scancode(Keymap::KeyCode::Tab);
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_filter_9.png");
+}
+
+RED_AUTO_TEST_CASE(TraceWidgetColumnResize)
+{
+    TestWidgetSelectorCtx ctx(400, 300);
+    auto& selector = ctx.selector;
+
+    selector.set_page({
+        .authorizations =
+            "reptile reptile reptile reptile\n"
+            "bird bird bird bird\n"
+            "reptile reptile reptile reptile\n"
+            "fish fish fish fish\n"
+            "bird bird bird bird"
+            ""_av,
+        .targets =
+            "snakesnakesnake@10.10.14.111\n"
+            "ravenravenraven@10.10.14.111\n"
+            "lezardlezardlezard@10.10.14.27\n"
+            "sharksharkshark@10.10.14.103\n"
+            "eagleeagleeagle@10.10.14.33\n"
+            ""_av,
+        .protocols = "RDP\nRDP\nVNC\nRDP\nVNC"_av,
+        .current_page = 1,
+        .number_of_page = 1,
+    });
+
+    auto click = [&](uint16_t x, uint16_t y){
+        selector.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
+        selector.rdp_input_mouse(MOUSE_FLAG_BUTTON1, x, y);
     };
 
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_13.png");
+    selector.rdp_input_invalidate(selector.get_rect());
 
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_14.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_resize_1.png");
 
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_15.png");
+    click(108, 50);
 
-    rdp_input_scancode(Keymap::KeyCode::End);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_16.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_resize_2.png");
 
-    rdp_input_scancode(Keymap::KeyCode::UpArrow);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_17.png");
+    click(322, 50);
 
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_18.png");
-
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_19.png");
-
-    rdp_input_scancode(Keymap::KeyCode::RightArrow);
-    rdp_input_scancode(Keymap::KeyCode::LeftArrow);
-    rdp_input_scancode(Keymap::KeyCode::Enter);
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    rdp_input_scancode(Keymap::KeyCode::Tab);
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_20.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_resize_1.png");
 }

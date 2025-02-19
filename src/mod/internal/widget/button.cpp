@@ -11,6 +11,65 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "keyboard/keymap.hpp"
 
 
+WidgetButtonEvent::WidgetButtonEvent(
+    gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit, RedrawOnSubmit redraw_on_submit)
+: Widget(drawable, Focusable::Yes)
+, redraw_on_submit(redraw_on_submit)
+, onsubmit(onsubmit)
+{
+}
+
+void WidgetButtonEvent::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
+{
+    button_state.update(
+        get_rect(), x, y, device_flags, redraw_on_submit, onsubmit,
+        [this](Rect rect){ rdp_input_invalidate(rect); }
+    );
+}
+
+bool WidgetButtonEvent::is_submit_event(const Keymap& keymap) noexcept
+{
+    auto kevt = keymap.last_kevent();
+    return kevt == Keymap::KEvent::Enter
+        || (kevt == Keymap::KEvent::KeyDown
+            && keymap.last_decoded_keys().uchars[0] == ' ');
+}
+
+bool WidgetButtonEvent::is_submit_event(KbdFlags flag, uint16_t unicode) noexcept
+{
+    return !bool(flag & KbdFlags::Release) && unicode == ' ';
+}
+
+void WidgetButtonEvent::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, Keymap const& keymap)
+{
+    if (is_submit_event(keymap)) {
+        onsubmit();
+    }
+}
+
+void WidgetButtonEvent::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
+{
+    if (is_submit_event(flag, unicode)) {
+        onsubmit();
+    }
+}
+
+bool WidgetButtonEvent::is_pressed() noexcept
+{
+    return button_state.is_pressed();
+}
+
+void WidgetButtonEvent::reset_state() noexcept
+{
+    button_state.pressed(false);
+}
+
+void WidgetButtonEvent::trigger()
+{
+    onsubmit();
+}
+
+
 struct WidgetButton::D
 {
     static const int x_text = 5;
@@ -53,15 +112,13 @@ WidgetButton::Colors WidgetButton::Colors::no_border_from_theme(const Theme& the
 WidgetButton::WidgetButton(
     gdi::GraphicApi & drawable, Font const & font,
     chars_view text, Colors colors, WidgetEventNotifier onsubmit)
-: Widget(drawable, Focusable::Yes)
-, h_text(font.max_height())
+: WidgetButtonEvent(drawable, onsubmit)
 , colors(colors)
-, onsubmit(onsubmit)
 , button_text(font, text)
 {
     set_wh(
         checked_int{button_text.width() + (D::border_len + D::x_text) * 2},
-        checked_int{h_text + (D::border_len + D::y_text) * 2}
+        checked_int{font.max_height() + (D::border_len + D::y_text) * 2}
     );
 }
 
@@ -74,7 +131,7 @@ void WidgetButton::rdp_input_invalidate(Rect clip)
     }
 
     auto const current_colors = colors.current_colors(has_focus);
-    int const is_pressed = button_state.is_pressed();
+    int const pressed_pad = is_pressed();
     int d = (current_colors.border == current_colors.bg) ? 0 : D::border_len;
     int padx = D::x_text + D::border_len - d;
     int pady = D::y_text + D::border_len - d;
@@ -89,12 +146,12 @@ void WidgetButton::rdp_input_invalidate(Rect clip)
         drawable,
         x() + d,
         y() + d,
-        h_text,
+        cy() - (D::border_len + D::y_text) * 2,
         gdi::DrawTextPadding{
-            .top = checked_int(pady + is_pressed),
-            .right = checked_int(padx - is_pressed),
-            .bottom = checked_int(pady - is_pressed),
-            .left = checked_int(padx + is_pressed),
+            .top = checked_int(pady + pressed_pad),
+            .right = checked_int(padx - pressed_pad),
+            .bottom = checked_int(pady - pressed_pad),
+            .left = checked_int(padx + pressed_pad),
         },
         button_text.fcs(),
         current_colors.fg,
@@ -108,45 +165,5 @@ void WidgetButton::rdp_input_invalidate(Rect clip)
             D::border_len, rect_intersect,
             gdi::ColorCtx::depth24()
         );
-    }
-}
-
-void WidgetButton::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
-{
-    button_state.update(
-        get_rect(), x, y, device_flags,
-        onsubmit,
-        // TODO
-        [this](Rect rect){ rdp_input_invalidate(rect); }
-    );
-}
-
-bool WidgetButton::is_submit_event(const Keymap& keymap) noexcept
-{
-    auto kevt = keymap.last_kevent();
-    return kevt == Keymap::KEvent::Enter
-        || (kevt == Keymap::KEvent::KeyDown
-            && keymap.last_decoded_keys().uchars[0] == ' ');
-}
-
-bool WidgetButton::is_submit_event(KbdFlags flag, uint16_t unicode) noexcept
-{
-    return !bool(flag & KbdFlags::Release) && unicode == ' ';
-}
-
-void WidgetButton::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, Keymap const& keymap)
-{
-    if (is_submit_event(keymap)) {
-        this->onsubmit();
-    }
-}
-
-void WidgetButton::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
-{
-    if (is_submit_event(flag, unicode)) {
-        this->onsubmit();
-    }
-    else {
-        Widget::rdp_input_unicode(flag, unicode);
     }
 }

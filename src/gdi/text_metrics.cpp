@@ -336,7 +336,7 @@ int draw_text(
     GraphicApi & drawable,
     int x,
     int y,
-    uint16_t height,
+    uint16_t max_height_text,
     DrawTextPadding padding,
     array_view<FontCharView const *> fcs,
     RDPColor fgcolor,
@@ -369,7 +369,7 @@ int draw_text(
                 checked_int(x - padding.left),
                 checked_int(y),
                 checked_int(w),
-                checked_int(height + padding.top + padding.bottom)
+                checked_int(max_height_text + padding.top + padding.bottom)
             );
             drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
             return rect.intersect(clip).eright();
@@ -409,7 +409,7 @@ int draw_text(
             checked_int(glyph_x - padding.left),
             checked_int(glyph_y - padding.top),
             checked_int(total_width + 2 + padding.left + padding.right), // TODO last loop only
-            checked_int(height + 1 + padding.top + padding.bottom)
+            checked_int(max_height_text + 1 + padding.top + padding.bottom)
         );
         // for freerdp because clip is ignored
         // auto bk = clip.intersect(real_bk);

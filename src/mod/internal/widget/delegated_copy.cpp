@@ -22,7 +22,6 @@
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
 #include "mod/internal/widget/delegated_copy.hpp"
-#include "mod/internal/widget/button.hpp"
 #include "gdi/draw_utils.hpp"
 #include "utils/theme.hpp"
 
@@ -47,9 +46,8 @@ WidgetDelegatedCopy::WidgetDelegatedCopy(
     gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
     Colors colors, Font const & font
 )
-    : Widget(drawable, Focusable::Yes)
+    : WidgetButtonEvent(drawable, onsubmit)
     , colors(colors)
-    , onsubmit(onsubmit)
 {
     auto const& glyph = font.item('E').view;
     set_wh(
@@ -80,7 +78,7 @@ void WidgetDelegatedCopy::rdp_input_invalidate(Rect clip)
     rect.cx -= (border_width + x_text) * 2;
     rect.cy -= (border_width + y_text) * 2;
 
-    if (button_state.is_pressed()) {
+    if (is_pressed()) {
         rect.x++;
         rect.y++;
     }
@@ -96,48 +94,4 @@ void WidgetDelegatedCopy::rdp_input_invalidate(Rect clip)
     drawRect(rect.x + d, rect.y, rect.cx - d * 2, 3);
     drawRect(rect.x + 2, rect.y + (rect.cy - 6) / 3 + 3, rect.cx - 4, 1);
     drawRect(rect.x + 2, rect.y + (rect.cy - 6) / 3 * 2 + 4, rect.cx - 4, 1);
-}
-
-void WidgetDelegatedCopy::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
-{
-    button_state.update(
-        get_rect(), x, y, device_flags,
-        onsubmit,
-        // TODO
-        [this](Rect rect){ rdp_input_invalidate(rect); }
-    );
-}
-
-void WidgetDelegatedCopy::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, const Keymap& keymap)
-{
-    if (WidgetButton::is_submit_event(keymap)) {
-        onsubmit();
-    }
-}
-
-void WidgetDelegatedCopy::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
-{
-    if (WidgetButton::is_submit_event(flag, unicode)) {
-        onsubmit();
-    }
-}
-
-void WidgetDelegatedCopy::focus(int reason)
-{
-    (void)reason;
-    if (!has_focus){
-        has_focus = true;
-        // TODO
-        rdp_input_invalidate(get_rect());
-    }
-}
-
-void WidgetDelegatedCopy::blur()
-{
-    if (has_focus) {
-        has_focus = false;
-        button_state.pressed(false);
-        // TODO
-        rdp_input_invalidate(get_rect());
-    }
 }

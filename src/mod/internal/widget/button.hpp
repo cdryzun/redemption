@@ -28,12 +28,41 @@
 class Font;
 class Theme;
 
-class WidgetButton : public Widget
+class WidgetButtonEvent : public Widget
 {
 public:
     static bool is_submit_event(Keymap const& keymap) noexcept;
     static bool is_submit_event(KbdFlags flag, uint16_t unicode) noexcept;
 
+    using RedrawOnSubmit = ButtonState::RedrawOnSubmit;
+
+    WidgetButtonEvent(
+        gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
+        // TODO remove default value
+        RedrawOnSubmit redraw_on_submit = RedrawOnSubmit::Yes
+    );
+
+    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) final;
+
+    void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) final;
+
+    void rdp_input_unicode(KbdFlags flag, uint16_t unicode) final;
+
+    void trigger();
+
+protected:
+    bool is_pressed() noexcept;
+    void reset_state() noexcept;
+
+private:
+    RedrawOnSubmit redraw_on_submit;
+    ButtonState button_state;
+    WidgetEventNotifier onsubmit;
+};
+
+class WidgetButton final : public WidgetButtonEvent
+{
+public:
     struct Colors
     {
         struct Box
@@ -60,19 +89,10 @@ public:
 
     void rdp_input_invalidate(Rect clip) override;
 
-    void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
-
-    void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
-
-    void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
-
 private:
     struct D;
     friend D;
 
-    uint16_t h_text;
-    ButtonState button_state;
     Colors colors;
-    WidgetEventNotifier onsubmit;
     WidgetText<64> button_text;
 };

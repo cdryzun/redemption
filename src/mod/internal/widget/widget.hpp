@@ -44,10 +44,9 @@ public:
 
     virtual ~WidgetTooltipShower() = default;
 
-    virtual void show_tooltip(
-        chars_view text, int x, int y,
-        Rect preferred_display_rect,
-        Rect mouse_area) = 0;
+    virtual void show_tooltip(chars_view text, int x, int y,
+                              Rect preferred_display_rect,
+                              Rect mouse_area) = 0;
 
     void hide_tooltip()
     {

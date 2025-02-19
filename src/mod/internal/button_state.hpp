@@ -18,6 +18,12 @@ struct ButtonState
         Pressed,
     };
 
+    enum class RedrawOnSubmit
+    {
+        No,
+        Yes,
+    };
+
     ButtonState() noexcept = default;
     ButtonState(State state) noexcept : _is_pressed(state == State::Pressed) {}
 
@@ -53,12 +59,14 @@ struct ButtonState
     template<class OnSubmit, class OnChange>
     void update(
         Rect area, uint16_t x, uint16_t y, uint16_t device_flags,
-        OnSubmit&& onsubmit, OnChange&& onchange)
+        RedrawOnSubmit redraw_on_submit, OnSubmit&& onsubmit, OnChange&& onchange)
     {
+        auto redraw = RedrawOnSubmit::Yes;
         if (is_toggable(device_flags) && area.contains_pt(checked_int(x), checked_int(y))) {
             toggle();
             if (device_flags == MOUSE_FLAG_BUTTON1) {
                 onsubmit();
+                redraw = redraw_on_submit;
             }
         }
         else if (device_flags == MOUSE_FLAG_BUTTON1) {
@@ -68,7 +76,9 @@ struct ButtonState
             return;
         }
 
-        onchange(area);
+        if (redraw == RedrawOnSubmit::Yes) {
+            onchange(area);
+        }
     }
 
 private:

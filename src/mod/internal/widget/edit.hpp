@@ -85,8 +85,12 @@ public:
 
     ~WidgetEdit();
 
+    static uint16_t x_padding() noexcept;
+
     bool has_text() const noexcept;
     Text get_text() const noexcept;
+    /// \result unspecifed behavior when text is not a number
+    unsigned get_text_as_uint() const noexcept;
 
     Font const& get_font() const noexcept { return *font; }
     Colors get_colors() const noexcept { return colors; }

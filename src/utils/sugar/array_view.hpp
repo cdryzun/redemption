@@ -110,6 +110,8 @@ struct array_view
     using const_pointer = T const*;
     using size_type = std::size_t;
 
+    array_view(int) = delete;
+
     constexpr array_view() noexcept = default;
     constexpr array_view(array_view && other) noexcept = default;
     constexpr array_view(array_view const & other) noexcept = default;
@@ -271,6 +273,8 @@ struct writable_array_view
     using const_iterator = T const*;
     using const_pointer = T const*;
     using size_type = std::size_t;
+
+    writable_array_view(int) = delete;
 
     constexpr writable_array_view() noexcept = default;
     constexpr writable_array_view(writable_array_view && other) noexcept = default;

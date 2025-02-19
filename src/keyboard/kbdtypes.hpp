@@ -96,6 +96,17 @@ namespace kbdtypes
         X = 0x2D,
         Y = 0x15,
         Z = 0x2C,
+
+        Digit1 = 0x02,
+        Digit2 = 0x03,
+        Digit3 = 0x04,
+        Digit4 = 0x05,
+        Digit5 = 0x06,
+        Digit6 = 0x07,
+        Digit7 = 0x08,
+        Digit8 = 0x09,
+        Digit9 = 0x0A,
+        Digit0 = 0x0B,
     };
 
 

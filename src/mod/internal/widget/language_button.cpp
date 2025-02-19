@@ -1,23 +1,7 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2015
- *   Author(s): Christophe Grosjean, Xiaopeng Zhou, Jonathan Poelen,
- *              Meng Tan, Jennifer Inthavong
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "mod/internal/widget/language_button.hpp"
 #include "mod/internal/widget/button.hpp"
@@ -98,7 +82,7 @@ LanguageButton::LanguageButton(
     Font const & font,
     Theme const & theme
 )
-: Widget(drawable, Focusable::Yes)
+: WidgetButtonEvent(drawable, [this]{ next_layout(); })
 , colors{
     .fg = theme.global.fgcolor,
     .bg = theme.global.bgcolor,
@@ -155,7 +139,7 @@ void LanguageButton::rdp_input_invalidate(Rect clip)
 
     int cy_inner = cy() - border_width * 2;
     int y_padding = (cy_inner - h_text) / 2;
-    int is_pressed = button_state.is_pressed();
+    int pressed_pad = is_pressed();
 
     gdi_draw_border(
         drawable, colors.fg, get_rect(),
@@ -169,10 +153,10 @@ void LanguageButton::rdp_input_invalidate(Rect clip)
         y() + border_width,
         h_text,
         gdi::DrawTextPadding{
-            .top = checked_int(y_padding + is_pressed),
-            .right = checked_int(icon_w_padding - is_pressed),
-            .bottom = checked_int(cy_inner - h_text - y_padding - is_pressed),
-            .left = checked_int(icon_w_padding + kbd_icon_cx + icon_right_padding + is_pressed),
+            .top = checked_int(y_padding + pressed_pad),
+            .right = checked_int(icon_w_padding - pressed_pad),
+            .bottom = checked_int(cy_inner - h_text - y_padding - pressed_pad),
+            .left = checked_int(icon_w_padding + kbd_icon_cx + icon_right_padding + pressed_pad),
         },
         button_text.fcs(),
         colors.fg,
@@ -194,49 +178,5 @@ void LanguageButton::rdp_input_invalidate(Rect clip)
             r.y += oy;
             drawable.draw(RDPOpaqueRect(r, colors.fg), rect_intersect, gdi::ColorCtx::depth24());
         }
-    }
-}
-
-void LanguageButton::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
-{
-    button_state.update(
-        get_rect(), x, y, device_flags,
-        [this]{ next_layout(); },
-        // TODO
-        [this](Rect rect){ rdp_input_invalidate(rect); }
-    );
-}
-
-void LanguageButton::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, const Keymap& keymap)
-{
-    if (WidgetButton::is_submit_event(keymap)) {
-        next_layout();
-    }
-}
-
-void LanguageButton::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
-{
-    if (WidgetButton::is_submit_event(flag, unicode)) {
-        next_layout();
-    }
-}
-
-void LanguageButton::focus(int reason)
-{
-    (void)reason;
-    if (!has_focus){
-        has_focus = true;
-        // TODO
-        rdp_input_invalidate(get_rect());
-    }
-}
-
-void LanguageButton::blur()
-{
-    if (has_focus) {
-        has_focus = false;
-        button_state.pressed(false);
-        // TODO
-        rdp_input_invalidate(get_rect());
     }
 }

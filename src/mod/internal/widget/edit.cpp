@@ -358,6 +358,11 @@ WidgetEdit::~WidgetEdit()
     this->copy_paste.stop_paste_for(*this);
 }
 
+uint16_t WidgetEdit::x_padding() noexcept
+{
+    return compute_optimal_dim(0, 0).w;
+}
+
 Dimension WidgetEdit::get_optimal_dim() const
 {
     int w = 0;
@@ -383,6 +388,16 @@ WidgetEdit::Text WidgetEdit::get_text() const noexcept
         }
         return uninit_str.set_end_string_ptr(av.as_charp());
     });
+}
+
+unsigned WidgetEdit::get_text_as_uint() const noexcept
+{
+    unsigned result = 0;
+    for (auto uc : buffer().text()) {
+        result *= 10;
+        result += uc - '0';
+    }
+    return result;
 }
 
 void WidgetEdit::set_text(bytes_view text, TextOptions opts)

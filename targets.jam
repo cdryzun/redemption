@@ -88,12 +88,10 @@ exe rdpproxy :
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/form.o
-  src/mod/internal/widget/grid.o
   src/mod/internal/widget/group_box.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/interactive_target.o
   src/mod/internal/widget/label.o
-  src/mod/internal/widget/labelgrid.o
   src/mod/internal/widget/language_button.o
   src/mod/internal/widget/login.o
   src/mod/internal/widget/module_host.o
@@ -3136,40 +3134,6 @@ test-run tests/mod/internal/widget/test_form :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/mod/internal/widget/test_grid :
-  $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_grid.cpp
-:
-  crypto
-  png
-  app_path_test.o
-  src/core/RDP/RDPDrawable.o
-  src/core/error.o
-  src/core/font.o
-  src/gdi/clip_from_cmd.o
-  src/gdi/draw_utils.o
-  src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
-  src/keyboard/keylayouts.o
-  src/keyboard/keymap.o
-  src/mod/internal/widget/button.o
-  src/mod/internal/widget/grid.o
-  src/mod/internal/widget/label.o
-  src/utils/bitmap.o
-  src/utils/bitmap_data_allocator.o
-  src/utils/bitmap_from_file.o
-  src/utils/drawable.o
-  src/utils/hexdump.o
-  src/utils/png.o
-  src/utils/rle.o
-  src/utils/stacktrace.o
-  src/utils/strutils.o
-  src/utils/utf.o
-  tests/includes/test_only/core/font.o
-  tests/includes/test_only/gdi/test_graphic.o
-  tests/includes/test_only/test_framework/check_img.o
-:
-  $(BOOST_STACKTRACE_LINKFLAGS)
-;
 test-run tests/mod/internal/widget/test_group_box :
   $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_group_box.cpp
 :
@@ -3298,40 +3262,6 @@ test-run tests/mod/internal/widget/test_label :
   tests/includes/test_only/core/font.o
   tests/includes/test_only/gdi/test_graphic.o
   tests/includes/test_only/test_framework/check_img.o
-:
-  $(BOOST_STACKTRACE_LINKFLAGS)
-;
-test-run tests/mod/internal/widget/test_labelgrid :
-  $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_labelgrid.cpp
-:
-  crypto
-  png
-  app_path_test.o
-  src/core/RDP/RDPDrawable.o
-  src/core/error.o
-  src/core/font.o
-  src/gdi/clip_from_cmd.o
-  src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
-  src/keyboard/keymap.o
-  src/mod/internal/widget/grid.o
-  src/mod/internal/widget/label.o
-  src/mod/internal/widget/labelgrid.o
-  src/utils/bitmap.o
-  src/utils/bitmap_data_allocator.o
-  src/utils/bitmap_from_file.o
-  src/utils/drawable.o
-  src/utils/fileutils.o
-  src/utils/hexdump.o
-  src/utils/png.o
-  src/utils/rle.o
-  src/utils/stacktrace.o
-  src/utils/strutils.o
-  src/utils/utf.o
-  tests/includes/test_only/core/font.o
-  tests/includes/test_only/gdi/test_graphic.o
-  tests/includes/test_only/test_framework/check_img.o
-  tests/includes/test_only/test_framework/working_directory.o
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
@@ -3571,9 +3501,7 @@ test-run tests/mod/internal/widget/test_selector :
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
-  src/mod/internal/widget/grid.o
   src/mod/internal/widget/label.o
-  src/mod/internal/widget/labelgrid.o
   src/mod/internal/widget/number_edit.o
   src/mod/internal/widget/selector.o
   src/translation/gettext.o
@@ -5247,12 +5175,10 @@ obj src/mod/internal/widget/dialog.o : $(REDEMPTION_SRC_PATH)/mod/internal/widge
 obj src/mod/internal/widget/edit.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/edit.cpp ;
 obj src/mod/internal/widget/edit_valid.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/edit_valid.cpp ;
 obj src/mod/internal/widget/form.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/form.cpp ;
-obj src/mod/internal/widget/grid.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/grid.cpp ;
 obj src/mod/internal/widget/group_box.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/group_box.cpp ;
 obj src/mod/internal/widget/image.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/image.cpp ;
 obj src/mod/internal/widget/interactive_target.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/interactive_target.cpp ;
 obj src/mod/internal/widget/label.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/label.cpp ;
-obj src/mod/internal/widget/labelgrid.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/labelgrid.cpp ;
 obj src/mod/internal/widget/language_button.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/language_button.cpp ;
 obj src/mod/internal/widget/login.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/login.cpp ;
 obj src/mod/internal/widget/module_host.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/module_host.cpp ;
@@ -5512,12 +5438,10 @@ alias test_dialog : tests/mod/internal/widget/test_dialog ;
 alias test_edit : tests/mod/internal/widget/test_edit ;
 alias test_edit_valid : tests/mod/internal/widget/test_edit_valid ;
 alias test_form : tests/mod/internal/widget/test_form ;
-alias test_grid : tests/mod/internal/widget/test_grid ;
 alias test_group_box : tests/mod/internal/widget/test_group_box ;
 alias test_image : tests/mod/internal/widget/test_image ;
 alias test_interactive_target : tests/mod/internal/widget/test_interactive_target ;
 alias test_label : tests/mod/internal/widget/test_label ;
-alias test_labelgrid : tests/mod/internal/widget/test_labelgrid ;
 alias test_login : tests/mod/internal/widget/test_login ;
 alias test_multiline : tests/mod/internal/widget/test_multiline ;
 alias test_number_edit : tests/mod/internal/widget/test_number_edit ;
@@ -5886,12 +5810,10 @@ alias tests/mod/internal/widget.norec :
   tests/mod/internal/widget/test_edit
   tests/mod/internal/widget/test_edit_valid
   tests/mod/internal/widget/test_form
-  tests/mod/internal/widget/test_grid
   tests/mod/internal/widget/test_group_box
   tests/mod/internal/widget/test_image
   tests/mod/internal/widget/test_interactive_target
   tests/mod/internal/widget/test_label
-  tests/mod/internal/widget/test_labelgrid
   tests/mod/internal/widget/test_login
   tests/mod/internal/widget/test_multiline
   tests/mod/internal/widget/test_number_edit
@@ -6369,12 +6291,10 @@ explicit
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/form.o
-  src/mod/internal/widget/grid.o
   src/mod/internal/widget/group_box.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/interactive_target.o
   src/mod/internal/widget/label.o
-  src/mod/internal/widget/labelgrid.o
   src/mod/internal/widget/language_button.o
   src/mod/internal/widget/login.o
   src/mod/internal/widget/module_host.o
@@ -6636,12 +6556,10 @@ explicit
   test_edit
   test_edit_valid
   test_form
-  test_grid
   test_group_box
   test_image
   test_interactive_target
   test_label
-  test_labelgrid
   test_login
   test_multiline
   test_number_edit
