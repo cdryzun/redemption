@@ -1519,7 +1519,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "block_user_input_until_appdriver_completes",
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
-        .desc = "If this option is enabled, user input will be ignored until the Application Driver's work is complete."
+        .desc = "Block user input in the session during the execution of Application Driver. Do not activate this option if the application session does not use Application Driver."
     });
 });
 

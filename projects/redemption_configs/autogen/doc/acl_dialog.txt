@@ -186,7 +186,7 @@ cfg::mod_rdp::replace_null_pointer_by_default_pointer ⇐ mod_rdp:replace_null_p
 cfg::mod_rdp::windows_xp_clipboard_support ⇐ mod_rdp:windows_xp_clipboard_support   [bool]
     Enable Windows XP clipboard support.
 cfg::mod_rdp::block_user_input_until_appdriver_completes ⇐ mod_rdp:block_user_input_until_appdriver_completes   [bool]
-    If this option is enabled, user input will be ignored until the Application Driver's work is complete.
+    Block user input in the session during the execution of Application Driver. Do not activate this option if the application session does not use Application Driver.
 
 cfg::protocol::save_session_info_pdu ⇐ protocol:save_session_info_pdu   [RdpSaveSessionInfoPDU]
       0: Windows

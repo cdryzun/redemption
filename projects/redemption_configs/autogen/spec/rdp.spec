@@ -248,7 +248,7 @@ replace_null_pointer_by_default_pointer = boolean(default=False)
 # Enable Windows XP clipboard support.
 windows_xp_clipboard_support = boolean(default=False)
 
-# If this option is enabled, user input will be ignored until the Application Driver's work is complete.
+# Block user input in the session during the execution of Application Driver. Do not activate this option if the application session does not use Application Driver.
 #_display_name=Block user input until Application Driver completes
 block_user_input_until_appdriver_completes = boolean(default=False)
 
