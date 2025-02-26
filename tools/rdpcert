@@ -12,6 +12,7 @@ my $x509file = '';
 my $key = '';
 my $x509 = '';
 my $eckey = '';
+my $issuer = '';
 
 GetOptions (
     'force' => \$force,
@@ -20,6 +21,7 @@ GetOptions (
     'x509' => \$x509,
     'inkey=s' => \$keyfile,
     'inx509=s' => \$x509file,
+    'issuer=s' => \$issuer,
 );
 
 if (not $key and not $x509){
@@ -30,6 +32,7 @@ if (not $key and not $x509){
         ."--x509         : set RDP Proxy server X509 certificate\n"
         ."--inx509=<file>: user provided X509 certificate matching private key, PEM format\n"
         ."--force        : force erasing existing key or user provided certificate\n"
+        ."--issuer=<name>: set issuer name in certificate\n";
         ;
     exit $!;
 }
@@ -55,7 +58,10 @@ my $extfile = "/tmp/tlssrv_x509v3ext";
 my $user_X509 = "$confpath/USER_X509";
 #my $clearpkey = "/tmp/clearRdpproxyPrivateKey.pem";
 my $pass = "inquisition";
-my $hostname = `hostname -f`;
+my $hostname = $issuer;
+if (!$hostname){
+    $hostname = `hostname -f`;
+}
 chomp $hostname;
 
 my $rsa_gen_opts = "-algorithm rsa -pkeyopt rsa_keygen_bits:4096";
