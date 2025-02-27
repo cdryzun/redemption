@@ -88,7 +88,7 @@ public:
         }
 
         LOG(LOG_ERR,
-            "IDManager::get_src_id(...): Unknown destination Id! Id=0x%X",
+            "IDManager::is_dest_only_id(...): Unknown destination Id! Id=0x%X",
             dest_id);
         throw Error(ERR_UNEXPECTED);
     }
@@ -180,7 +180,7 @@ public:
         }
 
         LOG(LOG_ERR,
-            "IDManager::unreg_dest_only_id(...): Unknown source Id! id=0x%X",
+            "IDManager::unreg_src_id(...): Unknown source Id! id=0x%X",
             src_id);
         throw Error(ERR_UNEXPECTED);
     }
