@@ -28,6 +28,7 @@ cp_spec = {
         ('mod_rdp:show_common_cipher_list', 'show_common_cipher_list', False),
         ('mod_rdp:allowed_dynamic_channels', 'allowed_dynamic_channels', "*"),
         ('mod_rdp:denied_dynamic_channels', 'denied_dynamic_channels', ""),
+        ('mod_rdp:disable_coreinput_dynamic_channel', 'disable_coreinput_dynamic_channel', True),
         ('mod_rdp:force_screen_resolution', 'force_screen_resolution', ""),
         ('mod_rdp:server_redirection_support', 'server_redirection', False),
         ('mod_rdp:load_balance_info', 'load_balance_info', ""),

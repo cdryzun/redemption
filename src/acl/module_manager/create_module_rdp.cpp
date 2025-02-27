@@ -654,6 +654,11 @@ ModPack create_mod_rdp(
         mod_rdp_params.dynamic_channels_params.denied_channels += ",Microsoft::Windows::RDS::DisplayControl";
     }
 
+    if (ini.get<cfg::mod_rdp::disable_coreinput_dynamic_channel>())
+    {
+        mod_rdp_params.dynamic_channels_params.denied_channels += ",Microsoft::Windows::RDS::CoreInput";
+    }
+
     // ================== FileValidator ============================
     auto & vp = mod_rdp_params.validator_params;
     vp.log_if_accepted = ini.get<cfg::file_verification::log_if_accepted>();

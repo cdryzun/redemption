@@ -109,6 +109,7 @@ namespace cfg
         struct denied_channels;
         struct allowed_dynamic_channels;
         struct denied_dynamic_channels;
+        struct disable_coreinput_dynamic_channel;
         struct force_screen_resolution;
         struct fast_path;
         struct server_redirection_support;

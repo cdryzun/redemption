@@ -131,6 +131,11 @@ allowed_dynamic_channels = string(default="*")
 #_advanced
 denied_dynamic_channels = string(default="")
 
+# If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.
+# This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.
+#_advanced
+disable_coreinput_dynamic_channel = boolean(default=True)
+
 # Force the screen resolution of a RDP target.
 # This option is ignored when the value is 0x0 or empty.<br/>
 # (in {width}x{height} format (e.g. 800x600))

@@ -495,6 +495,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:denied_dynamic_channels)
 #denied_dynamic_channels = 
 
+# If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.
+# This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.
+# (type: boolean (0/no/false or 1/yes/true))
+#_advanced
+# (acl config: proxy ⇐ mod_rdp:disable_coreinput_dynamic_channel)
+#disable_coreinput_dynamic_channel = 1
+
 # Force the screen resolution of a RDP target.
 # This option is ignored when the value is 0x0 or empty.
 # (in {width}x{height} format (e.g. 800x600))

@@ -999,6 +999,19 @@
     },
     {
       "section": "mod_rdp",
+      "name": "disable_coreinput_dynamic_channel",
+      "type": "bool",
+      "value": true,
+      "description": "If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.\nThis will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.",
+      "tags": ["compatibility"],
+      "rdp": true,
+      "rdp_sogisces_1_3_2030": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "mod_rdp",
       "name": "force_screen_resolution",
       "type": "ScreenResolution",
       "value": "",

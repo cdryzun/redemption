@@ -108,6 +108,9 @@ cfg::mod_rdp::allowed_dynamic_channels ⇐ mod_rdp:allowed_dynamic_channels   [s
 cfg::mod_rdp::denied_dynamic_channels ⇐ mod_rdp:denied_dynamic_channels   [std::string]
     List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.
     An explicit name will have higher priority than '*' in [mod_rdp]allowed_dynamic_channels.
+cfg::mod_rdp::disable_coreinput_dynamic_channel ⇐ mod_rdp:disable_coreinput_dynamic_channel   [bool]
+    If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.
+    This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.
 cfg::mod_rdp::force_screen_resolution ⇐ mod_rdp:force_screen_resolution   [ScreenResolution]
     Force the screen resolution of a RDP target.
     This option is ignored when the value is 0x0 or empty.

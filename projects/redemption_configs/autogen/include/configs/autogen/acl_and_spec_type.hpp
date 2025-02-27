@@ -99,6 +99,7 @@ template<> struct acl_and_spec_type<cfg::mod_rdp::allowed_channels> { using type
 template<> struct acl_and_spec_type<cfg::mod_rdp::denied_channels> { using type = ::configs::spec_types::list<std::string>; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::allowed_dynamic_channels> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::denied_dynamic_channels> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::mod_rdp::disable_coreinput_dynamic_channel> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::force_screen_resolution> { using type = ScreenResolution; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::fast_path> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::server_redirection_support> { using type = bool; };

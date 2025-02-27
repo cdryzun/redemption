@@ -1087,11 +1087,20 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "denied_dynamic_channels",
-        .value = value<std::string>(),
+        .value = value<std::string>(""),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.\n"
             "An explicit name will have higher priority than '*' in :REF::allowed_dynamic_channels."
+    });
+
+    _.member(MemberInfo{
+        .name = "disable_coreinput_dynamic_channel",
+        .value = value(true),
+        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .tags = Tag::Compatibility,
+        .desc = "If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.\n"
+        "This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.",
     });
 
     _.member(MemberInfo{
