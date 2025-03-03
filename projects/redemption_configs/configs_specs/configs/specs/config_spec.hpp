@@ -818,6 +818,19 @@ _.section("client", [&]
         .tags = Tag::Debug | Tag::Compatibility,
         .desc = disabled_orders_desc,
     });
+
+    _.member(MemberInfo{
+        .name = "workaround_incomplete_images",
+        .value = value(false),
+        .spec = global_spec(no_acl, spec::advanced),
+        .tags = Tag::Compatibility,
+        .desc = "Workaround for a bug encountered with the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2.\n"
+        "Randomly, some areas of the screen may not refresh.\n"
+        "This is due to a bug in the RDP client. If a single BitmapUpdate message contains multiple images, only the first one is correctly displayed by the client. "
+        "Enabling this option will prevent this situation.\n"
+        "Enabling this option will cause a slight increase in the amount of data sent to the client. It has no other effect, even for clients not affected by the bug.\n"
+        "The option will be automatically disabled if the connection comes from an Access Manager."
+    });
 });
 
 _.section("all_target_mod", [&]

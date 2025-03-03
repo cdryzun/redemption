@@ -276,6 +276,8 @@ private:
               , rdp_mppc_enc * mppc_enc
               , bool compression
               , int& input_front_id
+              , bool workaround_incomplete_images
+              , const bool& is_wabam
               , RDPSerializerVerbose verbose
             )
             : GraphicsUpdatePDU(
@@ -300,6 +302,8 @@ private:
             )
             , client_order_caps(client_order_caps)
             , input_front_id(input_front_id)
+            , workaround_incomplete_images(workaround_incomplete_images)
+            , is_wabam(is_wabam)
             {}
 
             using GraphicsUpdatePDU::draw;
@@ -318,6 +322,11 @@ private:
 
                 size_t const serializer_max_data_block_size = this->get_max_data_block_size();
 
+                bool const workaround_incomplete_images_final_decision = (
+                    this->workaround_incomplete_images &&
+                    not this->is_wabam
+                );
+
                 if (static_cast<size_t>(new_bmp.cx() * new_bmp.cy() * underlying_cast(new_bmp.bpp())) > serializer_max_data_block_size) { /*NOLINT*/
                     const uint16_t max_image_width
                       = std::min<uint16_t>(
@@ -332,7 +341,7 @@ private:
                     contiguous_sub_rect_f(
                         CxCy{new_bmp.cx(), new_bmp.cy()},
                         SubCxCy{max_image_width, max_image_height},
-                        [&](Rect subrect){
+                        [&, workaround_incomplete_images_final_decision](Rect subrect){
                             /*LOG(LOG_INFO, " *subrect: (%d,%d)-%dx%d", subrect.x, subrect.y, subrect.width(), subrect.height());*/
                             Bitmap sub_image(new_bmp, subrect);
 
@@ -356,6 +365,9 @@ private:
                             sub_image_data.bitmap_length = bmp_stream.get_offset();
 
                             GraphicsUpdatePDU::draw(sub_image_data, sub_image);
+                            if (workaround_incomplete_images_final_decision) {
+                                GraphicsUpdatePDU::flush_bitmaps();
+                            }
                         }
                     );
                 }
@@ -371,6 +383,9 @@ private:
                     target_bitmap_data.bitmap_length = bmp_stream.get_offset();
 
                     GraphicsUpdatePDU::draw(target_bitmap_data, new_bmp);
+                    if (workaround_incomplete_images_final_decision) {
+                        GraphicsUpdatePDU::flush_bitmaps();
+                    }
                 }
             }
 
@@ -383,6 +398,9 @@ private:
 
             OrderCaps & client_order_caps;
             int& input_front_id;
+
+            const bool workaround_incomplete_images;
+            const bool& is_wabam;
         };
 
         PrivateGraphicsUpdatePDU graphics_update_pdu;
@@ -491,6 +509,8 @@ private:
           , mppc_enc
           , bool(ini.get<cfg::client::rdp_compression>()) ? client_info.rdp_compression : false
           , input_front_id
+          , ini.get<cfg::client::workaround_incomplete_images>()
+          , ini.get<cfg::context::is_wabam>()
           , safe_cast<RDPSerializerVerbose>(underlying_cast(verbose) >> 16)
         )
         {}

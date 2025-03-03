@@ -72,6 +72,7 @@ template<> struct acl_and_spec_type<cfg::client::recv_timeout> { using type = ::
 template<> struct acl_and_spec_type<cfg::client::enable_osd_4_eyes> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::client::enable_remotefx> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::client::disabled_orders> { using type = ::configs::spec_types::list<unsigned>; };
+template<> struct acl_and_spec_type<cfg::client::workaround_incomplete_images> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::all_target_mod::connection_establishment_timeout> { using type = ::configs::spec_types::range<std::chrono::milliseconds, 1000, 10000>; };
 template<> struct acl_and_spec_type<cfg::all_target_mod::tcp_user_timeout> { using type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 3600000>; };
 template<> struct acl_and_spec_type<cfg::remote_program::allow_resize_hosted_desktop> { using type = bool; };

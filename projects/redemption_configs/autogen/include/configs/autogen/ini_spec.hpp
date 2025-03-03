@@ -200,6 +200,14 @@ enable_remotefx = boolean(default=True)
 #_advanced
 disabled_orders = string(default="25")
 
+# Workaround for a bug encountered with the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2.
+# Randomly, some areas of the screen may not refresh.
+# This is due to a bug in the RDP client. If a single BitmapUpdate message contains multiple images, only the first one is correctly displayed by the client. Enabling this option will prevent this situation.
+# Enabling this option will cause a slight increase in the amount of data sent to the client. It has no other effect, even for clients not affected by the bug.
+# The option will be automatically disabled if the connection comes from an Access Manager.
+#_advanced
+workaround_incomplete_images = boolean(default=False)
+
 [all_target_mod]
 
 # The maximum time that the proxy will wait while attempting to connect to an target.<br/>

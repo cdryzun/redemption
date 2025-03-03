@@ -73,6 +73,7 @@ namespace cfg
         struct enable_osd_4_eyes;
         struct enable_remotefx;
         struct disabled_orders;
+        struct workaround_incomplete_images;
     };
 
     struct all_target_mod {

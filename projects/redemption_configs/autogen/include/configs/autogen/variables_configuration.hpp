@@ -765,6 +765,19 @@ namespace cfg
         using mapped_type = ::configs::spec_types::list<unsigned>;
         type value { "25" };
     };
+    /// Workaround for a bug encountered with the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2. <br/>
+    /// Randomly, some areas of the screen may not refresh. <br/>
+    /// This is due to a bug in the RDP client. If a single BitmapUpdate message contains multiple images, only the first one is correctly displayed by the client. Enabling this option will prevent this situation. <br/>
+    /// Enabling this option will cause a slight increase in the amount of data sent to the client. It has no other effect, even for clients not affected by the bug. <br/>
+    /// The option will be automatically disabled if the connection comes from an Access Manager. <br/>
+    /// type: bool <br/>
+    /// default: false <br/>
+    struct client::workaround_incomplete_images {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
 
     /// The maximum time that the proxy will wait while attempting to connect to an target. <br/>
     /// type: std::chrono::milliseconds <br/>
@@ -5464,6 +5477,7 @@ struct client
 , cfg::client::enable_osd_4_eyes
 , cfg::client::enable_remotefx
 , cfg::client::disabled_orders
+, cfg::client::workaround_incomplete_images
 { static constexpr bool is_section = true; };
 
 struct all_target_mod
