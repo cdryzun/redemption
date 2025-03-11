@@ -22,6 +22,7 @@
 #pragma once
 
 #include "core/RDP/clipboard/format_name.hpp"
+#include "utils/sugar/numerics/safe_conversions.hpp"
 #include "utils/stream.hpp"
 #include "utils/utf.hpp"
 
@@ -105,7 +106,7 @@ namespace Cliprdr
 
             auto name = in_stream.remaining_bytes();
             auto end_name_pos = UTF16ByteLen(name);
-            auto end_format_pos = end_name_pos + 2;
+            auto end_format_pos = checked_int{end_name_pos + 2};
 
             if (!in_stream.in_check_rem(end_format_pos))
             {
@@ -128,9 +129,8 @@ namespace Cliprdr
         {
             uint32_t format_id = in_stream.in_uint32_le();
 
-            auto name = in_stream.remaining_bytes();
-            in_stream.in_skip_bytes(short_format_name_length);
-            name = name.first(strnlen(name.as_charp(), short_format_name_length));
+            auto name = in_stream.in_skip_bytes(short_format_name_length);
+            name = name.first(strnlen(name.as_charp(), name.size()));
 
             return process_format(format_id, AsciiName(name)), detail::LeftOrTrue{};
         }
@@ -145,8 +145,7 @@ namespace Cliprdr
         {
             uint32_t format_id = in_stream.in_uint32_le();
 
-            auto name = in_stream.remaining_bytes();
-            in_stream.in_skip_bytes(short_format_name_length);
+            auto name = in_stream.in_skip_bytes(short_format_name_length);
             name = name.first(UTF16ByteLen(name.first(short_format_name_length)));
 
             return process_format(format_id, UnicodeName(name)), detail::LeftOrTrue{};

@@ -26,17 +26,15 @@ std::unique_ptr<mod_api> new_mod_vnc(
     Transport & t
   , Random & random
   , gdi::GraphicApi & gd
+  , Font const & glyphs
   , EventContainer & events
   , const char * username
   , const char * password
   , FrontAPI & front
   , uint16_t front_width
   , uint16_t front_height
-  , bool clipboard_up
-  , bool clipboard_down
+  , ModVncParams vnc_params
   , const char * encodings
-  , ClipboardEncodingType clipboard_server_encoding_type
-  , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
   , KeyLayout const& layout
   , kbdtypes::KeyLocks locks
   , bool server_is_macos
@@ -47,14 +45,14 @@ std::unique_ptr<mod_api> new_mod_vnc(
   , SessionLogApi& session_log
   , ModTlsParams const& tls_params
   , std::string_view force_authentication_method
+  , Translator const& translator
 )
 {
     return std::make_unique<mod_vnc>(
-        t, random, gd, events, username, password, front,
-        front_width, front_height, clipboard_up, clipboard_down, encodings,
-        clipboard_server_encoding_type, bogus_clipboard_infinite_loop,
+        t, random, gd, glyphs, events, username, password, front,
+        front_width, front_height, vnc_params, encodings,
         layout, locks, server_is_macos, send_alt_ksym,
         cursor_pseudo_encoding_supported, rail_client_execute, verbose, session_log,
-        tls_params, force_authentication_method
+        tls_params, force_authentication_method, translator
     );
 }

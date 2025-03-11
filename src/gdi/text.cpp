@@ -204,7 +204,7 @@ void MultiLineText::set_text(Font const& font, chars_view utf8_text)
             + sizeof(Char) /* reserved for space fc */;
         d.data = aligned_alloc(alignof(Line), data_len);
         if (!d.data) {
-            // insuffisant memory, ignore error
+            // insufficient memory, ignore error
             d = {};
             return;
         }

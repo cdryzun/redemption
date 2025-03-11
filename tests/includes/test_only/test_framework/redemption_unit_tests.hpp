@@ -31,11 +31,21 @@ namespace ut
     enum class PatternView : char
     {
         deduced = 'a',
+        /// no printable ascii char are hexadecimal format excepted \\,
+        printable_ascii = 'p',
+        /// no printable utf8 char are hexadecimal format excepted \\,
+        printable_utf8 = 'P',
+        /// no printable ascii char are hexadecimal format excepted \\, \b, \t, \r, \n
         ascii = 'c',
+        /// as ascii, but newline is newline
         ascii_nl = 'C',
+        /// no printable utf8 char are hexadecimal format excepted \\, \b, \t, \r, \n
         utf8 = 's',
+        /// as utf8, but newline is newline
         utf8_nl = 'S',
+        /// hex format for any char
         hex = 'b',
+        /// dump format
         dump = 'd',
     };
 
@@ -49,16 +59,47 @@ namespace ut
         bytes_view bytes;
         PatternView pattern = default_pattern_view;
         unsigned min_len = default_ascii_min_len;
+
+        friend std::ostream& operator << (std::ostream& out, flagged_bytes_view flagged_view);
     };
 
     inline flagged_bytes_view dump(bytes_view v) { return {v, PatternView::dump, 0}; }
     inline flagged_bytes_view hex(bytes_view v) { return {v, PatternView::hex, 0}; }
     inline flagged_bytes_view utf8(bytes_view v) { return {v, PatternView::utf8, 0}; }
+    inline flagged_bytes_view printable_ascii(bytes_view v) { return {v, PatternView::printable_ascii, 0}; }
+    inline flagged_bytes_view printable_utf8(bytes_view v) { return {v, PatternView::printable_utf8, 0}; }
     inline flagged_bytes_view ascii(bytes_view v, unsigned min_len = default_ascii_min_len)
     { return {v, PatternView::ascii, min_len}; }
 
     bool compare_bytes(size_t& pos, bytes_view b, bytes_view a) noexcept;
-    void put_view(size_t pos, std::ostream& out, flagged_bytes_view x);
+    void put_view(size_t pos, std::ostream& out, flagged_bytes_view flagged_view);
+
+    inline void put_view(std::ostream& out, flagged_bytes_view flagged_view)
+    {
+        put_view(~size_t{}, out, flagged_view);
+    }
+
+    inline std::ostream& operator << (std::ostream& out, flagged_bytes_view flagged_view)
+    {
+        put_view(~size_t{}, out, flagged_view);
+        return out;
+    }
+
+    inline void put_hex_view(std::ostream& out, bytes_view bytes)
+    {
+        put_view(bytes.size(), out, {bytes, PatternView::hex});
+    }
+
+    struct AsHexView
+    {
+        bytes_view bytes;
+
+        friend std::ostream& operator << (std::ostream& out, AsHexView self)
+        {
+            put_hex_view(out, self.bytes);
+            return out;
+        }
+    };
 
     void put_message_with_diff(std::ostream& out, ::chars_view s1, char const* op, ::chars_view s2, bool nocolor = false); /*NOLINT*/
 
@@ -68,6 +109,16 @@ namespace ut
     {
         PatternViewSaver(PatternView pattern) noexcept;
         ~PatternViewSaver();
+
+        static PatternViewSaver deduced() noexcept { return PatternView::deduced; }
+        static PatternViewSaver printable_ascii() noexcept { return PatternView::printable_ascii; }
+        static PatternViewSaver printable_utf8() noexcept { return PatternView::printable_utf8; }
+        static PatternViewSaver ascii() noexcept { return PatternView::ascii; }
+        static PatternViewSaver ascii_nl() noexcept { return PatternView::ascii_nl; }
+        static PatternViewSaver utf8() noexcept { return PatternView::utf8; }
+        static PatternViewSaver utf8_nl() noexcept { return PatternView::utf8_nl; }
+        static PatternViewSaver hex() noexcept { return PatternView::hex; }
+        static PatternViewSaver dump() noexcept { return PatternView::dump; }
 
     private:
         PatternView pattern;
@@ -89,7 +140,7 @@ namespace ut
         constexpr static hex_int u8() { return {2}; }
         constexpr static hex_int u16() { return {4}; }
         constexpr static hex_int u32() { return {8}; }
-        constexpr static hex_int u64() { return {8}; }
+        constexpr static hex_int u64() { return {16}; }
     };
 } // namespace ut
 
@@ -99,6 +150,16 @@ namespace redemption_unit_test_
 {
     namespace literals
     {
+        inline ut::flagged_bytes_view operator""_av_printable_ascii(char const * s, size_t len) noexcept
+        {
+            return ut::printable_ascii({s, len});
+        }
+
+        inline ut::flagged_bytes_view operator""_av_printable_utf8(char const * s, size_t len) noexcept
+        {
+            return ut::printable_utf8({s, len});
+        }
+
         inline ut::flagged_bytes_view operator""_av_ascii(char const * s, size_t len) noexcept
         {
             return ut::ascii({s, len});
@@ -193,6 +254,7 @@ bool operator!=(bytes_view const&, ut::flagged_bytes_view const&);
 # define RED_FAIL(ostream_expr) ::redemption_unit_test_::Stream{} << ostream_expr
 # define RED_ERROR(ostream_expr) ::redemption_unit_test_::Stream{} << ostream_expr
 # define RED_TEST_INFO(ostream_expr) ::redemption_unit_test_::Stream{} << ostream_expr
+# define RED_TEST_INFO_SCOPE(ostream_expr) ::redemption_unit_test_::Stream{} << ostream_expr
 # define RED_TEST_CHECKPOINT(ostream_expr) ::redemption_unit_test_::Stream{} << ostream_expr
 # define RED_TEST_MESSAGE(ostream_expr) ::redemption_unit_test_::Stream{} << ostream_expr
 # define RED_TEST_PASSPOINT() do { } while(0)
@@ -233,6 +295,10 @@ bool operator!=(bytes_view const&, ut::flagged_bytes_view const&);
 # define RED_CHECK_GT(a, b) ::redemption_unit_test_::X(bool((a) > (b)))
 # define RED_CHECK_GE(a, b) ::redemption_unit_test_::X(bool((a) >= (b)))
 # define RED_CHECK(a) ::redemption_unit_test_::X(bool(a))
+# define RED_CHECK_HEX8(a) ::redemption_unit_test_::X(bool(a))
+# define RED_CHECK_HEX16(a) ::redemption_unit_test_::X(bool(a))
+# define RED_CHECK_HEX32(a) ::redemption_unit_test_::X(bool(a))
+# define RED_CHECK_HEX64(a) ::redemption_unit_test_::X(bool(a))
 # define RED_CHECK_MESSAGE(a, ostream_expr) ::redemption_unit_test_::X(bool(a)), \
     ::redemption_unit_test_::Stream{} << ostream_expr
 # define RED_CHECK_EQUAL_COLLECTIONS(first1, last1, first2, last2) \
@@ -271,7 +337,27 @@ bool operator!=(bytes_view const&, ut::flagged_bytes_view const&);
 
 #define RED_TEST_CREATE_DECORATOR(name, f)
 
-#else
+namespace redemption_unit_test_
+{
+    struct Enum
+    {
+        template<class E>
+            requires std::is_enum_v<E>
+        Enum(E e) noexcept;
+    };
+} // namespace redemption_unit_test_
+
+#if ! REDEMPTION_UNIT_TEST_FAST_CHECK
+
+namespace std /*NOLINT*/
+{
+    // hack hack hack :D
+    std::ostream& operator<<(std::ostream& out, ::redemption_unit_test_::Enum const& e);
+}
+
+#endif
+
+#else // ^^^ if defined(IN_IDE_PARSER) && !defined(REDEMPTION_UNIT_TEST_CPP)
 
 # include "impl/redemption_unit_tests_impl.hpp"
 
@@ -328,7 +414,8 @@ namespace redemption_unit_test_
 
     struct Enum
     {
-        template<class E, class = std::enable_if_t<std::is_enum<E>::value>>
+        template<class E>
+            requires std::is_enum_v<E>
         Enum(E e) noexcept
         : Enum(
             static_cast<long long>(e),
@@ -387,6 +474,7 @@ namespace std /*NOLINT*/
 #endif
 
 #endif
+
 
 namespace redemption_unit_test_
 {

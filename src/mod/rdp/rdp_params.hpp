@@ -27,9 +27,11 @@
 #include "core/channel_names.hpp"
 #include "keyboard/kbdtypes.hpp"
 #include "mod/tls_params.hpp"
-#include "mod/rdp/channels/validator_params.hpp"
+#include "mod/rdp/channels/clipboard_virtual_channels_params.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
+#include "translation/translation.hpp"
 #include "utils/sugar/zstring_view.hpp"
+#include "utils/basic_function.hpp"
 #include "utils/log.hpp"
 #include "utils/ref.hpp"
 
@@ -44,7 +46,10 @@
 #include <cstdint>
 
 
+class ChannelsAuthorizations;
+class FileValidatorService;
 class ClientExecute;
+class FdxCapture;
 class Transport;
 class Theme;
 class Font;
@@ -55,7 +60,7 @@ struct ModRDPParams
     ModRdpSessionProbeParams session_probe_params;
 #endif
 
-    const char * target_user;
+    chars_view target_user;
     const char * target_password;
     const char * target_host;
     const char * client_address;
@@ -73,15 +78,11 @@ struct ModRDPParams
 
     bool enable_restricted_admin_mode = false;
 
-    ValidatorParams validator_params;
+    using GetClipboardParams = BasicFunction<
+        ClipboardVirtualChannelParams(ChannelsAuthorizations const &)
+    >;
 
-    struct ClipboardParams
-    {
-        bool log_only_relevant_activities = true;
-        bool log_text = false;
-    };
-
-    ClipboardParams clipboard_params;
+    GetClipboardParams get_clipboard_params = NullFunctionWithDefaultResult{};
 
     struct FileSystemParams
     {
@@ -228,7 +229,7 @@ struct ModRDPParams
                 , Translator translator
                 , RDPVerbose verbose
                 )
-        : target_user(target_user)
+        : target_user{target_user, strlen(target_user)}
         , target_password(target_password)
         , target_host(target_host)
         , client_address(client_address)
@@ -257,7 +258,7 @@ struct ModRDPParams
     LOG(LOG_INFO, "ModRDPParams " #member "=" format, get (this->member))
 #define RDP_PARAMS_LOG_AV(av) int(av.size()), av.data()
 #define RDP_PARAMS_LOG_GET
-        RDP_PARAMS_LOG("\"%s\"", RDP_PARAMS_LOG_GET,    target_user);
+        RDP_PARAMS_LOG("\"%.*s\"", RDP_PARAMS_LOG_AV,   target_user);
         RDP_PARAMS_LOG("\"%s\"", hidden_or_null,        target_password);
         RDP_PARAMS_LOG("\"%s\"", RDP_PARAMS_LOG_GET,    target_host);
         RDP_PARAMS_LOG("\"%s\"", RDP_PARAMS_LOG_GET,    client_address);
@@ -434,9 +435,6 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%u",     from_millisec,         remote_app_params.bypass_legal_notice_timeout);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             support_connection_redirection_during_recording);
-
-        RDP_PARAMS_LOG("%s",     yes_or_no,             clipboard_params.log_only_relevant_activities);
-        RDP_PARAMS_LOG("%s",     yes_or_no,             clipboard_params.log_text);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             use_license_store);
 

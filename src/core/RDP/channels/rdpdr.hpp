@@ -21,6 +21,7 @@
 #pragma once
 
 #include "core/error.hpp"
+#include "core/rdp_hostname.hpp"
 #include "core/ERREF/ntstatus.hpp"
 #include "core/FSCC/FileInformation.hpp"
 #include "core/RDP/channels/rdpdr_completion_id_manager.hpp"
@@ -2561,34 +2562,27 @@ enum {
 //  MUST be null-terminated. The protocol imposes no limitations on the
 //  characters used in this field.
 
-inline void emit_client_name_request(OutStream & stream, chars_view computer_name, uint32_t unicodeFlag)
+inline void emit_client_name_request(OutStream & stream, RdpHostname computer_name, uint32_t unicodeFlag)
 {
     uint32_t CodePage    = 0;
-    stream.out_uint32_le(unicodeFlag);
+    stream.out_uint32_le(unicodeFlag | 0x00000001); // force unicode flag
     stream.out_uint32_le(CodePage);
 
-    if (unicodeFlag & 0x00000001) {
-        // ComputerName is in Unicode characters.
+    // ComputerName is in Unicode characters.
 
-        // The null-terminator is included.
-        uint8_t ComputerName_unicode_data[65536];
-        size_t size_of_ComputerName_unicode_data = ::UTF8toUTF16(
-            computer_name,
-            make_writable_array_view(ComputerName_unicode_data).drop_back(2));
-        // Writes null terminator.
-        ComputerName_unicode_data[size_of_ComputerName_unicode_data    ] = 0;
-        ComputerName_unicode_data[size_of_ComputerName_unicode_data + 1] = 0;
-        size_of_ComputerName_unicode_data += 2;
+    auto computer_name_len_buf = stream.out_skip_bytes(4);
 
-        stream.out_uint32_le(size_of_ComputerName_unicode_data);
+    auto computer_name_len_str = computer_name.utf16le_zstr();
 
-        stream.out_copy_bytes(ComputerName_unicode_data, size_of_ComputerName_unicode_data);
-    } else {
-        // The null-terminator is included.
-        stream.out_uint32_le(computer_name.size() + 1u);
-        stream.out_copy_bytes(computer_name);
-        stream.out_uint8(0);
+    for (auto c : computer_name_len_str)
+    {
+        stream.out_uint16_le(c);
     }
+    // Writes null terminator.
+    stream.out_uint16_le(0);
+
+    auto computer_name_len_in_byte = computer_name_len_str.msize() * 2u + 2u;
+    OutStream(computer_name_len_buf).out_uint32_le(computer_name_len_in_byte);
 }
 
 inline void receive_and_log_client_name_request(InStream & stream, int level)

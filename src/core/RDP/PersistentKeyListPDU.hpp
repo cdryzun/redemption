@@ -24,7 +24,7 @@
 #include "core/error.hpp"
 #include "utils/log.hpp"
 #include "utils/stream.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 #include "utils/sugar/int_to_chars.hpp"
 #include "core/stream_throw_helpers.hpp"
 
@@ -356,14 +356,14 @@ struct PersistentKeyListPDUData {
             }
 
             if (i > 20) {
-                p = byte_copy(p, "..."_av);
+                p = bytes_copy_and_advance(p, "..."_av);
                 break;
             }
 
             p = int_to_fixed_hexadecimal_upper_chars(p, this->entries[i].Key1);
             p = int_to_fixed_hexadecimal_upper_chars(p, this->entries[i].Key2);
         }
-        p = byte_copy(p, "))"_av);
+        p = bytes_copy_and_advance(p, "))"_av);
         *p = 0;
         LOG(level, "%s", buffer);
     }

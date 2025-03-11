@@ -27,6 +27,7 @@
 #include "core/RDP/channels/rdpdr_completion_id_manager.hpp"
 #include "core/RDP/channels/rdpdr.hpp"
 #include "core/channel_list.hpp"
+#include "core/rdp_hostname.hpp"
 #include "utils/timebase.hpp"
 #include "mod/rdp/channels/base_channel.hpp"
 #include "mod/rdp/channels/rdpdr_file_system_drive_manager.hpp"
@@ -105,12 +106,12 @@ class FileSystemVirtualChannel final : public BaseVirtualChannel
 
     bool device_capability_version_02_supported = false;
 
-    const std::string_view param_client_name;
+    const RdpHostname param_client_name;
     const bool        param_file_system_read_authorized;
     const bool        param_file_system_write_authorized;
     const uint32_t    param_random_number;                  // For ClientId.
 
-    const char* const param_proxy_managed_drive_prefix;
+    chars_view const param_proxy_managed_drive_prefix;
 
     bool user_logged_on = false;
 
@@ -911,9 +912,9 @@ public:
         FileSystemDriveManager& file_system_drive_manager,
         const bool channel_filter_on,
         std::string channel_files_directory,
-        const char * client_name,
+        RdpHostname client_name,
         uint32_t random_number,
-        const char * proxy_managed_drive_prefix,
+        chars_view proxy_managed_drive_prefix,
         const FileSystemVirtualChannelParams& params,
         SessionLogApi& session_log,
         RDPVerbose verbose)
@@ -2885,8 +2886,8 @@ private:
             uint32_t unicodeFlag = 0x7FF;
             rdpdr::emit_client_name_request(out_stream, this->param_client_name, unicodeFlag);
             LOG_IF(bool(this->verbose & RDPVerbose::rdpdr), LOG_INFO,
-                "FileSystemVirtualChannel::%s: ClientNameRequest: UnicodeFlag=0x%X CodePage=0 ComputerName=\"%.*s\"",
-                func_name, unicodeFlag, int(this->param_client_name.size()), this->param_client_name.data());
+                "FileSystemVirtualChannel::%s: ClientNameRequest: UnicodeFlag=0x%X CodePage=0 ComputerName=\"%s\"",
+                func_name, unicodeFlag, this->param_client_name.utf8_fixed_maybe_invalid().c_str());
 
             this->send_message_to_server(
                 out_stream.get_offset(),

@@ -32,7 +32,7 @@
 #include "capture/cryptofile.hpp"
 #include "core/log_id.hpp"
 #include "capture/fdx_capture.hpp"
-#include "mod/file_validator_service.hpp"
+#include "core/file_validator/file_validator_service.hpp"
 #include "acl/auth_api.hpp"
 #include "gdi/osd_api.hpp"
 
@@ -44,11 +44,11 @@ namespace
     {
         #include "fixtures/test_cliprdr_channel_xfreerdp_full_authorisation.hpp"
         const auto cb_params = []{ /*NOLINT*/
-            ClipboardVirtualChannelParams clipboard_virtual_channel_params;
-            clipboard_virtual_channel_params.clipboard_up_authorized   = true;
-            clipboard_virtual_channel_params.clipboard_down_authorized = true;
-            clipboard_virtual_channel_params.clipboard_file_authorized = true;
-            clipboard_virtual_channel_params.log_clipboard_text = true;
+            ClipboardVirtualChannelParams clipboard_virtual_channel_params {};
+            clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = true;
+            clipboard_virtual_channel_params.cliprdr_params.download_authorized = true;
+            clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
+            clipboard_virtual_channel_params.cliprdr_params.log_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_full_auth
@@ -57,11 +57,11 @@ namespace
     {
         #include "fixtures/test_cliprdr_channel_xfreerdp_down_denied.hpp"
         const auto cb_params = []{ /*NOLINT*/
-            ClipboardVirtualChannelParams clipboard_virtual_channel_params;
-            clipboard_virtual_channel_params.clipboard_up_authorized   = true;
-            clipboard_virtual_channel_params.clipboard_down_authorized = false;
-            clipboard_virtual_channel_params.clipboard_file_authorized = true;
-            clipboard_virtual_channel_params.log_clipboard_text = true;
+            ClipboardVirtualChannelParams clipboard_virtual_channel_params {};
+            clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = true;
+            clipboard_virtual_channel_params.cliprdr_params.download_authorized = false;
+            clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
+            clipboard_virtual_channel_params.cliprdr_params.log_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_down_denied
@@ -70,11 +70,11 @@ namespace
     {
         #include "fixtures/test_cliprdr_channel_xfreerdp_up_denied.hpp"
         const auto cb_params = []{ /*NOLINT*/
-            ClipboardVirtualChannelParams clipboard_virtual_channel_params;
-            clipboard_virtual_channel_params.clipboard_up_authorized   = false;
-            clipboard_virtual_channel_params.clipboard_down_authorized = true;
-            clipboard_virtual_channel_params.clipboard_file_authorized = true;
-            clipboard_virtual_channel_params.log_clipboard_text = true;
+            ClipboardVirtualChannelParams clipboard_virtual_channel_params {};
+            clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = false;
+            clipboard_virtual_channel_params.cliprdr_params.download_authorized = true;
+            clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
+            clipboard_virtual_channel_params.cliprdr_params.log_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_up_denied
@@ -84,10 +84,10 @@ namespace
         #include "fixtures/test_cliprdr_channel_xfreerdp_full_denied.hpp"
         const auto cb_params = []{ /*NOLINT*/
             ClipboardVirtualChannelParams clipboard_virtual_channel_params;
-            clipboard_virtual_channel_params.clipboard_up_authorized   = false;
-            clipboard_virtual_channel_params.clipboard_down_authorized = false;
-            clipboard_virtual_channel_params.clipboard_file_authorized = true;
-            clipboard_virtual_channel_params.log_clipboard_text = true;
+            clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = false;
+            clipboard_virtual_channel_params.cliprdr_params.download_authorized = false;
+            clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
+            clipboard_virtual_channel_params.cliprdr_params.log_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_full_denied
@@ -138,7 +138,6 @@ public:
 
 RED_AUTO_TEST_CASE(TestCliprdrChannelXfreeRDPAuthorisation)
 {
-    FileValidatorService * ipca_service = nullptr;
     NullSessionLog session_log;
     EventContainer events;
 
@@ -172,8 +171,10 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelXfreeRDPAuthorisation)
 
         ClipboardVirtualChannel clipboard_virtual_channel(
             events, osd,
-            d.cb_params, ipca_service, {nullptr, false, std::string()},
-            session_log, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+            d.cb_params,
+            session_log,
+            MsgTranslationCatalog::default_catalog(),
+            RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
 
         cliprdr_vc_filter.insert_after(clipboard_virtual_channel);
 
@@ -192,13 +193,12 @@ public:
 RED_AUTO_TEST_CASE(TestCliprdrChannelMalformedFormatListPDU)
 {
     NullSessionLog session_log;
-    FileValidatorService * ipca_service = nullptr;
 
     ClipboardVirtualChannelParams clipboard_virtual_channel_params;
-    clipboard_virtual_channel_params.clipboard_down_authorized = true;
-    clipboard_virtual_channel_params.clipboard_up_authorized   = true;
-    clipboard_virtual_channel_params.clipboard_file_authorized = true;
-    clipboard_virtual_channel_params.log_clipboard_text = true;
+    clipboard_virtual_channel_params.cliprdr_params.download_authorized = true;
+    clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = true;
+    clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
+    clipboard_virtual_channel_params.cliprdr_params.log_text = true;
 
     NullSender to_client_sender;
     NullSender to_server_sender;
@@ -208,8 +208,9 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelMalformedFormatListPDU)
     EventContainer events;
 
     ClipboardVirtualChannel clipboard_virtual_channel(
-        events, osd, clipboard_virtual_channel_params, ipca_service, {nullptr, false, std::string()},
-        session_log, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        events, osd, clipboard_virtual_channel_params,
+        session_log, MsgTranslationCatalog::default_catalog(),
+        RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
 
     cliprdr_vc_filter.insert_after(clipboard_virtual_channel);
 
@@ -231,13 +232,12 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelFailedFormatDataResponsePDU)
 {
     EventContainer events;
     NullSessionLog session_log;
-    FileValidatorService * ipca_service = nullptr;
 
     ClipboardVirtualChannelParams clipboard_virtual_channel_params;
-    clipboard_virtual_channel_params.clipboard_down_authorized = true;
-    clipboard_virtual_channel_params.clipboard_up_authorized   = true;
-    clipboard_virtual_channel_params.clipboard_file_authorized = true;
-    clipboard_virtual_channel_params.log_clipboard_text = true;
+    clipboard_virtual_channel_params.cliprdr_params.download_authorized = true;
+    clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = true;
+    clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
+    clipboard_virtual_channel_params.cliprdr_params.log_text = true;
 
     NullSender to_client_sender;
     NullSender to_server_sender;
@@ -246,8 +246,9 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelFailedFormatDataResponsePDU)
 
     ClipboardVirtualChannel clipboard_virtual_channel(
         events, osd,
-        clipboard_virtual_channel_params, ipca_service, {nullptr, false, std::string()},
-        session_log, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        clipboard_virtual_channel_params,
+        session_log, MsgTranslationCatalog::default_catalog(),
+        RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
 
     cliprdr_vc_filter.insert_after(clipboard_virtual_channel);
 
@@ -785,11 +786,12 @@ namespace
         WorkingDirectory::SubDirectory fdx_hash_path = hash_path.create_subdirectory(sid);
         CryptoContext cctx;
         LCGRandom rnd;
-        FdxCapture fdx = FdxCapture{
+        FdxCapture fdx = FdxCapture {
             record_path.dirname().string(),
             hash_path.dirname().string(),
             "sid,blabla", sid, FilePermissions(0660), cctx, rnd,
-            [](const Error & /*error*/){}};
+            [](const Error & /*error*/){}
+        };
     };
 
     auto add_file(FdxTestCtx& data_test, std::string_view suffix)
@@ -831,33 +833,50 @@ namespace
         }
 #endif
 
-        ClipboardVirtualChannelParams default_channel_params() const
-        {
-            ClipboardVirtualChannelParams clipboard_virtual_channel_params {};
-            clipboard_virtual_channel_params.clipboard_down_authorized = true;
-            clipboard_virtual_channel_params.clipboard_up_authorized   = true;
-            clipboard_virtual_channel_params.clipboard_file_authorized = true;
-            clipboard_virtual_channel_params.log_clipboard_text = true;
-            clipboard_virtual_channel_params.validator_params.down_target_name = "down";
-            clipboard_virtual_channel_params.validator_params.up_target_name = "up";
-            clipboard_virtual_channel_params.validator_params.log_if_accepted = true;
-            clipboard_virtual_channel_params.validator_params.enable_clipboard_text_up = true;
-            clipboard_virtual_channel_params.validator_params.enable_clipboard_text_down = true;
-            clipboard_virtual_channel_params.validator_params.block_invalid_file_down
-                = this->verify_before_transfer;
-            clipboard_virtual_channel_params.validator_params.block_invalid_file_up
-                = this->verify_before_transfer;
-            return clipboard_virtual_channel_params;
-        }
-
         std::unique_ptr<FdxTestCtx> make_optional_fdx_ctx() const
         {
-            if (this->with_fdx_capture) {
+            if (with_fdx_capture) {
                 return std::make_unique<FdxTestCtx>(
-                    &"abcdefgh"[this->with_validator * 2 + this->always_file_storage]
+                    &"abcdefgh"[with_validator * 2 + always_file_storage]
                 );
             }
-            return std::unique_ptr<FdxTestCtx>();
+            return {};
+        }
+
+        ClipboardVirtualChannelParams build_params(FdxTestCtx * fdx_ctx) const
+        {
+            return ClipboardVirtualChannelParams {
+                .cliprdr_params {
+                    .download_authorized = true,
+                    .upload_authorized   = true,
+                    .file_authorized = true,
+                    .log_only_relevant_activities = true,
+                    .log_text = true,
+                },
+                .validator_params {
+                    .file {
+                        .file_validator_service = nullptr,
+                        .targets = FileValidatorTargets::Upload
+                                | FileValidatorTargets::Download,
+                        .log_if_accepted = true,
+                        .block_invalid_file_upload = this->verify_before_transfer,
+                        .block_invalid_file_download = this->verify_before_transfer,
+                        .max_blocked_file_size_rejected = 1024*1024*1024,
+                        .tmp_dir = fdx_ctx ? fdx_ctx->wd.dirname().string() : chars_view{},
+                    },
+                    .text {
+                        .enable_text_upload = true,
+                        .enable_text_download = true,
+                        .block_invalid_text_upload = false,
+                        .block_invalid_text_download = false,
+                    },
+                    .osd_delay = std::chrono::seconds(5),
+                },
+                .file_storage_params {
+                    .fdx_capture = fdx_ctx ? &fdx_ctx->fdx : nullptr,
+                    .always_file_storage = always_file_storage,
+                },
+            };
         }
 
         class ChannelCtx
@@ -878,25 +897,21 @@ namespace
         public:
             ChannelCtx(
                 MsgComparator& msg_comparator,
-                FdxTestCtx* fdx_ctx,
-                ClipboardVirtualChannelParams const& clipboard_virtual_channel_params,
-                ClipDataTest const& d, RDPVerbose verbose)
+                ClipboardVirtualChannelParams clipboard_virtual_channel_params,
+                bool with_validator,
+                RDPVerbose verbose)
             : report_message(msg_comparator)
             , validator_transport(msg_comparator)
             , to_client_sender(msg_comparator)
             , to_server_sender(msg_comparator)
             , cliprdr_vc_filter(&to_client_sender, &to_server_sender)
             , clipboard_virtual_channel(
-                events, osd,
-                clipboard_virtual_channel_params,
-                d.with_validator ? &file_validator_service : nullptr,
-                ClipboardVirtualChannel::FileStorage{
-                    fdx_ctx ? &fdx_ctx->fdx : nullptr,
-                    d.always_file_storage,
-                    fdx_ctx ? fdx_ctx->wd.dirname().string() : std::string()
-                },
-                report_message,
-                verbose
+                events, osd, [&]{
+                    clipboard_virtual_channel_params.validator_params.file.file_validator_service
+                        = with_validator ? &file_validator_service : nullptr;
+                    return std::move(clipboard_virtual_channel_params);
+                }(),
+                report_message, MsgTranslationCatalog::default_catalog(), verbose
             )
             {
                 this->cliprdr_vc_filter.insert_after(this->clipboard_virtual_channel);
@@ -948,6 +963,37 @@ namespace
                 this->clipboard_virtual_channel.process_client_message(total_len, flags, av);
             }
         };
+
+        struct Pair
+        {
+            std::unique_ptr<FdxTestCtx> fdx_ctx;
+            std::unique_ptr<ChannelCtx> channel_ctx;
+        };
+
+        Pair make_channel(MsgComparator& msg_comparator, RDPVerbose verbose) const
+        {
+            auto fdx_ctx = make_optional_fdx_ctx();
+            auto * fdx_ptr = fdx_ctx.get();
+            return {
+                std::move(fdx_ctx),
+                std::make_unique<ChannelCtx>(
+                    msg_comparator, build_params(fdx_ptr), with_validator, verbose
+                )
+            };
+        }
+
+        template<class FnParams>
+        Pair make_channel(MsgComparator& msg_comparator, RDPVerbose verbose, FnParams fn_params) const
+        {
+            auto fdx_ctx = make_optional_fdx_ctx();
+            auto * fdx_ptr = fdx_ctx.get();
+            return {
+                std::move(fdx_ctx),
+                std::make_unique<ChannelCtx>(
+                    msg_comparator, fn_params(build_params(fdx_ptr)), with_validator, verbose
+                )
+            };
+        }
     };
 
     void initialize_channel(
@@ -1052,12 +1098,11 @@ RED_AUTO_TEST_CONTEXT_DATA(TestCliprdrChannelFilterDataFileWithoutLock, ClipData
 
     bytes_view temp_av;
     MsgComparator msg_comparator;
-    auto fdx_ctx = d.make_optional_fdx_ctx();
-    auto channel_ctx = std::make_unique<ClipDataTest::ChannelCtx>(
+
+    auto [fdx_ctx, channel_ctx] = d.make_channel(
         msg_comparator,
-        fdx_ctx.get(),
-        d.default_channel_params(),
-        d, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/
+    );
 
    initialize_channel(msg_comparator, *channel_ctx, RDPECLIP::CB_USE_LONG_FORMAT_NAMES, false);
 
@@ -1254,12 +1299,10 @@ RED_AUTO_TEST_CONTEXT_DATA(TestCliprdrChannelFilterDataMultiFileWithLock, ClipDa
 
     bytes_view temp_av;
     MsgComparator msg_comparator;
-    auto fdx_ctx = d.make_optional_fdx_ctx();
-    auto channel_ctx = std::make_unique<ClipDataTest::ChannelCtx>(
+    auto [fdx_ctx, channel_ctx] = d.make_channel(
         msg_comparator,
-        fdx_ctx.get(),
-        d.default_channel_params(),
-        d, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/
+    );
 
     initialize_channel(msg_comparator, *channel_ctx,
         RDPECLIP::CB_CAN_LOCK_CLIPDATA | RDPECLIP::CB_USE_LONG_FORMAT_NAMES, false);
@@ -1663,16 +1706,15 @@ RED_AUTO_TEST_CONTEXT_DATA(TestCliprdrValidationBeforeTransfer, ClipDataTest con
 
     bytes_view temp_av;
     MsgComparator msg_comparator;
-    auto fdx_ctx = d.make_optional_fdx_ctx();
 
-    auto cliprdr_params = d.default_channel_params();
-    cliprdr_params.validator_params.max_file_size_rejected = 30;
-
-    auto channel_ctx = std::make_unique<ClipDataTest::ChannelCtx>(
+    auto [fdx_ctx, channel_ctx] = d.make_channel(
         msg_comparator,
-        fdx_ctx.get(),
-        cliprdr_params,
-        d, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        RDPVerbose::cliprdr, /*| RDPVerbose::cliprdr_dump*/
+        [](ClipboardVirtualChannelParams cliprdr_params) {
+            cliprdr_params.validator_params.file.max_blocked_file_size_rejected = 30;
+            return cliprdr_params;
+        }
+    );
 
     initialize_channel(msg_comparator, *channel_ctx, RDPECLIP::CB_USE_LONG_FORMAT_NAMES);
 
@@ -2754,16 +2796,15 @@ RED_AUTO_TEST_CONTEXT_DATA(TestCliprdrValidationBeforeTransferAndMaxSize, ClipDa
 
     bytes_view temp_av;
     MsgComparator msg_comparator;
-    auto fdx_ctx = d.make_optional_fdx_ctx();
 
-    auto cliprdr_params = d.default_channel_params();
-    cliprdr_params.validator_params.max_file_size_rejected = 10;
-
-    auto channel_ctx = std::make_unique<ClipDataTest::ChannelCtx>(
+    auto [fdx_ctx, channel_ctx] = d.make_channel(
         msg_comparator,
-        fdx_ctx.get(),
-        cliprdr_params,
-        d, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        RDPVerbose::cliprdr, /*| RDPVerbose::cliprdr_dump*/
+        [](ClipboardVirtualChannelParams cliprdr_params) {
+            cliprdr_params.validator_params.file.max_blocked_file_size_rejected = 10;
+            return cliprdr_params;
+        }
+    );
 
     initialize_channel(msg_comparator, *channel_ctx, RDPECLIP::CB_USE_LONG_FORMAT_NAMES);
 
@@ -2869,16 +2910,16 @@ RED_AUTO_TEST_CONTEXT_DATA(TestCliprdrTextValidationBeforeTransfer, ClipDataTest
     bytes_view temp_av;
     MsgComparator msg_comparator;
 
-    auto cliprdr_params = d.default_channel_params();
-    cliprdr_params.validator_params.block_invalid_text_up = true;
-    // cliprdr_params.validator_params.block_invalid_text_down = true;
-    cliprdr_params.validator_params.max_file_size_rejected = 30;
-
-    auto channel_ctx = std::make_unique<ClipDataTest::ChannelCtx>(
+    auto [fdx_ctx, channel_ctx] = d.make_channel(
         msg_comparator,
-        nullptr,
-        cliprdr_params,
-        d, RDPVerbose::cliprdr /*| RDPVerbose::cliprdr_dump*/);
+        RDPVerbose::cliprdr, /*| RDPVerbose::cliprdr_dump*/
+        [](ClipboardVirtualChannelParams cliprdr_params) {
+            cliprdr_params.validator_params.text.block_invalid_text_upload = true;
+            // cliprdr_params.validator_params.block_invalid_text_down = true;
+            cliprdr_params.validator_params.file.max_blocked_file_size_rejected = 30;
+            return cliprdr_params;
+        }
+    );
 
     initialize_channel(msg_comparator, *channel_ctx, RDPECLIP::CB_USE_LONG_FORMAT_NAMES);
 

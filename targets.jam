@@ -49,14 +49,18 @@ exe rdpproxy :
   src/core/RDP/orders/remoteFx.o
   src/core/RDP/rdp_pointer.o
   src/core/RDP/rlgr.o
+  src/core/WinNT/file_attributes.o
   src/core/channels_authorizations.o
   src/core/check_files.o
   src/core/dynamic_channels_authorizations.o
   src/core/error.o
+  src/core/file_storage.o
+  src/core/file_validator/file_validator.o
   src/core/font.o
   src/core/log_certificate_status.o
   src/core/mainloop.o
   src/core/pid_file.o
+  src/core/protop/protop_utf16.o
   src/core/session.o
   src/core/session_events.o
   src/gdi/clip_from_cmd.o
@@ -115,12 +119,20 @@ exe rdpproxy :
   src/mod/rdp/rdp_negociation.o
   src/mod/rdp/rdp_negociation_data.o
   src/mod/vnc/dsm.o
-  src/mod/vnc/encoder/copyrect.o
-  src/mod/vnc/encoder/cursor.o
-  src/mod/vnc/encoder/hextile.o
-  src/mod/vnc/encoder/raw.o
-  src/mod/vnc/encoder/rre.o
-  src/mod/vnc/encoder/zrle.o
+  src/mod/vnc/encoders/copyrect.o
+  src/mod/vnc/encoders/cursor.o
+  src/mod/vnc/encoders/hextile.o
+  src/mod/vnc/encoders/raw.o
+  src/mod/vnc/encoders/rfb/cut_text.o
+  src/mod/vnc/encoders/rre.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/mod/vnc/encoders/zrle.o
+  src/mod/vnc/file_transfer/file_transfer_gui.o
+  src/mod/vnc/rdp_adapters/cliprdr_adapter.o
+  src/mod/vnc/rdp_adapters/cliprdr_file_list.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/mod/vnc/rdp_adapters/vnc_file_list.o
   src/mod/vnc/vnc.o
   src/system/linux/system/tls_check_certificate.o
   src/translation/gettext.o
@@ -145,6 +157,7 @@ exe rdpproxy :
   src/utils/d3des.o
   src/utils/drawable.o
   src/utils/drawable_pointer.o
+  src/utils/eta.o
   src/utils/fileutils.o
   src/utils/hexadecimal_string_to_buffer.o
   src/utils/hexdump.o
@@ -227,11 +240,15 @@ exe headlessclient :
   src/core/RDP/orders/remoteFx.o
   src/core/RDP/rdp_pointer.o
   src/core/RDP/rlgr.o
+  src/core/WinNT/file_attributes.o
   src/core/channels_authorizations.o
   src/core/dynamic_channels_authorizations.o
   src/core/error.o
+  src/core/file_storage.o
+  src/core/file_validator/file_validator.o
   src/core/font.o
   src/core/log_certificate_status.o
+  src/core/protop/protop_utf16.o
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
@@ -254,8 +271,11 @@ exe headlessclient :
   src/mod/internal/rail_module_host_mod.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
+  src/mod/internal/widget/edit.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/module_host.o
+  src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
   src/mod/rdp/channels/cliprdr_channel.o
@@ -266,12 +286,20 @@ exe headlessclient :
   src/mod/rdp/rdp_negociation.o
   src/mod/rdp/rdp_negociation_data.o
   src/mod/vnc/dsm.o
-  src/mod/vnc/encoder/copyrect.o
-  src/mod/vnc/encoder/cursor.o
-  src/mod/vnc/encoder/hextile.o
-  src/mod/vnc/encoder/raw.o
-  src/mod/vnc/encoder/rre.o
-  src/mod/vnc/encoder/zrle.o
+  src/mod/vnc/encoders/copyrect.o
+  src/mod/vnc/encoders/cursor.o
+  src/mod/vnc/encoders/hextile.o
+  src/mod/vnc/encoders/raw.o
+  src/mod/vnc/encoders/rfb/cut_text.o
+  src/mod/vnc/encoders/rre.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/mod/vnc/encoders/zrle.o
+  src/mod/vnc/file_transfer/file_transfer_gui.o
+  src/mod/vnc/rdp_adapters/cliprdr_adapter.o
+  src/mod/vnc/rdp_adapters/cliprdr_file_list.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/mod/vnc/rdp_adapters/vnc_file_list.o
   src/mod/vnc/vnc.o
   src/system/linux/system/tls_check_certificate.o
   src/translation/gettext.o
@@ -291,6 +319,7 @@ exe headlessclient :
   src/utils/d3des.o
   src/utils/drawable.o
   src/utils/drawable_pointer.o
+  src/utils/eta.o
   src/utils/fileutils.o
   src/utils/hexadecimal_string_to_buffer.o
   src/utils/hexdump.o
@@ -2069,6 +2098,26 @@ test-run tests/core/WMF/test_MetaFileFormat :
   $(REDEMPTION_TEST_PATH)/core/WMF/test_MetaFileFormat.cpp
 :
 ;
+test-run tests/core/WinNT/test_win_nt_chrono :
+  $(REDEMPTION_TEST_PATH)/core/WinNT/test_win_nt_chrono.cpp
+:
+;
+test-run tests/core/WinNT/test_win_nt_path :
+  $(REDEMPTION_TEST_PATH)/core/WinNT/test_win_nt_path.cpp
+:
+;
+test-run tests/core/file_validator/test_file_validator_service :
+  $(REDEMPTION_TEST_PATH)/core/file_validator/test_file_validator_service.cpp
+:
+  src/core/error.o
+  src/utils/fileutils.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  tests/includes/test_only/test_framework/working_directory.o
+  tests/includes/test_only/transport/test_transport.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
 test-run tests/core/test_buf64k :
   $(REDEMPTION_TEST_PATH)/core/test_buf64k.cpp
 :
@@ -2569,7 +2618,6 @@ test-run tests/mod/internal/test_close_mod :
   src/utils/bitmap_from_file.o
   src/utils/cfgloader.o
   src/utils/drawable.o
-  src/utils/fileutils.o
   src/utils/hexadecimal_string_to_buffer.o
   src/utils/hexdump.o
   src/utils/png.o
@@ -2581,7 +2629,6 @@ test-run tests/mod/internal/test_close_mod :
   tests/includes/test_only/front/fake_front.o
   tests/includes/test_only/gdi/test_graphic.o
   tests/includes/test_only/test_framework/check_img.o
-  tests/includes/test_only/test_framework/working_directory.o
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
@@ -3864,20 +3911,8 @@ test-run tests/mod/rdp/test_rdp_negociation_data :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/mod/test_file_validator_service :
-  $(REDEMPTION_TEST_PATH)/mod/test_file_validator_service.cpp
-:
-  src/core/error.o
-  src/utils/fileutils.o
-  src/utils/stacktrace.o
-  src/utils/strutils.o
-  tests/includes/test_only/test_framework/working_directory.o
-  tests/includes/test_only/transport/test_transport.o
-:
-  $(BOOST_STACKTRACE_LINKFLAGS)
-;
-test-run tests/mod/vnc/encoder/test_hextile :
-  $(REDEMPTION_TEST_PATH)/mod/vnc/encoder/test_hextile.cpp
+test-run tests/mod/vnc/encoders/test_hextile :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/encoders/test_hextile.cpp
 :
   crypto
   src/core/error.o
@@ -3890,8 +3925,8 @@ test-run tests/mod/vnc/encoder/test_hextile :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/mod/vnc/encoder/test_pointer_loader_vnc :
-  $(REDEMPTION_TEST_PATH)/mod/vnc/encoder/test_pointer_loader_vnc.cpp
+test-run tests/mod/vnc/encoders/test_pointer_loader_vnc :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/encoders/test_pointer_loader_vnc.cpp
 :
   crypto
   src/core/RDP/rdp_pointer.o
@@ -3901,8 +3936,18 @@ test-run tests/mod/vnc/encoder/test_pointer_loader_vnc :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/mod/vnc/encoder/test_zrle :
-  $(REDEMPTION_TEST_PATH)/mod/vnc/encoder/test_zrle.cpp
+test-run tests/mod/vnc/encoders/test_uvnc_file_transfer :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/encoders/test_uvnc_file_transfer.cpp
+:
+  src/core/WinNT/file_attributes.o
+  src/core/error.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/utils/stacktrace.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
+test-run tests/mod/vnc/encoders/test_zrle :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/encoders/test_zrle.cpp
 :
   crypto
   png
@@ -3927,6 +3972,110 @@ test-run tests/mod/vnc/encoder/test_zrle :
   $(BOOST_STACKTRACE_LINKFLAGS)
   <define>ZLIB_CONST
 ;
+test-run tests/mod/vnc/rdp_adapters/test_cliprdr_adapter :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/rdp_adapters/test_cliprdr_adapter.cpp
+:
+  src/core/WinNT/file_attributes.o
+  src/core/error.o
+  src/core/protop/protop_utf16.o
+  src/mod/vnc/rdp_adapters/cliprdr_adapter.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/utils/hexdump.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
+test-run tests/mod/vnc/rdp_adapters/test_cliprdr_file_list :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/rdp_adapters/test_cliprdr_file_list.cpp
+:
+  src/core/WinNT/file_attributes.o
+  src/core/error.o
+  src/core/protop/protop_utf16.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/mod/vnc/rdp_adapters/cliprdr_file_list.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
+test-run tests/mod/vnc/rdp_adapters/test_rdpeclip :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/rdp_adapters/test_rdpeclip.cpp
+:
+  src/core/WinNT/file_attributes.o
+  src/core/error.o
+  src/core/protop/protop_utf16.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
+test-run tests/mod/vnc/rdp_adapters/test_vnc_file_list :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/rdp_adapters/test_vnc_file_list.cpp
+:
+  src/core/WinNT/file_attributes.o
+  src/core/error.o
+  src/core/protop/protop_utf16.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/mod/vnc/rdp_adapters/vnc_file_list.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
+test-run tests/mod/vnc/test_file_transfer_gui :
+  $(REDEMPTION_TEST_PATH)/mod/vnc/test_file_transfer_gui.cpp
+:
+  crypto
+  png
+  app_path_test.o
+  src/core/RDP/RDPDrawable.o
+  src/core/RDP/rdp_pointer.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/draw_utils.o
+  src/gdi/graphic_api.o
+  src/gdi/text.o
+  src/keyboard/keylayouts.o
+  src/keyboard/keymap.o
+  src/mod/internal/copy_paste.o
+  src/mod/internal/widget/button.o
+  src/mod/internal/widget/edit.o
+  src/mod/internal/widget/label.o
+  src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
+  src/mod/vnc/file_transfer/file_transfer_gui.o
+  src/translation/gettext.o
+  src/translation/translation.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/bitmap_from_file.o
+  src/utils/drawable.o
+  src/utils/eta.o
+  src/utils/hexdump.o
+  src/utils/png.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+  tests/includes/test_only/core/font.o
+  tests/includes/test_only/gdi/test_graphic.o
+  tests/includes/test_only/test_framework/check_img.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
 test-run tests/mod/vnc/test_newline_convert :
   $(REDEMPTION_TEST_PATH)/mod/vnc/test_newline_convert.cpp
 :
@@ -3941,34 +4090,59 @@ test-run tests/mod/vnc/test_vnc :
   crypto
   openssl
   png
+  snappy
   z
   app_path_test.o
   src/RAIL/client_execute.o
+  src/capture/fdx_capture.o
   src/client/common/new_mod_vnc.o
   src/core/RDP/rdp_pointer.o
+  src/core/WinNT/file_attributes.o
   src/core/error.o
   src/core/font.o
   src/core/log_certificate_status.o
+  src/core/protop/protop_utf16.o
+  src/gdi/draw_utils.o
   src/gdi/graphic_api.o
   src/gdi/screen_functions.o
   src/gdi/text.o
   src/keyboard/keymap.o
   src/keyboard/keymapsym.o
+  src/mod/internal/copy_paste.o
+  src/mod/internal/widget/button.o
+  src/mod/internal/widget/edit.o
   src/mod/internal/widget/label.o
+  src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
   src/mod/vnc/dsm.o
-  src/mod/vnc/encoder/copyrect.o
-  src/mod/vnc/encoder/cursor.o
-  src/mod/vnc/encoder/hextile.o
-  src/mod/vnc/encoder/raw.o
-  src/mod/vnc/encoder/rre.o
-  src/mod/vnc/encoder/zrle.o
+  src/mod/vnc/encoders/copyrect.o
+  src/mod/vnc/encoders/cursor.o
+  src/mod/vnc/encoders/hextile.o
+  src/mod/vnc/encoders/raw.o
+  src/mod/vnc/encoders/rfb/cut_text.o
+  src/mod/vnc/encoders/rre.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/mod/vnc/encoders/zrle.o
+  src/mod/vnc/file_transfer/file_transfer_gui.o
+  src/mod/vnc/rdp_adapters/cliprdr_adapter.o
+  src/mod/vnc/rdp_adapters/cliprdr_file_list.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/mod/vnc/rdp_adapters/vnc_file_list.o
   src/mod/vnc/vnc.o
   src/system/linux/system/tls_check_certificate.o
+  src/translation/gettext.o
+  src/translation/translation.o
+  src/transport/crypto_transport.o
+  src/transport/file_transport.o
+  src/transport/mwrm_reader.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
   src/utils/d3des.o
+  src/utils/eta.o
   src/utils/fileutils.o
+  src/utils/hexadecimal_string_to_buffer.o
   src/utils/hexdump.o
   src/utils/rle.o
   src/utils/stacktrace.o
@@ -4590,6 +4764,10 @@ test-run tests/utils/sugar/test_static_array_to_hexadecimal_chars :
   $(REDEMPTION_TEST_PATH)/utils/sugar/test_static_array_to_hexadecimal_chars.cpp
 :
 ;
+test-run tests/utils/sugar/test_static_string_from_enum_flags :
+  $(REDEMPTION_TEST_PATH)/utils/sugar/test_static_string_from_enum_flags.cpp
+:
+;
 test-run tests/utils/sugar/test_static_vector :
   $(REDEMPTION_TEST_PATH)/utils/sugar/test_static_vector.cpp
 :
@@ -4770,6 +4948,12 @@ test-run tests/utils/test_error_message_ctx :
   $(REDEMPTION_TEST_PATH)/utils/test_error_message_ctx.cpp
 :
 ;
+test-run tests/utils/test_eta :
+  $(REDEMPTION_TEST_PATH)/utils/test_eta.cpp
+:
+  src/utils/eta.o
+:
+;
 test-run tests/utils/test_file_permissions :
   $(REDEMPTION_TEST_PATH)/utils/test_file_permissions.cpp
 :
@@ -4790,6 +4974,10 @@ test-run tests/utils/test_hexadecimal_string_to_buffer :
   $(REDEMPTION_TEST_PATH)/utils/test_hexadecimal_string_to_buffer.cpp
 :
   src/utils/hexadecimal_string_to_buffer.o
+:
+;
+test-run tests/utils/test_human_size :
+  $(REDEMPTION_TEST_PATH)/utils/test_human_size.cpp
 :
 ;
 test-run tests/utils/test_id_manager :
@@ -5044,14 +5232,18 @@ obj src/core/RDP/nla/kerberos.o : $(REDEMPTION_SRC_PATH)/core/RDP/nla/kerberos.c
 obj src/core/RDP/orders/remoteFx.o : $(REDEMPTION_SRC_PATH)/core/RDP/orders/remoteFx.cpp ;
 obj src/core/RDP/rdp_pointer.o : $(REDEMPTION_SRC_PATH)/core/RDP/rdp_pointer.cpp ;
 obj src/core/RDP/rlgr.o : $(REDEMPTION_SRC_PATH)/core/RDP/rlgr.cpp ;
+obj src/core/WinNT/file_attributes.o : $(REDEMPTION_SRC_PATH)/core/WinNT/file_attributes.cpp ;
 obj src/core/channels_authorizations.o : $(REDEMPTION_SRC_PATH)/core/channels_authorizations.cpp ;
 obj src/core/check_files.o : $(REDEMPTION_SRC_PATH)/core/check_files.cpp ;
 obj src/core/dynamic_channels_authorizations.o : $(REDEMPTION_SRC_PATH)/core/dynamic_channels_authorizations.cpp ;
 obj src/core/error.o : $(REDEMPTION_SRC_PATH)/core/error.cpp : $(BOOST_STACKTRACE_CXXFLAGS) ;
+obj src/core/file_storage.o : $(REDEMPTION_SRC_PATH)/core/file_storage.cpp ;
+obj src/core/file_validator/file_validator.o : $(REDEMPTION_SRC_PATH)/core/file_validator/file_validator.cpp ;
 obj src/core/font.o : $(REDEMPTION_SRC_PATH)/core/font.cpp ;
 obj src/core/log_certificate_status.o : $(REDEMPTION_SRC_PATH)/core/log_certificate_status.cpp ;
 obj src/core/mainloop.o : $(REDEMPTION_SRC_PATH)/core/mainloop.cpp ;
 obj src/core/pid_file.o : $(REDEMPTION_SRC_PATH)/core/pid_file.cpp ;
+obj src/core/protop/protop_utf16.o : $(REDEMPTION_SRC_PATH)/core/protop/protop_utf16.cpp ;
 obj src/core/session.o : $(REDEMPTION_SRC_PATH)/core/session.cpp ;
 obj src/core/session_events.o : $(REDEMPTION_SRC_PATH)/core/session_events.cpp ;
 obj src/gdi/clip_from_cmd.o : $(REDEMPTION_SRC_PATH)/gdi/clip_from_cmd.cpp ;
@@ -5130,12 +5322,20 @@ obj src/mod/rdp/channels/sespro_clipboard_based_launcher.o : $(REDEMPTION_SRC_PA
 obj src/mod/rdp/rdp_negociation.o : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation.cpp ;
 obj src/mod/rdp/rdp_negociation_data.o : $(REDEMPTION_SRC_PATH)/mod/rdp/rdp_negociation_data.cpp ;
 obj src/mod/vnc/dsm.o : $(REDEMPTION_SRC_PATH)/mod/vnc/dsm.cpp : <define>ZLIB_CONST ;
-obj src/mod/vnc/encoder/copyrect.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/copyrect.cpp ;
-obj src/mod/vnc/encoder/cursor.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/cursor.cpp ;
-obj src/mod/vnc/encoder/hextile.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/hextile.cpp ;
-obj src/mod/vnc/encoder/raw.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/raw.cpp ;
-obj src/mod/vnc/encoder/rre.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/rre.cpp ;
-obj src/mod/vnc/encoder/zrle.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoder/zrle.cpp : <define>ZLIB_CONST ;
+obj src/mod/vnc/encoders/copyrect.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/copyrect.cpp ;
+obj src/mod/vnc/encoders/cursor.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/cursor.cpp ;
+obj src/mod/vnc/encoders/hextile.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/hextile.cpp ;
+obj src/mod/vnc/encoders/raw.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/raw.cpp ;
+obj src/mod/vnc/encoders/rfb/cut_text.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/rfb/cut_text.cpp ;
+obj src/mod/vnc/encoders/rre.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/rre.cpp ;
+obj src/mod/vnc/encoders/uvnc_file_transfer.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/uvnc_file_transfer.cpp ;
+obj src/mod/vnc/encoders/zrle.o : $(REDEMPTION_SRC_PATH)/mod/vnc/encoders/zrle.cpp : <define>ZLIB_CONST ;
+obj src/mod/vnc/file_transfer/file_transfer_gui.o : $(REDEMPTION_SRC_PATH)/mod/vnc/file_transfer/file_transfer_gui.cpp ;
+obj src/mod/vnc/rdp_adapters/cliprdr_adapter.o : $(REDEMPTION_SRC_PATH)/mod/vnc/rdp_adapters/cliprdr_adapter.cpp ;
+obj src/mod/vnc/rdp_adapters/cliprdr_file_list.o : $(REDEMPTION_SRC_PATH)/mod/vnc/rdp_adapters/cliprdr_file_list.cpp ;
+obj src/mod/vnc/rdp_adapters/rdp_channel.o : $(REDEMPTION_SRC_PATH)/mod/vnc/rdp_adapters/rdp_channel.cpp ;
+obj src/mod/vnc/rdp_adapters/rdpeclip.o : $(REDEMPTION_SRC_PATH)/mod/vnc/rdp_adapters/rdpeclip.cpp ;
+obj src/mod/vnc/rdp_adapters/vnc_file_list.o : $(REDEMPTION_SRC_PATH)/mod/vnc/rdp_adapters/vnc_file_list.cpp ;
 obj src/mod/vnc/vnc.o : $(REDEMPTION_SRC_PATH)/mod/vnc/vnc.cpp : <define>ZLIB_CONST ;
 obj src/proxy_recorder/proxy_recorder.o : $(REDEMPTION_SRC_PATH)/proxy_recorder/proxy_recorder.cpp ;
 obj src/system/linux/system/tls_check_certificate.o : $(REDEMPTION_SRC_PATH)/system/linux/system/tls_check_certificate.cpp ;
@@ -5164,6 +5364,7 @@ obj src/utils/crypto/ssl_mod_exp_direct.o : $(REDEMPTION_SRC_PATH)/utils/crypto/
 obj src/utils/d3des.o : $(REDEMPTION_SRC_PATH)/utils/d3des.cpp ;
 obj src/utils/drawable.o : $(REDEMPTION_SRC_PATH)/utils/drawable.cpp ;
 obj src/utils/drawable_pointer.o : $(REDEMPTION_SRC_PATH)/utils/drawable_pointer.cpp ;
+obj src/utils/eta.o : $(REDEMPTION_SRC_PATH)/utils/eta.cpp ;
 obj src/utils/fileutils.o : $(REDEMPTION_SRC_PATH)/utils/fileutils.cpp ;
 obj src/utils/hexadecimal_string_to_buffer.o : $(REDEMPTION_SRC_PATH)/utils/hexadecimal_string_to_buffer.cpp ;
 obj src/utils/hexdump.o : $(REDEMPTION_SRC_PATH)/utils/hexdump.cpp ;
@@ -5178,6 +5379,7 @@ obj src/utils/primitives/primitives_sse2.o : $(REDEMPTION_SRC_PATH)/utils/primit
 obj src/utils/rle.o : $(REDEMPTION_SRC_PATH)/utils/rle.cpp ;
 obj src/utils/scaled_image24.o : $(REDEMPTION_SRC_PATH)/utils/scaled_image24.cpp ;
 obj src/utils/set_exception_handler_pretty_message.o : $(REDEMPTION_SRC_PATH)/utils/set_exception_handler_pretty_message.cpp ;
+obj src/utils/spooled_temporary_file.o : $(REDEMPTION_SRC_PATH)/utils/spooled_temporary_file.cpp ;
 obj src/utils/stacktrace.o : $(REDEMPTION_SRC_PATH)/utils/stacktrace.cpp : $(BOOST_STACKTRACE_CXXFLAGS) ;
 obj src/utils/strutils.o : $(REDEMPTION_SRC_PATH)/utils/strutils.cpp ;
 obj src/utils/sugar/multisz.o : $(REDEMPTION_SRC_PATH)/utils/sugar/multisz.cpp ;
@@ -5324,6 +5526,9 @@ alias test_x224 : tests/core/RDP/test_x224 ;
 alias test_audio_output : tests/core/RDPEA/test_audio_output ;
 alias test_MessageSyntax : tests/core/SMB2/test_MessageSyntax ;
 alias test_MetaFileFormat : tests/core/WMF/test_MetaFileFormat ;
+alias test_win_nt_chrono : tests/core/WinNT/test_win_nt_chrono ;
+alias test_win_nt_path : tests/core/WinNT/test_win_nt_path ;
+alias test_file_validator_service : tests/core/file_validator/test_file_validator_service ;
 alias test_buf64k : tests/core/test_buf64k ;
 alias test_channel_list : tests/core/test_channel_list ;
 alias test_channel_names : tests/core/test_channel_names ;
@@ -5390,10 +5595,15 @@ alias test_sespro_channel_params : tests/mod/rdp/channels/test_sespro_channel_pa
 alias test_virtual_channel_filter : tests/mod/rdp/channels/test_virtual_channel_filter ;
 alias test_rdp : tests/mod/rdp/test_rdp ;
 alias test_rdp_negociation_data : tests/mod/rdp/test_rdp_negociation_data ;
-alias test_file_validator_service : tests/mod/test_file_validator_service ;
-alias test_hextile : tests/mod/vnc/encoder/test_hextile ;
-alias test_pointer_loader_vnc : tests/mod/vnc/encoder/test_pointer_loader_vnc ;
-alias test_zrle : tests/mod/vnc/encoder/test_zrle ;
+alias test_hextile : tests/mod/vnc/encoders/test_hextile ;
+alias test_pointer_loader_vnc : tests/mod/vnc/encoders/test_pointer_loader_vnc ;
+alias test_uvnc_file_transfer : tests/mod/vnc/encoders/test_uvnc_file_transfer ;
+alias test_zrle : tests/mod/vnc/encoders/test_zrle ;
+alias test_cliprdr_adapter : tests/mod/vnc/rdp_adapters/test_cliprdr_adapter ;
+alias test_cliprdr_file_list : tests/mod/vnc/rdp_adapters/test_cliprdr_file_list ;
+alias test_rdpeclip : tests/mod/vnc/rdp_adapters/test_rdpeclip ;
+alias test_vnc_file_list : tests/mod/vnc/rdp_adapters/test_vnc_file_list ;
+alias test_file_transfer_gui : tests/mod/vnc/test_file_transfer_gui ;
 alias test_newline_convert : tests/mod/vnc/test_newline_convert ;
 alias test_vnc : tests/mod/vnc/test_vnc ;
 alias test_extract_user_domain : tests/proxy_recorder/test_extract_user_domain ;
@@ -5447,6 +5657,7 @@ alias test_multisz : tests/utils/sugar/test_multisz ;
 alias test_range : tests/utils/sugar/test_range ;
 alias test_split : tests/utils/sugar/test_split ;
 alias test_static_array_to_hexadecimal_chars : tests/utils/sugar/test_static_array_to_hexadecimal_chars ;
+alias test_static_string_from_enum_flags : tests/utils/sugar/test_static_string_from_enum_flags ;
 alias test_static_vector : tests/utils/sugar/test_static_vector ;
 alias test_unique_fd : tests/utils/sugar/test_unique_fd ;
 alias unordered_erase : tests/utils/sugar/unordered_erase ;
@@ -5470,10 +5681,12 @@ alias test_drawable : tests/utils/test_drawable ;
 alias test_drawable_pointer : tests/utils/test_drawable_pointer ;
 alias test_ellipse : tests/utils/test_ellipse ;
 alias test_error_message_ctx : tests/utils/test_error_message_ctx ;
+alias test_eta : tests/utils/test_eta ;
 alias test_file_permissions : tests/utils/test_file_permissions ;
 alias test_fileutils : tests/utils/test_fileutils ;
 alias test_get_printable_password : tests/utils/test_get_printable_password ;
 alias test_hexadecimal_string_to_buffer : tests/utils/test_hexadecimal_string_to_buffer ;
+alias test_human_size : tests/utils/test_human_size ;
 alias test_id_manager : tests/utils/test_id_manager ;
 alias test_ip : tests/utils/test_ip ;
 alias test_key_qvalue_pairs : tests/utils/test_key_qvalue_pairs ;
@@ -5680,6 +5893,13 @@ alias tests/core/SMB2.norec :
 alias tests/core/WMF.norec :
   tests/core/WMF/test_MetaFileFormat
 ;
+alias tests/core/WinNT.norec :
+  tests/core/WinNT/test_win_nt_chrono
+  tests/core/WinNT/test_win_nt_path
+;
+alias tests/core/file_validator.norec :
+  tests/core/file_validator/test_file_validator_service
+;
 alias tests/core.norec :
   tests/core/test_buf64k
   tests/core/test_channel_list
@@ -5766,15 +5986,20 @@ alias tests/mod/rdp.norec :
   tests/mod/rdp/test_rdp
   tests/mod/rdp/test_rdp_negociation_data
 ;
-alias tests/mod.norec :
-  tests/mod/test_file_validator_service
+alias tests/mod/vnc/encoders.norec :
+  tests/mod/vnc/encoders/test_hextile
+  tests/mod/vnc/encoders/test_pointer_loader_vnc
+  tests/mod/vnc/encoders/test_uvnc_file_transfer
+  tests/mod/vnc/encoders/test_zrle
 ;
-alias tests/mod/vnc/encoder.norec :
-  tests/mod/vnc/encoder/test_hextile
-  tests/mod/vnc/encoder/test_pointer_loader_vnc
-  tests/mod/vnc/encoder/test_zrle
+alias tests/mod/vnc/rdp_adapters.norec :
+  tests/mod/vnc/rdp_adapters/test_cliprdr_adapter
+  tests/mod/vnc/rdp_adapters/test_cliprdr_file_list
+  tests/mod/vnc/rdp_adapters/test_rdpeclip
+  tests/mod/vnc/rdp_adapters/test_vnc_file_list
 ;
 alias tests/mod/vnc.norec :
+  tests/mod/vnc/test_file_transfer_gui
   tests/mod/vnc/test_newline_convert
   tests/mod/vnc/test_vnc
 ;
@@ -5848,6 +6073,7 @@ alias tests/utils/sugar.norec :
   tests/utils/sugar/test_range
   tests/utils/sugar/test_split
   tests/utils/sugar/test_static_array_to_hexadecimal_chars
+  tests/utils/sugar/test_static_string_from_enum_flags
   tests/utils/sugar/test_static_vector
   tests/utils/sugar/test_unique_fd
   tests/utils/sugar/unordered_erase
@@ -5873,10 +6099,12 @@ alias tests/utils.norec :
   tests/utils/test_drawable_pointer
   tests/utils/test_ellipse
   tests/utils/test_error_message_ctx
+  tests/utils/test_eta
   tests/utils/test_file_permissions
   tests/utils/test_fileutils
   tests/utils/test_get_printable_password
   tests/utils/test_hexadecimal_string_to_buffer
+  tests/utils/test_human_size
   tests/utils/test_id_manager
   tests/utils/test_ip
   tests/utils/test_key_qvalue_pairs
@@ -5927,7 +6155,6 @@ alias tests :
   tests/headlessclient
   tests/keyboard
   tests/lib
-  tests/mod
   tests/proxy_recorder
   tests/server
   tests/translation
@@ -5973,6 +6200,8 @@ alias tests/core :
   tests/core/RDPEA
   tests/core/SMB2
   tests/core/WMF
+  tests/core/WinNT
+  tests/core/file_validator
 ;
 alias tests/core/RDP/caches :
   tests/core/RDP/caches.norec
@@ -6024,6 +6253,12 @@ alias tests/core/SMB2 :
 alias tests/core/WMF :
   tests/core/WMF.norec
 ;
+alias tests/core/WinNT :
+  tests/core/WinNT.norec
+;
+alias tests/core/file_validator :
+  tests/core/file_validator.norec
+;
 alias tests/front :
   tests/front.norec
 ;
@@ -6044,7 +6279,6 @@ alias tests/mod/internal :
   tests/mod/internal/widget
 ;
 alias tests/mod :
-  tests/mod.norec
   tests/mod/internal
   tests/mod/rdp
   tests/mod/vnc
@@ -6059,12 +6293,16 @@ alias tests/mod/rdp :
   tests/mod/rdp.norec
   tests/mod/rdp/channels
 ;
-alias tests/mod/vnc/encoder :
-  tests/mod/vnc/encoder.norec
+alias tests/mod/vnc/encoders :
+  tests/mod/vnc/encoders.norec
 ;
 alias tests/mod/vnc :
   tests/mod/vnc.norec
-  tests/mod/vnc/encoder
+  tests/mod/vnc/encoders
+  tests/mod/vnc/rdp_adapters
+;
+alias tests/mod/vnc/rdp_adapters :
+  tests/mod/vnc/rdp_adapters.norec
 ;
 alias tests/proxy_recorder :
   tests/proxy_recorder.norec
@@ -6158,14 +6396,18 @@ explicit
   src/core/RDP/orders/remoteFx.o
   src/core/RDP/rdp_pointer.o
   src/core/RDP/rlgr.o
+  src/core/WinNT/file_attributes.o
   src/core/channels_authorizations.o
   src/core/check_files.o
   src/core/dynamic_channels_authorizations.o
   src/core/error.o
+  src/core/file_storage.o
+  src/core/file_validator/file_validator.o
   src/core/font.o
   src/core/log_certificate_status.o
   src/core/mainloop.o
   src/core/pid_file.o
+  src/core/protop/protop_utf16.o
   src/core/session.o
   src/core/session_events.o
   src/gdi/clip_from_cmd.o
@@ -6244,12 +6486,20 @@ explicit
   src/mod/rdp/rdp_negociation.o
   src/mod/rdp/rdp_negociation_data.o
   src/mod/vnc/dsm.o
-  src/mod/vnc/encoder/copyrect.o
-  src/mod/vnc/encoder/cursor.o
-  src/mod/vnc/encoder/hextile.o
-  src/mod/vnc/encoder/raw.o
-  src/mod/vnc/encoder/rre.o
-  src/mod/vnc/encoder/zrle.o
+  src/mod/vnc/encoders/copyrect.o
+  src/mod/vnc/encoders/cursor.o
+  src/mod/vnc/encoders/hextile.o
+  src/mod/vnc/encoders/raw.o
+  src/mod/vnc/encoders/rfb/cut_text.o
+  src/mod/vnc/encoders/rre.o
+  src/mod/vnc/encoders/uvnc_file_transfer.o
+  src/mod/vnc/encoders/zrle.o
+  src/mod/vnc/file_transfer/file_transfer_gui.o
+  src/mod/vnc/rdp_adapters/cliprdr_adapter.o
+  src/mod/vnc/rdp_adapters/cliprdr_file_list.o
+  src/mod/vnc/rdp_adapters/rdp_channel.o
+  src/mod/vnc/rdp_adapters/rdpeclip.o
+  src/mod/vnc/rdp_adapters/vnc_file_list.o
   src/mod/vnc/vnc.o
   src/proxy_recorder/proxy_recorder.o
   src/system/linux/system/tls_check_certificate.o
@@ -6278,6 +6528,7 @@ explicit
   src/utils/d3des.o
   src/utils/drawable.o
   src/utils/drawable_pointer.o
+  src/utils/eta.o
   src/utils/fileutils.o
   src/utils/hexadecimal_string_to_buffer.o
   src/utils/hexdump.o
@@ -6292,6 +6543,7 @@ explicit
   src/utils/rle.o
   src/utils/scaled_image24.o
   src/utils/set_exception_handler_pretty_message.o
+  src/utils/spooled_temporary_file.o
   src/utils/stacktrace.o
   src/utils/strutils.o
   src/utils/sugar/multisz.o
@@ -6440,6 +6692,9 @@ explicit
   test_audio_output
   test_MessageSyntax
   test_MetaFileFormat
+  test_win_nt_chrono
+  test_win_nt_path
+  test_file_validator_service
   test_buf64k
   test_channel_list
   test_channel_names
@@ -6506,10 +6761,15 @@ explicit
   test_virtual_channel_filter
   test_rdp
   test_rdp_negociation_data
-  test_file_validator_service
   test_hextile
   test_pointer_loader_vnc
+  test_uvnc_file_transfer
   test_zrle
+  test_cliprdr_adapter
+  test_cliprdr_file_list
+  test_rdpeclip
+  test_vnc_file_list
+  test_file_transfer_gui
   test_newline_convert
   test_vnc
   test_extract_user_domain
@@ -6563,6 +6823,7 @@ explicit
   test_range
   test_split
   test_static_array_to_hexadecimal_chars
+  test_static_string_from_enum_flags
   test_static_vector
   test_unique_fd
   unordered_erase
@@ -6586,10 +6847,12 @@ explicit
   test_drawable_pointer
   test_ellipse
   test_error_message_ctx
+  test_eta
   test_file_permissions
   test_fileutils
   test_get_printable_password
   test_hexadecimal_string_to_buffer
+  test_human_size
   test_id_manager
   test_ip
   test_key_qvalue_pairs
@@ -6648,6 +6911,8 @@ explicit
   tests/core/RDPEA.norec
   tests/core/SMB2.norec
   tests/core/WMF.norec
+  tests/core/WinNT.norec
+  tests/core/file_validator.norec
   tests/core.norec
   tests/front.norec
   tests/gdi.norec
@@ -6658,8 +6923,8 @@ explicit
   tests/mod/internal/widget.norec
   tests/mod/rdp/channels.norec
   tests/mod/rdp.norec
-  tests/mod.norec
-  tests/mod/vnc/encoder.norec
+  tests/mod/vnc/encoders.norec
+  tests/mod/vnc/rdp_adapters.norec
   tests/mod/vnc.norec
   tests/proxy_recorder.norec
   tests/server.norec
@@ -6703,6 +6968,8 @@ explicit
   tests/core/RDPEA
   tests/core/SMB2
   tests/core/WMF
+  tests/core/WinNT
+  tests/core/file_validator
   tests/front
   tests/gdi
   tests/headlessclient
@@ -6713,8 +6980,9 @@ explicit
   tests/mod/internal/widget
   tests/mod/rdp/channels
   tests/mod/rdp
-  tests/mod/vnc/encoder
+  tests/mod/vnc/encoders
   tests/mod/vnc
+  tests/mod/vnc/rdp_adapters
   tests/proxy_recorder
   tests/server
   tests/system/linux/system

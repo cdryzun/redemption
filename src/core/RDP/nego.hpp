@@ -116,7 +116,7 @@ public:
     void set_lb_info(uint8_t * lb_info, size_t lb_info_length);
 
     RdpNego(
-        std::string_view username, const char * target_host,
+        chars_view username, const char * target_host,
         bool nla, const bool krb, const bool nla_ntlm,
         const bool tls_only, const bool rdp_legacy, bool admin_mode,
         Random & rand, const TimeBase & time_base,

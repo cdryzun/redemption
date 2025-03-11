@@ -28,13 +28,13 @@
 
 RED_AUTO_TEST_CASE(TestFormatDataResponsePDUEmitFileList)
 {
-    StaticOutStream<1024> ou_stream_fileList;
+    StaticOutStream<1024> out_stream_fileList;
 
     const int cItems = 1;
     RDPECLIP::FormatDataResponsePDU_FileList fdr(cItems);
-    fdr.emit(ou_stream_fileList);
+    fdr.emit(out_stream_fileList);
 
-    RED_CHECK(ou_stream_fileList.get_produced_bytes() == "\x01\x00\x00\x00"_av);
+    RED_CHECK(out_stream_fileList.get_produced_bytes() == "\x01\x00\x00\x00"_av);
 }
 
 RED_AUTO_TEST_CASE(TestFormatDataResponsePDURecvFileList)
@@ -83,7 +83,7 @@ RED_AUTO_TEST_CASE(TestFormatDataResponsePDURecvFileList)
 RED_AUTO_TEST_CASE(TestFormatDataResponsePDUEmitFilePic)
 {
     // emit_metaFilePic
-    StaticOutStream<1600> ou_stream_metaFilePic;
+    StaticOutStream<1600> out_stream_metaFilePic;
 
     int height=73;
     int width=220;
@@ -92,7 +92,7 @@ RED_AUTO_TEST_CASE(TestFormatDataResponsePDUEmitFilePic)
     const double ARBITRARY_SCALE = 40;
 
     RDPECLIP::FormatDataResponsePDU_MetaFilePic fdr(data_lenght, width, height, bpp, ARBITRARY_SCALE);
-    fdr.emit(ou_stream_metaFilePic);
+    fdr.emit(out_stream_metaFilePic);
 
     auto metafilepic_out_data =
         "\x08\x00\x00\x00\x60\x22\x00\x00"
@@ -105,7 +105,7 @@ RED_AUTO_TEST_CASE(TestFormatDataResponsePDUEmitFilePic)
         "\x34\xbc\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         "\x00\x00\x00\x00"_av;
 
-    RED_CHECK(metafilepic_out_data == ou_stream_metaFilePic.get_produced_bytes());
+    RED_CHECK(metafilepic_out_data == out_stream_metaFilePic.get_produced_bytes());
 }
 
 RED_AUTO_TEST_CASE(TestFormatDataResponsePDURecvFilePic)

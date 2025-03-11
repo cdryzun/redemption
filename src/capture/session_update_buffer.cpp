@@ -20,7 +20,7 @@ Author(s): Jonathan Poelen
 
 #include "capture/session_update_buffer.hpp"
 #include "utils/sugar/numerics/safe_conversions.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 
 #include <cstring>
 
@@ -88,7 +88,7 @@ void SessionUpdateBuffer::append(MonotonicTimePoint time, LogId id, KVLogList kv
 
     auto push_s = [&s](chars_view chars) {
         auto str = chars_view{s, chars.size()};
-        s = byte_copy(s, chars);
+        s = bytes_copy_and_advance(s, chars);
         return str;
     };
 

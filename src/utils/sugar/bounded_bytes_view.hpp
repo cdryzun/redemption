@@ -32,7 +32,7 @@ struct writable_bounded_bytes_view : writable_bounded_array_view<uint8_t, AtLeas
     using writable_bounded_u8_array_view = writable_bounded_array_view<uint8_t, AtLeast, AtMost>;
     using writable_bounded_chars_view = writable_bounded_array_view<char, AtLeast, AtMost>;
 
-    writable_bounded_bytes_view() = delete;
+    writable_bounded_bytes_view() noexcept requires(AtLeast == 0) = default;
     writable_bounded_bytes_view(writable_bounded_bytes_view &&) noexcept = default;
     writable_bounded_bytes_view(writable_bounded_bytes_view const &) noexcept = default;
     writable_bounded_bytes_view & operator=(writable_bounded_bytes_view &&) noexcept = default;
@@ -63,13 +63,25 @@ struct writable_bounded_bytes_view : writable_bounded_array_view<uint8_t, AtLeas
     {}
 
     template<class U, typename std::enable_if<
-      std::is_constructible<writable_bounded_chars_view, U&&>::value, bool
+      std::is_constructible<writable_bounded_chars_view, U&&>::value
+        && !std::is_constructible<writable_bounded_u8_array_view, U&&>::value, bool
     >::type = 1>
     explicit(!detail::is_writable_view_v<U>)
     constexpr writable_bounded_bytes_view(U && a) noexcept /*NOLINT*/
     : writable_bounded_bytes_view(writable_bounded_chars_view(a))
     {}
 
+    template<class UInt>
+        requires std::is_unsigned_v<UInt>
+    constexpr writable_bounded_bytes_view(char * p, UInt len) noexcept
+        : writable_bounded_bytes_view(writable_bounded_chars_view{p, len})
+    {}
+
+    template<class UInt>
+        requires std::is_unsigned_v<UInt>
+    constexpr writable_bounded_bytes_view(uint8_t * p, UInt len) noexcept
+        : writable_bounded_u8_array_view{p, len}
+    {}
 
     [[nodiscard]] char       * as_charp() noexcept { return char_ptr_cast(this->data()); }
     [[nodiscard]] char const * as_charp() const noexcept { return char_ptr_cast(this->data()); }
@@ -78,18 +90,24 @@ struct writable_bounded_bytes_view : writable_bounded_array_view<uint8_t, AtLeas
 
     [[nodiscard]] writable_bounded_chars_view as_chars() noexcept
     {
-        return writable_bounded_chars_view::assumed(this->as_charp());
+        return writable_bounded_chars_view::assumed(this->as_charp(), this->size());
     }
 
     [[nodiscard]] bounded_array_view<char, AtLeast, AtMost> as_chars() const noexcept
     {
-        return bounded_array_view<char, AtLeast, AtMost>::assumed(this->as_charp());
+        return bounded_array_view<char, AtLeast, AtMost>::assumed(this->as_charp(), this->size());
     }
 };
 
 template<class T, class Bounds = sequence_to_size_bounds_t<T>>
 writable_bounded_bytes_view(T&&) -> writable_bounded_bytes_view<
     Bounds::at_least, Bounds::at_most
+>;
+
+template<class T, class UInt>
+    requires std::is_unsigned_v<UInt>
+writable_bounded_bytes_view(T * p, UInt len) -> writable_bounded_bytes_view<
+    0, static_cast<UInt>(~UInt{})
 >;
 
 namespace detail
@@ -108,7 +126,7 @@ struct bounded_bytes_view : bounded_array_view<uint8_t, AtLeast, AtMost>
     using bounded_u8_array_view = bounded_array_view<uint8_t, AtLeast, AtMost>;
     using bounded_chars_view = bounded_array_view<char, AtLeast, AtMost>;
 
-    bounded_bytes_view() = delete;
+    bounded_bytes_view() noexcept requires(AtLeast == 0) = default;
     bounded_bytes_view(bounded_bytes_view &&) noexcept = default;
     bounded_bytes_view(bounded_bytes_view const &) noexcept = default;
     bounded_bytes_view & operator=(bounded_bytes_view &&) noexcept = default;
@@ -133,10 +151,23 @@ struct bounded_bytes_view : bounded_array_view<uint8_t, AtLeast, AtMost>
     {}
 
     template<class U, typename std::enable_if<
-      std::is_constructible<bounded_chars_view, U&&>::value, bool
+      std::is_constructible<bounded_chars_view, U&&>::value
+        && !std::is_constructible<bounded_u8_array_view, U&&>::value, bool
     >::type = 1>
     constexpr bounded_bytes_view(U && a) noexcept(noexcept(bounded_chars_view(a))) /*NOLINT*/
     : bounded_bytes_view(bounded_chars_view(a))
+    {}
+
+    template<class UInt>
+        requires std::is_unsigned_v<UInt>
+    constexpr bounded_bytes_view(char * p, UInt len) noexcept
+        : bounded_bytes_view(bounded_chars_view{p, len})
+    {}
+
+    template<class UInt>
+        requires std::is_unsigned_v<UInt>
+    constexpr bounded_bytes_view(uint8_t * p, UInt len) noexcept
+        : bounded_u8_array_view{p, len}
     {}
 
 
@@ -145,13 +176,19 @@ struct bounded_bytes_view : bounded_array_view<uint8_t, AtLeast, AtMost>
 
     [[nodiscard]] bounded_chars_view as_chars() const noexcept
     {
-        return bounded_chars_view::assumed(this->as_charp());
+        return bounded_chars_view::assumed(this->as_charp(), this->size());
     }
 };
 
 template<class T, class Bounds = sequence_to_size_bounds_t<T>>
 bounded_bytes_view(T&&) -> bounded_bytes_view<
     Bounds::at_least, Bounds::at_most
+>;
+
+template<class T, class UInt>
+    requires std::is_unsigned_v<UInt>
+bounded_bytes_view(T * p, UInt len) -> bounded_bytes_view<
+    0, static_cast<UInt>(~UInt{})
 >;
 
 

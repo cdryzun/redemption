@@ -75,7 +75,10 @@ _.set_sections({
     "protocol",
     "session_probe",
     "server_cert",
+
     "mod_vnc",
+    "vnc_clipboard",
+    "vnc_file_transfer",
 
     "session_log",
     "ocr",
@@ -231,6 +234,7 @@ _.display_name_word_replacement_table = {
     {"ffmpeg", "FFmpeg"},
 
     {"cpu", "CPU"},
+    {"gui", "GUI"},
     {"ui", "UI"},
 };
 
@@ -2253,22 +2257,6 @@ _.section(names{"server_cert"}, [&]
 
 _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
 {
-    _.member(MemberInfo{
-        .name = "clipboard_up",
-        .value = value(false),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable)),
-        .desc = "Check this option to enable the clipboard upload (from client to target server).\n"
-        "This only supports text data clipboard (not files).",
-    });
-
-    _.member(MemberInfo{
-        .name = "clipboard_down",
-        .value = value(false),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable)),
-        .desc = "Check this option to enable the clipboard download (from target server to client).\n"
-        "This only supports text data clipboard (not files).",
-    });
-
     // TODO should be connpolicy and named disabled_encodings (disabled_orders ?)
     _.member(MemberInfo{
         .name = "encodings",
@@ -2289,28 +2277,6 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .name = "support_cursor_pseudo_encoding",
         .value = value(true),
         .spec = connpolicy(vnc, loggable),
-    });
-
-    _.member(MemberInfo{
-        .name = names{
-            .all = "server_clipboard_encoding_type",
-            .acl = "vnc_server_clipboard_encoding_type"
-        },
-        .value = enum_as_string(ClipboardEncodingType::latin1),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
-        .desc = "VNC target server clipboard text data encoding type.",
-    });
-
-    _.member(MemberInfo{
-        .name = names{
-            .all = "bogus_clipboard_infinite_loop",
-            .acl = "vnc_bogus_clipboard_infinite_loop"
-        },
-        .value = enum_as_int(VncBogusClipboardInfiniteLoop::delayed),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
-        .desc =
-            "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\n"
-            "This option indicates the strategy to adopt in such situations."
     });
 
     _.member(MemberInfo{
@@ -2439,6 +2405,97 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
             "  - x509vnc\n"
             "  - x509plain",
     });
+
+    _.member(MemberInfo{
+        .name = "clipboard_up",
+        .value = value(false),
+        .spec = spec::external({SpecAttributes::hidden}),
+    });
+
+    _.member(MemberInfo{
+        .name = "clipboard_down",
+        .value = value(false),
+        .spec = spec::external({SpecAttributes::hidden}),
+    });
+});
+
+_.section(names{.all="vnc_clipboard", .connpolicy="clipboard"}, [&]
+{
+    _.member(MemberInfo{
+        .name = "enable_clipboard_upload",
+        .value = value(false),
+        .spec = ini_only(no_acl), // configured via proxy_opt
+        .desc =
+            "Enable the clipboard upload (from client to target server).\n"
+            "This only supports text data clipboard, not files.",
+    });
+
+    _.member(MemberInfo{
+        .name = "enable_clipboard_download",
+        .value = value(false),
+        .spec = ini_only(no_acl), // configured via proxy_opt
+        .desc =
+            "Enable the clipboard download (from target server to client).\n"
+            "This only supports text data clipboard, not files.",
+    });
+
+    _.member(MemberInfo{
+        .name = "clipboard_encoding",
+        .value = enum_as_string(VncClipboardEncoding::latin1),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc = "VNC target server clipboard text data encoding type.",
+    });
+
+    _.member(MemberInfo{
+        .name = "bogus_infinite_loop_strategy",
+        .value = enum_as_int(VncBogusClipboardInfiniteLoopStrategy::delayed),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc =
+            "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\n"
+            "This option indicates the strategy to adopt in such situations."
+    });
+});
+
+_.section(names{.all="vnc_file_transfer", .connpolicy="file_transfer"}, [&]
+{
+    _.member(MemberInfo{
+        .name = "enable_file_upload",
+        .value = value(false),
+        .spec = ini_only(no_acl), // configured via proxy_opt
+        .desc =
+            "Enable the file transfer upload (from client to target server).\n"
+            "This feature is only supported by Ultra VNC server."
+    });
+
+    _.member(MemberInfo{
+        .name = "enable_file_download",
+        .value = value(false),
+        .spec = ini_only(no_acl), // configured via proxy_opt
+        .desc =
+            "Enable the file transfer download (from target server to client).\n"
+            "This feature is only supported by Ultra VNC server."
+    });
+
+    _.member(MemberInfo{
+        .name = "max_item_in_gui",
+        .value = value<types::u32>(100'000),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc = "Maximum item in folder showed by the GUI.",
+    });
+
+    _.member(MemberInfo{
+        .name = "max_file_transfer_list",
+        .value = value<types::u32>(10'000),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc = "Maximum file number authorized for one upload or download.",
+    });
+
+    _.member(MemberInfo{
+        .name = "max_file_size",
+        .value = value<types::bytes<types::u64>>(268'435'456), // 256 MiB
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc = "Maximum file size authorized for an upload or a download.",
+    });
 });
 
 _.section(names{"vnc_over_ssh"}, [&]
@@ -2512,14 +2569,14 @@ _.section("file_verification", [&]
     _.member(MemberInfo{
         .name = "enable_up",
         .value = value(false),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp | vnc, loggable),
         .desc = "Enable use of ICAP service for file verification on upload.",
     });
 
     _.member(MemberInfo{
         .name = "enable_down",
         .value = value(false),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp | vnc, loggable),
         .desc = "Enable use of ICAP service for file verification on download.",
     });
 
@@ -2544,7 +2601,7 @@ _.section("file_verification", [&]
     _.member(MemberInfo{
         .name = "block_invalid_file_up",
         .value = value(false),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp /*| vnc*/, loggable),
         .desc =
             "Block file transfer from the client to the target server on invalid file verification.\n"
             "File verification on upload must be enabled via the Enable up option."
@@ -2553,7 +2610,7 @@ _.section("file_verification", [&]
     _.member(MemberInfo{
         .name = "block_invalid_file_down",
         .value = value(false),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp /*| vnc*/, loggable),
         .desc =
             "Block file transfer from the target server to the client on invalid file verification.\n"
             "File verification on download must be enabled via the Enable down option."
@@ -2580,14 +2637,14 @@ _.section("file_verification", [&]
     _.member(MemberInfo{
         .name = "log_if_accepted",
         .value = value(true),
-        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc = "Log the files and clipboard texts that are verified and accepted. If deactivated, only those rejected are logged.",
     });
 
     _.member(MemberInfo{
         .name = "max_file_size_rejected",
         .value = value<types::mebibytes<types::u32>>(256),
-        .spec = connpolicy(rdp, loggable, spec::advanced),
+        .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc =
             "⚠ This value affects the RAM used by the session.\n\n"
             "If option Block invalid file (up or down) is enabled, automatically reject file with greater filesize."
@@ -2606,7 +2663,7 @@ _.section("file_storage", [&]
     _.member(MemberInfo{
         .name = "store_file",
         .value = enum_as_string(RdpStoreFile::never),
-        .spec = connpolicy(rdp, loggable),
+        .spec = connpolicy(rdp | vnc, loggable),
         .desc =
             "Enable storage of transferred files (via RDP Clipboard).\n"
             "⚠ Saving files can take up a lot of disk space."
@@ -2616,7 +2673,6 @@ _.section("file_storage", [&]
 // for validator only
 for (char const* section_name : {"icap_server_down", "icap_server_up"}) {
     // TODO temporary
-    // please, update $REDEMPTION/tools/c++-analyzer/lua-checker/checkers/config.lua for each changement of value
     _.section(section_name, [&]
     {
         _.member(MemberInfo{
@@ -3548,6 +3604,7 @@ _.section("context", [&]
         .name = "proxy_opt",
         .value = value<std::string>(),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),
+        .desc = "Not used when :REF:NOSUFFIX:[globals]:enable_wab_integration is off.",
     });
 
     _.member(MemberInfo{

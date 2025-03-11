@@ -81,7 +81,7 @@ RED_AUTO_TEST_CASE(TestWidgetPagination)
      * Init
      */
 
-    constexpr uint16_t cx = 250;
+    constexpr uint16_t cx = 230;
     constexpr uint16_t cy = 40;
     TestGraphic gd{cx, cy};
 
@@ -134,13 +134,13 @@ RED_AUTO_TEST_CASE(TestWidgetPagination)
         RED_CHECK_IMG(gd, IMG_TEST_PATH filename); \
     } while (0)
 
-    CHECK_PART("part1.png", NamedBGRColor::RED, {0, 0, 40, cy});
-    CHECK_PART("part3.png", NamedBGRColor::RED, {80, 0, 40, cy});
-    CHECK_PART("part5.png", NamedBGRColor::RED, {160, 0, 40, cy});
+    CHECK_PART("part1.png", NamedBGRColor::RED, {0, 0, 35, cy});
+    CHECK_PART("part3.png", NamedBGRColor::RED, {70, 0, 35, cy});
+    CHECK_PART("part5.png", NamedBGRColor::RED, {140, 0, 35, cy});
 
     gd.draw_rect({0, 0, cx, cy}, NamedBGRColor::BLACK);
-    CHECK_PART("part2.png", NamedBGRColor::GREEN, {40, 0, 40, cy});
-    CHECK_PART("part4.png", NamedBGRColor::GREEN, {120, 0, 40, cy});
+    CHECK_PART("part2.png", NamedBGRColor::GREEN, {35, 0, 35, cy});
+    CHECK_PART("part4.png", NamedBGRColor::GREEN, {105, 0, 35, cy});
 
     pag.init_focus();
     gd.draw_rect({0, 0, cx, cy}, NamedBGRColor::BLACK);
@@ -297,7 +297,7 @@ RED_AUTO_TEST_CASE(TestWidgetPagination)
     // first -> 1
     CHECK_CLICK(1, 2, "first_pressed_text_4.png", "first_text_1.png");
     // edit
-    CHECK_CLICK(0, 90, "edit_text_1_focus_begin.png", "edit_text_1_focus_begin.png");
+    CHECK_CLICK(0, 80, "edit_text_1_focus_begin.png", "edit_text_1_focus_begin.png");
     // next -> 2
     CHECK_CLICK(2, 170, "next_pressed_text_1.png", "next_text_2.png");
     // no input

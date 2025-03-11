@@ -6,6 +6,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #include <type_traits>
+#include "utils/sugar/array.hpp"
 
 
 /// Returns the smaller of \c a and \c b in the smaller type.
@@ -204,3 +205,64 @@ struct max_auto_t
 };
 
 inline constexpr max_auto_t max_auto {};
+
+
+
+template<class F, class T, class... Ts>
+    requires std::is_member_function_pointer_v<F>
+auto apply(F f, T && obj, Ts && ... args)
+    REDEMPTION_DECLTYPE_AUTO_RETURN_NOEXCEPT((static_cast<T&&>(obj).*f)(static_cast<Ts&&>(args)...))
+
+template<class F, class T>
+    requires std::is_member_object_pointer_v<F>
+auto apply(F mem, T && obj) noexcept
+    REDEMPTION_DECLTYPE_AUTO_RETURN(static_cast<T&&>(obj).*mem)
+
+template<class F, class... Ts>
+    requires (!std::is_member_pointer_v<F>)
+auto apply(F && f, Ts && ... args)
+    REDEMPTION_DECLTYPE_AUTO_RETURN_NOEXCEPT(static_cast<F&&>(f)(static_cast<Ts&&>(args)...))
+
+
+template<auto f>
+struct CFunc
+{
+    template<class... Ts>
+    auto operator()(Ts && ... args) const
+        REDEMPTION_DECLTYPE_AUTO_RETURN_NOEXCEPT(apply(f, static_cast<Ts&&>(args)...))
+};
+
+template<auto f>
+inline constexpr auto c_fn = CFunc<f>{};
+
+
+struct FnIdentity
+{
+    template<class T>
+    T && operator()(T && value) const noexcept
+    {
+        return static_cast<T&&>(value);
+    }
+};
+
+template<class Cont, class IntT, class Proj = FnIdentity>
+    requires std::is_integral_v<IntT>
+IntT sum(Cont const& cont, IntT start_value, Proj && proj = Proj{})
+    noexcept(noexcept(apply(proj, *utils::detail_::begin_impl(cont))))
+{
+    for (auto && x : cont)
+    {
+        start_value += apply(proj, x);
+    }
+    return start_value;
+}
+
+template<class Cont, class Proj>
+    requires (!std::is_integral_v<Proj>)
+std::size_t sum(Cont const& cont, Proj && proj)
+    REDEMPTION_AUTO_RETURN_NOEXCEPT(sum(cont, std::size_t{}, proj))
+
+template<class IntT, class Cont, class Proj>
+    requires std::is_integral_v<IntT>
+IntT sum(Cont const& cont, Proj && proj)
+    REDEMPTION_AUTO_RETURN_NOEXCEPT(sum(cont, IntT{}, proj))

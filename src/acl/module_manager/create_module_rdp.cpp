@@ -1,37 +1,17 @@
 /*
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-  Product name: redemption, a FLOSS RDP proxy
-  Copyright (C) Wallix 2010
-  Author(s): Christophe Grosjean, Javier Caverni, Xavier Dunat,
-             Raphael Zhou, Meng Tan
-
-  Manage Modules Life cycle : creation, destruction and chaining
-  find out the next module to run from context reading
+SPDX-FileCopyrightText: 2026 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "core/auth_channel_name.hpp"
-#include "capture/fdx_capture.hpp"
-#include "utils/sugar/scope_exit.hpp"
+#include "core/file_validator/file_validator.hpp"
+#include "core/file_storage.hpp"
 #include "utils/sugar/unique_fd.hpp"
 #include "utils/sugar/bytes_view.hpp"
 #include "utils/error_message_ctx.hpp"
 #include "utils/netutils.hpp"
 #include "utils/ascii.hpp"
 #include "utils/parse_primary_drawing_orders.hpp"
-#include "mod/file_validator_service.hpp"
 #include "mod/tls_params_loader.hpp"
 #include "mod/rdp/params/rdp_session_probe_params.hpp"
 #include "mod/rdp/params/rdp_application_params.hpp"
@@ -49,26 +29,6 @@
 
 namespace
 {
-void file_verification_error(
-    SessionLogApi& session_log,
-    std::string_view up_target_name,
-    std::string_view down_target_name,
-    chars_view msg)
-{
-    if (!up_target_name.empty()) {
-        session_log.log6(LogId::FILE_VERIFICATION_ERROR, KVLogList{
-            KVLog("icap_service"_av, up_target_name),
-            KVLog("status"_av, msg),
-        });
-    }
-
-    if (!down_target_name.empty() && down_target_name != up_target_name) {
-        session_log.log6(LogId::FILE_VERIFICATION_ERROR, KVLogList{
-            KVLog("icap_service"_av, down_target_name),
-            KVLog("status"_av, msg),
-        });
-    }
-}
 
 // READ PROXY_OPT
 ChannelsAuthorizations make_channels_authorizations(Inifile const& ini)
@@ -83,82 +43,28 @@ ChannelsAuthorizations make_channels_authorizations(Inifile const& ini)
     return ChannelsAuthorizations(allow, deny);
 }
 
-struct RdpData
+RDPVerbose get_rdp_verbose(Inifile const & ini) noexcept
 {
-    struct FileValidator
-    {
-        struct CtxError {
-            SessionLogApi& session_log;
-            std::string up_target_name;
-            std::string down_target_name;
-        };
+    return safe_cast<RDPVerbose>(ini.get<cfg::debug::mod_rdp>());
+}
 
-    private:
-        struct FileValidatorTransport final : FileTransport
-        {
-            using FileTransport::FileTransport;
-
-            size_t do_partial_read(uint8_t * buffer, size_t len) override
-            {
-                size_t r = FileTransport::do_partial_read(buffer, len);
-                if (r == 0) {
-                    LOG(LOG_ERR, "ModuleManager::create_mod_rdp: RDPData::FileValidator::do_partial_read: No data read!");
-                    this->throw_error(Error(ERR_TRANSPORT_NO_MORE_DATA, errno));
-                }
-                return r;
-            }
-        };
-
-        CtxError ctx_error;
-        FileValidatorTransport trans;
-
-    public:
-        // TODO wait result (add delay)
-        FileValidatorService service;
-
-        FileValidator(unique_fd&& fd, CtxError&& ctx_error, FileValidatorService::Verbose verbose)
-        : ctx_error(std::move(ctx_error))
-        , trans(std::move(fd), [this](const Error & err){
-            file_verification_error(
-                this->ctx_error.session_log,
-                this->ctx_error.up_target_name,
-                this->ctx_error.down_target_name,
-                err.errmsg()
-            );
-        })
-        , service(this->trans, verbose)
-        {}
-
-        ~FileValidator()
-        {
-            try {
-                this->service.send_close_session();
-            }
-            catch (...) {
-            }
-        }
-
-        int get_fd() const
-        {
-            return this->trans.get_fd();
-        }
-    };
-
+struct RdpSocket
+{
 public:
-    RdpData(
-        EventContainer & events
-      , Inifile & ini
+    RdpSocket(
+        Inifile & ini
       , SocketTransport::Name name
       , unique_fd sck
       , SocketTransport::Verbose verbose
       , ModRdpUseFailureSimulationSocketTransport use_failure_simulation_socket_transport
     )
-    : events_guard(events)
-    , socket_transport_ptr([&]() -> SocketTransport* {
+    : socket_transport_ptr(
+        [&]() -> SocketTransport* {
             chars_view ip_address = ini.get<cfg::context::target_host>();
             int port = checked_int(ini.get<cfg::context::target_port>());
             auto recv_timeout = std::chrono::milliseconds(ini.get<cfg::globals::mod_recv_timeout>());
-            auto connection_establishment_timeout = ini.get<cfg::all_target_mod::connection_establishment_timeout>();
+            auto connection_establishment_timeout
+                = ini.get<cfg::all_target_mod::connection_establishment_timeout>();
             auto tcp_user_timeout = ini.get<cfg::all_target_mod::tcp_user_timeout>();
 
             if (ModRdpUseFailureSimulationSocketTransport::Off == use_failure_simulation_socket_transport) {
@@ -190,85 +96,33 @@ public:
                 recv_timeout,
                 verbose
             );
-        }())
+        }()
+    )
     {}
 
-    ~RdpData() = default;
-
-    void set_file_validator(std::unique_ptr<RdpData::FileValidator>&& file_validator, mod_rdp& mod)
-    {
-        assert(!this->file_validator);
-        this->file_validator = std::move(file_validator);
-        this->events_guard.create_event_fd_without_timeout(
-            "File Validator Event",
-            this->file_validator->get_fd(),
-            [&mod](Event& /*event*/)
-            {
-                mod.DLP_antivirus_check_channels_files();
-            });
-    }
+    ~RdpSocket() = default;
 
     SocketTransport& get_transport() const
     {
         return *this->socket_transport_ptr;
     }
 
-    ModRdpFactory& get_rdp_factory() noexcept
-    {
-        return this->rdp_factory;
-    }
-
 private:
-    EventsGuard events_guard;
-
-    std::unique_ptr<FileValidator> file_validator;
-
     std::unique_ptr<SocketTransport> socket_transport_ptr;
-    ModRdpFactory rdp_factory;
 };
 
 
-class ModRDPWithSocket final : public RdpData, public mod_rdp
+class ModRDPWithSocket final : public RdpSocket, public mod_rdp
 {
-private:
-    std::unique_ptr<FdxCapture> fdx_capture;
+    FileValidator file_validator_ctx;
+    FileStorage file_storage_ctx;
     Random & gen;
     Inifile & ini;
     CryptoContext & cctx;
-
-    FdxCapture* get_fdx_capture(Random & gen, Inifile & ini, CryptoContext & cctx)
-    {
-        if (!this->fdx_capture) {
-            LOG(LOG_INFO, "Enable clipboard file storage");
-            auto const& session_id = ini.get<cfg::context::session_id>();
-            auto const& subdir = ini.get<cfg::capture::record_subdirectory>();
-            auto const& record_dir = ini.get<cfg::capture::record_path>();
-            auto const& hash_dir = ini.get<cfg::capture::hash_path>();
-            auto const& filebase = ini.get<cfg::capture::record_filebase>();
-
-            this->fdx_capture = std::make_unique<FdxCapture>(
-                str_concat(record_dir.as_string(), subdir),
-                str_concat(hash_dir.as_string(), subdir),
-                filebase,
-                session_id, ini.get<cfg::capture::file_permissions>(),
-                cctx, gen,
-                /* TODO should be a log (siem?)*/
-                [](const Error & /*error*/){});
-
-            ini.set_acl<cfg::capture::fdx_path>(this->fdx_capture->get_fdx_path());
-        }
-
-        return this->fdx_capture.get();
-    }
+    SessionLogApi & session_log;
+    EventsGuard events_guard;
 
 public:
-    auto get_fdx_capture_fn()
-    {
-        return [this]{
-            return get_fdx_capture(gen, ini, cctx);
-        };
-    }
-
     ModRDPWithSocket(
         gdi::OsdApi & osd
       , Inifile & ini
@@ -285,22 +139,103 @@ public:
       , Random & gen
       , CryptoContext & cctx
       , const ChannelsAuthorizations & channels_authorizations
-      , const ModRDPParams & mod_rdp_params
+      , ModRDPParams & mod_rdp_params
       , LicenseApi & license_store
       , ModRdpVariables vars
-      , [[maybe_unused]] FileValidatorService * file_validator_service
       , ModRdpUseFailureSimulationSocketTransport use_failure_simulation_socket_transport
       , TransportWrapperFnView& transport_wrapper_fn
     )
-    : RdpData(events, ini, name, std::move(sck), verbose, use_failure_simulation_socket_transport)
-    , mod_rdp(transport_wrapper_fn(this->get_transport()), gd
-        , osd, events, session_log , err_msg_ctx, front, info, redir_info, gen
-        , channels_authorizations, mod_rdp_params, license_store
-        , vars, file_validator_service, this->get_rdp_factory())
+    : RdpSocket(ini, name, std::move(sck), verbose, use_failure_simulation_socket_transport)
+    , mod_rdp(
+        transport_wrapper_fn(this->get_transport()),
+        gd,
+        osd,
+        events,
+        session_log,
+        err_msg_ctx,
+        front,
+        info,
+        redir_info,
+        gen,
+        channels_authorizations,
+        [&] () -> ModRDPParams const & {
+            mod_rdp_params.get_clipboard_params
+                = [this](ChannelsAuthorizations const & channels_authorizations){
+                    return get_clipboard_params(channels_authorizations);
+                };
+            return mod_rdp_params;
+        }(),
+        license_store,
+        vars
+    )
     , gen(gen)
     , ini(ini)
     , cctx(cctx)
+    , session_log(session_log)
+    , events_guard(events)
     {}
+
+private:
+    ClipboardVirtualChannelParams
+    get_clipboard_params(ChannelsAuthorizations const & channels_authorizations)
+    {
+        bool clipboard_up_authorized = channels_authorizations.cliprdr_up_is_authorized();
+        bool clipboard_down_authorized = channels_authorizations.cliprdr_down_is_authorized();
+        bool file_authorized = channels_authorizations.cliprdr_file_is_authorized();
+
+        FileValidator::Params validators_params {
+            .up = {
+                .text_authorized = clipboard_up_authorized,
+                .file_authorized = clipboard_up_authorized && file_authorized,
+            },
+            .down = {
+                .text_authorized = clipboard_down_authorized,
+                .file_authorized = clipboard_down_authorized && file_authorized,
+            },
+            .verbose_validator = bool(get_rdp_verbose(ini) & RDPVerbose::cliprdr),
+        };
+
+        auto file_validator = file_validator_ctx.init(
+            ini,
+            session_log,
+            validators_params,
+            events_guard,
+            [this](Event& /*event*/)
+            {
+                DLP_antivirus_check_channels_files();
+            }
+        );
+
+        return ClipboardVirtualChannelParams {
+            .cliprdr_params {
+                .download_authorized = clipboard_down_authorized,
+                .upload_authorized   = clipboard_up_authorized,
+                .file_authorized     = file_authorized,
+                .log_only_relevant_activities
+                    = ini.get<cfg::mod_rdp::log_only_relevant_clipboard_activities>(),
+                .log_text = ini.get<cfg::mod_rdp::log_clipboard_text>(),
+            },
+            .validator_params {
+                .file = file_validator,
+                .text = {
+                    .enable_text_upload = ini.get<cfg::file_verification::clipboard_text_up>(),
+                    .enable_text_download = ini.get<cfg::file_verification::clipboard_text_down>(),
+                    .block_invalid_text_upload
+                        = ini.get<cfg::file_verification::block_invalid_clipboard_text_up>(),
+                    .block_invalid_text_download
+                        = ini.get<cfg::file_verification::block_invalid_clipboard_text_down>(),
+                },
+                .osd_delay = std::chrono::seconds(5),
+            },
+            .file_storage_params = file_storage_ctx.init(
+                gen, ini, cctx, session_log,
+                {
+                    .up_file_authorized = validators_params.up.file_authorized,
+                    .down_file_authorized = validators_params.down.file_authorized,
+                }
+            ),
+        };
+    }
 };
 
 inline static ModRdpSessionProbeParams get_session_probe_params(Inifile & ini)
@@ -437,7 +372,7 @@ ModPack create_mod_rdp(
     ClientInfo const& client_info_ /* /!\ modified */,
     ClientExecute& rail_client_execute,
     kbdtypes::KeyLocks key_locks,
-    Ref<Font const> glyphs,
+    Font const& glyphs,
     Theme & theme,
     EventContainer& events,
     SessionLogApi& session_log,
@@ -466,7 +401,7 @@ ModPack create_mod_rdp(
     }
 
     const bool smartcard_passthrough = ini.get<cfg::mod_rdp::force_smartcard_authentication>();
-    const auto rdp_verbose = safe_cast<RDPVerbose>(ini.get<cfg::debug::mod_rdp>());
+    const auto rdp_verbose = get_rdp_verbose(ini);
 
     ModRDPParams mod_rdp_params(
         (smartcard_passthrough ? "" : ini.get<cfg::globals::target_user>().c_str())
@@ -584,9 +519,6 @@ ModPack create_mod_rdp(
 
     // ======================= End Dynamic Channel Params ===================
 
-    mod_rdp_params.clipboard_params.log_only_relevant_activities =
-        ini.get<cfg::mod_rdp::log_only_relevant_clipboard_activities>();
-    mod_rdp_params.clipboard_params.log_text = ini.get<cfg::mod_rdp::log_clipboard_text>();
     mod_rdp_params.split_domain = ini.get<cfg::mod_rdp::split_domain>();
 
     mod_rdp_params.enable_remotefx = ini.get<cfg::mod_rdp::enable_remotefx>();
@@ -653,66 +585,6 @@ ModPack create_mod_rdp(
     {
         mod_rdp_params.dynamic_channels_params.denied_channels += ",Microsoft::Windows::RDS::CoreInput";
     }
-
-    // ================== FileValidator ============================
-    auto & vp = mod_rdp_params.validator_params;
-    vp.log_if_accepted = ini.get<cfg::file_verification::log_if_accepted>();
-    vp.block_invalid_file_up = ini.get<cfg::file_verification::block_invalid_file_up>();
-    vp.block_invalid_file_down = ini.get<cfg::file_verification::block_invalid_file_down>();
-    vp.max_file_size_rejected
-      = safe_cast<uint64_t>(ini.get<cfg::file_verification::max_file_size_rejected>())
-      * 1024u * 1024u /* mebibyte to byte */;
-    vp.enable_clipboard_text_up = ini.get<cfg::file_verification::clipboard_text_up>();
-    vp.enable_clipboard_text_down = ini.get<cfg::file_verification::clipboard_text_down>();
-    vp.block_invalid_text_up = ini.get<cfg::file_verification::block_invalid_clipboard_text_up>();
-    vp.block_invalid_text_down = ini.get<cfg::file_verification::block_invalid_clipboard_text_down>();
-    vp.up_target_name = ini.get<cfg::file_verification::enable_up>() ? "up" : "";
-    vp.down_target_name = ini.get<cfg::file_verification::enable_down>() ? "down" : "";
-
-    bool enable_validator = ini.get<cfg::file_verification::enable_up>()
-        || ini.get<cfg::file_verification::enable_down>();
-
-    std::unique_ptr<RdpData::FileValidator> file_validator;
-
-    if (enable_validator) {
-        auto const& socket_path = ini.get<cfg::file_verification::socket_path>();
-        bool const no_log_for_unix_socket = false;
-        unique_fd ufd = addr_connect_blocking(
-            socket_path.c_str(),
-            ini.get<cfg::all_target_mod::connection_establishment_timeout>(),
-            no_log_for_unix_socket);
-        if (ufd) {
-            file_validator = std::make_unique<RdpData::FileValidator>(
-                std::move(ufd),
-                RdpData::FileValidator::CtxError{
-                    session_log,
-                    mod_rdp_params.validator_params.up_target_name,
-                    mod_rdp_params.validator_params.down_target_name,
-                },
-                bool(rdp_verbose & RDPVerbose::cliprdr)
-                    ? FileValidatorService::Verbose::Yes
-                    : FileValidatorService::Verbose::No
-            );
-            file_validator->service.send_infos({
-                "server_ip"_av, ini.get<cfg::context::target_host>(),
-                "client_ip"_av, ini.get<cfg::globals::host>(),
-                "auth_user"_av, ini.get<cfg::globals::auth_user>()
-            });
-        }
-        else {
-            LOG(LOG_ERR, "Error, can't connect to validator, file validation disable");
-            file_verification_error(
-                session_log,
-                mod_rdp_params.validator_params.up_target_name,
-                mod_rdp_params.validator_params.down_target_name,
-                "Unable to connect to FileValidator service"_av
-            );
-            // enable_validator = false;
-            throw Error(ERR_SOCKET_CONNECT_FAILED);
-        }
-    }
-    // ================== End FileValidator =========================
-
 
     // ================== Application Driver =========================
     update_application_driver(mod_rdp_params, ini);
@@ -819,32 +691,9 @@ ModPack create_mod_rdp(
         mod_rdp_params,
         file_system_license_store,
         ini,
-        enable_validator ? &file_validator->service : nullptr,
         ini.get<cfg::debug::mod_rdp_use_failure_simulation_socket_transport>(),
         transport_wrapper_fn
     );
-
-    if (enable_validator) {
-        new_mod->set_file_validator(std::move(file_validator), *new_mod);
-    }
-
-    {
-        auto& factory = new_mod->get_rdp_factory();
-        factory.always_file_storage = (ini.get<cfg::file_storage::store_file>() == RdpStoreFile::always);
-        factory.tmp_dir = ini.get<cfg::file_verification::tmpdir>().as_string();
-        switch (ini.get<cfg::file_storage::store_file>())
-        {
-            case RdpStoreFile::never:
-                break;
-            case RdpStoreFile::on_invalid_verification:
-                if (!enable_validator) {
-                    break;
-                }
-                [[fallthrough]];
-            case RdpStoreFile::always:
-                factory.get_fdx_capture = new_mod->get_fdx_capture_fn();
-        }
-    }
 
     auto* socket_transport = &new_mod->get_transport();
 

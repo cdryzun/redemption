@@ -124,9 +124,23 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
         return lambda d, text: update_dict(d, log_extractor.findall(text), kv_extractor)
 
     # log6 call with or without ternary
-    log6_regex = re.compile(r'\blog6\((?:(?!\bLogId:|[?]|;).)*(?:[?])?\s*\bLogId::([A-Z0-9_]+)[^,:)]*(?::\s*LogId::([A-Z0-9_]+)\s*\)?)?,\s*(?:KVLogList)?(\{(?:[^)]+|[)][^;])*)?', re.DOTALL)
-    # KVLog("key"_av, value) with value "..." | "..."_av | ...
-    kv_log6_regex = re.compile(r'KVLog[{(]"([^"]+)"_av,\s*((?:(?!"_av|[)}]?,?\n).)*(?:"(?=_av))?)')
+    log6_regex = re.compile(
+        r'''
+        \blog6\((?:(?!\bLogId:|[?]|;).)*(?:[?])?
+            \s*\bLogId::([A-Z0-9_]+)[^,:)]*(?::\s*LogId::([A-Z0-9_]+)\s*\)?)?,
+            \s*(?:KVLogList)?(\{(?:[^)]+|[)][^;])*)?
+        ''',
+        re.X | re.DOTALL
+    )
+    # KVLog("key"_av, value) with value: "..." | "..."_av | x ? ... : "..."_av | ...
+    kv_log6_regex = re.compile(
+        r'''
+        KVLog\s*[{(]
+            \s*"([^"]+)"_av,
+            \s*((?:(?!"_av|[)}]?,?\n).|"_av\s*:\s*(?:"[^"]*"_av)?)*(?:"(?=_av))?)
+        ''',
+        re.X
+    )
 
     def log6_process(d, text):  # noqa: ANN001, ANN202
         return update_dict(d,
@@ -139,11 +153,15 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
     server_cert_regex = re.compile(r'\{\n\s*LogId::(\w+),\s*("[^"]+")')
 
     log_id_sesprobe_regex = re.compile(
-        r'executable_log6_if\(\s*(?:'
-            r'"[A-Z0-9_]+"_ascii_upper,\s*LogId::([A-Z0-9_]+)'
-            '|'
-            r'EXECUTABLE_LOG6_ID_AND_NAME\(\s*([A-Z0-9_]+)\s*\)'
-        r')([^)]*)')
+        r'''
+        executable_log6_if\(\s*(?:
+            "[A-Z0-9_]+"_ascii_upper,\s*LogId::([A-Z0-9_]+)
+            |
+            EXECUTABLE_LOG6_ID_AND_NAME\(\s*([A-Z0-9_]+)\s*\)
+        )([^)]*)
+        ''',
+        re.X
+    )
     kv_sesprobe_regex = re.compile(r'"([^"]+)"()')  # capture an empty value
 
     def sesprob_process(d, text):
@@ -186,11 +204,6 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
                 text = cppfile_from_dirpath(filename)
                 log6_process(rdp_logs, text)
                 sesprob_process(rdp_logs, text)
-                if filename == 'rdp_negociation.cpp' and dirpath == f'{src_path}/mod/rdp':
-                    for (logid, desc) in server_cert_regex.findall(text):
-                        log = rdp_logs[logid]
-                        log.formated_logs.add(f'{cat}="{logid}" {colored("description")}={desc}')
-                        log.used_params.add(('description',))
 
         elif dirpath.startswith(f'{src_path}/mod/vnc'):
             update(vnc_logs, log6_process, filenames)
@@ -237,6 +250,9 @@ def extract_siem_format(src_path: str, color: bool) -> tuple[tuple[LogFormatType
                 else:
                     text = cppfile_from_dirpath(filename)
                     log6_process(rdp_and_vnc_logs, text)
+
+        elif dirpath == f'{src_path}/core/file_validator':
+            update(rdp_and_vnc_logs, log6_process, filenames)
 
         else:
             update(other_logs, log6_process, filenames)
@@ -294,10 +310,19 @@ def extract_doc_siem(docdir: str) -> tuple[LogFormatType,   # proxy
     # )+
     # </section>
     cat = r'rdpproxy: \[rdpproxy\]|(?:rdpproxy: )?\[(?:RDP|VNC) Session\]'
-    block_regex = re.compile(fr'<codeblock[^>]*>(?:{cat}) [^<]*((?:(?!</section>).)*)', re.DOTALL)
+    block_regex = re.compile(
+        fr'<codeblock[^>]*>(?:{cat}) [^<]*((?:(?!</section>).)*)',
+        re.DOTALL
+    )
     # split by rdpproxy: [rdpproxy] / wabengine: [wabauth] / others... / <note>
-    split_part_regex = re.compile(r'(?=(?:(?:^|\n|<codeblock[^>]*>)(?:\w+: \[\w+\]|(?:rdpproxy: )?\[(?:RDP|VNC) Session\]) |<note[ >]))', re.DOTALL | re.MULTILINE)
-    siem_log_regex = re.compile(fr'^(?:\n|<codeblock[^>]*>)?(({cat}) (?:(?!type=|<).)*type=["”]([^"”]+)["”][^<]*)', re.DOTALL | re.MULTILINE)
+    split_part_regex = re.compile(
+        r'(?=(?:(?:^|\n|<codeblock[^>]*>)(?:\w+: \[\w+\]|(?:rdpproxy: )?\[(?:RDP|VNC) Session\]) |<note[ >]))',
+        re.DOTALL | re.MULTILINE
+    )
+    siem_log_regex = re.compile(
+        fr'^(?:\n|<codeblock[^>]*>)?(({cat}) (?:(?!type=|<).)*type=["”]([^"”]+)["”][^<]*)',
+        re.DOTALL | re.MULTILINE
+    )
 
     # accept <codeph>h</codeph>, <codeph>h</codeph> and <codeph>h</codeph> is optional
     # reject '<codeph>h</codeph> :' and '<codeph>h</codeph>.'

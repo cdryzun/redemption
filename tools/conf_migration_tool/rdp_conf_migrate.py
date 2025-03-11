@@ -587,7 +587,7 @@ def main(
     group.add_argument('-f', '--file-version', metavar='FILE', type=pathlib.Path,
                        help='Output format of redemption --version from file.')
     parser.add_argument('--migrate-by-external-tool', action='store_true',
-                        help='Do not remove some values (e.g. these migrate to the DB).')
+                        help='Do not remove or update some values (e.g. these migrate to the DB).')
     parser.add_argument('--dump', choices=['json'],
                         help='Dump migration configuration.')
     parser.add_argument('inifile', nargs='?', help='rdpproxy.ini file path.')
@@ -937,6 +937,36 @@ migration_defs: Sequence[MigrationType] = (
         'theme': {
             'edit_focus_color': UpdateItem(key='edit_focus_border_color'),
             'edit_border_color': NewItem(_copy_of('theme', 'edit_bgcolor')),
+        },
+    }),
+    (RedemptionVersion("12.3.15"), {
+        'mod_vnc': {
+            'clipboard_up': RemoveItem(
+                # moved to
+                # section='vnc_clipboard',
+                # key='enable_clipboard_upload',
+                reason='Moved to proxy_opt (devices / services options in Bastion GUI).',
+                ignored_when_external_tool=True,
+            ),
+            'clipboard_down': RemoveItem(
+                # moved to
+                # section='vnc_clipboard',
+                # key='enable_clipboard_download',
+                reason='Moved to proxy_opt (devices / services options in Bastion GUI).',
+                ignored_when_external_tool=True,
+            ),
+            'server_clipboard_encoding_type': RemoveItem(
+                # moved to
+                # section='vnc_clipboard',
+                # key='clipboard_encoding',
+                reason='Moved to connection policy, but with default value',
+            ),
+            'bogus_clipboard_infinite_loop_strategy': RemoveItem(
+                # moved to
+                # section='vnc_clipboard',
+                # key='bogus_infinite_loop_strategy',
+                reason='Moved to connection policy, but with default value',
+            ),
         },
     }),
 )

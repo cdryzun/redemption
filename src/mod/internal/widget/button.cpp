@@ -42,9 +42,9 @@ bool WidgetButtonEvent::is_submit_event(const Keymap& keymap) noexcept
             && keymap.last_decoded_keys().uchars[0] == ' ');
 }
 
-bool WidgetButtonEvent::is_submit_event(KbdFlags flag, uint16_t unicode) noexcept
+bool WidgetButtonEvent::is_submit_event(KbdFlags flags, uint16_t unicode) noexcept
 {
-    return !bool(flag & KbdFlags::Release) && unicode == ' ';
+    return !bool(flags & KbdFlags::Release) && unicode == ' ';
 }
 
 void WidgetButtonEvent::rdp_input_scancode(KbdFlags /*flags*/, Scancode /*scancode*/, uint32_t /*event_time*/, Keymap const& keymap)
@@ -138,27 +138,22 @@ void WidgetButton::rdp_input_invalidate(Rect clip)
     }
 
     auto const current_colors = colors.current_colors(has_focus);
-    int const pressed_pad = is_pressed();
-    int d = (current_colors.border == current_colors.bg) ? 0 : D::border_len;
+    auto const pressed_pad = is_pressed();
+    uint16_t d = (current_colors.border == current_colors.bg) ? 0 : D::border_len;
     int padx = D::x_text + D::border_len - d;
     int pady = D::y_text + D::border_len - d;
 
-    auto rect_text = get_rect();
-    rect_text.x += d;
-    rect_text.y += d;
-    rect_text.cx -= d * 2;
-    rect_text.cy -= d * 2;
+    auto rect_text = get_rect().shrink(d);
 
     gdi::draw_text(
         drawable,
         x() + d,
         y() + d,
         cy() - (D::border_len + D::y_text) * 2,
-        gdi::DrawTextPadding{
-            .top = checked_int(pady + pressed_pad),
-            .right = checked_int(padx - pressed_pad),
-            .bottom = checked_int(pady - pressed_pad),
-            .left = checked_int(padx + pressed_pad),
+        gdi::DrawTextPadding::Padding2{
+            .top_bottom = checked_int{pady},
+            .left_right = checked_int{padx},
+            .gap_xy = pressed_pad,
         },
         button_text.fcs(),
         current_colors.fg,

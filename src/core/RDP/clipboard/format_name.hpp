@@ -35,8 +35,8 @@
 
 namespace Cliprdr
 {
-    enum class IsLongFormat : bool;
-    enum class IsAscii : bool;
+    enum class IsLongFormat : bool { No, Yes, };
+    enum class IsAscii : bool { No, Yes, };
 
     struct UnicodeName
     {

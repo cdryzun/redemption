@@ -32,7 +32,7 @@ class WidgetButtonEvent : public Widget
 {
 public:
     static bool is_submit_event(Keymap const& keymap) noexcept;
-    static bool is_submit_event(KbdFlags flag, uint16_t unicode) noexcept;
+    static bool is_submit_event(KbdFlags flags, uint16_t unicode) noexcept;
 
     enum class RedrawOnSubmit : uint8_t
     {

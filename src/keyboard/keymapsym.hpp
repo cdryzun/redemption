@@ -53,6 +53,15 @@ struct KeymapSym
     {
         uint32_t keysym;
         VncKeyState down_flag;
+
+        static const uint32_t LCtrl = 0xffe3;
+        static const uint32_t RCtrl = 0xffe4;
+        static const uint32_t LShift = 0xffe1;
+        static const uint32_t RShift = 0xffe2;
+        static const uint32_t LAlt = 0xffe9;
+        static const uint32_t RAlt = 0xffea;
+        static const uint32_t LWin = 0xffeb;
+        static const uint32_t RWin = 0xffec;
     };
 
     struct Keys
@@ -92,6 +101,11 @@ struct KeymapSym
     Keys reset_mods(KeyLocks locks) noexcept;
 
     Keys utf16_to_keysyms(KbdFlags flag, uint16_t utf16) noexcept;
+
+    kbdtypes::KeyModFlags mods() const noexcept
+    {
+        return mods_;
+    }
 
 private:
     void _update_keymap() noexcept;

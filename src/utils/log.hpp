@@ -35,29 +35,13 @@
 
 #include <syslog.h>
 
-namespace detail_ {
+namespace detail_
+{
     template<class T>
     struct vlog_wrap
     {
         T value;
     };
-
-    // has c_str() member
-    template<class T>
-    auto log_value(T const & x, int /*unused*/) noexcept
-    -> typename std::enable_if<
-        std::is_convertible<decltype(x.c_str()), char const *>::value,
-        vlog_wrap<char const *>
-    >::type
-    {
-        return {x.c_str()};
-    }
-
-    template<class T>
-    vlog_wrap<T const &> log_value(T const & x, char /*unused*/) noexcept
-    {
-        return {x};
-    }
 } // namespace detail_
 
 // T* to void* for %p
@@ -71,13 +55,15 @@ inline detail_::vlog_wrap<uint8_t const*> log_value(uint8_t const* p) noexcept {
 template<class T>
 auto log_value(T const & x) noexcept
 {
-    if constexpr (std::is_enum<T>::value) {
-        return detail_::vlog_wrap<typename std::underlying_type<T>::type>{
-            static_cast<typename std::underlying_type<T>::type>(x)
-        };
+    if constexpr (std::is_enum_v<T>) {
+        using type = std::underlying_type_t<T>;
+        return detail_::vlog_wrap<type>{static_cast<type>(x)};
+    }
+    else if constexpr (requires { x.c_str(); }) {
+        return detail_::vlog_wrap<char const *>{x.c_str()};
     }
     else {
-        return detail_::log_value(x, 1);
+        return detail_::vlog_wrap<T const &>{x};
     }
 }
 

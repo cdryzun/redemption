@@ -1677,7 +1677,7 @@ FileSystemDriveManager::DriveName::DriveName(chars_view name, bool reserved) noe
 
 uint32_t FileSystemDriveManager::enable_drive(
     DriveName drive_name,
-    std::string_view directory_drive_path_view,
+    chars_view directory_drive_path_view,
     bool read_only)
 {
     uint32_t drive_id = INVALID_MANAGED_DRIVE_ID;
@@ -1715,7 +1715,7 @@ uint32_t FileSystemDriveManager::enable_drive(
 }
 
 bool FileSystemDriveManager::enable_drive(
-    DriveName const& drive_name, std::string_view directory_drive_path)
+    DriveName const& drive_name, chars_view directory_drive_path)
 {
     return drive_name.is_valid()
         && this->enable_drive(
@@ -1725,7 +1725,7 @@ bool FileSystemDriveManager::enable_drive(
            ) != INVALID_MANAGED_DRIVE_ID;
 }
 
-bool FileSystemDriveManager::enable_session_probe_drive(std::string_view directory)
+bool FileSystemDriveManager::enable_session_probe_drive(chars_view directory)
 {
     if (this->session_probe_drive_id == INVALID_MANAGED_DRIVE_ID) {
         this->session_probe_drive_id = this->enable_drive(

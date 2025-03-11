@@ -27,7 +27,6 @@ Author(s): Jonathan Poelen
 #include "cxx/cxx.hpp"
 
 #include <boost/test/results_collector.hpp>
-// include <boost/test/results_reporter.hpp>
 #include <boost/test/framework.hpp>
 
 #include <algorithm>
@@ -289,7 +288,7 @@ namespace
             || c == '\n';
     }
 
-    enum class UnpritableMode
+    enum class UnprintableMode
     {
         cstr,
         cstr_with_raw_newline,
@@ -297,24 +296,24 @@ namespace
     };
 
     static bool put_unprintable_char(
-        std::ostream& out, uint8_t c, UnpritableMode mode = UnpritableMode::cstr)
+        std::ostream& out, uint8_t c, UnprintableMode mode = UnprintableMode::cstr)
     {
         switch (mode)
         {
-            case UnpritableMode::cstr:
-            case UnpritableMode::cstr_with_raw_newline:
+            case UnprintableMode::cstr:
+            case UnprintableMode::cstr_with_raw_newline:
                 switch (c) {
                     case '"': out << "\\\""; return false;
                     case '\b': out << "\\b"; return false;
                     case '\t': out << "\\t"; return false;
                     case '\r': out << "\\r"; return false;
                     case '\n':
-                        out << ((mode == UnpritableMode::cstr) ? "\\n" : "\n");
+                        out << ((mode == UnprintableMode::cstr) ? "\\n" : "\n");
                         return false;
                 }
                 break;
 
-            case UnpritableMode::hex:
+            case UnprintableMode::hex:
                 break;
         }
 
@@ -335,12 +334,12 @@ namespace
     {
         bool previous_is_printable = true;
 
-        void put(std::ostream& out, uint8_t c, UnpritableMode mode = UnpritableMode::cstr)
+        void put(std::ostream& out, uint8_t c, UnprintableMode mode = UnprintableMode::cstr)
         {
             this->put_cond(out, c, mode, is_printable_ascii(c));
         }
 
-        void put_cond(std::ostream& out, uint8_t c, UnpritableMode mode, bool is_printable)
+        void put_cond(std::ostream& out, uint8_t c, UnprintableMode mode, bool is_printable)
         {
             if (is_printable) {
                 if (!previous_is_printable) {
@@ -443,7 +442,7 @@ namespace
 
     static void put_utf8_bytes(
         size_t pos, std::ostream& out, bytes_view v,
-        size_t /*min_len*/, UnpritableMode mode = UnpritableMode::cstr)
+        size_t /*min_len*/, UnprintableMode mode = UnprintableMode::cstr)
     {
         PutCharCtx putc_ctx;
         auto print = [&](bytes_view x, bool is_markable){
@@ -484,21 +483,28 @@ namespace
 
     static void put_utf8_bytes2(size_t pos, std::ostream& out, bytes_view v, unsigned min_len)
     {
-        put_utf8_bytes(pos, out, v, min_len, UnpritableMode::cstr_with_raw_newline);
+        put_utf8_bytes(pos, out, v, min_len, UnprintableMode::cstr_with_raw_newline);
     }
 
     static void put_ascii_bytes(
         size_t pos, std::ostream& out, bytes_view v,
-        unsigned min_len, UnpritableMode mode = UnpritableMode::cstr)
+        unsigned min_len, UnprintableMode mode = UnprintableMode::cstr)
     {
         PutCharCtx putc_ctx;
 
-        auto put_bytes = [&](auto print){
-            print(v.first(pos));
-            if (pos != v.size()) {
-                out << start_color;
-                print(v.from_offset(pos));
-                out << reset_color;
+        auto put_bytes = [&](auto print) {
+            if (pos < v.size())
+            {
+                print(v.first(pos));
+                if (pos != v.size()) {
+                    out << start_color;
+                    print(v.from_offset(pos));
+                    out << reset_color;
+                }
+            }
+            else
+            {
+                print(v);
             }
         };
 
@@ -549,7 +555,17 @@ namespace
 
     static void put_ascii_bytes2(size_t pos, std::ostream& out, bytes_view v, unsigned min_len)
     {
-        put_ascii_bytes(pos, out, v, min_len, UnpritableMode::cstr_with_raw_newline);
+        put_ascii_bytes(pos, out, v, min_len, UnprintableMode::cstr_with_raw_newline);
+    }
+
+    static void put_printable_ascii_bytes(size_t pos, std::ostream& out, bytes_view v, unsigned min_len)
+    {
+        put_ascii_bytes(pos, out, v, min_len, UnprintableMode::hex);
+    }
+
+    static void put_printable_utf8_bytes(size_t pos, std::ostream& out, bytes_view v, unsigned min_len)
+    {
+        put_utf8_bytes(pos, out, v, min_len, UnprintableMode::hex);
     }
 
     static void put_hex_bytes(size_t pos, std::ostream& out, bytes_view v, size_t /*min_len*/)
@@ -607,14 +623,14 @@ namespace
         if (count_invalid > n / 6) {
             put_ascii_bytes(pos, out, v, min_len,
                 (count_alpha / 4 > count_escaped)
-                    ? UnpritableMode::cstr
-                    : UnpritableMode::hex);
+                    ? UnprintableMode::cstr
+                    : UnprintableMode::hex);
         }
         else {
             put_utf8_bytes(pos, out, v, min_len,
                 (v.size() < 255)
-                    ? UnpritableMode::cstr
-                    : UnpritableMode::cstr_with_raw_newline);
+                    ? UnprintableMode::cstr
+                    : UnprintableMode::cstr_with_raw_newline);
         }
     }
 }
@@ -627,14 +643,16 @@ namespace ut
         return pos == a.size() && a.size() == b.size();
     }
 
-    void put_view(size_t pos, std::ostream& out, flagged_bytes_view x)
+    void put_view(size_t pos, std::ostream& out, flagged_bytes_view flagged_view)
     {
-        char const* sep = (x.pattern == PatternView::dump) ? "" : "\"";
+        char const* sep = (flagged_view.pattern == PatternView::dump) ? "" : "\"";
         out << sep;
-        switch (x.pattern) {
-            #define CASE(c, print) case PatternView::c: \
-                print(pos, out, x.bytes, x.min_len);    \
+        switch (flagged_view.pattern) {
+            #define CASE(c, print) case PatternView::c:                    \
+                print(pos, out, flagged_view.bytes, flagged_view.min_len); \
                 break
+            CASE(printable_ascii, put_printable_ascii_bytes);
+            CASE(printable_utf8, put_printable_utf8_bytes);
             CASE(ascii, put_ascii_bytes);
             CASE(ascii_nl, put_ascii_bytes2);
             CASE(utf8, put_utf8_bytes);
@@ -654,18 +672,24 @@ namespace ut
             out << s1 << ws << op << ws << s2;
         }
         else {
-            size_t pos = std::mismatch(s1.begin(), s1.end(), s2.begin(), s2.end()).first - s1.begin();
+            std::streamsize pos = std::mismatch(s1.begin(), s1.end(), s2.begin(), s2.end()).first
+                                - s1.begin();
+
             out.write(s1.data(), pos);
-            if (pos != s1.size()) {
+            std::streamsize s1_len = static_cast<std::streamsize>(s1.size());
+            if (pos != s1_len) {
                 out << start_color;
-                out.write(s1.data() + pos, s1.size() - pos);
+                out.write(s1.data() + pos, s1_len - pos);
                 out << reset_color;
             }
+
             out << ws << op << ws;
+
             out.write(s2.data(), pos);
-            if (pos != s2.size()) {
+            std::streamsize s2_len = static_cast<std::streamsize>(s2.size());
+            if (pos != s2_len) {
                 out << start_color;
-                out.write(s2.data() + pos, s2.size() - pos);
+                out.write(s2.data() + pos, s2_len - pos);
                 out << reset_color;
             }
         }

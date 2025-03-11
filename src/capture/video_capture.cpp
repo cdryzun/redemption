@@ -25,7 +25,7 @@
 #include "capture/video_capture.hpp"
 #include "capture/video_recorder.hpp"
 #include "utils/drawable.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 
 #include "core/RDP/RDPDrawable.hpp"
 

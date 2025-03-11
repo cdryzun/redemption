@@ -90,6 +90,17 @@ struct Translator
         return formatted_to_zstr(av, len);
     }
 
+    template<class T, class... Ts>
+    auto fmt_len(TrKeyFmt<T> k, Ts... xs) const noexcept
+    -> decltype(T::check_printf_result(nullptr, 0, xs...))
+    {
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wformat-nonliteral")
+        auto len = std::snprintf(nullptr, 0, tr(TrKey{k.index}).c_str(), xs...);
+        REDEMPTION_DIAGNOSTIC_POP()
+        return len < 0 ? 0u : static_cast<unsigned>(len);
+    }
+
     struct UInt
     {
         UInt(short n) noexcept : n(static_cast<std::size_t>(n < 0 ? -n : n)) {}
@@ -120,9 +131,29 @@ struct Translator
     /// Translate message and choose plural form.
     template<class T, class Int>
     auto nfmt(writable_chars_view av, TrKeyPluralFmt<T> k, Int n) const noexcept
-    -> decltype(this->nfmt(av, n, k, n))
+    -> decltype(this->nfmt(n, av, k, n))
     {
-        return this->nfmt(av, n, k, n);
+        return this->nfmt(n, av, k, n);
+    }
+
+    /// Translate message and choose plural form.
+    template<class T, class... Ts>
+    auto nfmt_len(UInt n, TrKeyPluralFmt<T> k, Ts... xs) const noexcept
+    -> decltype(T::check_printf_result(nullptr, 0, xs...))
+    {
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wformat-nonliteral")
+        auto len = std::snprintf(nullptr, 0, ntr(n.n, TrKey{k.index}).c_str(), xs...);
+        REDEMPTION_DIAGNOSTIC_POP()
+        return len < 0 ? 0u : static_cast<unsigned>(len);
+    }
+
+    /// Translate message and choose plural form.
+    template<class T, class Int>
+    auto nfmt_len(TrKeyPluralFmt<T> k, Int n) const noexcept
+    -> decltype(this->nfmt_len(n, k, n))
+    {
+        return this->nfmt_len(n, k, n);
     }
 
     template<std::size_t N>
@@ -214,5 +245,5 @@ struct TranslationCatalogs
 
 private:
     std::pmr::monotonic_buffer_resource m_mbr;
-    MsgTranslationCatalog m_catalogs[TranslationCatalogsRef::View::fized_size()];
+    MsgTranslationCatalog m_catalogs[TranslationCatalogsRef::View::fixed_size()];
 };

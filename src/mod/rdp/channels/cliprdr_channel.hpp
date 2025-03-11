@@ -22,11 +22,13 @@
 
 #include "core/RDP/clipboard/format_name.hpp"
 #include "core/events.hpp"
-#include "mod/file_validator_service.hpp"
+#include "core/file_validator/file_validator_service.hpp"
+#include "core/file_validator/file_validator_targets.hpp"
 #include "mod/rdp/channels/base_channel.hpp"
 #include "mod/rdp/channels/clipboard_virtual_channels_params.hpp"
 #include "mod/rdp/channels/virtual_channel_filter.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
+#include "translation/translation.hpp"
 #include "utils/sugar/unique_fd.hpp"
 #include "system/ssl_sha256.hpp"
 
@@ -47,14 +49,6 @@ class SessionLogApi;
 class ClipboardVirtualChannel final : public BaseVirtualChannel,
     public RemovableVirtualChannelFilter<CliprdrVirtualChannelProcessor>
 {
-public:
-    struct FileStorage
-    {
-        FdxCapture * fdx_capture;
-        bool always_file_storage;
-        std::string tmp_dir;
-    };
-
 private:
     class ToClientDataSender : public VirtualChannelDataSender
     {
@@ -94,10 +88,9 @@ public:
     ClipboardVirtualChannel(
         EventContainer& events,
         gdi::OsdApi& osd_api,
-        const ClipboardVirtualChannelParams& params,
-        FileValidatorService* file_validator_service,
-        FileStorage file_storage,
+        ClipboardVirtualChannelParams params,
         SessionLogApi& session_log,
+        Translator translator,
         RDPVerbose verbose);
 
     ~ClipboardVirtualChannel();
@@ -119,11 +112,19 @@ public:
     void DLP_antivirus_check_channels_files();
 
 private:
+    struct ValidatorParams
+    {
+        bool enable_text_upload;
+        bool enable_text_download;
+        bool log_if_accepted;
+    };
+
     std::vector<CliprdFileInfo> file_descr_list;
 
     Cliprdr::FormatNameInventory format_name_inventory;
 
-    const ClipboardVirtualChannelParams params;
+    const ClipboardVirtualChannelParams::CliprdrParams params;
+    const ValidatorParams validator_params;
 
     FileValidatorService * file_validator;
 
@@ -374,7 +375,7 @@ private:
         };
 
         ClipCtx(
-            std::string const& target_name,
+            FileValidatorTargets target,
             bool verify_file_before_transfer,
             bool verify_text_before_transfer,
             uint64_t max_file_size_rejected,
@@ -397,7 +398,7 @@ private:
 
         Cliprdr::FormatNameInventory current_format_list;
 
-        const std::string validator_target_name;
+        FileValidatorTargets validator_target;
 
         std::vector<CliprdFileInfo> files;
 

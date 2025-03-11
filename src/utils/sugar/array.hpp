@@ -22,37 +22,30 @@
 
 #include "cxx/cxx.hpp"
 
+#include <initializer_list>
 #include <type_traits>
-#include <array>
 #include <iterator>
 
 namespace utils
 {
-    namespace adl_barrier_ {
-#if __cplusplus < REDEMPTION_CXX_STD_17
-        template<class T, std::size_t n>
-        constexpr T * data(T (&a)[n]) noexcept
-        { return a; }
+    namespace adl_barrier_
+    {
+        using std::data;
+        using std::size;
 
+        // add data() for rvalue because std::data(C&&) use std::data(C const&)
         template<class C>
         constexpr auto data(C && c)
-        noexcept(noexcept(c.data()))
-        -> decltype(c.data())
-        { return c.data(); }
+            noexcept(noexcept(static_cast<C&&>(c).data()))
+        -> decltype(static_cast<C&&>(c).data())
+        { return static_cast<C&&>(c).data(); }
 
-        template<class T, std::size_t n>
-        constexpr std::size_t size(T (&)[n]) noexcept
-        { return n; }
-
+        // add size() for rvalue because std::size(C&&) use std::size(C const&)
         template<class C>
         constexpr auto size(C && c)
-        noexcept(noexcept(c.size()))
-        -> decltype(c.size())
-        { return c.size(); }
-# else
-       using std::data;
-       using std::size;
-# endif
+            noexcept(noexcept(static_cast<C&&>(c).size()))
+        -> decltype(static_cast<C&&>(c).size())
+        { return static_cast<C&&>(c).size(); }
     }  // namespace adl_barrier_
 
     namespace detail_

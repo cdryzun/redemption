@@ -818,18 +818,12 @@ struct EventRef
             event_->set_timeout(trigger_time);
         }
         else {
-            auto& new_event = event_container.event_creator().create_event_timeout(
+            *this = event_container.event_creator().create_event_timeout(
                 name,
                 lifespan,
                 trigger_time,
                 static_cast<TimeoutFn&&>(fn)
             );
-            if (event_) {
-                event_->garbage = true;
-                event_->event_ref = nullptr;
-            }
-            event_ = &new_event;
-            event_->event_ref = this;
         }
     }
 

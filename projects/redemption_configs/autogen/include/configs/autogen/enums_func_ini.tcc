@@ -264,37 +264,37 @@ parse_error parse_from_cfg(Language & x, ::configs::spec_type<std::string> /*typ
         x, value, "bad value, expected: en, fr");
 }
 
-inline constexpr zstring_view enum_zstr_ClipboardEncodingType[] {
+inline constexpr zstring_view enum_zstr_VncClipboardEncoding[] {
     "utf-8"_zv,
     "latin1"_zv,
 };
 
-inline constexpr zstring_view enum_zint_ClipboardEncodingType[] {
+inline constexpr zstring_view enum_zint_VncClipboardEncoding[] {
     "0"_zv,
     "1"_zv,
 };
 
 zstring_view assign_zbuf_from_cfg(
     writable_chars_view zbuf,
-    cfg_s_type<ClipboardEncodingType> /*type*/,
-    ClipboardEncodingType x
+    cfg_s_type<VncClipboardEncoding> /*type*/,
+    VncClipboardEncoding x
 ){
     (void)zbuf;
-    assert(is_valid_enum_value<ClipboardEncodingType>::is_valid(static_cast<uint8_t>(x)));
-    return enum_zint_ClipboardEncodingType[static_cast<uint8_t>(x)];
+    assert(is_valid_enum_value<VncClipboardEncoding>::is_valid(static_cast<uint8_t>(x)));
+    return enum_zint_VncClipboardEncoding[static_cast<uint8_t>(x)];
 }
 
 zstring_view assign_zbuf_from_cfg(
     writable_chars_view zbuf,
     cfg_s_type<std::string> /*type*/,
-    ClipboardEncodingType x
+    VncClipboardEncoding x
 ){
     (void)zbuf;
-    assert(is_valid_enum_value<ClipboardEncodingType>::is_valid(static_cast<uint8_t>(x)));
-    return enum_zstr_ClipboardEncodingType[static_cast<uint8_t>(x)];
+    assert(is_valid_enum_value<VncClipboardEncoding>::is_valid(static_cast<uint8_t>(x)));
+    return enum_zstr_VncClipboardEncoding[static_cast<uint8_t>(x)];
 }
 
-parse_error parse_from_cfg(ClipboardEncodingType & x, ::configs::spec_type<ClipboardEncodingType> /*type*/, bytes_view value)
+parse_error parse_from_cfg(VncClipboardEncoding & x, ::configs::spec_type<VncClipboardEncoding> /*type*/, bytes_view value)
 {
     using ul = uint8_t;
 
@@ -307,19 +307,19 @@ parse_error parse_from_cfg(ClipboardEncodingType & x, ::configs::spec_type<Clipb
         return err;
     }
 
-    x = static_cast<ClipboardEncodingType>(xi);
+    x = static_cast<VncClipboardEncoding>(xi);
     return no_parse_error;
 }
 
 
-inline constexpr std::pair<chars_view, ClipboardEncodingType> enum_str_value_ClipboardEncodingType[] {
-    {"UTF-8"_av, ClipboardEncodingType::utf8},
-    {"LATIN1"_av, ClipboardEncodingType::latin1},
+inline constexpr std::pair<chars_view, VncClipboardEncoding> enum_str_value_VncClipboardEncoding[] {
+    {"UTF-8"_av, VncClipboardEncoding::utf8},
+    {"LATIN1"_av, VncClipboardEncoding::latin1},
 };
 
-parse_error parse_from_cfg(ClipboardEncodingType & x, ::configs::spec_type<std::string> /*type*/, bytes_view value)
+parse_error parse_from_cfg(VncClipboardEncoding & x, ::configs::spec_type<std::string> /*type*/, bytes_view value)
 {
-    return parse_str_value_pairs<enum_str_value_ClipboardEncodingType>(
+    return parse_str_value_pairs<enum_str_value_VncClipboardEncoding>(
         x, value, "bad value, expected: utf-8, latin1");
 }
 
@@ -777,13 +777,13 @@ parse_error parse_from_cfg(SessionProbeOnLaunchFailure & x, ::configs::spec_type
         x, value, "bad value, expected: ignore_and_continue, disconnect_user, retry_without_session_probe");
 }
 
-inline constexpr zstring_view enum_zstr_VncBogusClipboardInfiniteLoop[] {
+inline constexpr zstring_view enum_zstr_VncBogusClipboardInfiniteLoopStrategy[] {
     "delayed"_zv,
     "duplicated"_zv,
     "continued"_zv,
 };
 
-inline constexpr zstring_view enum_zint_VncBogusClipboardInfiniteLoop[] {
+inline constexpr zstring_view enum_zint_VncBogusClipboardInfiniteLoopStrategy[] {
     "0"_zv,
     "1"_zv,
     "2"_zv,
@@ -791,25 +791,25 @@ inline constexpr zstring_view enum_zint_VncBogusClipboardInfiniteLoop[] {
 
 zstring_view assign_zbuf_from_cfg(
     writable_chars_view zbuf,
-    cfg_s_type<VncBogusClipboardInfiniteLoop> /*type*/,
-    VncBogusClipboardInfiniteLoop x
+    cfg_s_type<VncBogusClipboardInfiniteLoopStrategy> /*type*/,
+    VncBogusClipboardInfiniteLoopStrategy x
 ){
     (void)zbuf;
-    assert(is_valid_enum_value<VncBogusClipboardInfiniteLoop>::is_valid(static_cast<uint8_t>(x)));
-    return enum_zint_VncBogusClipboardInfiniteLoop[static_cast<uint8_t>(x)];
+    assert(is_valid_enum_value<VncBogusClipboardInfiniteLoopStrategy>::is_valid(static_cast<uint8_t>(x)));
+    return enum_zint_VncBogusClipboardInfiniteLoopStrategy[static_cast<uint8_t>(x)];
 }
 
 zstring_view assign_zbuf_from_cfg(
     writable_chars_view zbuf,
     cfg_s_type<std::string> /*type*/,
-    VncBogusClipboardInfiniteLoop x
+    VncBogusClipboardInfiniteLoopStrategy x
 ){
     (void)zbuf;
-    assert(is_valid_enum_value<VncBogusClipboardInfiniteLoop>::is_valid(static_cast<uint8_t>(x)));
-    return enum_zstr_VncBogusClipboardInfiniteLoop[static_cast<uint8_t>(x)];
+    assert(is_valid_enum_value<VncBogusClipboardInfiniteLoopStrategy>::is_valid(static_cast<uint8_t>(x)));
+    return enum_zstr_VncBogusClipboardInfiniteLoopStrategy[static_cast<uint8_t>(x)];
 }
 
-parse_error parse_from_cfg(VncBogusClipboardInfiniteLoop & x, ::configs::spec_type<VncBogusClipboardInfiniteLoop> /*type*/, bytes_view value)
+parse_error parse_from_cfg(VncBogusClipboardInfiniteLoopStrategy & x, ::configs::spec_type<VncBogusClipboardInfiniteLoopStrategy> /*type*/, bytes_view value)
 {
     using ul = uint8_t;
 
@@ -822,20 +822,20 @@ parse_error parse_from_cfg(VncBogusClipboardInfiniteLoop & x, ::configs::spec_ty
         return err;
     }
 
-    x = static_cast<VncBogusClipboardInfiniteLoop>(xi);
+    x = static_cast<VncBogusClipboardInfiniteLoopStrategy>(xi);
     return no_parse_error;
 }
 
 
-inline constexpr std::pair<chars_view, VncBogusClipboardInfiniteLoop> enum_str_value_VncBogusClipboardInfiniteLoop[] {
-    {"DELAYED"_av, VncBogusClipboardInfiniteLoop::delayed},
-    {"DUPLICATED"_av, VncBogusClipboardInfiniteLoop::duplicated},
-    {"CONTINUED"_av, VncBogusClipboardInfiniteLoop::continued},
+inline constexpr std::pair<chars_view, VncBogusClipboardInfiniteLoopStrategy> enum_str_value_VncBogusClipboardInfiniteLoopStrategy[] {
+    {"DELAYED"_av, VncBogusClipboardInfiniteLoopStrategy::delayed},
+    {"DUPLICATED"_av, VncBogusClipboardInfiniteLoopStrategy::duplicated},
+    {"CONTINUED"_av, VncBogusClipboardInfiniteLoopStrategy::continued},
 };
 
-parse_error parse_from_cfg(VncBogusClipboardInfiniteLoop & x, ::configs::spec_type<std::string> /*type*/, bytes_view value)
+parse_error parse_from_cfg(VncBogusClipboardInfiniteLoopStrategy & x, ::configs::spec_type<std::string> /*type*/, bytes_view value)
 {
-    return parse_str_value_pairs<enum_str_value_VncBogusClipboardInfiniteLoop>(
+    return parse_str_value_pairs<enum_str_value_VncBogusClipboardInfiniteLoopStrategy>(
         x, value, "bad value, expected: delayed, duplicated, continued");
 }
 

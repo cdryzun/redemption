@@ -92,8 +92,13 @@ SIEM_FILTERS_RDP_SESSION = (
 )
 
 SIEM_FILTERS_VNC_SESSION = (
+    ('cb-copying-pasting-file-from-remote-session', 'CB_COPYING_PASTING_FILE_FROM_REMOTE_SESSION'),
+    ('cb-copying-pasting-file-to-remote-session', 'CB_COPYING_PASTING_FILE_TO_REMOTE_SESSION'),
     ('certificate-check-success', 'CERTIFICATE_CHECK_SUCCESS'),
     ('connection-failed', 'CONNECTION_FAILED'),
+    ('file-blocked', 'FILE_BLOCKED'),
+    ('file-verification', 'FILE_VERIFICATION'),
+    ('file-verification-error', 'FILE_VERIFICATION_ERROR'),
     ('kbd-input', 'KBD_INPUT'),
     ('kill-pattern-detected', 'KILL_PATTERN_DETECTED'),
     ('notify-pattern-detected', 'NOTIFY_PATTERN_DETECTED'),

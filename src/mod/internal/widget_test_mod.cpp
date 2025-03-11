@@ -6,11 +6,9 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "core/front_api.hpp"
 #include "mod/internal/widget_test_mod.hpp"
-#include "utils/theme.hpp"
 
-#include "core/font.hpp"
-#include "gdi/text.hpp"
 
+class Theme;
 
 // Pimpl
 struct WidgetTestMod::WidgetTestModPrivate
@@ -30,29 +28,6 @@ struct WidgetTestMod::WidgetTestModPrivate
         (void)front;
         (void)font;
         (void)theme;
-
-
-        int dy = 0;
-        for (uint32_t uni : {'a', '!', '}'})
-        {
-            auto * fc = &font.item(uni).view;
-            LOG(LOG_DEBUG, "offsetx: %d  width: %d  incby: %d", fc->offsetx, fc->width, fc->incby);
-
-            decltype(fc) a[]{fc, fc};
-
-            gdi::draw_text(
-                gd,
-                0,
-                dy,
-                font.max_height(),
-                gdi::DrawTextPadding{},
-                {a, 2},
-                Widget::Color{NamedBGRColor::BLACK},
-                Widget::Color{NamedBGRColor::RED},
-                {0, 0, width, height}
-            );
-            dy += 20;
-        }
     }
 
     // gdi::GraphicApi & gd;

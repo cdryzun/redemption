@@ -189,10 +189,6 @@ enum {
     , CB_UNLOCK_CLIPDATA       = 0x000B
 };
 
-enum {
-      CB_CHUNKED_FORMAT_DATA_RESPONSE = 0xFFFF
-};
-
 inline static const char * get_msgType_name(uint16_t msgType) {
     switch (msgType) {
         case CB_MONITOR_READY:         return "CB_MONITOR_READY";
@@ -206,7 +202,6 @@ inline static const char * get_msgType_name(uint16_t msgType) {
         case CB_FILECONTENTS_RESPONSE: return "CB_FILECONTENTS_RESPONSE";
         case CB_LOCK_CLIPDATA:         return "CB_LOCK_CLIPDATA";
         case CB_UNLOCK_CLIPDATA:       return "CB_UNLOCK_CLIPDATA";
-        case CB_CHUNKED_FORMAT_DATA_RESPONSE: return "CB_CHUNKED_FORMAT_DATA_RESPONSE";
     }
 
     return "<unknown>";
@@ -234,6 +229,10 @@ inline static const char * get_msgType_name(uint16_t msgType) {
 // | 0x0004           | List Response PDU to indicate the format names are in  |
 // |                  | ASCII 8.                                               |
 // +------------------+--------------------------------------------------------+
+
+// dataLen (4 bytes): An unsigned, 32-bit integer that specifies the size, in bytes,
+//  of the data which follows the Clipboard PDU Header
+
 
 enum {
       CB_RESPONSE_NONE = 0x0000
@@ -636,12 +635,6 @@ enum {
     CB_HUGE_FILE_SUPPORT_ENABLED = 0x00000020
 };
 
-enum {
-    CB_MINIMUM_WINDOWS_CLIENT_GENERAL_CAPABILITY_FLAGS_ =
-        (CB_USE_LONG_FORMAT_NAMES | CB_STREAM_FILECLIP_ENABLED |
-         CB_FILECLIP_NO_FILE_PATHS | CB_CAN_LOCK_CLIPDATA)
-};
-
 inline static zstring_view get_generalFlag_name(uint16_t msgFlag)
 {
     switch (msgFlag) {
@@ -803,11 +796,10 @@ inline uint32_t extract_clipboard_general_flags_capability(
 
             if (verbose) {
                 LOG(LOG_INFO, "GeneralCapabilitySet:"
-                    " capabilitySetType=0x%04x:CB_CAPSTYPE_GENERAL"
+                    " capabilitySetType=CB_CAPSTYPE_GENERAL"
                     " lengthCapability=0x%04x"
                     " version=0x%08x"
                     " generalFlags=0x%08x: %s",
-                    RDPECLIP::CB_CAPSTYPE_GENERAL,
                     lengthCapability,
                     version,
                     generalFlags, RDPECLIP::generalFlags_to_string(generalFlags));
@@ -1110,7 +1102,6 @@ struct FormatDataRequestPDU
 enum : uint32_t {
     FILECONTENTS_SIZE              = 0x00000001
   , FILECONTENTS_RANGE             = 0x00000002
-  , FILECONTENTS_SIZE_CB_REQUESTED = 0x00000008
 };
 
 

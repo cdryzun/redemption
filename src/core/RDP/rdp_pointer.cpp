@@ -829,6 +829,73 @@ constexpr auto slashed_circle_pointer_v = predefined_pointer(32, 32,
     /* 0ba0 */ "................................"
     , 15, 16
 );
+/* 0000 */
+/* 0060 */
+/* 00c0 */
+/* 0120 */
+/* 0180 */
+/* 01e0 */
+/* 0240 */
+/* 02a0 */
+/* 0300 */
+/* 0360 */
+/* 03c0 */
+/* 0420 */
+/* 0480 */
+/* 04e0 */
+/* 0540 */
+/* 05a0 */
+/* 0600 */
+/* 0660 */
+/* 06c0 */
+/* 0720 */
+/* 0780 */
+/* 07e0 */
+/* 0840 */
+/* 08a0 */
+/* 0900 */
+/* 0960 */
+/* 09c0 */
+/* 0a20 */
+/* 0a80 */
+/* 0ae0 */
+/* 0b40 */
+/* 0ba0 */
+constexpr auto link_pointer_pointer_v = predefined_pointer(32, 32,
+    /* 0000 */ "................................"
+    /* 0060 */ "................................"
+    /* 00c0 */ "................................"
+    /* 0120 */ "................................"
+    /* 0180 */ "................................"
+    /* 01e0 */ "................................"
+    /* 0240 */ "................................"
+    /* 02a0 */ "................................"
+    /* 0300 */ "................................"
+    /* 0b40 */ "...........XXXXXXXXXX..........."
+    /* 0a80 */ "...........X++++++++X..........."
+    /* 0ae0 */ "...........X++++++++X..........."
+    /* 09c0 */ "..........X++++++++++X.........."
+    /* 0a20 */ "..........X++++++++++X.........."
+    /* 0960 */ ".........X+++++++++++X.........."
+    /* 0900 */ ".........X++++++++++++X........."
+    /* 08a0 */ "........X+++++++++++++X........."
+    /* 0840 */ "........X+X+++++++++++X........."
+    /* 07e0 */ ".......X++X+++++++++++X........."
+    /* 0780 */ "......X+++X+++++++++++X........."
+    /* 0720 */ "......X++XX++++++++X++X........."
+    /* 06c0 */ "......XXX.X++X++X++X++X........."
+    /* 0660 */ "..........X++X++X++X+X.........."
+    /* 0600 */ "..........X++X++X++XX..........."
+    /* 05a0 */ "..........X++X++XXX............."
+    /* 0540 */ "..........X++XXX................"
+    /* 03c0 */ "..........X++X.................."
+    /* 0420 */ "..........X++X.................."
+    /* 0480 */ "..........X++X.................."
+    /* 04e0 */ "..........X++X.................."
+    /* 0360 */ "...........XX..................."
+    /* 0ba0 */ "................................"
+    , 11, 1
+);
 
 } // anonymous namespace
 
@@ -842,13 +909,13 @@ RdpPointer const& dot_pointer() noexcept { return dot_pointer_v; }
 RdpPointer const& null_pointer() noexcept { return null_pointer_v; }
 RdpPointer const& system_normal_pointer() noexcept { return system_normal_pointer_v; }
 RdpPointer const& slashed_circle_pointer() noexcept { return slashed_circle_pointer_v; }
+RdpPointer const& link_pointer_pointer() noexcept { return link_pointer_pointer_v; }
 
 RdpPointer const& predefined_pointer_to_pointer(PredefinedPointer pointer) noexcept
 {
     switch (pointer)
     {
         case PredefinedPointer::SystemNormal: return system_normal_pointer();
-        case PredefinedPointer::SlashedCircle: return slashed_circle_pointer();
         case PredefinedPointer::Edit: return edit_pointer();
         case PredefinedPointer::Null: return null_pointer();
         case PredefinedPointer::Dot:  return dot_pointer();
@@ -856,6 +923,8 @@ RdpPointer const& predefined_pointer_to_pointer(PredefinedPointer pointer) noexc
         case PredefinedPointer::NESW: return size_NESW_pointer();
         case PredefinedPointer::NWSE: return size_NWSE_pointer();
         case PredefinedPointer::WE:   return size_WE_pointer();
+        case PredefinedPointer::SlashedCircle: return slashed_circle_pointer();
+        case PredefinedPointer::Pointer: return link_pointer_pointer();
 
         case PredefinedPointer::Normal:
             break;

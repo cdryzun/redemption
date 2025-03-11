@@ -30,15 +30,1493 @@
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/RDP/clipboard/format_list_serialize.hpp"
 #include "core/app_path.hpp"
+#include "core/file_validator/file_validator_service.hpp"
+#include "core/WinNT/chrono.hpp"
 #include "gdi/screen_functions.hpp"
 #include "RAIL/client_execute.hpp"
 #include "utils/sugar/chars_to_int.hpp"
 #include "utils/d3des.hpp"
 #include "utils/diffiehellman.hpp"
+#include "utils/mathutils.hpp"
 #include "utils/hexdump.hpp"
+#include "utils/sugar/static_array_to_hexadecimal_chars.hpp"
 #include "system/tls_check_certificate.hpp"
+#include "translation/trkeys.hpp"
+#include "capture/fdx_capture.hpp"
+
+#include <new>
 
 using namespace std::literals::chrono_literals;
+
+
+template<class PDU>
+static inline void log_clipboard_pdu(VNCVerbose verbose, PDU const & pdu)
+{
+    pdu.log_if(
+        flags_any(verbose, VNCVerbose::clipboard),
+        "mod_vnc: FileTranfer: ",
+        LOG_DEBUG
+    );
+}
+
+
+namespace
+{
+    template<class F>
+    auto from_vnc_cb(F) noexcept
+    {
+        return [](void* ctx, auto... xs) {
+            return F{}(*static_cast<mod_vnc*>(ctx), xs...);
+        };
+    }
+
+    void log_uvnc_buffer_error(
+        char const * ctx_msg_error,
+        UVNC::FileTransfer::WriteErrorCode ec)
+    {
+        using ErrorCode = UVNC::FileTransfer::WriteErrorCode;
+
+        char const * err_msg = "";
+        #define CASE(name) case ErrorCode::name: err_msg = #name; break
+        switch (ec)
+        {
+            case ErrorCode::NoError: break;
+            CASE(TooLargeDataLength);
+            CASE(TooSmallBuffer);
+        }
+        #undef CASE
+        LOG(LOG_ERR, "mod_vnc::FileTransfer::%s: error to send file transfer data: %s (%d)",
+            ctx_msg_error, err_msg, ec);
+    }
+}
+
+
+enum class mod_vnc::FtFlags : uint32_t
+{
+    FtSupported = 1 << 0,
+    FtAccessRequested = 1 << 1,
+    FtAccessYes = 1 << 2,
+    FtAccessNo = 1 << 3,
+
+    // collect files for GUI
+    VncDirContent_ForGui = 1 << 6,
+    // collect files for cb buffer transfer
+    VncDirContent_ForCbList = 1 << 7,
+    // cb buffer transfer collect is completed
+    VncDirContent_CbListCompleted = 1 << 8,
+    // file list requested while VncDirContent_ForCbList
+    VncDirContent_WithCbFileRepDelayed = 1 << 9,
+};
+
+
+enum class mod_vnc::TransferValidatorStatus : uint8_t
+{
+    WaitResponse,
+    IsOk,
+    IsRejected,
+};
+
+
+struct mod_vnc::TransferedFileCtx::TflFile final
+    : FdxCapture::TflFile
+{};
+
+
+mod_vnc::TransferedFileCtx::Utf8FileName::Utf8FileName(const Utf8FileName& other) noexcept
+{
+    *this = other;
+}
+
+mod_vnc::TransferedFileCtx::Utf8FileName &
+mod_vnc::TransferedFileCtx::Utf8FileName::operator=(const Utf8FileName& other) noexcept
+{
+    m_len = other.m_len;
+    memcpy(m_buffer, other.m_buffer, m_len);
+    return *this;
+}
+
+
+mod_vnc::TransferedFileCtx::File::File() = default;
+mod_vnc::TransferedFileCtx::File::~File() = default;
+
+
+void mod_vnc::TransferedFileCtx::Utf8FileName::reset(VNC::UVncFile::PathView file_name) noexcept
+{
+    constexpr auto to_utf8 = cp1252_to_utf8;
+    using Buffer = decltype(to_utf8.buffer_from(file_name.native()));
+
+    static_assert(Buffer::view_t::at_most == sizeof(m_buffer));
+
+    auto buffer_view = make_writable_bounded_array_view(m_buffer);
+    m_len = to_utf8(file_name.native(), buffer_view).msize();
+}
+
+
+// TODO remove some members
+struct mod_vnc::FT
+{
+    static const uint32_t requested_nb_bytes = 256 * 1024;
+
+    using Utf8FileName = TransferedFileCtx::Utf8FileName;
+
+    static VNC::CliprdrAdapter::Callbacks
+    make_cliprdr_adapter_callbacks(mod_vnc & self) noexcept
+    {
+        return VNC::CliprdrAdapter::Callbacks
+        {
+            .ctx = &self,
+            .send_to_front_channel = from_vnc_cb([](
+                mod_vnc & self,
+                bytes_view data,
+                size_t total_len,
+                VNC::ChannelFlags channel_flags
+            ){
+                self.send_to_cliprdr(data, total_len, channel_flags);
+            }),
+            .send_to_mod_channel = from_vnc_cb([](mod_vnc & self, bytes_view data){
+                self.t.send(data);
+            }),
+            .receive_partial_file_list = from_vnc_cb([](
+                mod_vnc & self,
+                bytes_view data,
+                writable_sized_bytes_view<VNC::FileDescriptor::pdu_len()> buffer,
+                uint16_t buffer_offset,
+                VNC::ChannelFlags channel_flags,
+                uint32_t total_item
+            ){
+                if (!self.cliprdr.is_requested_file_list())
+                {
+                    return buffer_offset;
+                }
+
+                if (flags_any(channel_flags, VNC::ChannelFlags::First))
+                {
+                    auto now = self.events_guard.event_container().get_time_base().real_time;
+                    auto clock = clock_cast<WinNtClock>(now);
+                    self.cliprdr_file_list.start_new_list(to_win_nt_utime(clock), total_item);
+                    // TODO error when ^ returns false
+                    self.ft_gui.client_cb_file_list_start(total_item);
+                }
+
+                if (!self.cliprdr_file_list.is_full())
+                {
+                    VNC::CliprdrFileList::AddFileResult add_file_result {};
+
+                    auto parse_result = VNC::FileListParser::parse(
+                        data, buffer_offset, buffer,
+                        [&](VNC::FileDescriptor const& fd){
+                            log_clipboard_pdu(self.verbose, fd);
+
+                            if (FT::is_file_too_large(
+                                    self,
+                                    FileValidatorTargets::Upload,
+                                    fd.file_size()
+                            ))
+                            {
+                                // TODO add message error
+                                return false;
+                            }
+
+                            // TODO log when false
+                            // TODO ignore big fail when huge capability not supported
+                            add_file_result = self.cliprdr_file_list.add_file(fd);
+                            return bool(add_file_result);
+                        }
+                    );
+                    // TODO check add_file_result
+                    // TODO error when false
+                    // TODO ignore other data when false
+                    parse_result.ok;
+                    buffer_offset = parse_result.new_buffer_offset;
+                    auto nb_files = self.cliprdr_file_list.nb_files();
+                    self.ft_gui.client_cb_file_list_set_nb_item(nb_files);
+                }
+                else
+                {
+                    // TODO list is full
+                }
+
+                if (flags_any(channel_flags, VNC::ChannelFlags::Last))
+                {
+                    self.ft_gui.client_cb_file_list_end();
+                }
+
+                return buffer_offset;
+            }),
+            .receive_file_contents_response = from_vnc_cb([](
+                mod_vnc & self,
+                bytes_view data,
+                uint32_t remaining_len,
+                bool ok,
+                VNC::ChannelFlags channel_flags
+            ){
+                LOG(LOG_DEBUG, "receive_file_contents_response ok = %d", ok);
+                hexdump(data); // TODO LOG_DEBUG
+
+                // TODO send abort when error
+
+                // TODO utility log function
+                if (flags_any(self.verbose, VNCVerbose::clipboard)
+                 && flags_any(channel_flags, VNC::ChannelFlags::First)
+                 && ok) [[unlikely]]
+                {
+                    VNC::FileContentsResponseWithoutData resp;
+                    InStream in_stream{data};
+                    if (resp.read(in_stream))
+                    {
+                        log_clipboard_pdu(self.verbose, resp);
+                    }
+                    else
+                    {
+                        LOG(LOG_WARNING, "mod_vnc::receive_file_contents_response: invalide FileContentsResponse");
+                    }
+                }
+
+                namespace UFT = UVNC::FileTransfer;
+
+                if (auto resp_result = self.cliprdr_file_list.receive_cb_file_contents_response(
+                    data, remaining_len, ok, channel_flags
+                ))
+                {
+                    data = resp_result.data;
+
+                    FT::file_transfer_update(self, data);
+
+                    StaticOutStream<UFT::max_block_size_authorized> out_stream;
+                    auto block_size = self.ft_reader.block_size();
+
+                    // write cb file data to vnc
+                    for (UFT::FilePacketResult result
+                      ; !(result = UFT::write_multi_uncompressed_file_packets(
+                            out_stream, data, block_size));
+                    )
+                    {
+                        assert(result.ec == UFT::WriteErrorCode::TooSmallBuffer);
+                        data = result.remaining_in_data;
+                        self.t.send(out_stream.get_produced_bytes());
+                        out_stream.rewind();
+                    }
+
+                    LOG(LOG_DEBUG, "eof: %d", resp_result.file_is_complete);
+
+                    // end of file
+                    if (resp_result.file_is_complete)
+                    {
+                        FT::file_transfer_completed(self, Mwrm3::Direction::ClientToServer);
+
+                        // write end of file
+                        while (is_err(UFT::write_end_of_file(out_stream)))
+                        {
+                            self.t.send(out_stream.get_produced_bytes());
+                            out_stream.rewind();
+                        }
+
+                        // write next items
+                        FT::copy_item_to_vnc(out_stream, self);
+                    }
+
+                    // send buffer
+                    self.t.send(out_stream.get_produced_bytes());
+
+                    // request more data
+                    if (!resp_result.file_is_complete
+                     && flags_any(channel_flags, VNC::ChannelFlags::Last))
+                    {
+                        out_stream.rewind();
+                        FT::request_cb_file_range_unchecked(self, out_stream);
+                    }
+
+                    FT::cb_to_vnc_progression(self, {
+                        .items = resp_result.file_is_complete,
+                        .bytes = resp_result.data.size(),
+                        .total_bytes_adjust = resp_result.delta_file_size,
+                    });
+                }
+                else
+                {
+                    self.t.send(UFT::abort_file_transfer_pdu);
+                    auto * file = self.cliprdr_file_list.get_file(resp_result.lindex);
+
+                    if (file)
+                    {
+                        FT::file_transfer_stopped(
+                            self,
+                            Mwrm3::Direction::ClientToServer,
+                            FT::TransferStopReason::ProtocolError
+                        );
+                    }
+
+                    self.ft_gui.transfer_progression(FT::progress_error(file));
+                }
+            }),
+            .receive_file_data_request = from_vnc_cb([](mod_vnc & self){
+                LOG(LOG_DEBUG, "receive_file_data_request | ft_flags=0x%x", self.ft_flags);
+
+                if (flags_any(self.ft_flags, FtFlags::VncDirContent_CbListCompleted))
+                {
+                    FT::send_cb_file_list(self);
+                }
+                else if (flags_any(self.ft_flags, FtFlags::VncDirContent_ForCbList))
+                {
+                    self.ft_flags |= FtFlags::VncDirContent_WithCbFileRepDelayed;
+                }
+                else
+                {
+                    // TODO or empty list ?
+                    self.send_to_cliprdr(VNC::format_data_response_fail_with_header);
+                }
+            }),
+            .receive_file_contents_request = from_vnc_cb([](
+                mod_vnc & self, VNC::FileContentsRequest const & req
+            ){
+                LOG(LOG_DEBUG, "receive_file_contents_request | ft_flags=0x%x", self.ft_flags);
+
+                FT::send_transfer_result(self, self.uvnc_file_list.rdp_requested_file(req));
+            }),
+            .receive_capability_flags = from_vnc_cb([](mod_vnc & self) {
+                FT::init_max_blocked_file_size_rejected(self);
+            })
+        };
+    }
+
+    static VNC::FileTransferGui::Callbacks
+    make_ft_gui_callbacks(mod_vnc & self) noexcept
+    {
+        return VNC::FileTransferGui::Callbacks
+        {
+            .ctx = &self,
+            .close_gui = from_vnc_cb([](mod_vnc & self) {
+                FT::close_gui(self);
+            }),
+            .open_dir = from_vnc_cb([](mod_vnc & self, VNC::UVncFile::PathView path) {
+                auto buffer = cp1252_to_utf8.buffer_from(path.native());
+                LOG(LOG_DEBUG, "open_dir: %.*s", static_cast<int>(buffer.av().size()), buffer.av().as_charp());
+
+                // TODO support of multi go to parent
+
+                StaticOutStream<UVNC::FileTransfer::max_no_data_packet_size> out_stream;
+                return FT::open_dir_and_send(out_stream, self, path);
+            }),
+            .copy_cb_to_vnc = from_vnc_cb([](mod_vnc & self) {
+                auto current_dir = self.ft_gui.current_directory();
+
+                auto buffer = cp1252_to_utf8.buffer_from(current_dir.native());
+                LOG(LOG_DEBUG, "to vnc: current_dir: %.*s",
+                    static_cast<int>(buffer.av().size()), buffer.av().as_charp());
+
+                self.cliprdr_file_list.reset_transfer();
+                FT::copy_item_to_vnc(self);
+                self.ft_gui.transfer_start(
+                    VNC::FileTransferGui::Direction::CbToVnc,
+                    {
+                        .items = self.cliprdr_file_list.nb_files(),
+                        .bytes = self.cliprdr_file_list.get_total_file_size()
+                    }
+                );
+            }),
+            .copy_vnc_to_cb = from_vnc_cb([](
+                mod_vnc & self,
+                VNC::FileTransferGui::SelectedVncFiles files
+            ){
+                LOG(LOG_DEBUG, "to cb | ft_flags=0x%x", self.ft_flags);
+
+                auto current_dir = self.ft_gui.current_directory();
+                FT::send_transfer_result(self, self.uvnc_file_list.start_new_list(current_dir));
+
+                auto buffer1 = cp1252_to_utf8.buffer_from(current_dir.native());
+
+                for (auto && file : files)
+                {
+                    auto buffer2 = cp1252_to_utf8.buffer_from(file.file_name.native());
+                    LOG(LOG_DEBUG, "%.*s|%.*s|",
+                        static_cast<int>(buffer1.av().size()), buffer1.av().data(),
+                        static_cast<int>(buffer2.av().size()), buffer2.av().as_charp());
+
+                    if (FT::is_file_too_large(self, FileValidatorTargets::Download, 1))
+                    {
+                        self.session_log.log6(LogId::FILE_BLOCKED, {
+                            KVLog("direction"_av, "DOWN"_av),
+                            KVLog("file_name"_av, FT::Utf8FileName{file.file_name}.av()),
+                        });
+                        // TODO gui should prevent selection of file too large
+                        continue;
+                    }
+
+                    // TODO gui error
+                    self.uvnc_file_list.push_file_in_current_dir(file);
+                }
+
+                // TODO when list not empty
+                self.cliprdr.send_format_list_with_files();
+                self.ft_gui.vnc_to_rdp_file_list_start();
+
+                FT::req_vnc_files_recursively(self);
+            }),
+            .stop_transfer = from_vnc_cb([](mod_vnc & self){
+                LOG(LOG_DEBUG, "stop transfer");
+
+                if (auto * file = self.cliprdr_file_list.get_current_file())
+                {
+                    FT::file_transfer_stopped(
+                        self,
+                        Mwrm3::Direction::ClientToServer,
+                        FT::TransferStopReason::UserRequest
+                    );
+                }
+
+                FT::send_transfer_result(self, self.uvnc_file_list.stop_file_transfer());
+                self.ft_gui.transfer_progression(VNC::FileTransferGui::Progression::abort());
+            }),
+        };
+    }
+
+    static UVNCFileTransferReader::ReceivePacketCallbacks
+    make_uvnc_file_transfer_reader_callback(mod_vnc & self) noexcept
+    {
+        return UVNCFileTransferReader::ReceivePacketCallbacks
+        {
+            .ctx = &self,
+            .error = [](void*, UVNCFileTransferReader::ProtocolError err)
+            {
+                LOG(LOG_DEBUG, "Error: %u | %u", err.type, err.max_or_min_len);
+            },
+            .parsing_header = from_vnc_cb([](mod_vnc & self)
+            {
+                auto header = self.ft_reader.header();
+                header.log("Header: ", LOG_DEBUG);
+            }),
+            .drive_list = from_vnc_cb([](mod_vnc & self, UVNC::FileTransfer::DrivesList drives)
+            {
+                LOG(LOG_DEBUG, "DriveList | ft_flags=0x%x", self.ft_flags);
+
+                if (!flags_any(self.ft_flags, FtFlags::VncDirContent_ForGui))
+                {
+                    return ;
+                }
+
+                self.ft_flags &= ~FtFlags::VncDirContent_ForGui;
+
+                self.ft_gui.server_vnc_file_list_start(VNC::UVncFile::PathView{});
+                for (auto drive : drives)
+                {
+                    LOG(LOG_DEBUG, " - %c: | %c", drive.drive_letter, drive.drive_type);
+                    self.ft_gui.server_vnc_file_list_add_drive(drive.drive_letter, drive.drive_type);
+                }
+                self.ft_gui.server_vnc_file_list_add_shorcuts();
+                self.ft_gui.server_vnc_file_list_end();
+            }),
+            .start_list_dir = from_vnc_cb([](mod_vnc & self, UVNC::FileTransfer::Path path)
+            {
+                auto buffer = cp1252_to_utf8.buffer_from(path.native());
+                LOG(LOG_DEBUG, "Requested dir%s%.*s | ft_flags=0x%x", path.empty() ? " error" : ": ",
+                    static_cast<int>(buffer.av().size()), buffer.av().data(), self.ft_flags);
+
+                if (flags_any(self.ft_flags, FtFlags::VncDirContent_ForGui))
+                {
+                    if (!path.empty())
+                    {
+                        self.ft_gui.server_vnc_file_list_start(path);
+                    }
+                    // error
+                    else
+                    {
+                        self.ft_gui.server_vnc_file_list_error();
+                    }
+                }
+                else if (flags_any(self.ft_flags, FtFlags::VncDirContent_ForCbList))
+                {
+                    // error
+                    if (path.empty())
+                    {
+                        if (flags_any(self.ft_flags, FtFlags::VncDirContent_WithCbFileRepDelayed))
+                        {
+                            self.ft_flags &= ~FtFlags::VncDirContent_WithCbFileRepDelayed;
+                            self.send_to_cliprdr(VNC::format_data_response_fail_with_header);
+                        }
+
+                        // TODO specific error
+                        self.ft_gui.server_vnc_file_list_error();
+                    }
+                }
+            }),
+            .file_info = from_vnc_cb([](mod_vnc & self, UVNC::FileTransfer::FileInfoPDU file_info)
+            {
+                LOG(LOG_DEBUG, "FileInfo: attrs=%s(%x) | creat=%lu | access=%lu | write=%lu | fsize=%lu | fname=%.*s (len=%zu) | ft_flags=0x%x",
+                    file_attribute_flags_to_string(file_info.attributes),
+                    file_info.attributes,
+                    file_info.creation_time,
+                    file_info.last_access_time,
+                    file_info.last_write_time,
+                    file_info.file_size(),
+                    static_cast<int>(file_info.file_name.size()), file_info.file_name.data(),
+                    file_info.file_name.size(),
+                    self.ft_flags
+                );
+
+                // ignore irrelevant state
+                if (!flags_any(self.ft_flags,
+                        FtFlags::VncDirContent_ForGui
+                      | FtFlags::VncDirContent_ForCbList))
+                {
+                    return ;
+                }
+
+                // skip some file type
+                if (flags_any(file_info.attributes, WinNtFileAttributeFlags::System))
+                {
+                    return ;
+                }
+
+                // skip parent directory ("..")
+                auto is_dir = flags_any(file_info.attributes, WinNtFileAttributeFlags::Directory);
+                if (is_dir && bytes_equal(file_info.file_name, ".."_av))
+                {
+                    return ;
+                }
+
+                /*
+                 * Push file
+                 */
+
+                VNC::UVncFile file {
+                    .file_name { file_info.file_name },
+                    .file_size = file_info.file_size(),
+                    .last_access_time = file_info.last_access_time,
+                    .is_dir = is_dir,
+                };
+
+                if (flags_any(self.ft_flags, FtFlags::VncDirContent_ForGui))
+                {
+                    // add a file in the transferable list
+                    self.ft_gui.server_vnc_file_list_add(file);
+                }
+                else
+                {
+                    // TODO check CB_HUGE_FILE_SUPPORT_ENABLED
+                    // TODO gui error
+                    self.uvnc_file_list.push_file_in_current_dir(file);
+                }
+            }),
+            .end_list_dir = from_vnc_cb([](mod_vnc & self)
+            {
+                LOG(LOG_DEBUG, "File end | ft_flags=0x%x", self.ft_flags);
+
+                if (flags_any(self.ft_flags, FtFlags::VncDirContent_ForGui))
+                {
+                    self.ft_flags &= ~FtFlags::VncDirContent_ForGui;
+                    self.ft_gui.server_vnc_file_list_end();
+                }
+                else if (flags_any(self.ft_flags, FtFlags::VncDirContent_ForCbList))
+                {
+                    FT::req_vnc_files_recursively(self);
+                }
+            }),
+            // response to file transfer request
+            .file_header = from_vnc_cb([](
+                mod_vnc & self,
+                bytes_view file_name_with_optional_date,
+                UVNC::FileTransfer::FileSizeOrError file_size_or_error
+            )
+            {
+                LOG(LOG_DEBUG, "FileHeader: %.*s | fsize=%lu | err=%d | ft_flags=0x%x",
+                    static_cast<int>(file_name_with_optional_date.size()), file_name_with_optional_date.data(),
+                    file_size_or_error.file_size(), file_size_or_error.is_error(), self.ft_flags);
+
+                auto * file = self.uvnc_file_list.get_current_file();
+                bool is_ok = file_size_or_error.is_ok() && file;
+
+                if (file)
+                {
+                    FT::file_transfer_start(
+                        self,
+                        is_ok,
+                        Mwrm3::Direction::ServerToClient,
+                        file->name(),
+                        file->file_size
+                    );
+                }
+
+                FT::send_transfer_result(
+                    self,
+                    self.uvnc_file_list.receive_vnc_file_request_response(is_ok)
+                );
+            }),
+            .file_partial_packet = from_vnc_cb([](
+                mod_vnc & self, bytes_view data, UVNC::FileTransfer::FilePacketType pkt_type)
+            {
+                LOG(LOG_DEBUG, "FilePacket: type=%u datalen=%zu | ft_flags=0x%x",
+                    pkt_type, data.size(), self.ft_flags);
+                // hexdump(data);
+
+                FT::file_transfer_update(self, data);
+                FT::send_transfer_result(self, self.uvnc_file_list.receive_vnc_file_data(data));
+            }),
+            .end_of_file = from_vnc_cb([](mod_vnc & self)
+            {
+                LOG(LOG_DEBUG, "EndOfFile | ft_flags=0x%x", self.ft_flags);
+
+                if (auto * file = self.uvnc_file_list.get_current_file())
+                {
+                    FT::file_transfer_completed(self, Mwrm3::Direction::ServerToClient);
+                }
+
+                FT::send_transfer_result(self, self.uvnc_file_list.receive_vnc_end_of_file());
+            }),
+            .aborted_file = from_vnc_cb([](mod_vnc & self)
+            {
+                LOG(LOG_DEBUG, "AbortFileTransfer | ft_flags=0x%x", self.ft_flags);
+
+                auto * file = self.uvnc_file_list.get_current_file();
+                auto result = self.uvnc_file_list.receive_vnc_file_abort();
+
+                if (file && result.response_types[0]
+                    == VNC::VncFileList::TransferResult::ResponseType::RdpResponseFailure)
+                {
+                    FT::file_transfer_stopped(
+                        self,
+                        Mwrm3::Direction::ServerToClient,
+                        FT::TransferStopReason::ProtocolError
+                    );
+                }
+
+                FT::send_transfer_result(self, result);
+            }),
+            .file_partial_checksums = from_vnc_cb([](
+                mod_vnc & self, bytes_view checksums, uint32_t remaining)
+            {
+                LOG(LOG_DEBUG, "FileChecksums remaining=%u datalen=%zu | ft_flags=0x%x",
+                    remaining, checksums.size(), self.ft_flags);
+                // hexdump(checksums);
+            }),
+            // response to file transfer offer
+            .file_accept_header = from_vnc_cb([](
+                mod_vnc & self,
+                bytes_view tmp_file_name,
+                bool accepted
+            ) {
+                LOG(LOG_DEBUG, "FileAcceptHeader: %.*s | accepted = %d | ft_flags=0x%x",
+                    static_cast<int>(tmp_file_name.size()), tmp_file_name.data(), accepted,
+                    self.ft_flags);
+
+                auto * file = self.cliprdr_file_list.get_current_file();
+                bool ok = accepted
+                       && file
+                       && self.cliprdr_file_list.receive_uvnc_file_accept_response();
+
+                if (file)
+                {
+                    FT::file_transfer_start(
+                        self,
+                        ok,
+                        Mwrm3::Direction::ClientToServer,
+                        file->name(),
+                        file->file_size
+                    );
+                }
+
+                if (ok)
+                {
+                    // request data
+                    if (file->file_size)
+                    {
+                        StaticOutStream<128> out_stream;
+                        FT::request_cb_file_range_unchecked(self, out_stream);
+                    }
+                    // request next file because no data
+                    else
+                    {
+                        FT::file_transfer_completed(self, Mwrm3::Direction::ClientToServer);
+                        self.t.send(UVNC::FileTransfer::end_of_file_pdu);
+
+                        self.cliprdr_file_list.next_file();
+                        FT::copy_item_to_vnc(self);
+
+                        FT::cb_to_vnc_progression(self, {
+                            .items = 1,
+                            .bytes = 0,
+                            .total_bytes_adjust = 0,
+                        });
+                    }
+                }
+                // file rejected or error
+                else
+                {
+                    self.ft_gui.transfer_progression(FT::progress_error(file));
+                    self.cliprdr_file_list.reset_transfer();
+                }
+            }),
+            .command_return = from_vnc_cb([](mod_vnc & self, bytes_view response, bool is_ok)
+            {
+                LOG(LOG_DEBUG, "CommandReturn: %d | %.*s | ft_flags=0x%x",
+                    is_ok, static_cast<int>(response.size()), response.data(), self.ft_flags);
+
+                auto status = is_ok
+                    ? self.cliprdr_file_list.receive_uvnc_create_dir_response()
+                    : VNC::CliprdrFileList::ReceiveStatus::Error;
+
+                // assume response for create directory
+                switch (status)
+                {
+                    case VNC::CliprdrFileList::ReceiveStatus::Error:
+                        self.ft_gui.transfer_progression(
+                            FT::progress_error(self.cliprdr_file_list.get_current_file())
+                        );
+                        self.cliprdr_file_list.reset_transfer();
+                        break;
+                    case VNC::CliprdrFileList::ReceiveStatus::WaitingResponse:
+                        break;
+                    case VNC::CliprdrFileList::ReceiveStatus::TransferComplete:
+                        self.ft_gui.transfer_progression({
+                            .state = VNC::FileTransferGui::Progression::State::Completed,
+                            .items = 1,
+                            .bytes = 0,
+                            .total_bytes_adjust = 0,
+                        });
+                        break;
+                    case VNC::CliprdrFileList::ReceiveStatus::ReadyForNextItems:
+                        FT::copy_item_to_vnc(self);
+                        self.ft_gui.transfer_progression(
+                            VNC::FileTransferGui::Progression::next_item()
+                        );
+                        break;
+                }
+            }),
+            .file_transfer_access = from_vnc_cb([](mod_vnc & self, bool enabled)
+            {
+                FT::access_response(self, enabled);
+            }),
+            .protocol_version = from_vnc_cb([](mod_vnc & self, uint32_t version, bool supported)
+            {
+                LOG(LOG_INFO, "FileTransferProtocolVersion: %u | supported=%d | block_size=%u", version, supported, self.ft_reader.block_size());
+
+                if (!supported)
+                {
+                    return ;
+                }
+
+                self.ft_flags |= FtFlags::FtSupported;
+                FT::init_file_validator_and_storage(self);
+                self.cliprdr.enable_file_transfer();
+                self.cliprdr.init_cliprdr_server();
+            }),
+        };
+    }
+
+    static void open_gui(mod_vnc & self)
+    {
+        LOG(LOG_DEBUG, "open_gui");
+
+        self.ft_flags &= ~FtFlags::FtAccessNo;
+        self.ft_flags &= ~FtFlags::FtAccessYes;
+        self.ft_flags |= FtFlags::FtAccessRequested;
+
+        self.ft_gui.open(self.width, self.height, self.mouse.mouse_x(), self.mouse.mouse_y());
+        FT::update_file_group_descriptor(self);
+
+        // request access permission
+        self.t.send(UVNC::FileTransfer::abort_file_transfer_pdu);
+
+        self.gd = gdi::null_gd();
+    }
+
+    static void close_gui(mod_vnc & self)
+    {
+        LOG(LOG_DEBUG, "close_gui");
+        self.ft_gui.close();
+
+        // remove all flags, excepted FtSupported
+        self.ft_flags &= FtFlags::FtSupported;
+
+        self.gd = self.original_gd;
+        if (self.has_cursor)
+        {
+            self.gd->cached_pointer(0);
+        }
+        self.update_screen(Rect(0, 0, self.width, self.height), 0);
+        // TODO vnc transfer stop
+    }
+
+    static bool is_loggable(mod_vnc const& self)
+    {
+        return flags_any(self.verbose, VNCVerbose::clipboard);
+    }
+
+    static void skip_error(UVNC::FileTransfer::WriteErrorCode err) noexcept
+    {
+        assert(is_ok(err));
+        (void)err;
+    }
+
+    static void access_response(mod_vnc & self, bool enabled)
+    {
+        LOG_IF(is_loggable(self), LOG_INFO, "FileTransferAccess: %d | ft_flags=0x%x",
+            enabled, self.ft_flags);
+
+        if (!flags_any(self.ft_flags, FtFlags::FtAccessRequested))
+        {
+            return ;
+        }
+
+        self.ft_flags &= ~FtFlags::FtAccessRequested;
+
+        // file transfer is disabled
+        if (!enabled)
+        {
+            self.ft_flags |= FtFlags::FtAccessNo;
+            self.ft_gui.server_vnc_file_disabled();
+            return ;
+        }
+
+        /*
+         * Open file transfer and req Disk or DirContent
+         */
+
+        self.ft_flags |= FtFlags::FtAccessYes;
+
+        StaticOutStream<UVNC::FileTransfer::max_no_data_packet_size * 2> out_stream;
+
+        skip_error(UVNC::FileTransfer::write_session_start(out_stream));
+
+        open_dir_and_send(out_stream, self, VNC::UVncFile::PathView{});
+    }
+
+    static bool open_dir_and_send(OutStream & out_stream, mod_vnc & self, VNC::UVncFile::PathView path)
+    {
+        // req already in progress
+        if (flags_any(self.ft_flags,
+                FtFlags::VncDirContent_ForGui
+              | FtFlags::VncDirContent_ForCbList))
+        {
+            return true;
+        }
+
+        auto result = path.empty()
+            ? UVNC::FileTransfer::write_drives_list_request(out_stream)
+            : UVNC::FileTransfer::write_directory_content_request(out_stream, path);
+
+        if (is_ok(result))
+        {
+            self.ft_flags |= FtFlags::VncDirContent_ForGui;
+            self.t.send(out_stream.get_produced_bytes());
+            return true;
+        }
+
+        // TODO add path
+        log_uvnc_buffer_error("vnc::gui::open_dir", result);
+        return false;
+    }
+
+    static void update_file_group_descriptor(mod_vnc & self)
+    {
+        if (self.cliprdr.has_file_group_descriptor_format())
+        {
+            if (self.cliprdr.request_file_list())
+            {
+                LOG(LOG_DEBUG, "file list requested");
+                self.ft_gui.client_cb_file_list_requested();
+            }
+        }
+        else
+        {
+            LOG(LOG_DEBUG, "show no files");
+            self.ft_gui.client_cb_file_list_reset();
+        }
+    }
+
+    static void copy_item_to_vnc(mod_vnc & self)
+    {
+        StaticOutStream<UVNC::FileTransfer::min_full_packet_size> out_stream;
+        if (copy_item_to_vnc(out_stream, self))
+        {
+            auto d = out_stream.get_produced_bytes();
+            if (!d.empty())
+            {
+                self.t.send(d);
+            }
+        }
+    }
+
+    [[nodiscard]]
+    static bool copy_item_to_vnc(OutStream & out_stream, mod_vnc & self)
+    {
+        assert(out_stream.get_capacity());
+
+        auto current_dir = self.ft_gui.current_directory();
+
+        write_items:
+        switch (self.cliprdr_file_list.write_uvnc_items_to_vnc(out_stream, current_dir))
+        {
+            case VNC::CliprdrFileList::ErrorCode::Ok:
+                return true;
+
+            // buffer is full, send then try again
+            case VNC::CliprdrFileList::ErrorCode::TooSmallBuffer:
+                self.t.send(out_stream.get_produced_bytes());
+                out_stream.rewind();
+                goto write_items;
+
+            case VNC::CliprdrFileList::ErrorCode::PathTooLong:
+                break;
+        }
+
+        // TODO message to gui + stop. Check before copy
+        auto path = self.cliprdr_file_list.get_current_file_unchecked().name().native();
+        LOG(LOG_INFO, "CliprdrFileList::write_uvnc_items_to_vnc: path too long: %.*s/%.*s",
+            static_cast<int>(current_dir.native().size()), current_dir.native().as_charp(),
+            static_cast<int>(path.size()), path.as_charp());
+        return false;
+    }
+
+    static void request_cb_file_range_unchecked(mod_vnc & self, OutStream & out_stream)
+    {
+        auto ec = self.cliprdr_file_list.write_cb_file_range_request(out_stream);
+        assert(is_ok(ec));
+
+        self.send_to_cliprdr(out_stream.get_produced_bytes());
+    }
+
+    struct CbToVncProgression
+    {
+        uint32_t items;
+        uint64_t bytes;
+        int64_t total_bytes_adjust;
+    };
+
+    static void cb_to_vnc_progression(mod_vnc & self, CbToVncProgression progression)
+    {
+        self.ft_gui.transfer_progression({
+            .state = self.cliprdr_file_list.is_transfer_complete()
+                ? VNC::FileTransferGui::Progression::State::Completed
+                : VNC::FileTransferGui::Progression::State::InProgress,
+            .items = progression.items,
+            .bytes = progression.bytes,
+            .total_bytes_adjust = progression.total_bytes_adjust,
+        });
+    }
+
+    static
+    VNC::FileTransferGui::Progression
+    progress_error(VNC::CliprdrFileList::File const * file) noexcept
+    {
+        return VNC::FileTransferGui::Progression::error(file ? file->name() : WinNtPathView{});
+    }
+
+    enum class TraversaleState : bool
+    {
+        Running,
+        Completed,
+    };
+
+    static void req_vnc_files_recursively(mod_vnc & self)
+    {
+        StaticOutStream<UVNC::FileTransfer::max_no_data_packet_size> out_stream;
+
+        LOG_IF(bool(self.verbose & VNCVerbose::clipboard),
+            LOG_INFO, "mod_vnc::req_vnc_files_recursively: request files in subdirs");
+
+        switch (self.uvnc_file_list.write_next_vnc_directory_content_request(out_stream))
+        {
+            case VNC::VncFileList::NextDirectoryResult::Ok:
+                self.ft_flags |= FtFlags::VncDirContent_ForCbList;
+                self.t.send(out_stream.get_produced_bytes());
+                return;
+
+            case VNC::VncFileList::NextDirectoryResult::TooSmallBuffer:
+                // out_stream has always sufficient space.
+                assert(false);
+            case VNC::VncFileList::NextDirectoryResult::NoDir:
+                break;
+        }
+
+        LOG_IF(bool(self.verbose & VNCVerbose::clipboard),
+            LOG_INFO, "mod_vnc::req_vnc_files_recursively completed");
+
+        self.ft_gui.vnc_to_rdp_file_list_ready();
+
+        bool has_req = flags_any(self.ft_flags, FtFlags::VncDirContent_WithCbFileRepDelayed);
+        self.ft_flags &= ~FtFlags::VncDirContent_WithCbFileRepDelayed;
+        self.ft_flags &= ~FtFlags::VncDirContent_ForCbList;
+        self.ft_flags |= FtFlags::VncDirContent_CbListCompleted;
+        if (has_req)
+        {
+            FT::send_cb_file_list(self);
+        }
+    }
+
+    static void send_cb_file_list(mod_vnc & self)
+    {
+        FT::send_transfer_result(self, self.uvnc_file_list.start_rdp_file_list());
+
+        StaticOutStream<64 * 1024> out_stream;
+
+        using Status = VNC::VncFileList::PartialRdpFileListResult::Status;
+
+        auto result = VNC::VncFileList::PartialRdpFileListResult {};
+
+        do
+        {
+            result = self.uvnc_file_list.write_partial_rdp_file_list(out_stream);
+            assert(result.status != Status::TooSmallBuffer);
+
+            self.send_to_cliprdr(
+                out_stream.get_produced_bytes(),
+                result.total_len,
+                result.channel_flags()
+            );
+        }
+        while (result.status != Status::Completed);
+    }
+
+    static void send_transfer_result(mod_vnc & self, VNC::VncFileList::TransferResult result)
+    {
+        if (bool(self.verbose & VNCVerbose::clipboard)) [[unlikely]]
+        {
+            constexpr auto total_responses = std::size(result.response_types);
+            unsigned i = 0;
+            for (auto && response_type : result.response_types)
+            {
+                char const * s = nullptr;
+#define CASE(x) case VNC::VncFileList::TransferResult::ResponseType::x: s = #x; break
+                switch (response_type)
+                {
+                    CASE(Nothing);
+                    CASE(InvalidLindex);
+                    CASE(RdpResponseUnsequenced);
+                    CASE(RdpResponseFailure);
+                    CASE(RdpResponseSize);
+                    CASE(RdpResponseData);
+                    CASE(VncRequestFile);
+                    CASE(VncConfirmFile);
+                    CASE(VncAbortFile);
+#undef CASE
+                }
+                LOG(LOG_INFO, "mod_vnc::send_transfer_result: %u/%zu. %s", i, total_responses, s);
+                ++i;
+            }
+        }
+
+        if (!result.rdp_data.empty())
+        {
+            self.send_to_cliprdr(result.rdp_data);
+        }
+
+        if (!result.vnc_data.empty())
+        {
+            self.t.send(result.vnc_data);
+        }
+    }
+
+    static void init_max_blocked_file_size_rejected(mod_vnc & self) noexcept
+    {
+        auto huge_flag = VNC::CbCapabilityFlags::HugeFileSupportEnabled;
+        auto protocol_limit
+            = (flags_any(self.cliprdr.cb_capabilities(), huge_flag))
+            ? ~uint64_t{}
+            : ~uint32_t{};
+
+        auto & ctx = self.transfered_file_ctx;
+
+        ctx.max_blocked_file_size_rejected_upload
+            = flags_any(ctx.block_invalid_file, FileValidatorTargets::Upload)
+            ? mmin(protocol_limit, ctx.original_max_blocked_file_size_rejected)
+            : protocol_limit;
+
+        ctx.max_blocked_file_size_rejected_download
+            = flags_any(ctx.block_invalid_file, FileValidatorTargets::Download)
+            ? mmin(protocol_limit, ctx.original_max_blocked_file_size_rejected)
+            : protocol_limit;
+    }
+
+    static void init_file_validator_and_storage(mod_vnc & self)
+    {
+        auto & ctx = self.transfered_file_ctx;
+
+        // when already initialized
+        if (ctx.get_file_validator_and_storage.is_null_function())
+        {
+            return ;
+        }
+
+        auto [file_validator, file_storage] = ctx.get_file_validator_and_storage();
+        ctx.get_file_validator_and_storage = NullFunctionWithDefaultResult{};
+
+        if (file_storage)
+        {
+            ctx.fdx_capture = file_storage.fdx_capture;
+            ctx.file_storage_option = file_storage.always_file_storage
+                ? FileStorageOption::Always
+                : FileStorageOption::OnInvalidFile;
+        }
+
+        if (file_validator)
+        {
+            ctx.file_validator = file_validator.file_validator_service;
+            ctx.validator_targets = file_validator.targets;
+            ctx.log_if_accepted = file_validator.log_if_accepted;
+            ctx.block_invalid_file = FileValidatorTargets::None
+                | (file_validator.block_invalid_file_upload
+                    ? FileValidatorTargets::Upload
+                    : FileValidatorTargets::None)
+                | (file_validator.block_invalid_file_download
+                    ? FileValidatorTargets::Download
+                    : FileValidatorTargets::None);
+            ctx.block_invalid_file &= file_validator.targets;
+            ctx.original_max_blocked_file_size_rejected
+                = file_validator.max_blocked_file_size_rejected;
+            ctx.tmp_dir.init(file_validator.tmp_dir);
+            init_max_blocked_file_size_rejected(self);
+        }
+    }
+
+    static bool is_file_too_large(
+        mod_vnc & self, FileValidatorTargets target, uint64_t file_size) noexcept
+    {
+        auto & ctx = self.transfered_file_ctx;
+        auto max_file_size = (target == FileValidatorTargets::Download)
+            ? ctx.max_blocked_file_size_rejected_download
+            : ctx.max_blocked_file_size_rejected_upload;
+        return file_size > max_file_size;
+    }
+
+    static FileValidatorTargets direction_to_file_validator_target(Mwrm3::Direction direction) noexcept
+    {
+        return direction == Mwrm3::Direction::ServerToClient
+            ? FileValidatorTargets::Download
+            : FileValidatorTargets::Upload;
+    }
+
+    static chars_view direction_to_target_name(Mwrm3::Direction direction) noexcept
+    {
+        return direction == Mwrm3::Direction::ServerToClient ? "DOWN"_av : "UP"_av;
+    }
+
+    static chars_view target_to_direction_name(FileValidatorTargets target) noexcept
+    {
+        return target == FileValidatorTargets::Download ? "DOWN"_av : "UP"_av;
+    }
+
+    // Log SIEM:
+    //                       +--------------------------+---------------
+    //                       |           icap           |   other
+    // ----------------------|--------------------------|---------------
+    // before req file offer |                          | Rejected (when file too large)
+    //                       |                          | blocked by gui (vnc -> rdp)
+    // ----------------------|--------------------------|---------------
+    // file offer response   |                          | Failed (when error)
+    // ----------------------|--------------------------|---------------
+    // receive data          |                          | Rejected (when file too large)
+    // ----------------------|--------------------------|---------------
+    // icap response         | FILE_VERIFICATION        |
+    //                       | FILE_BLOCKED (when fail) |
+    // ----------------------|--------------------------|---------------
+    // eof                   |                          | Completed
+    // ----------------------|--------------------------|---------------
+    // error                 |                          | Failed
+    // ----------------------|--------------------------|---------------
+    // user cancellation     |                          | Stopped
+    // ----------------------|--------------------------|---------------
+
+    static void file_transfer_start(
+        mod_vnc & self,
+        bool is_ok,
+        Mwrm3::Direction direction,
+        VNC::UVncFile::PathView file_name,
+        uint64_t file_size)
+    {
+        auto & ctx = self.transfered_file_ctx;
+        auto validator_target = direction_to_file_validator_target(direction);
+        bool use_validator = flags_any(ctx.validator_targets, validator_target);
+
+        if (!ctx.current_file.utf8_file_name.is_empty())
+        {
+            file_transfer_stopped(self, direction, TransferStopReason::UserRequest);
+        }
+
+        LOG(LOG_DEBUG, "file started");
+
+        ctx.current_file.file_size = file_size;
+        ctx.current_file.utf8_file_name.reset(file_name);
+        ctx.current_file.validator_status = TransferValidatorStatus::WaitResponse;
+        ctx.sha2.reset();
+
+        if (is_ok)
+        {
+            if (use_validator)
+            {
+                ctx.current_file.validator_target = validator_target;
+                ctx.current_file.validator_id = ctx.file_validator->open_file(
+                    ctx.current_file.utf8_file_name.av(),
+                    direction_to_target_name(direction)
+                );
+            }
+
+            if (ctx.fdx_capture)
+            {
+                ctx.current_file.tfl_file = std::unique_ptr<TransferedFileCtx::TflFile>(
+                    static_cast<TransferedFileCtx::TflFile*>(
+                        new FdxCapture::TflFile{
+                            ctx.fdx_capture->new_tfl(direction)
+                        }
+                    )
+                );
+            }
+        }
+        else
+        {
+            self.session_log.log6(
+                (direction == Mwrm3::Direction::ClientToServer)
+                    ? LogId::CB_COPYING_PASTING_FILE_TO_REMOTE_SESSION
+                    : LogId::CB_COPYING_PASTING_FILE_FROM_REMOTE_SESSION,
+                {
+                    KVLog{"file_name"_av, ctx.current_file.utf8_file_name.av()},
+                    KVLog{"size"_av, int_to_decimal_chars(file_size)},
+                    KVLog{"status"_av, "Reject"_av},
+                }
+            );
+        }
+    }
+
+    static void file_transfer_update(mod_vnc & self, bytes_view data)
+    {
+        auto & ctx = self.transfered_file_ctx;
+        auto & file = ctx.current_file;
+
+        ctx.sha2.update(data);
+
+        if (file.validator_id != FileValidatorId{})
+        {
+            ctx.file_validator->send_data(file.validator_id, data);
+        }
+
+        if (file.tfl_file)
+        {
+            file.tfl_file->trans.send(data);
+        }
+    }
+
+    static void close_tfl(
+        TransferedFileCtx & ctx,
+        TransferedFileCtx::File & file,
+        Mwrm3::TransferedStatus status)
+    {
+        REDEMPTION_ASSUME(ctx.fdx_capture);
+
+        LOG(LOG_DEBUG, "close tfl %lu", file.tfl_file->file_id);
+
+        ctx.fdx_capture->close_tfl(
+            *file.tfl_file,
+            file.utf8_file_name.av().as<std::string_view>(),
+            status,
+            Mwrm3::Sha256Signature{ make_sized_array_view(file.hash.buffer) }
+        );
+        file.tfl_file.reset();
+    }
+
+    static void cancel_tfl(TransferedFileCtx & ctx, TransferedFileCtx::File & file)
+    {
+        REDEMPTION_ASSUME(ctx.fdx_capture);
+
+        LOG(LOG_DEBUG, "cancel tfl %lu", file.tfl_file->file_id);
+
+        ctx.fdx_capture->cancel_tfl(*file.tfl_file);
+        file.tfl_file.reset();
+    }
+
+    static auto finalize_sha2_sig(TransferedFileCtx & ctx)
+    {
+        auto & file = ctx.current_file;
+
+        auto hash_buf = make_writable_sized_array_view(file.hash.buffer);
+        ctx.sha2.final(hash_buf);
+
+        return hash_buf;
+    }
+
+    static void file_transfer_completed(mod_vnc & self, Mwrm3::Direction direction)
+    {
+        auto & ctx = self.transfered_file_ctx;
+        auto & file = ctx.current_file;
+
+        LOG(LOG_DEBUG, "file completed");
+
+        auto hash_buf = finalize_sha2_sig(ctx);
+
+        self.session_log.log6(
+            (direction == Mwrm3::Direction::ClientToServer)
+                ? LogId::CB_COPYING_PASTING_FILE_TO_REMOTE_SESSION
+                : LogId::CB_COPYING_PASTING_FILE_FROM_REMOTE_SESSION,
+            {
+                KVLog{"file_name"_av, file.utf8_file_name.av()},
+                KVLog{"size"_av, int_to_decimal_chars(file.file_size)},
+                KVLog{"status"_av, "Completed"_av},
+                KVLog{"sha2"_av, static_array_to_hexadecimal_lower_chars(hash_buf)},
+            }
+        );
+
+        if (file.tfl_file)
+        {
+            LOG(LOG_DEBUG, "completed id = %lu", file.tfl_file->file_id);
+            LOG(LOG_DEBUG, "validator id = %u", file.validator_id);
+
+            if (ctx.file_storage_option == FileStorageOption::Always
+             || file.validator_status == TransferValidatorStatus::IsRejected)
+            {
+                close_tfl(ctx, file, Mwrm3::TransferedStatus::Completed);
+            }
+            else if (file.validator_id == FileValidatorId{})
+            {
+                cancel_tfl(ctx, file);
+            }
+        }
+
+        if (file.validator_id != FileValidatorId{}
+         && file.validator_status == TransferValidatorStatus::WaitResponse)
+        {
+            ctx.file_validator->send_eof(file.validator_id);
+            move_to_waiting_file_validator_list(ctx);
+        }
+
+        file.utf8_file_name.reset();
+    }
+
+    enum class TransferStopReason : bool
+    {
+        UserRequest,
+        ProtocolError,
+    };
+
+    static void file_verification_log(
+        mod_vnc & self,
+        TransferedFileCtx::File const & file,
+        chars_view status)
+    {
+        self.session_log.log6(LogId::FILE_VERIFICATION, {
+            KVLog("direction"_av, FT::target_to_direction_name(file.validator_target)),
+            KVLog("file_name"_av, file.utf8_file_name.av()),
+            KVLog("status"_av, status),
+        });
+    }
+
+    static void file_transfer_stopped(
+        mod_vnc & self,
+        Mwrm3::Direction direction,
+        TransferStopReason reason)
+    {
+        auto & ctx = self.transfered_file_ctx;
+        auto & file = ctx.current_file;
+
+        LOG(LOG_DEBUG, "file stopped");
+
+        auto requested_by_user = (reason == TransferStopReason::UserRequest);
+        self.session_log.log6(
+            (direction == Mwrm3::Direction::ClientToServer)
+                ? LogId::CB_COPYING_PASTING_FILE_TO_REMOTE_SESSION
+                : LogId::CB_COPYING_PASTING_FILE_FROM_REMOTE_SESSION,
+            {
+                KVLog{"file_name"_av, file.utf8_file_name.av()},
+                KVLog{"size"_av, int_to_decimal_chars(file.file_size)},
+                KVLog{"status"_av, requested_by_user ? "Stopped"_av : "Failed"_av},
+            }
+        );
+
+        if (file.tfl_file && ctx.file_storage_option == FileStorageOption::Always)
+        {
+            REDEMPTION_ASSUME(ctx.fdx_capture);
+            finalize_sha2_sig(ctx);
+            close_tfl(ctx, file, Mwrm3::TransferedStatus::Broken);
+        }
+
+        if (file.validator_id != FileValidatorId{})
+        {
+            file_verification_log(self, file, "Stopped"_av);
+
+            if (file.tfl_file
+             && ctx.file_storage_option == FileStorageOption::OnInvalidFile)
+            {
+                FT::move_to_waiting_file_validator_list(ctx);
+            }
+            else
+            {
+                ctx.file_validator->send_abort(file.validator_id);
+                file.validator_id = {};
+            }
+        }
+
+        file.utf8_file_name.reset();
+    }
+
+    static void move_to_waiting_file_validator_list(TransferedFileCtx & ctx)
+    {
+        LOG(LOG_DEBUG, "move to waiting_validator_file_list");
+        ctx.waiting_validator_file_list.push_back(std::move(ctx.current_file));
+        ctx.current_file.validator_status = TransferValidatorStatus::WaitResponse;
+        ctx.current_file.validator_id = {};
+    }
+
+    static void disconnect(mod_vnc & self)
+    {
+        auto & ctx = self.transfered_file_ctx;
+
+        auto close_file = [&](TransferedFileCtx::File & file)
+        {
+            if (file.validator_id != FileValidatorId{})
+            {
+                file_verification_log(self, file, "Connection closed"_av);
+            }
+
+            if (file.tfl_file)
+            {
+                close_tfl(ctx, file, Mwrm3::TransferedStatus::Broken);
+            }
+        };
+
+        try
+        {
+            if (ctx.current_file.validator_id != FileValidatorId{})
+            {
+                finalize_sha2_sig(ctx);
+            }
+
+            close_file(ctx.current_file);
+
+            while (!ctx.waiting_validator_file_list.empty())
+            {
+                close_file(ctx.waiting_validator_file_list.back());
+                ctx.waiting_validator_file_list.pop_back();
+            }
+        }
+        catch (Error const& err)
+        {
+            LOG(LOG_ERR, "mod_vnc: error on close tfls: %s", err.errmsg());
+        }
+    }
+};
+
+
+mod_vnc::dynamic_non_null_cstring::~dynamic_non_null_cstring()
+{
+    _free();
+}
+
+void mod_vnc::dynamic_non_null_cstring::init(chars_view str)
+{
+    _free();
+    auto * mem = static_cast<char*>(::operator new (str.size() + 1));
+    m_str = mem;
+    bytes_copy(mem, str);
+    mem[str.size()] = '\0';
+}
+
+void mod_vnc::dynamic_non_null_cstring::_free() noexcept
+{
+    if (*m_str)
+    {
+        ::operator delete (const_cast<char*>(m_str));
+        m_str = "";
+    }
+}
+
+
 
 
 void mod_vnc::VncTransport::send(bytes_view buffer)
@@ -72,6 +1550,7 @@ mod_vnc::VncBuf64k::read_from(mod_vnc::VncTransport vncTrans)
 mod_vnc::mod_vnc( Transport & t
            , Random & rand
            , gdi::GraphicApi & gd
+           , Font const& glyphs
            , EventContainer & events
            , const char * username
            , const char * password
@@ -79,11 +1558,8 @@ mod_vnc::mod_vnc( Transport & t
            // TODO: front width and front height should be provided through info
            , uint16_t front_width
            , uint16_t front_height
-           , bool clipboard_up
-           , bool clipboard_down
+           , ModVncParams params
            , const char * encodings
-           , ClipboardEncodingType clipboard_server_encoding_type
-           , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
            , KeyLayout const& layout
            , kbdtypes::KeyLocks locks
            , bool server_is_macos
@@ -94,6 +1570,7 @@ mod_vnc::mod_vnc( Transport & t
            , SessionLogApi& session_log
            , ModTlsParams const& tls_params
            , std::string_view force_authentication_method
+           , Translator const& translator
            )
     : front(front)
     , t(VncTransport(*this, t))
@@ -106,21 +1583,79 @@ mod_vnc::mod_vnc( Transport & t
                 KeymapSym::IsApple(server_is_macos),
                 KeymapSym::IsUnix(server_is_unix),
                 bool(verbose & VNCVerbose::keymap))
-    , enable_clipboard_up(clipboard_up)
-    , enable_clipboard_down(clipboard_down)
     , encodings(encodings)
-    , clipboard_server_encoding_type(clipboard_server_encoding_type)
-    , bogus_clipboard_infinite_loop(bogus_clipboard_infinite_loop)
     , session_time_start(events.get_monotonic_time_since_epoch())
     , rail_client_execute(rail_client_execute)
     , rand(rand)
     , gd(gd)
+    , original_gd(gd)
     , events_guard(events)
 #ifndef __EMSCRIPTEN__
     , session_log(session_log)
 #endif
     , choosenAuth(VNC_AUTH_INVALID)
     , cursor_pseudo_encoding_supported(cursor_pseudo_encoding_supported)
+
+    , cliprdr_chann([&]{
+        auto * cliprdr_chann = front.get_channel_list().get_by_name(channel_names::cliprdr);
+        // disabled cliprdr when text and file transfer are disabled
+        return cliprdr_chann
+            && (params.cut_text.enable_upload
+             || params.cut_text.enable_download
+             || params.file_transfer.enable_upload
+             || params.file_transfer.enable_download
+            )
+            ? cliprdr_chann
+            : nullptr;
+    }())
+    , cliprdr(
+        params.cut_text.bogus_infinite_loop_strategy,
+        params.cut_text.server_encoding,
+        VNC::CliprdrAdapter::RdpToVncOptions::None
+        | (cliprdr_chann && params.cut_text.enable_upload
+            ? VNC::CliprdrAdapter::RdpToVncOptions::NonFileResponse
+            : VNC::CliprdrAdapter::RdpToVncOptions::None)
+        | (cliprdr_chann && params.cut_text.enable_download
+            ? VNC::CliprdrAdapter::RdpToVncOptions::NonFileRequest
+            : VNC::CliprdrAdapter::RdpToVncOptions::None)
+        | (cliprdr_chann && params.file_transfer.enable_upload
+            ? VNC::CliprdrAdapter::RdpToVncOptions::FileResponse
+            : VNC::CliprdrAdapter::RdpToVncOptions::None)
+        | (cliprdr_chann && params.file_transfer.enable_download
+            ? VNC::CliprdrAdapter::RdpToVncOptions::FileRequest
+            : VNC::CliprdrAdapter::RdpToVncOptions::None),
+        bool(verbose & VNCVerbose::clipboard_dump)
+            ? VNC::CliprdrAdapter::Log::Dump
+            : bool(verbose & VNCVerbose::clipboard)
+                ? VNC::CliprdrAdapter::Log::Yes
+                : VNC::CliprdrAdapter::Log::No,
+        VNC::CliprdrAdapter::MaxRdpPduLen(CHANNELS::CHANNEL_CHUNK_LENGTH),
+        events,
+        FT::make_cliprdr_adapter_callbacks(*this)
+    )
+    , cliprdr_file_list{ params.file_transfer.max_file_list }
+    , uvnc_file_list{ {
+        .max_nb_files = params.file_transfer.max_file_list,
+        .max_file_size = params.file_transfer.max_file_size,
+    } }
+    , ft_gui {
+        gd,
+        glyphs,
+        events,
+        params.file_transfer.max_file_list,
+        VNC::FileTransferGui::TransferOptions::None
+        | (cliprdr_chann && params.file_transfer.enable_upload
+            ? VNC::FileTransferGui::TransferOptions::CbToVnc
+            : VNC::FileTransferGui::TransferOptions::None)
+        | (cliprdr_chann && params.file_transfer.enable_download
+            ? VNC::FileTransferGui::TransferOptions::VncToCb
+            : VNC::FileTransferGui::TransferOptions::None),
+        translator,
+        FT::make_ft_gui_callbacks(*this)
+    }
+    , transfered_file_ctx {
+        .get_file_validator_and_storage = params.get_file_validator_and_storage,
+    }
     , do_tls_params {
         .certif_path = str_concat(app_path(AppPath::Certif), '/', tls_params.device_id),
         .server_cert = tls_params.server_cert,
@@ -132,11 +1667,8 @@ mod_vnc::mod_vnc( Transport & t
     , server_data_buf(*this)
     , tlsSwitch(false)
     , frame_buffer_update_ctx(this->zd, verbose)
-    , clipboard_data_ctx(verbose)
 {
     LOG_IF(bool(verbose), LOG_INFO, "mod_vnc::verbosity=0x%x", underlying_cast(verbose));
-
-    LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO, "Creation of new mod 'VNC'");
 
     std::snprintf(this->username, sizeof(this->username), "%s", username);
     std::snprintf(this->password, sizeof(this->password), "%s", password);
@@ -147,7 +1679,7 @@ mod_vnc::mod_vnc( Transport & t
         [this](Event& event)
         {
             // First Timeout Clear Screen
-            gdi_clear_screen(this->gd, this->get_dim());
+            gdi_clear_screen(*this->gd, this->get_dim());
             event.garbage = true;
 
             // Following fd timeouts
@@ -159,7 +1691,8 @@ mod_vnc::mod_vnc( Transport & t
                     this->draw_event();
                 }
             );
-        });
+        }
+    );
 
     using namespace std::string_view_literals;
 
@@ -209,7 +1742,10 @@ mod_vnc::mod_vnc( Transport & t
     }
 }
 
-mod_vnc::~mod_vnc() = default;
+mod_vnc::~mod_vnc()
+{
+    FT::disconnect(*this);
+}
 
 bool mod_vnc::ms_logon(Buf64k & buf)
 {
@@ -260,14 +1796,14 @@ void mod_vnc::initial_clear_screen()
     LOG_IF(bool(this->verbose & VNCVerbose::connection), LOG_INFO, "state=DO_INITIAL_CLEAR_SCREEN");
 
     // set almost null cursor, this is the little dot cursor
-    this->gd.cached_pointer(PredefinedPointer::Dot);
+    this->gd->cached_pointer(PredefinedPointer::Dot);
 
     this->session_log.log6(LogId::SESSION_ESTABLISHED_SUCCESSFULLY, {});
 
     Rect const screen_rect(0, 0, this->width, this->height);
 
     RDPOpaqueRect orect(screen_rect, RDPColor{});
-    this->gd.draw(orect, screen_rect, gdi::ColorCtx::from_bpp(this->bpp, this->palette_update_ctx.get_palette()));
+    this->gd->draw(orect, screen_rect, gdi::ColorCtx::from_bpp(this->bpp, this->palette_update_ctx.get_palette()));
 
     this->state = UP_AND_RUNNING;
     this->front.can_be_start_capture(this->session_log);
@@ -275,72 +1811,20 @@ void mod_vnc::initial_clear_screen()
     this->session_log.acl_report(AclReport::connect_device_successful());
 
     this->update_screen(screen_rect, 1);
-    this->lib_open_clip_channel();
 
     LOG_IF(bool(this->verbose & VNCVerbose::connection), LOG_INFO, "VNC screen cleaning ok");
 
-    RDPECLIP::GeneralCapabilitySet general_caps(
-        RDPECLIP::CB_CAPS_VERSION_1,
-        (this->server_use_long_format_names ? RDPECLIP::CB_USE_LONG_FORMAT_NAMES : 0));
-
-    LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-        "Server use %s format name", this->server_use_long_format_names ? "long":"short");
-
-    RDPECLIP::ClipboardCapabilitiesPDU clip_cap_pdu(1);
-
-    RDPECLIP::CliprdrHeader clip_header(RDPECLIP::CB_CLIP_CAPS, 0,
-        clip_cap_pdu.size() + general_caps.size());
-
-    StaticOutStream<1024> out_s;
-
-    clip_header.emit(out_s);
-    clip_cap_pdu.emit(out_s);
-    general_caps.emit(out_s);
-
-    size_t length     = out_s.get_offset();
-    size_t chunk_size = length;
-
-    LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-        "mod_vnc server clipboard PDU: msgType=%s(%d)",
-        RDPECLIP::get_msgType_name(clip_header.msgType()),
-        clip_header.msgType());
-
-    this->send_to_front_channel( channel_names::cliprdr
-                               , out_s.get_data()
-                               , length
-                               , chunk_size
-                               ,   CHANNELS::CHANNEL_FLAG_FIRST
-                                 | CHANNELS::CHANNEL_FLAG_LAST
-                               );
-
-    RDPECLIP::ServerMonitorReadyPDU server_monitor_ready_pdu;
-    RDPECLIP::CliprdrHeader         header(RDPECLIP::CB_MONITOR_READY, RDPECLIP::CB_RESPONSE_NONE, server_monitor_ready_pdu.size());
-
-    out_s.rewind();
-
-    header.emit(out_s);
-    server_monitor_ready_pdu.emit(out_s);
-
-    length     = out_s.get_offset();
-    chunk_size = length;
-
-    LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-        "mod_vnc server clipboard PDU: msgType=%s(%d)",
-        RDPECLIP::get_msgType_name(header.msgType()),
-        header.msgType());
-
-    this->send_to_front_channel( channel_names::cliprdr
-                               , out_s.get_data()
-                               , length
-                               , chunk_size
-                               ,   CHANNELS::CHANNEL_FLAG_FIRST
-                                 | CHANNELS::CHANNEL_FLAG_LAST
-                               );
+    cliprdr.init_cliprdr_server();
 }
 
 void mod_vnc::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
     if (this->state != UP_AND_RUNNING) {
+        return;
+    }
+
+    if (ft_gui.is_open()) [[unlikely]] {
+        ft_gui.input_mouse(device_flags, x, y, keymapSym.mods());
         return;
     }
 
@@ -381,9 +1865,15 @@ void mod_vnc::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
     this->t.send(out_stream.get_produced_bytes());
 }
 
-void mod_vnc::rdp_input_mouse_ex(uint16_t /*device_flags*/, uint16_t /*x*/, uint16_t /*y*/)
+void mod_vnc::rdp_input_mouse_ex(uint16_t device_flags, uint16_t x, uint16_t y)
 {
-     // this->mouse seems that cannot handle extended mouse events, so do nothing
+    if (ft_gui.is_open()) [[unlikely]] {
+        ft_gui.input_mouse_ex(device_flags, x, y);
+        return;
+    }
+
+    // this->mouse seems that cannot handle extended mouse events, so do nothing
+    // TODO requirement: ExtendedMouseButtons Pseudo-encoding
 }
 
 void mod_vnc::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
@@ -396,10 +1886,42 @@ void mod_vnc::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t eve
     }
 
     LOG_IF(bool(this->verbose & VNCVerbose::keymap_stack), LOG_INFO,
-        "mod_vnc::rdp_input_scancode(device_flags=0x%x, keycode=0x%x)",
-        underlying_cast(flags), underlying_cast(scancode));
+        "mod_vnc::rdp_input_scancode(device_flags=0x%x, keycode=0x%x)", flags, scancode);
 
-    this->send_keyevents(this->keymapSym.scancode_to_keysyms(flags, scancode));
+    auto const keys = this->keymapSym.scancode_to_keysyms(flags, scancode);
+
+    if (ft_gui.is_open()) [[unlikely]] {
+        ft_gui.input_scancode(flags, scancode, keymap);
+        return;
+    }
+
+    using Mod = kbdtypes::KeyMod;
+
+    constexpr auto lmod_accepted = Mod::LCtrl | Mod::LAlt;
+    constexpr auto lmod_mask = lmod_accepted | Mod::LMeta | Mod::LShift;
+
+    if (REDEMPTION_UNLIKELY(scancode == Scancode::F7)
+     && kbdtypes::is_pressed(flags)
+     // ctrl+alt | ctrl+altgr
+     && (keymapSym.mods().rmod_as_lmod() & lmod_mask) == lmod_accepted
+     && flags_any(ft_flags, FtFlags::FtSupported)
+     && cliprdr.has_file_capability()
+    )
+    {
+        // release control keys
+        KeymapSym::Keys keys;
+        auto mods = keymapSym.mods();
+        using Key = KeymapSym::Key;
+        if (mods.test(Mod::LCtrl)) keys.push({Key::LCtrl, KeymapSym::VncKeyState::Up});
+        if (mods.test(Mod::RCtrl)) keys.push({Key::RCtrl, KeymapSym::VncKeyState::Up});
+        if (mods.test(Mod::LAlt)) keys.push({Key::LAlt, KeymapSym::VncKeyState::Up});
+        if (mods.test(Mod::RAlt)) keys.push({Key::RAlt, KeymapSym::VncKeyState::Up});
+        send_keyevents(keys);
+
+        FT::open_gui(*this);
+    }
+
+    this->send_keyevents(keys);
 }
 
 void mod_vnc::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
@@ -412,7 +1934,19 @@ void mod_vnc::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
         "mod_vnc::rdp_input_unicode(device_flag=0x%x, unicode16=0x%x)",
         underlying_cast(flag), unicode);
 
-    this->send_keyevents(this->keymapSym.utf16_to_keysyms(flag, unicode));
+    auto keys = this->keymapSym.utf16_to_keysyms(flag, unicode);
+
+    if (ft_gui.is_open()) [[unlikely]] {
+        for (auto key : keys) {
+            auto flag = (key.down_flag == KeymapSym::VncKeyState::Up)
+                ? KbdFlags::Release
+                : KbdFlags{};
+            ft_gui.input_unicode(flag, key.keysym, keymapSym.mods());
+        }
+        return;
+    }
+
+    this->send_keyevents(keys);
 }
 
 void mod_vnc::send_keyevents(KeymapSym::Keys keys)
@@ -432,78 +1966,6 @@ void mod_vnc::send_keyevents(KeymapSym::Keys keys)
 
     this->t.send(stream.get_produced_bytes());
 }
-
-void mod_vnc::rdp_input_clip_data(bytes_view data)
-{
-    if (this->state == UP_AND_RUNNING) {
-        auto client_cut_text = [this](std::size_t n, auto f){
-            StreamBufMaker<65536> buf_maker;
-            OutStream stream = buf_maker.reserve_out_stream(n + 8u);
-            auto str = f(stream.get_tail().from_offset(8));
-
-            stream.out_uint8(6);                // message-type : ClientCutText
-            stream.out_clear_bytes(3);          // padding
-            stream.out_uint32_be(str.size());   // length
-            stream.out_skip_bytes(str.size());  // text
-
-            this->t.send(stream.get_produced_bytes());
-        };
-
-        if (this->clipboard_requested_format_id == RDPECLIP::CF_UNICODETEXT) {
-            if (this->clipboard_server_encoding_type == ClipboardEncodingType::utf8) {
-                LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                    "mod_vnc::rdp_input_clip_data: CF_UNICODETEXT -> UTF-8");
-
-                const size_t utf8_data_length =
-                    data.size() / sizeof(uint16_t) * maximum_length_of_utf8_character_in_bytes + 1;
-
-                client_cut_text(utf8_data_length, [&](writable_bytes_view utf8_data){
-                    const auto len = ::UTF16toUTF8(
-                        data.data(), data.size(), utf8_data.data(), utf8_data_length);
-                    return utf8_data.first(len);
-                });
-            }
-            else {
-                LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                    "mod_vnc::rdp_input_clip_data: CF_UNICODETEXT -> Latin-1");
-
-                const size_t latin1_data_length = data.size() / sizeof(uint16_t) + 1;
-                client_cut_text(latin1_data_length, [&](writable_bytes_view latin1_data){
-                    const auto len = ::UTF16toLatin1(
-                        data.data(), data.size(), latin1_data.data(), latin1_data_length);
-                    return latin1_data.first(len);
-                });
-            }
-        }
-        else {
-            if (this->clipboard_server_encoding_type == ClipboardEncodingType::utf8) {
-                LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                    "mod_vnc::rdp_input_clip_data: CF_TEXT -> UTF-8");
-
-                const size_t utf8_data_length = data.size() * 2 + 1;
-                client_cut_text(utf8_data_length, [&](writable_bytes_view utf8_data){
-                    const size_t len = ::Latin1toUTF8(
-                        data.data(), data.size(), utf8_data.data(), utf8_data_length);
-                    return utf8_data.first(len);
-                });
-            }
-            else {
-                LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                    "mod_vnc::rdp_input_clip_data: CF_TEXT -> Latin-1");
-
-                client_cut_text(data.size(), [&](writable_bytes_view utf8_data){
-                    memcpy(utf8_data.data(), data.data(), data.size());
-                    return utf8_data;
-                });
-            }
-        }
-    }
-
-    this->clipboard_owned_by_client = true;
-
-    this->clipboard_last_client_data_timestamp = this->events_guard.get_monotonic_time();
-}
-
 
 void mod_vnc::rdp_input_synchronize(KeyLocks locks)
 {
@@ -654,10 +2116,10 @@ void mod_vnc::draw_event()
                 break;
             }
             REDEMPTION_DIAGNOSTIC_POP()
-        } else {
+        }
+        else {
             can_read = false;
         }
-
     }
 
     if (can_read) {
@@ -674,8 +2136,6 @@ void mod_vnc::draw_event()
 
     LOG_IF(bool(this->verbose & VNCVerbose::draw_event), LOG_INFO,
         "Remaining in buffer : %" PRIu64, data_server_after);
-
-    this->check_timeout();
 
     this->front.must_flush_capture();
 }
@@ -925,9 +2385,10 @@ bool mod_vnc::draw_event_impl()
         LOG_IF(bool(this->verbose & VNCVerbose::draw_event), LOG_INFO, "state=UP_AND_RUNNING");
 
         try {
-            while (this->up_and_running_ctx.run(this->server_data_buf, this->gd, *this)) {
+            while (this->up_and_running_ctx.run(this->server_data_buf, *this->gd, *this)) {
                 this->up_and_running_ctx.restart();
             }
+            // TODO only when data contains a FramebufferUpdate
             this->update_screen(Rect(0, 0, this->width, this->height), 1);
         }
         catch (const Error & e) {
@@ -1488,6 +2949,8 @@ bool mod_vnc::draw_event_impl()
             bool support_raw_encoding           = true;
             bool support_copyrect_encoding      = true;
             bool support_cursor_pseudo_encoding = this->cursor_pseudo_encoding_supported;
+            bool support_pointer_position       = false;
+            bool support_file_transfer          = true; // TODO
 
             char const * p = this->encodings.c_str();
             if (*p){
@@ -1507,6 +2970,7 @@ bool mod_vnc::draw_event_impl()
                         case HEXTILE_ENCODING: support_hextile_encoding = true; break;
                         case ZRLE_ENCODING: support_zrle_encoding = true; break;
                         case RRE_ENCODING: support_rre_encoding = true; break;
+                        case POINTER_POSITION_ENCODING: support_pointer_position = true; break;
                         default: break;
                     }
                 }
@@ -1516,46 +2980,55 @@ bool mod_vnc::draw_event_impl()
                 support_rre_encoding           = true;
             }
 
-            uint16_t number_of_encodings =  support_zrle_encoding
-                                         +  support_hextile_encoding
-                                         +  support_raw_encoding
-                                         +  support_copyrect_encoding
-                                         +  support_rre_encoding
-                                         +  support_cursor_pseudo_encoding;
+            uint16_t number_of_encodings = support_zrle_encoding
+                                         + support_hextile_encoding
+                                         + support_raw_encoding
+                                         + support_copyrect_encoding
+                                         + support_rre_encoding
+                                         + support_cursor_pseudo_encoding
+                                         + support_file_transfer
+                                         + support_pointer_position
+                                         ;
 
             // LOG(LOG_INFO, "number of encodings=%d", number_of_encodings);
 
             stream.out_uint8(VNC_CS_MSG_SET_ENCODINGS);
             stream.out_uint8(0);
             stream.out_uint16_be(number_of_encodings);
-            if (support_zrle_encoding)          {
+            if (support_zrle_encoding) {
                 LOG(LOG_INFO, "enable ZRLE encoding");
                 stream.out_uint32_be(ZRLE_ENCODING);
-            }            // (16) Zrle
-            if (support_hextile_encoding)       {
+            }
+            if (support_hextile_encoding) {
                 LOG(LOG_INFO, "enable hextile encoding");
                 stream.out_uint32_be(HEXTILE_ENCODING);
-            }         // (5) Hextile
-            if (support_raw_encoding)           {
+            }
+            if (support_raw_encoding) {
                 LOG(LOG_INFO, "enable RAW encoding");
                 stream.out_uint32_be(RAW_ENCODING);
-            }             // (0) raw
-            if (support_copyrect_encoding)      {
+            }
+            if (support_copyrect_encoding) {
                 LOG(LOG_INFO, "enable copyrect encoding");
                 stream.out_uint32_be(COPYRECT_ENCODING);
-            }        // (1) copy rect
-            if (support_rre_encoding)           {
+            }
+            if (support_rre_encoding) {
                 LOG(LOG_INFO, "enable rre encoding");
                 stream.out_uint32_be(RRE_ENCODING);
-            }             // (2) RRE
+            }
             if (support_cursor_pseudo_encoding) {
                 LOG(LOG_INFO, "enable cursor pseudo encoding");
                 stream.out_uint32_be(CURSOR_PSEUDO_ENCODING);
-            }   // (-239) cursor
+            }
+            if (support_pointer_position) {
+                LOG(LOG_INFO, "enable pointer position encoding");
+                stream.out_uint32_be(POINTER_POSITION_ENCODING);
+            }
+            if (support_file_transfer) {
+                LOG(LOG_INFO, "enable file transfer encoding");
+                stream.out_uint32_be(UVNC_FILE_TRANSFER);
+            }
 
-            assert(4u + number_of_encodings * 4u == stream.get_offset());
-
-            this->t.send(stream.get_data(), 4u + number_of_encodings * 4u);
+            this->t.send(stream.get_produced_bytes());
         }
 
 
@@ -1595,618 +3068,133 @@ bool mod_vnc::draw_event_impl()
     return false;
 }
 
-void mod_vnc::check_timeout()
-{
-    if (this->clipboard_requesting_for_data_is_delayed) {
-        //const uint64_t usnow = ustime();
-        //const uint64_t timeval_diff = usnow - this->clipboard_last_client_data_timestamp;
-        //LOG(LOG_INFO,
-        //    "usnow=%llu clipboard_last_client_data_timestamp=%llu timeval_diff=%llu",
-        //    usnow, this->clipboard_last_client_data_timestamp, timeval_diff);
-        LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-            "mod_vnc server clipboard PDU: msgType=CB_FORMAT_DATA_REQUEST(%u) (time)",
-            RDPECLIP::CB_FORMAT_DATA_REQUEST);
-
-        // Build and send a CB_FORMAT_DATA_REQUEST to front (for format CF_TEXT or CF_UNICODETEXT)
-        // 04 00 00 00 04 00 00 00 0? 00 00 00
-        // 00 00 00 00
-        RDPECLIP::FormatDataRequestPDU format_data_request_pdu(this->clipboard_requested_format_id);
-        RDPECLIP::CliprdrHeader format_data_request_header(RDPECLIP::CB_FORMAT_DATA_REQUEST, RDPECLIP::CB_RESPONSE_NONE, format_data_request_pdu.size());
-        StaticOutStream<256>           out_s;
-
-        format_data_request_header.emit(out_s);
-        format_data_request_pdu.emit(out_s);
-
-        size_t length     = out_s.get_offset();
-        size_t chunk_size = length;
-
-        this->clipboard_requesting_for_data_is_delayed = false;
-        this->clipboard_timeout_timer.garbage();
-        this->send_to_front_channel( channel_names::cliprdr
-                                   , out_s.get_data()
-                                   , length
-                                   , chunk_size
-                                   , CHANNELS::CHANNEL_FLAG_FIRST
-                                   | CHANNELS::CHANNEL_FLAG_LAST
-                                   );
-    }
-}
-
-
 bool mod_vnc::lib_clip_data(Buf64k & buf)
 {
-    if (!this->clipboard_data_ctx.run(buf)) {
-        return false;
-    }
+    auto result = server_cut_text_reader.read_packet(buf);
 
-    if (this->clipboard_data_ctx.clipboard_is_enabled()) {
-        LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-            "mod_vnc::lib_clip_data: Sending Format List PDU (%u) to client.",
-            RDPECLIP::CB_FORMAT_LIST);
+    // TODO disabled when ft_gui.is_open() ?
+    cliprdr.process_vnc_server_cut_text_message(
+        result.partial_data,
+        server_cut_text_reader.remaining_len(),
+        result.chunk_flags
+    );
 
-        StaticOutStream<256> out_s;
-        Cliprdr::format_list_serialize_with_header(
-            out_s, Cliprdr::IsLongFormat(false),
-            std::array{Cliprdr::FormatNameRef{RDPECLIP::CF_UNICODETEXT, {}}});
+    // TODO auto-open gui and request_file_list()
 
-        const size_t totalLength = out_s.get_offset();
-        this->send_to_front_channel(channel_names::cliprdr,
-                out_s.get_data(),
-                totalLength,
-                totalLength,
-                CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST
-            );
-
-        this->clipboard_owned_by_client = false;
-
-        // Can stop RDP to VNC clipboard infinite loop.
-        this->clipboard_requesting_for_data_is_delayed = false;
-        this->clipboard_timeout_timer.garbage();
-    }
-    else {
-        LOG(LOG_WARNING, "mod_vnc::lib_clip_data: Clipboard Channel Redirection unavailable");
-    }
-
-    return true;
+    return flags_any(result.chunk_flags, Rfb::ChunkFlags::Last);
 }
 
-
-void mod_vnc::send_to_front_channel(CHANNELS::ChannelNameId mod_channel_name, uint8_t const * data,
-        size_t length, size_t chunk_size, int flags)
+bool mod_vnc::consume_file_transfer_packet(Buf64k& buf)
 {
-    LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO, "mod_vnc::send_to_front_channel");
+    LOG(LOG_DEBUG, "mod_vnc::consume_file_transfer_packet");
 
-    const CHANNELS::ChannelDef * front_channel = this->front.get_channel_list().get_by_name(mod_channel_name);
-    if (front_channel) {
-        this->front.send_to_channel(*front_channel, {data, chunk_size}, length, flags);
-    }
+    auto status = ft_reader.read_packet(
+        buf,
+        FT::make_uvnc_file_transfer_reader_callback(*this)
+    );
+
+    LOG(LOG_DEBUG, "ft status = %d", status);
+    return status == UVNCFileTransferReader::ReadPacketStatus::Completed;
 }
 
-void mod_vnc::send_to_mod_channel(CHANNELS::ChannelNameId front_channel_name, InStream & chunk,
-        size_t length, uint32_t flags)
+void mod_vnc::send_to_cliprdr(
+    bytes_view chunk, size_t total_length, VNC::ChannelFlags flags)
 {
-    LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO, "mod_vnc::send_to_mod_channel");
+    if (bool(this->verbose & (VNCVerbose::clipboard | VNCVerbose::clipboard_dump))) [[unlikely]] {
+        LOG(LOG_INFO, "mod_vnc::send_to_cliprdr (%savailable) (%zu/%zu bytes) flags=<%s>(%u)",
+            cliprdr_chann ? "" : "un", chunk.size(), total_length,
+            VNC::channel_flags_to_string(flags), flags);
 
-    if (this->state != UP_AND_RUNNING) {
-        return;
+        if (bool(this->verbose & VNCVerbose::clipboard_dump)) {
+            LOG(LOG_INFO, "mod_vnc::send_to_cliprdr: dump vvvvvv");
+            hexdump_c(chunk);
+            LOG(LOG_INFO, "mod_vnc::send_to_cliprdr: dumped ^^^^");
+        }
     }
 
-    if (front_channel_name == channel_names::cliprdr) {
-        this->clipboard_send_to_vnc_server(chunk, length, flags);
+    if (!cliprdr_chann) {
+        return ;
     }
-}
 
-void mod_vnc::send_clipboard_pdu_to_front(const OutStream & out_stream)
-{
     // Send clipboard as a train of consecutive PDU
-    size_t pdu_data_length           = out_stream.get_offset();
-    size_t remaining_pdu_data_length = pdu_data_length;
-    uint8_t * chunk_data = out_stream.get_data();
 
-    int send_flags =
-        (CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_SHOW_PROTOCOL);
+    constexpr size_t max_pdu_len = CHANNELS::CHANNEL_CHUNK_LENGTH;
 
-    do {
-        const size_t chunk_size = std::min<size_t>(
-                CHANNELS::CHANNEL_CHUNK_LENGTH,
-                remaining_pdu_data_length
-            );
+    size_t remaining_pdu_data_length = chunk.size();
+    uint8_t const * chunk_data = chunk.data();
+
+    auto channel_flags = (VNC::ChannelFlags::First & flags) | VNC::ChannelFlags::ShowProtocol;
+
+    do
+    {
+        const auto chunk_size = mmin(max_pdu_len, remaining_pdu_data_length);
 
         remaining_pdu_data_length -= chunk_size;
 
         if (!remaining_pdu_data_length) {
-            send_flags |= CHANNELS::CHANNEL_FLAG_LAST;
+            channel_flags |= flags & VNC::ChannelFlags::Last;
         }
 
-        this->send_to_front_channel(channel_names::cliprdr,
-                                    chunk_data,
-                                    pdu_data_length,
-                                    chunk_size,
-                                    send_flags
-                                   );
-        LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-            "mod_vnc server clipboard PDU: msgType=CB_FORMAT_DATA_RESPONSE(%u) - chunk_size=%zu",
-            RDPECLIP::CB_FORMAT_DATA_RESPONSE, chunk_size);
+        front.send_to_channel(
+            *cliprdr_chann,
+            {chunk_data, chunk_size},
+            total_length,
+            underlying_cast(channel_flags)
+        );
 
-        send_flags &= ~CHANNELS::CHANNEL_FLAG_FIRST;
+        channel_flags = VNC::ChannelFlags::ShowProtocol;
 
         chunk_data += chunk_size;
     }
     while (remaining_pdu_data_length);
 }
 
-
-void mod_vnc::clipboard_send_to_vnc_server(InStream & chunk, size_t length, uint32_t flags)
+void mod_vnc::send_to_cliprdr(bytes_view pdu)
 {
-    LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
-        "mod_vnc::clipboard_send_to_vnc_server: length=%zu chunk_size=%zu flags=0x%08X",
-        length, chunk.get_capacity(), flags);
-
-    // TODO Create a unit tested class for clipboard messages
-
-    /*
-     * rdp message :
-     *
-     *   -------------------------------------------------------------------------------------------
-     *                    rdesktop                    |             freerdp / mstsc
-     *   -------------------------------------------------------------------------------------------
-     *                                          serveur paste
-     *   -------------------------------------------------------------------------------------------
-     *    mod   -> front : (4) format_data_resquest   |   mod   -> front : (4) format_data_resquest
-     *  _ front -> mod   : (5) format_data_response   |   front -> mod   : (5) format_data_response
-     * |  front -> mod   : (2) format_list            |
-     * |_ mod   -> front : (3) format_list_response   |
-     *   -------------------------------------------------------------------------------------------
-     *                                          serveur copy
-     *   -------------------------------------------------------------------------------------------
-     *    mod   -> front : (2) format_list            |   mod   -> front : (2) format_list
-     *    front -> mod   : (3) format_list_response   |   front -> mod   : (3) format_list_response
-     *    front -> mod   : (4) format_data_resquest   |   front -> mod   : (4) format_data_resquest
-     *    mod   -> front : (5) format_data_response   |   mod   -> front : (5) format_data_response
-     *    front -> mod   : (4) format_data_resquest   |
-     *    mod   -> front : (5) format_data_response   |
-     *   -------------------------------------------------------------------------------------------
-     *                                            host copy
-     *  _-------------------------------------------------------------------------------------------
-     * |  front -> mod   : (2) format_list            |   front -> mod   : (2) format_list
-     * |_ mod   -> front : (3) format_list_response   |   mod   -> front : (3) format_list_response
-     *   -------------------------------------------------------------------------------------------
-     *                                            host paste
-     *   -------------------------------------------------------------------------------------------
-     *    front -> mod   : (4) format_data_resquest   |   front -> mod   : (4) format_data_resquest
-     *    mod   -> front : (5) format_data_response   |   mod   -> front : (5) format_data_response
-     *   -------------------------------------------------------------------------------------------
-     *
-     * rdesktop : paste serveur = paste serveur + host copy
-     */
-
-    // specific treatement depending on msgType
-    RDPECLIP::RecvPredictor rp(chunk);
-    uint16_t msgType = rp.msgType();
-
-    if ((flags & CHANNELS::CHANNEL_FLAG_FIRST) == 0) {
-        msgType = RDPECLIP::CB_CHUNKED_FORMAT_DATA_RESPONSE;
-        // msgType read is not a msgType, it's a part of data.
-    }
-
-    LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-        "mod_vnc client clipboard PDU: msgType=%s(%d)",
-        RDPECLIP::get_msgType_name(msgType), msgType);
-
-    switch (msgType) {
-        case RDPECLIP::CB_FORMAT_LIST: {
-            RDPECLIP::CliprdrHeader incoming_header;
-            incoming_header.recv(chunk);
-            if (bool(this->verbose & VNCVerbose::clipboard)) {
-                incoming_header.log(LOG_INFO);
-            }
-
-            // Client notify that a copy operation have occured.
-            // Two operations should be done :
-            //  - Always: send a RDP acknowledge (CB_FORMAT_LIST_RESPONSE)
-            //  - Only if clipboard content formats list include "UNICODETEXT:
-            // send a request for it in that format
-            bool contains_data_in_text_format = false;
-            bool contains_data_in_unicodetext_format = false;
-            Cliprdr::format_list_extract(
-                chunk,
-                Cliprdr::IsLongFormat(this->client_use_long_format_names),
-                Cliprdr::IsAscii(bool(incoming_header.msgFlags() & RDPECLIP::CB_ASCII_NAMES)),
-                [&](uint32_t format_id, auto const& name) {
-                    contains_data_in_text_format |= (format_id == RDPECLIP::CF_TEXT);
-                    contains_data_in_unicodetext_format |= (format_id == RDPECLIP::CF_UNICODETEXT);
-                    if (bool(this->verbose & VNCVerbose::clipboard)) {
-                        Cliprdr::log_format_name("", format_id, name);
-                    }
-                }
-            );
-
-
-            //---- Beginning of clipboard PDU Header ----------------------------
-
-            LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                "mod_vnc server clipboard PDU: msgType=CB_FORMAT_LIST_RESPONSE(%u)",
-                RDPECLIP::CB_FORMAT_LIST_RESPONSE);
-
-            // Build and send the CB_FORMAT_LIST_RESPONSE (with status = OK)
-            // 03 00 01 00 00 00 00 00 00 00 00 00
-            RDPECLIP::CliprdrHeader clipboard_header(RDPECLIP::CB_FORMAT_LIST_RESPONSE, RDPECLIP::CB_RESPONSE_OK, 0);
-            StaticOutStream<256>    out_s;
-
-            clipboard_header.emit(out_s);
-
-            size_t chunk_size = out_s.get_offset();
-
-            this->send_to_front_channel( channel_names::cliprdr
-                                       , out_s.get_data()
-                                       , chunk_size // total length is chunk size
-                                       , chunk_size
-                                       ,   CHANNELS::CHANNEL_FLAG_FIRST
-                                         | CHANNELS::CHANNEL_FLAG_LAST
-                                       );
-
-            constexpr MonotonicTimePoint::duration MINIMUM_TIMEVAL(250000us);
-
-            if (this->enable_clipboard_up
-             && (contains_data_in_text_format || contains_data_in_unicodetext_format)
-            ) {
-                this->clipboard_requested_format_id = contains_data_in_unicodetext_format
-                    ? RDPECLIP::CF_UNICODETEXT
-                    : RDPECLIP::CF_TEXT;
-
-                const auto usnow        = this->events_guard.get_monotonic_time();
-                const auto timeval_diff = usnow - this->clipboard_last_client_data_timestamp;
-                if ((timeval_diff > MINIMUM_TIMEVAL) || !this->clipboard_owned_by_client) {
-                    LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                        "mod_vnc server clipboard PDU: msgType=CB_FORMAT_DATA_REQUEST(%u)",
-                        RDPECLIP::CB_FORMAT_DATA_REQUEST);
-
-                    // Build and send a CB_FORMAT_DATA_REQUEST to front (for format CF_TEXT or CF_UNICODETEXT)
-                    // 04 00 00 00 04 00 00 00 0? 00 00 00
-                    // 00 00 00 00
-
-                    RDPECLIP::FormatDataRequestPDU format_data_request_pdu(this->clipboard_requested_format_id);
-                    RDPECLIP::CliprdrHeader format_data_request_header(RDPECLIP::CB_FORMAT_DATA_REQUEST, RDPECLIP::CB_RESPONSE_NONE, format_data_request_pdu.size());
-                    out_s.rewind();
-
-                    format_data_request_header.emit(out_s);
-                    format_data_request_pdu.emit(out_s);
-
-                    chunk_size = out_s.get_offset();
-
-                    this->clipboard_requesting_for_data_is_delayed = false;
-                    this->clipboard_timeout_timer.garbage();
-                    this->send_to_front_channel( channel_names::cliprdr
-                                               , out_s.get_data()
-                                               , chunk_size // total length is chunk_size
-                                               , chunk_size
-                                               , CHANNELS::CHANNEL_FLAG_FIRST
-                                               | CHANNELS::CHANNEL_FLAG_LAST
-                                               );
-                }
-                else {
-                    if (this->bogus_clipboard_infinite_loop == VncBogusClipboardInfiniteLoop::delayed) {
-                        LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                            "mod_vnc server clipboard PDU: msgType=CB_FORMAT_DATA_REQUEST(%u) (delayed)",
-                            RDPECLIP::CB_FORMAT_DATA_REQUEST);
-                        this->clipboard_requesting_for_data_is_delayed = true;
-                        // arms timeout
-                        this->clipboard_timeout_timer = this->events_guard.create_event_timeout(
-                            "VNC Clipboard Timeout Event",
-                            MINIMUM_TIMEVAL - timeval_diff,
-                            [this](Event&){this->check_timeout();});
-                    }
-                    else if ((this->bogus_clipboard_infinite_loop != VncBogusClipboardInfiniteLoop::duplicated)
-                        &&  ((this->clipboard_general_capability_flags & RDPECLIP::CB_MINIMUM_WINDOWS_CLIENT_GENERAL_CAPABILITY_FLAGS_)
-                          == RDPECLIP::CB_MINIMUM_WINDOWS_CLIENT_GENERAL_CAPABILITY_FLAGS_)
-                    ) {
-                        LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                            "mod_vnc::clipboard_send_to_vnc_server: "
-                            "duplicated clipboard update event "
-                            "from Windows client is ignored");
-                    }
-                    else {
-                        LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                            "mod_vnc server clipboard PDU: msgType=CB_FORMAT_LIST(%u) (preventive)",
-                            RDPECLIP::CB_FORMAT_LIST);
-
-                        StaticOutStream<256> out_s;
-                        Cliprdr::format_list_serialize_with_header(
-                            out_s, Cliprdr::IsLongFormat(false),
-                            std::array{Cliprdr::FormatNameRef{
-                                this->clipboard_requested_format_id, {}}});
-
-                        const size_t totalLength = out_s.get_offset();
-                        this->send_to_front_channel(channel_names::cliprdr,
-                                out_s.get_data(),
-                                totalLength,
-                                totalLength,
-                                CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST
-                            );
-                    }
-                }
-            }
-        }
-        break;
-
-        case RDPECLIP::CB_FORMAT_DATA_REQUEST: {
-            const unsigned expected = 10; /* msgFlags(2) + datalen(4) + requestedFormatId(4) */
-            if (!chunk.in_check_rem(expected)) {
-                LOG( LOG_ERR
-                   , "mod_vnc::clipboard_send_to_vnc_server: truncated CB_FORMAT_DATA_REQUEST(%u) data, need=%u remains=%zu"
-                   , RDPECLIP::CB_FORMAT_DATA_REQUEST, expected, chunk.in_remain());
-                throw Error(ERR_VNC);
-            }
-
-            // This is a fake treatment that pretends to send the Request
-            //  to VNC server. Instead, the RDP PDU is handled localy and
-            //  the clipboard PDU, if any, is likewise built localy and
-            //  sent back to front.
-            RDPECLIP::CliprdrHeader format_data_request_header;
-            RDPECLIP::FormatDataRequestPDU format_data_request_pdu;
-
-            // 04 00 00 00 04 00 00 00 0d 00 00 00 00 00 00 00
-            format_data_request_header.recv(chunk);
-            format_data_request_pdu.recv(chunk);
-
-            LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                "mod_vnc::clipboard_send_to_vnc_server: CB_FORMAT_DATA_REQUEST(%u) msgFlags=0x%02x datalen=%u requestedFormatId=%s(%u)",
-                RDPECLIP::CB_FORMAT_DATA_REQUEST,
-                format_data_request_header.msgFlags(),
-                format_data_request_header.dataLen(),
-                RDPECLIP::get_FormatId_name(format_data_request_pdu.requestedFormatId),
-                format_data_request_pdu.requestedFormatId);
-
-            if (this->bogus_clipboard_infinite_loop != VncBogusClipboardInfiniteLoop::delayed
-            && this->clipboard_owned_by_client) {
-                StreamBufMaker<65536> buf_maker;
-                OutStream out_stream = buf_maker.reserve_out_stream(
-                        8 +                                       // clipHeader(8)
-                        this->to_vnc_clipboard_data.get_offset()  // data
-                    );
-
-                RDPECLIP::CliprdrHeader header(RDPECLIP::CB_FORMAT_DATA_RESPONSE, RDPECLIP::CB_RESPONSE_OK, this->to_vnc_clipboard_data.get_offset());
-                const RDPECLIP::FormatDataResponsePDU format_data_response_pdu;
-                header.emit(out_stream);
-                format_data_response_pdu.emit(out_stream, this->to_vnc_clipboard_data.get_data(), this->to_vnc_clipboard_data.get_offset());
-
-                this->send_clipboard_pdu_to_front(out_stream);
-                break;
-            }
-
-            if ((format_data_request_pdu.requestedFormatId == RDPECLIP::CF_TEXT)
-            && !this->clipboard_data_ctx.clipboard_data_is_utf8_encoded()) {
-                StreamBufMaker<65536> buf_maker;
-                OutStream out_stream = buf_maker.reserve_out_stream(
-                    RDPECLIP::CliprdrHeader::size() +
-                    this->clipboard_data_ctx.clipboard_data().size() * 2 +    // data
-                    1                                           // Null character
-                );
-
-                auto to_rdp_clipboard_data =
-                    ::linux_to_windows_newline_convert(
-                        this->clipboard_data_ctx.clipboard_data().as_chars(),
-                        out_stream.get_tail().as_chars()
-                            .drop_front(RDPECLIP::CliprdrHeader::size())
-                            // Null character
-                            .drop_back(1)
-                    );
-                const auto to_rdp_clipboard_data_length = to_rdp_clipboard_data.size()
-                    + 1; // Null character
-                // Null character
-                *to_rdp_clipboard_data.end() = '\x0';
-
-                RDPECLIP::CliprdrHeader header(RDPECLIP::CB_FORMAT_DATA_RESPONSE, RDPECLIP::CB_RESPONSE_OK, to_rdp_clipboard_data_length);
-                const RDPECLIP::FormatDataResponsePDU format_data_response_pdu;
-                header.emit(out_stream);
-                format_data_response_pdu.emit(out_stream, out_stream.get_data() + RDPECLIP::CliprdrHeader::size(), to_rdp_clipboard_data_length);
-                this->send_clipboard_pdu_to_front(out_stream);
-
-                LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                    "mod_vnc::clipboard_send_to_vnc_server: "
-                    "Sending Format Data Response PDU (CF_TEXT) done");
-            }
-            else if (format_data_request_pdu.requestedFormatId == RDPECLIP::CF_UNICODETEXT) {
-                BufMaker<65536> buf_maker;
-                auto uninit_buf_av = buf_maker.dyn_array(
-                    8 +                                         // clipHeader(8)
-                    this->clipboard_data_ctx.clipboard_data().size() * 4 +    // data
-                    2                                           // Null character
-                );
-                auto const header_size = RDPECLIP::CliprdrHeader::size();
-
-                // [ .................... out_stream .................... ]
-                // [ [ ... header_stream(8) ... ] [ ... data_stream ... ] ]
-                OutStream out_stream(uninit_buf_av);
-                OutStream data_stream(uninit_buf_av.from_offset(header_size));
-
-                if (this->clipboard_data_ctx.clipboard_data_is_utf8_encoded()) {
-                    size_t utf16_data_length = UTF8toUTF16_CrLf(
-                        this->clipboard_data_ctx.clipboard_data(),
-                        data_stream.get_data(),
-                        data_stream.get_capacity()-2
-                    );
-                    data_stream.out_skip_bytes(utf16_data_length);
-                }
-                else {
-                    size_t utf16_data_length = Latin1toUTF16(
-                        this->clipboard_data_ctx.clipboard_data(),
-                        data_stream.get_data(),
-                        data_stream.get_capacity()-2
-                    );
-                    data_stream.out_skip_bytes(utf16_data_length);
-                }
-                data_stream.out_uint16_le(0x0000);  // Null character
-
-                RDPECLIP::CliprdrHeader header(RDPECLIP::CB_FORMAT_DATA_RESPONSE, RDPECLIP::CB_RESPONSE_OK, data_stream.get_offset());
-                //const RDPECLIP::FormatDataResponsePDU format_data_response_pdu;
-                header.emit(out_stream);
-                assert(out_stream.get_current() == data_stream.get_data());
-                out_stream.out_skip_bytes(data_stream.get_offset());
-                //format_data_response_pdu.emit(out_stream, data_stream.get_data(), out_stream.get_offset());
-
-                this->send_clipboard_pdu_to_front(out_stream);
-
-                LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
-                    "mod_vnc::clipboard_send_to_vnc_server: "
-                    "Sending Format Data Response PDU (CF_UNICODETEXT) done");
-            }
-            else {
-                LOG( LOG_INFO
-                   , "mod_vnc::clipboard_send_to_vnc_server: resquested clipboard format Id 0x%02x is not supported by VNC PROXY"
-                   , format_data_request_pdu.requestedFormatId);
-            }
-        }
-        break;
-
-        case RDPECLIP::CB_FORMAT_DATA_RESPONSE: {
-            RDPECLIP::CliprdrHeader header(RDPECLIP::CB_FORMAT_DATA_RESPONSE, RDPECLIP::CB_RESPONSE_FAIL, 0);
-            // TODO: really we are not using format data response but reading underlying data directly
-            // we should not do that! We should reassemble consecutive data packets until data_response
-            // is reassembled, then check if it is full and should be send or not.
-
-            header.recv(chunk);
-            if (header.msgFlags() == RDPECLIP::CB_RESPONSE_OK) {
-                // TODO: we should be able to unify both sides of the condition
-                // the case where we have only one PDU is the extreme case of
-                // when we have a train of consecutive PDU
-
-                // Here is where we receive the first packet, the followup will be treated
-                // in state RDPECLIP::CB_CHUNKED_FORMAT_DATA_RESPONSE (pseudo state
-                // when we do not have a first packet)
-
-                if ((flags & CHANNELS::CHANNEL_FLAG_LAST) != 0) {
-                    if (!chunk.in_check_rem(header.dataLen())) {
-                        LOG( LOG_ERR
-                           , "mod_vnc::clipboard_send_to_vnc_server: truncated CB_FORMAT_DATA_RESPONSE(%u), need=%u remains=%zu"
-                           , RDPECLIP::CB_FORMAT_DATA_RESPONSE
-                           , header.dataLen(), chunk.in_remain());
-                        throw Error(ERR_VNC);
-                    }
-
-                    this->to_vnc_clipboard_data.rewind();
-
-                    this->to_vnc_clipboard_data.out_copy_bytes(
-                        chunk.get_current(), header.dataLen());
-
-                    this->rdp_input_clip_data(this->to_vnc_clipboard_data.get_produced_bytes());
-                } // CHANNELS::CHANNEL_FLAG_LAST
-                else {
-                    // Virtual channel data span in multiple Virtual Channel PDUs.
-
-                    if ((flags & CHANNELS::CHANNEL_FLAG_FIRST) == 0) {
-                        LOG(LOG_ERR, "mod_vnc::clipboard_send_to_vnc_server: flag CHANNEL_FLAG_FIRST expected");
-                        throw Error(ERR_VNC);
-                    }
-
-                    this->to_vnc_clipboard_data_size      =
-                    this->to_vnc_clipboard_data_remaining = header.dataLen();
-
-                    LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
-                        "mod_vnc::clipboard_send_to_vnc_server: virtual channel data span in multiple Virtual Channel PDUs: total=%u",
-                        this->to_vnc_clipboard_data_size);
-
-                    this->to_vnc_clipboard_data.rewind();
-
-                    if (this->to_vnc_clipboard_data.get_capacity() >= this->to_vnc_clipboard_data_size) {
-                        uint32_t number_of_bytes_to_read = std::min<uint32_t>(
-                            this->to_vnc_clipboard_data_remaining, chunk.in_remain());
-                        this->to_vnc_clipboard_data.out_copy_bytes(
-                            chunk.view_bytes(number_of_bytes_to_read));
-
-                        this->to_vnc_clipboard_data_remaining -= number_of_bytes_to_read;
-                    }
-                    else {
-                        char * latin1_overflow_message_buffer = ::char_ptr_cast(this->to_vnc_clipboard_data.get_data());
-                        const size_t latin1_overflow_message_buffer_length = this->to_vnc_clipboard_data.get_capacity();
-
-                        const size_t latin1_overflow_message_length =
-                            ::snprintf(latin1_overflow_message_buffer,
-                                       latin1_overflow_message_buffer_length,
-                                       "The data was too large to fit into the clipboard buffer. "
-                                           "The buffer size is limited to %zu bytes. "
-                                           "The length of data is %" PRIu32 " bytes.",
-                                       this->to_vnc_clipboard_data.get_capacity(),
-                                       this->to_vnc_clipboard_data_size);
-
-                        this->to_vnc_clipboard_data.out_skip_bytes(latin1_overflow_message_length);
-                        this->to_vnc_clipboard_data.out_clear_bytes(1); /* null-terminator */
-                    }
-                } // else CHANNELS::CHANNEL_FLAG_LAST
-            } // RDPECLIP::CB_RESPONSE_OK
-        }
-        break;
-
-        case RDPECLIP::CB_CHUNKED_FORMAT_DATA_RESPONSE:
-            assert(this->to_vnc_clipboard_data.get_offset() != 0);
-            assert(this->to_vnc_clipboard_data_size);
-
-            // Virtual channel data span in multiple Virtual Channel PDUs.
-            LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO, "mod_vnc::clipboard_send_to_vnc_server: an other trunk");
-
-            if ((flags & CHANNELS::CHANNEL_FLAG_FIRST) != 0) {
-                LOG(LOG_ERR, "mod_vnc::clipboard_send_to_vnc_server: flag CHANNEL_FLAG_FIRST unexpected");
-                throw Error(ERR_VNC);
-            }
-
-            // if (bool(this->verbose & VNCVerbose::basic_trace)) {
-            //     LOG( LOG_INFO, "mod_vnc::clipboard_send_to_vnc_server: trunk size=%u, capacity=%u"
-            //        , chunk.in_remain(), static_cast<unsigned>(this->to_vnc_clipboard_data.tailroom()));
-            // }
-
-            if (this->to_vnc_clipboard_data.get_capacity() >= this->to_vnc_clipboard_data_size) {
-                uint32_t number_of_bytes_to_read = std::min<uint32_t>(
-                        this->to_vnc_clipboard_data_remaining,
-                        chunk.in_remain()
-                    );
-
-                this->to_vnc_clipboard_data.out_copy_bytes(chunk.get_current(), number_of_bytes_to_read);
-
-                this->to_vnc_clipboard_data_remaining -= number_of_bytes_to_read;
-            }
-
-            if ((flags & CHANNELS::CHANNEL_FLAG_LAST) != 0) {
-                assert((this->to_vnc_clipboard_data.get_capacity() < this->to_vnc_clipboard_data_size) ||
-                    !this->to_vnc_clipboard_data_remaining);
-
-                this->rdp_input_clip_data(this->to_vnc_clipboard_data.get_produced_bytes());
-            }
-        break;
-
-        case RDPECLIP::CB_CLIP_CAPS:
-        {
-            RDPECLIP::CliprdrHeader clipboard_header;
-            clipboard_header.recv(chunk);
-
-            RDPECLIP::ClipboardCapabilitiesPDU clipboard_caps_pdu;
-            clipboard_caps_pdu.recv(chunk);
-            assert(1 == clipboard_caps_pdu.cCapabilitiesSets());
-
-            RDPECLIP::CapabilitySetRecvFactory caps_recv_factory(chunk);
-            if (caps_recv_factory.capabilitySetType() == RDPECLIP::CB_CAPSTYPE_GENERAL) {
-                RDPECLIP::GeneralCapabilitySet general_caps;
-                general_caps.recv(chunk, caps_recv_factory);
-
-                this->clipboard_general_capability_flags = general_caps.generalFlags();
-
-                if (general_caps.generalFlags() & RDPECLIP::CB_USE_LONG_FORMAT_NAMES) {
-                    this->client_use_long_format_names = true;
-                }
-
-                LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
-                    "Client use %s format name",
-                    (this->client_use_long_format_names ? "long" : "short"));
-
-                if (bool(this->verbose & VNCVerbose::basic_trace)) {
-                    general_caps.log(LOG_INFO);
-                }
-            }
-        }
-        break;
-    }
-    LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO, "mod_vnc::clipboard_send_to_vnc_server: done");
+    auto flags = VNC::ChannelFlags::First
+               | VNC::ChannelFlags::Last
+               | VNC::ChannelFlags::ShowProtocol;
+    send_to_cliprdr(pdu, pdu.size(), flags);
 }
 
+void mod_vnc::send_to_mod_channel(
+    CHANNELS::ChannelNameId front_channel_name,
+    InStream & chunk,
+    size_t total_length,
+    uint32_t flags)
+{
+    LOG_IF(bool(this->verbose & VNCVerbose::basic_trace),
+        LOG_INFO, "mod_vnc::send_to_mod_channel | ft_flags=0x%x", ft_flags);
+
+    if (this->state != UP_AND_RUNNING) {
+        return;
+    }
+
+    if (front_channel_name == channel_names::cliprdr) {
+        VNC::ChannelFlags channel_flags {};
+        channel_flags |= (flags & CHANNELS::CHANNEL_FLAG_FIRST)
+            ? VNC::ChannelFlags::First
+            : VNC::ChannelFlags::NoFlags;
+        channel_flags |= (flags & CHANNELS::CHANNEL_FLAG_LAST)
+            ? VNC::ChannelFlags::Last
+            : VNC::ChannelFlags::NoFlags;
+        cliprdr.process_rdp_client_message(
+            chunk.remaining_bytes(),
+            total_length,
+            channel_flags
+        );
+
+        // enable/disable file list
+        if (cliprdr.rdp_client_last_msg_type() == VNC::CbMsgType::FormatList
+         && flags_any(channel_flags, VNC::ChannelFlags::Last)
+         && ft_gui.is_open())
+        {
+            FT::update_file_group_descriptor(*this);
+            // TODO add clip support for no stop transfer
+            FT::send_transfer_result(*this, uvnc_file_list.stop_file_transfer());
+        }
+    }
+}
 
 void mod_vnc::rdp_gdi_up_and_running()
 {
@@ -2233,4 +3221,168 @@ void mod_vnc::disconnect()
 
     LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
         "type=SESSION_DISCONNECTION duration=%s", duration_str);
+
+    FT::disconnect(*this);
+}
+
+void mod_vnc::file_validator_receive_event()
+{
+    auto file_validator = transfered_file_ctx.file_validator;
+
+    if (!file_validator)
+    {
+        return ;
+    }
+
+    auto receive_data = [&]{
+        for (;;)
+        {
+            switch (file_validator->receive_response())
+            {
+                case FileValidatorService::ResponseType::WaitingData:
+                    return false;
+                case FileValidatorService::ResponseType::HasContent:
+                    return true;
+                case FileValidatorService::ResponseType::Error:
+                    ;
+            }
+        }
+    };
+
+    using ValidationResult = LocalFileValidatorProtocol::ValidationResult;
+
+    while (receive_data())
+    {
+        bool is_accepted = false;
+
+        switch (file_validator->last_result_flag())
+        {
+            case ValidationResult::Wait:
+                return;
+            case ValidationResult::IsAccepted:
+                is_accepted = true;
+                [[fallthrough]];
+            case ValidationResult::IsRejected:
+            case ValidationResult::Error:
+                ;
+        }
+
+        LOG_IF(
+            flags_any(verbose, VNCVerbose::clipboard),
+            LOG_INFO, "DLPAV response: is_accepted=%d", is_accepted
+        );
+
+        auto file_validator_id = file_validator->last_file_id();
+        auto & result_content = file_validator->get_content();
+
+        auto * file = [&, this] () -> TransferedFileCtx::File *
+        {
+            if (transfered_file_ctx.current_file.validator_id == file_validator_id)
+            {
+                if (file_validator_id != FileValidatorId{})
+                {
+                    return &transfered_file_ctx.current_file;
+                }
+                return nullptr;
+            }
+
+            for (auto & file : transfered_file_ctx.waiting_validator_file_list)
+            {
+                if (file.validator_id == file_validator_id)
+                {
+                    return &file;
+                }
+            }
+
+            return nullptr;
+        }();
+
+        LOG_IF(
+            flags_any(verbose, VNCVerbose::clipboard),
+            LOG_INFO, "DLPAV file: found=%d, validator_id=%u file_id=%lu",
+            !!file,
+            file ? file->validator_id : FileValidatorId{},
+            (file && file->tfl_file) ? file->tfl_file->file_id : FdxCapture::FileId{}
+        );
+
+        // when id is already released
+        if (!file) [[unlikely]]
+        {
+            continue;
+        }
+
+        file->validator_id = {};
+
+        if (!is_accepted || transfered_file_ctx.log_if_accepted) {
+            FT::file_verification_log(*this, *file, result_content);
+        }
+
+        auto target = file->validator_target;
+
+        bool file_is_blocked = !is_accepted
+                            && flags_any(transfered_file_ctx.block_invalid_file, target);
+
+        if (file_is_blocked)
+        {
+            session_log.log6(LogId::FILE_BLOCKED, {
+                KVLog("direction"_av, FT::target_to_direction_name(target)),
+                KVLog("file_name"_av, file->utf8_file_name.av()),
+            });
+        }
+
+        if (file->tfl_file)
+        {
+            REDEMPTION_ASSUME(transfered_file_ctx.fdx_capture);
+
+            file->validator_status = is_accepted
+                ? TransferValidatorStatus::IsOk
+                : TransferValidatorStatus::IsRejected;
+
+            // if file is in waiting_validator_file_list
+            bool file_is_complete = (file != &transfered_file_ctx.current_file);
+
+            if (is_accepted
+             && transfered_file_ctx.file_storage_option == FileStorageOption::OnInvalidFile)
+            {
+                FT::cancel_tfl(transfered_file_ctx, *file);
+            }
+            else if (file_is_blocked
+             || (file_is_complete
+                && (transfered_file_ctx.file_storage_option == FileStorageOption::Always
+                    || !is_accepted
+                ))
+            )
+            {
+                if (!file_is_complete)
+                {
+                    FT::finalize_sha2_sig(transfered_file_ctx);
+                }
+
+                FT::close_tfl(
+                    transfered_file_ctx,
+                    *file,
+                    file_is_complete
+                        ? Mwrm3::TransferedStatus::Completed
+                        : Mwrm3::TransferedStatus::Broken
+                );
+            }
+
+            // remove file in waiting list
+            if (!file->tfl_file && file_is_complete)
+            {
+                auto & file_list = transfered_file_ctx.waiting_validator_file_list;
+                if (file != &file_list.back())
+                {
+                    auto i = checked_int{ file - file_list.data() };
+                    file_list[i] = std::move(file_list.back());
+                }
+                file_list.pop_back();
+            }
+        }
+
+        if (file_is_blocked)
+        {
+            FT::send_transfer_result(*this, uvnc_file_list.stop_file_transfer());
+        }
+    }
 }

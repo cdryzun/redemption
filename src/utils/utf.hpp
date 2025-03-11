@@ -1,26 +1,6 @@
 /*
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-   Product name: redemption, a FLOSS RDP proxy
-   Copyright (C) Wallix 2012
-   Author(s): Christophe Grosjean, Javier Caverni, Raphael Zhou, Meng Tan,
-              Jennifer Inthavong
-   Based on xrdp Copyright (C) Jay Sorg 2004-2010
-
-   stream object, used for input / output communication between
-   entities
+SPDX-FileCopyrightText: 2026 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #pragma once
@@ -66,9 +46,6 @@ bool UTF8InsertUtf16(writable_bytes_view source, std::size_t bytes_used, uint16_
 // UTF8toUTF16 never writes the trailing zero
 std::size_t UTF8toUTF16(bytes_view source, uint8_t * target, size_t t_len) noexcept;
 std::size_t UTF8toUTF16(bytes_view source, writable_bytes_view target) noexcept;
-
-// UTF8toUTF16 never writes the trailing zero (with Lf to CrLf conversion).
-std::size_t UTF8toUTF16_CrLf(bytes_view source, uint8_t * target, std::size_t t_len) noexcept;
 
 template<class ResizableArray>
 void UTF8toResizableUTF16(bytes_view utf8_source, ResizableArray& utf16_target)
@@ -177,17 +154,10 @@ std::size_t UTF32toUTF8(uint32_t utf32_char, uint8_t * utf8_target, std::size_t 
 
 size_t UTF8CharNbBytes(const uint8_t * source) noexcept;
 
-bool is_utf8_string(uint8_t const * s, int length = -1) noexcept; /*NOLINT*/
-
 bool is_ASCII_string(bytes_view source) noexcept;
 bool is_ASCII_string(byte_ptr source) noexcept;
 
-std::size_t UTF8StrLenInChar(byte_ptr source) noexcept;
-
 std::size_t UTF16toLatin1(const uint8_t * utf16_source_, std::size_t utf16_len, uint8_t * latin1_target, std::size_t latin1_len) noexcept;
-
-std::size_t Latin1toUTF16(bytes_view latin1_source,
-        uint8_t * utf16_target, std::size_t utf16_len) noexcept;
 
 std::size_t Latin1toUTF8(
     const uint8_t * latin1_source, std::size_t latin1_len,
@@ -628,3 +598,338 @@ struct Utf16ToUnicodeConverter
 private:
     uint16_t previous_unicode16 = 0;
 };
+
+
+struct [[nodiscard]] StringConvertResult
+{
+    writable_bytes_view out;
+    bytes_view in;
+};
+
+struct [[nodiscard]] StringConvertU32Result
+{
+    writable_array_view<uint32_t> out;
+    bytes_view in;
+};
+
+struct PartialResultWithSuccess
+{
+    uint8_t * out;
+    bool success;
+
+    explicit operator bool () const noexcept
+    {
+        return success;
+    }
+};
+
+struct [[nodiscard]] StringConvertResultWithSuccess
+{
+    writable_bytes_view out;
+    bytes_view in;
+    bool success;
+
+    explicit operator bool () const noexcept
+    {
+        return success;
+    }
+};
+
+template<std::size_t AtLeast, std::size_t AtMost>
+struct [[nodiscard]] WritableBoundedViewWithSuccess
+{
+    writable_bounded_array_view<uint8_t, AtLeast, AtMost> out;
+    bool success;
+
+    explicit operator bool () const noexcept
+    {
+        return success;
+    }
+};
+
+
+// CP1252
+//@{
+
+template<class Converter, std::size_t AtLeast, std::size_t AtMost>
+struct UtfBytesBufferConverter
+{
+    using view_t = writable_bounded_bytes_view<
+        AtLeast * Converter::min_output_buffer_multiplicator,
+        AtMost * Converter::max_output_buffer_multiplicator
+    >;
+
+    UtfBytesBufferConverter() noexcept
+        requires (AtLeast == 0)
+    {}
+
+    UtfBytesBufferConverter(bounded_bytes_view<AtLeast, AtMost> in) noexcept
+    {
+        reset(in);
+    }
+
+    void reset(bounded_bytes_view<AtLeast, AtMost> in) noexcept
+    {
+        auto buffer_view = make_writable_bounded_array_view(m_buffer);
+        m_len = Converter{}(in, buffer_view).msize();
+    }
+
+    view_t av() noexcept
+    {
+        return view_t::assumed(m_buffer, m_len);
+    }
+
+    operator bytes_view () const noexcept
+    {
+        return {m_buffer, m_len};
+    }
+
+private:
+    detail::select_minimal_size_t<AtMost> m_len = 0;
+    uint8_t m_buffer[AtMost * Converter::max_output_buffer_multiplicator];
+};
+
+template<class Converter, std::size_t AtLeast, std::size_t AtMost>
+struct UtfBytesBufferConverterWithSuccess
+{
+    using view_t = writable_bounded_bytes_view<
+        AtLeast / Converter::output_buffer_divisor,
+        AtMost / Converter::output_buffer_divisor
+    >;
+
+    UtfBytesBufferConverterWithSuccess() noexcept
+        requires (AtLeast == 0)
+        : m_success{true}
+    {}
+
+    UtfBytesBufferConverterWithSuccess(bounded_bytes_view<AtLeast, AtMost> in) noexcept
+    {
+        reset(in);
+    }
+
+    void reset(bounded_bytes_view<AtLeast, AtMost> in) noexcept
+    {
+        auto buffer_view = make_writable_bounded_array_view(m_buffer);
+        auto result = Converter{}(in, buffer_view);
+        m_success = result.success;
+        m_len = result.out.msize();
+    }
+
+    WritableBoundedViewWithSuccess<
+        AtLeast / Converter::output_buffer_divisor,
+        AtMost / Converter::output_buffer_divisor
+    > result() noexcept
+    {
+        return { view_t::assumed(m_buffer, m_len), m_success };
+    }
+
+private:
+    detail::select_minimal_size_t<AtMost> m_len;
+    bool m_success;
+    uint8_t m_buffer[AtMost / Converter::output_buffer_divisor];
+};
+
+
+template<class Converter, std::size_t AtLeast, std::size_t AtMost>
+struct Utf32BufferConverter
+{
+    using view_t = bounded_array_view<uint32_t, AtLeast, AtMost>;
+
+    Utf32BufferConverter(bounded_bytes_view<AtLeast, AtMost> in) noexcept
+    {
+        auto buffer_view = make_writable_bounded_array_view(m_buffer);
+        m_len = Converter{}(in, buffer_view).msize();
+    }
+
+    view_t av() const noexcept
+    {
+        return view_t::assumed(m_buffer, m_len);
+    }
+
+    operator array_view<uint32_t> () const noexcept
+    {
+        return {m_buffer, m_len};
+    }
+
+private:
+    detail::select_minimal_size_t<AtMost> m_len;
+    uint32_t m_buffer[AtMost];
+};
+
+
+template<class Encoder>
+struct EncodingToExpendedEncodingWithoutError : Encoder
+{
+    static constexpr std::size_t output_buffer_multiplicator
+        = Encoder::max_output_buffer_multiplicator;
+
+    template<
+        std::size_t AtLeast, std::size_t AtMost,
+        std::size_t AtLeastOutput, std::size_t AtMostOutput
+    >
+        requires (AtMost * Encoder::max_output_buffer_multiplicator <= AtLeastOutput)
+    auto operator()(
+        bounded_bytes_view<AtLeast, AtMost> in,
+        writable_bounded_array_view<uint8_t, AtLeastOutput, AtMostOutput> out
+    ) const noexcept
+    {
+        auto end_out = Encoder::unchecked(in, out.data());
+        return writable_bounded_bytes_view<
+            AtLeast * Encoder::min_output_buffer_multiplicator,
+            AtMost * Encoder::max_output_buffer_multiplicator
+        >::assumed(out.data(), end_out);
+    }
+
+    template<std::size_t AtLeast, std::size_t AtMost>
+    UtfBytesBufferConverter<
+        EncodingToExpendedEncodingWithoutError,
+        AtLeast,
+        AtMost
+    >
+    buffer_from(bounded_bytes_view<AtLeast, AtMost> in) const noexcept
+    {
+        return {in};
+    }
+};
+
+struct Cp1252ToUtf8Base
+{
+    static constexpr std::size_t min_output_buffer_multiplicator = 1;
+    static constexpr std::size_t max_output_buffer_multiplicator = 3;
+
+    static uint8_t * unchecked(bytes_view in, uint8_t * out) noexcept;
+
+    static StringConvertResult partial(bytes_view in, writable_bytes_view out) noexcept;
+};
+
+using Cp1252ToUtf8 = EncodingToExpendedEncodingWithoutError<Cp1252ToUtf8Base>;
+
+inline constexpr Cp1252ToUtf8 cp1252_to_utf8 {};
+
+
+struct Cp1252ToUtf16LEBase
+{
+    static constexpr std::size_t min_output_buffer_multiplicator = 2;
+    static constexpr std::size_t max_output_buffer_multiplicator = 2;
+
+    static uint8_t * unchecked(bytes_view in, uint8_t * out) noexcept;
+
+    static StringConvertResult partial(bytes_view in, writable_bytes_view out) noexcept;
+};
+
+using Cp1252ToUtf16LE = EncodingToExpendedEncodingWithoutError<Cp1252ToUtf16LEBase>;
+
+inline constexpr EncodingToExpendedEncodingWithoutError<Cp1252ToUtf16LE> cp1252_to_utf16le {};
+
+
+/// CP1252 to Utf-16 with Lf (newline) replaced by CrLf.
+struct Cp1252ToUtf16LE_LfToCrLfBase
+{
+    static constexpr std::size_t min_output_buffer_multiplicator = 2;
+    static constexpr std::size_t max_output_buffer_multiplicator = 4;
+
+    static uint8_t * unchecked(bytes_view in, uint8_t * out) noexcept;
+
+    static StringConvertResult partial(bytes_view in, writable_bytes_view out) noexcept;
+};
+
+using Cp1252ToUtf16LE_LfToCrLf = EncodingToExpendedEncodingWithoutError<Cp1252ToUtf16LE_LfToCrLfBase>;
+
+inline constexpr EncodingToExpendedEncodingWithoutError<Cp1252ToUtf16LE_LfToCrLf>
+    cp1252_to_utf16le_lf_to_crlf {};
+
+
+/// Utf-8 Utf-16 with Lf (newline) replaced by CrLf.
+struct Utf8ToUtf16LE_LfToCrLfBase
+{
+    static constexpr std::size_t min_output_buffer_multiplicator = 2;
+    static constexpr std::size_t max_output_buffer_multiplicator = 4;
+
+    static uint8_t * unchecked(bytes_view in, uint8_t * out) noexcept;
+
+    static StringConvertResult partial(bytes_view in, writable_bytes_view out) noexcept;
+};
+
+using Utf8ToUtf16LE_LfToCrLf = EncodingToExpendedEncodingWithoutError<Utf8ToUtf16LE_LfToCrLfBase>;
+
+inline constexpr EncodingToExpendedEncodingWithoutError<Utf8ToUtf16LE_LfToCrLf>
+    utf8_to_utf16le_lf_to_crlf {};
+
+
+struct Cp1252ToUtf32
+{
+    uint16_t operator()(uint8_t c) const noexcept;
+
+    static uint32_t * unchecked(bytes_view in, uint32_t * out) noexcept;
+
+    static StringConvertU32Result partial(bytes_view in, writable_array_view<uint32_t> out) noexcept;
+
+    template<
+        std::size_t AtLeast, std::size_t AtMost,
+        std::size_t AtLeastOutput, std::size_t AtMostOutput
+    >
+        requires (AtMost <= AtLeastOutput)
+    writable_bounded_array_view<uint32_t, AtLeast, AtMost>
+    operator()(
+        bounded_bytes_view<AtLeast, AtMost> in,
+        writable_bounded_array_view<uint32_t, AtLeastOutput, AtMostOutput> out
+    ) const noexcept
+    {
+        auto end_out = unchecked(in, out.data());
+        return writable_bounded_array_view<uint32_t, AtLeast, AtMost>::assumed(out.data(), end_out);
+    }
+
+    template<std::size_t AtLeast, std::size_t AtMost>
+    Utf32BufferConverter<Cp1252ToUtf32, AtLeast, AtMost>
+    buffer_from(bounded_bytes_view<AtLeast, AtMost> in) const noexcept
+    {
+        return {in};
+    }
+};
+
+inline constexpr Cp1252ToUtf32 cp1252_to_utf32 {};
+
+
+struct Utf16LEToCp1252
+{
+    static constexpr std::size_t output_buffer_divisor = 2;
+
+    static PartialResultWithSuccess unchecked(bytes_view in, uint8_t * out) noexcept;
+
+    static StringConvertResultWithSuccess partial(bytes_view in, writable_bytes_view out) noexcept;
+
+    template<
+        std::size_t AtLeast, std::size_t AtMost,
+        std::size_t AtLeastOutput, std::size_t AtMostOutput
+    >
+        requires (AtMost / output_buffer_divisor <= AtLeastOutput)
+    WritableBoundedViewWithSuccess<
+        AtLeast / output_buffer_divisor,
+        AtMost / output_buffer_divisor
+    >
+    operator()(
+        bounded_bytes_view<AtLeast, AtMost> in,
+        writable_bounded_array_view<uint8_t, AtLeastOutput, AtMostOutput> out
+    ) const noexcept
+    {
+        auto result = unchecked(in, out.data());
+        return {
+            writable_bounded_bytes_view<
+                AtLeast / output_buffer_divisor,
+                AtMost / output_buffer_divisor
+            >::assumed(out.data(), result.out),
+            result.success,
+        };
+    }
+
+    template<std::size_t AtLeast, std::size_t AtMost>
+    UtfBytesBufferConverterWithSuccess<Utf16LEToCp1252, AtLeast, AtMost>
+    buffer_from(bounded_bytes_view<AtLeast, AtMost> in) const noexcept
+    {
+        return {in};
+    }
+};
+
+inline constexpr Utf16LEToCp1252 utf16le_to_cp1252 {};
+
+//@}

@@ -93,7 +93,7 @@ enum class TargetFormats : uint8_t
     BmpCacheReport  = 1 << 7,
 };
 
-REDEMPTION_DECLARE_ENUM_OPS(constexpr, TargetFormats)
+REDEMPTION_DECLARE_ENUM_FLAGS(TargetFormats)
 
 constexpr auto video_target_formats = TargetFormats::FullVideo | TargetFormats::SequencedVideo;
 

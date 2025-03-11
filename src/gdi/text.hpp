@@ -173,6 +173,8 @@ struct DrawTextPadding
         }
     };
 
+    using X = Horizontal;
+
     struct Vertical
     {
         uint16_t top_bottom;
@@ -188,21 +190,26 @@ struct DrawTextPadding
         }
     };
 
+    using Y = Vertical;
+
     struct Padding2
     {
         uint16_t top_bottom;
         uint16_t left_right;
+        int gap_xy = 0;
 
         operator DrawTextPadding () const noexcept
         {
-            return {
+            return DrawTextPadding {
                 .top = top_bottom,
                 .right = left_right,
                 .bottom = top_bottom,
                 .left = left_right,
-            };
+            }.gap_xy(gap_xy);
         }
     };
+
+    using YX = Padding2;
 
     struct Right
     {
@@ -218,8 +225,41 @@ struct DrawTextPadding
             };
         }
     };
+
+    struct Left
+    {
+        uint16_t left;
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = 0,
+                .right = 0,
+                .bottom = 0,
+                .left = left,
+            };
+        }
+    };
+
+    struct LeftRight
+    {
+        uint16_t left;
+        uint16_t right;
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = 0,
+                .right = right,
+                .bottom = 0,
+                .left = left,
+            };
+        }
+    };
 };
 
+/// Show text with \p drawable.
+/// \p padding is used for move the origin of \p x, \p y.
 /// \return last pixel drawn
 int draw_text(
     GraphicApi & drawable,

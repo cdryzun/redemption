@@ -48,7 +48,7 @@ struct RdpNegoProtocols
 };
 
 RdpNego::RdpNego(
-    std::string_view username, const char * target_host,
+    chars_view username, const char * target_host,
     bool nla, const bool krb, const bool nla_ntlm,
     const bool tls_only, const bool rdp_legacy, bool admin_mode,
     Random & rand, const TimeBase & time_base,
@@ -65,7 +65,7 @@ RdpNego::RdpNego(
       (this->rdp_legacy ? RdpNegoProtocols::Rdp : 0)
     | (this->tls_only ? RdpNegoProtocols::Tls : 0)
     | (this->nla ? RdpNegoProtocols::Nla : 0))
-, username(username)
+, username(username.begin(), username.end())
 , target_host(target_host)
 , current_password(nullptr)
 , current_service_password(nullptr)

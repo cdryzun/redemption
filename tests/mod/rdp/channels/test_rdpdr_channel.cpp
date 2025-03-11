@@ -183,9 +183,9 @@ RED_AUTO_TEST_CASE(TestRdpdrChannel)
         TestToClientSender to_client_sender(t);
         TestToServerSender to_server_sender(t);
 
-        const char * client_name                  = "rzh";
+        auto         client_name                  = RdpHostname::from_ascii("rzh"_sized_av);
         uint32_t     random_number                = 5245;
-        const char * proxy_managed_drive_prefix   = "";
+        chars_view   proxy_managed_drive_prefix   = ""_av;
 
         FileSystemVirtualChannel file_system_virtual_channel(
             events, &to_client_sender, &to_server_sender,

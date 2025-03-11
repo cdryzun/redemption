@@ -164,6 +164,35 @@ show_common_cipher_list = boolean(default=False)
 #_advanced
 force_authentication_method = string(default="")
 
+[clipboard]
+
+# VNC target server clipboard text data encoding type.
+#_advanced
+clipboard_encoding = option('utf-8', 'latin1', default="latin1")
+
+# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+# This option indicates the strategy to adopt in such situations.
+# &nbsp; &nbsp;   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
+# &nbsp; &nbsp;   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
+# &nbsp; &nbsp;   2: continued: No special processing is done, the proxy always responds immediately.
+#_advanced
+bogus_infinite_loop_strategy = option(0, 1, 2, default=0)
+
+[file_transfer]
+
+# Maximum item in folder showed by the GUI.
+#_advanced
+#_display_name=Max item in GUI
+max_item_in_gui = integer(min=0, default=100000)
+
+# Maximum file number authorized for one upload or download.
+#_advanced
+max_file_transfer_list = integer(min=0, default=10000)
+
+# Maximum file size authorized for an upload or a download.
+#_advanced
+max_file_size = integer(min=0, default=268435456)
+
 [capture]
 
 # ⚠ Logs may contain passwords.<br/>
@@ -175,6 +204,33 @@ force_authentication_method = string(default="")
 #_advanced
 #_hex
 disable_keyboard_log = integer(min=0, max=3, default=3)
+
+[file_verification]
+
+# Enable use of ICAP service for file verification on upload.
+enable_up = boolean(default=False)
+
+# Enable use of ICAP service for file verification on download.
+enable_down = boolean(default=False)
+
+# Log the files and clipboard texts that are verified and accepted. If deactivated, only those rejected are logged.
+#_advanced
+log_if_accepted = boolean(default=True)
+
+# ⚠ This value affects the RAM used by the session.<br/>
+# If option Block invalid file (up or down) is enabled, automatically reject file with greater filesize.<br/>
+# (in megabytes)
+#_advanced
+max_file_size_rejected = integer(min=0, default=256)
+
+[file_storage]
+
+# Enable storage of transferred files (via RDP Clipboard).
+# ⚠ Saving files can take up a lot of disk space.
+# &nbsp; &nbsp;   never: Never store transferred files.
+# &nbsp; &nbsp;   always: Always store transferred files.
+# &nbsp; &nbsp;   on_invalid_verification: Store transferred files only if file verification fails. Requires ICAP file verification (in section file_verification).
+store_file = option('never', 'always', 'on_invalid_verification', default="never")
 
 [vnc_over_ssh]
 

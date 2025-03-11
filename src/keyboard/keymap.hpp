@@ -123,6 +123,7 @@ struct Keymap
     bool is_alt_pressed() const noexcept;
     bool is_ctrl_pressed() const noexcept;
     bool is_shift_pressed() const noexcept;
+    bool is_altgr_pressed() const noexcept;
 
     bool is_session_scuttling_shortcut_pressed() const noexcept;
 
@@ -144,11 +145,10 @@ struct Keymap
 private:
     void _update_keymap() noexcept;
 
-    DecodedKeys _decoded_key {};
-    KeyModFlags _key_mods {};
-
-    std::array<KeyLayout::HalfKeymap, 2> _keymap;
     uint8_t _imods {};
+    KeyModFlags _key_mods {};
+    DecodedKeys _decoded_key {};
+    std::array<KeyLayout::HalfKeymap, 2> _keymap;
     KeyLayout::DKeyTable _dkeys {};
 
     KeyLayout _layout;

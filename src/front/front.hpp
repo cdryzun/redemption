@@ -1759,11 +1759,9 @@ public:
                         }
                         this->client_info.keylayout = safe_int(cs_core.keyboardLayout);
                         this->client_info.build     = cs_core.clientBuild;
-                        for (size_t i = 0; i < 15 ; i++) {
-                            this->client_info.hostname[i] = cs_core.clientName[i];
-                        }
-                        this->client_info.hostname[15] = 0;
-                        //LOG(LOG_INFO, "hostname=\"%s\"", this->client_info.hostname);
+                        this->client_info.hostname  =
+                            RdpHostname(make_bounded_array_view(cs_core.clientName));
+                        //LOG(LOG_INFO, "hostname=\"%s\"", this->client_info.hostname.utf8_fixed_maybe_invalid().c_str());
                         LOG(LOG_INFO, "Client Color Depth is %d", int(this->client_info.screen_info.bpp));
 
                         if (bool(this->ini.get<cfg::client::max_color_depth>())) {

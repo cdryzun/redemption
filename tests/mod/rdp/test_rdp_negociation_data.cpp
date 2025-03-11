@@ -29,7 +29,13 @@ RED_AUTO_TEST_CASE(TestRdpLogonInfo)
         chars_view username,
         bool split_domain
     ){
-        RdpLogonInfo logon_info(truncatable_bounded_array_view(hostname), false, target_user.data(), split_domain);
+        using A15 = bounded_array_view<char, 0, 15>;
+       RdpLogonInfo logon_info(
+           RdpHostname::from_ascii(A15::assumed(hostname)),
+           false,
+           target_user,
+           split_domain
+        );
         RED_CHECK(logon_info.domain() == domain);
         RED_CHECK(logon_info.username() == username);
     };

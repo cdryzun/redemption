@@ -46,5 +46,7 @@ REDEMPTION_VERBOSE_FLAGS_DEF(VNCVerbose)
     copyrect_trace  = 0x0004'0000,
 
     keymap          = 0x0008'0000,
+
+    clipboard_dump  = 0x0010'0000,
 };
 

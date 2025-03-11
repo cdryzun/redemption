@@ -48,7 +48,6 @@
 #include "mod/null/null.hpp"
 #include "client/common/new_mod_rdp.hpp"
 #include "mod/rdp/rdp_params.hpp"
-#include "mod/rdp/mod_rdp_factory.hpp"
 #include "core/channels_authorizations.hpp"
 #include "gdi/osd_api.hpp"
 #include "front/front.hpp"
@@ -107,7 +106,7 @@ ClientInfo make_client_info()
     info.screen_info.width = 800;
     info.screen_info.height = 600;
     info.rdp5_performanceflags = PERF_DISABLE_WALLPAPER;
-    utils::strlcpy(info.hostname, "test");
+    info.hostname = RdpHostname::from_ascii("test"_sized_av);
     return info;
 }
 
@@ -220,9 +219,6 @@ RED_AUTO_TEST_CASE(TestFront)
 
     NullLicenseStore license_store;
     const ChannelsAuthorizations channels_authorizations{};
-    ModRdpFactory mod_rdp_factory;
-
-    FileValidatorService * file_validator_service = nullptr;
 
     RedirectionInfo redir_info;
     ErrorMessageCtx err_msg_ctx;
@@ -230,7 +226,7 @@ RED_AUTO_TEST_CASE(TestFront)
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen2, channels_authorizations, mod_rdp_params,
-        license_store, ini, file_validator_service, mod_rdp_factory);
+        license_store, ini);
 
     // incoming connexion data
     RED_CHECK_EQUAL(front.screen_info().width, 1024);

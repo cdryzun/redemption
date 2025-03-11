@@ -24,7 +24,7 @@
 #include "utils/fileutils.hpp"
 #include "utils/log.hpp"
 #include "utils/sugar/unique_fd.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 
 #include <algorithm>
 #include <string>
@@ -157,7 +157,7 @@ public:
          */
 
         char newpath[PATH_MAX];
-        *byte_copy(newpath, {path_maker.path, end_filename}) = '\0';
+        *bytes_copy_and_advance(newpath, {path_maker.path, end_filename}) = '\0';
         if (-1 == rename(path_maker.path, newpath)) {
             io_error("Failed to rename the (temporary) license file!");
             unlink(path_maker.path);
@@ -266,7 +266,7 @@ private:
             if (std::size(path) < license_path.size() + client_name.size() + inserted_chars) {
                 return false;
             }
-            it = byte_copy(it, license_path);
+            it = bytes_copy_and_advance(it, license_path);
             *it++ = '/';
             auto start_client = it;
             it = std::copy_if(client_name.begin(), client_name.end(), it, [](char c){
@@ -317,7 +317,7 @@ private:
             if (static_cast<std::size_t>(std::end(path) - it) < templ.size() + 1) {
                 return false;
             }
-            it = byte_copy(it, templ);
+            it = bytes_copy_and_advance(it, templ);
             *it = '\0';
             return true;
         }

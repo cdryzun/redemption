@@ -34,7 +34,6 @@
 #include "core/channels_authorizations.hpp"
 #include "client/common/new_mod_rdp.hpp"
 #include "mod/rdp/rdp_params.hpp"
-#include "mod/rdp/mod_rdp_factory.hpp"
 #include "utils/theme.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/error_message_ctx.hpp"
@@ -93,7 +92,7 @@ RED_AUTO_TEST_CASE(TestDecodePacket)
     #include "fixtures/dump_TLSw2008.hpp"
     TestTransport t(cstr_array_view(indata), cstr_array_view(outdata));
 
-    snprintf(info.hostname, sizeof(info.hostname), "192-168-1-100");
+    info.hostname = RdpHostname::from_ascii("192-168-1-100"_sized_av);
 
     std::vector<uint8_t> redirection_password_or_cookie;
     Theme theme;
@@ -144,12 +143,11 @@ RED_AUTO_TEST_CASE(TestDecodePacket)
     ErrorMessageCtx err_msg_ctx;
 
     const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
-    ModRdpFactory mod_rdp_factory;
 
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen, channels_authorizations, mod_rdp_params,
-        license_store, ini, nullptr, mod_rdp_factory);
+        license_store, ini);
 
     RED_CHECK_EQUAL(info.screen_info.width, 1024);
     RED_CHECK_EQUAL(info.screen_info.height, 768);
@@ -222,7 +220,7 @@ RED_AUTO_TEST_CASE(TestDecodePacket2)
     #include "fixtures/dump_TLSw2008_2.hpp"
     LimitedTestTransport t{{cstr_array_view(indata), cstr_array_view(outdata)}};
 
-    snprintf(info.hostname, sizeof(info.hostname), "192-168-1-100");
+    info.hostname = RdpHostname::from_ascii("192-168-1-100"_sized_av);
 
     std::vector<uint8_t> redirection_password_or_cookie;
     Theme theme;
@@ -273,12 +271,11 @@ RED_AUTO_TEST_CASE(TestDecodePacket2)
     ErrorMessageCtx err_msg_ctx;
 
     const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
-    ModRdpFactory mod_rdp_factory;
 
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen, channels_authorizations, mod_rdp_params,
-        license_store, ini, nullptr, mod_rdp_factory);
+        license_store, ini);
 
     RED_CHECK_EQUAL(info.screen_info.width, 1024);
     RED_CHECK_EQUAL(info.screen_info.height, 768);

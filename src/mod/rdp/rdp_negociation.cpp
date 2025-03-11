@@ -161,7 +161,7 @@ RdpNegociation::RdpNegociation(
     , has_managed_drive(has_managed_drive)
     , convert_remoteapp_to_desktop(convert_remoteapp_to_desktop)
     , send_channel_index(0)
-    , real_client_name(info.hostname)
+    , real_client_name(info.hostname.utf8_fixed_maybe_invalid())
     , license_store(license_store)
     , use_license_store(mod_rdp_params.use_license_store)
     , build_number(info.build)
@@ -1261,7 +1261,7 @@ bool RdpNegociation::get_license(InStream & stream, TpduBuffer& buf)
                         }
                         else
                         {
-                            license_info.client_name = this->real_client_name;
+                            license_info.client_name = this->real_client_name.zstr();
                             out = this->license_store.get_license_v0(
                                 license_info,
                                 make_writable_array_view(this->lic_layer_license_data),

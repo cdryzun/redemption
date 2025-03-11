@@ -22,6 +22,7 @@ Author(s): Proxies Team
 
 #include <cstdint>
 #include "utils/sugar/cast.hpp"
+#include "utils/enum_flags.hpp"
 
 //====================================
 // SCANCODES PHYSICAL LAYOUT REFERENCE
@@ -29,18 +30,31 @@ Author(s): Proxies Team
 // +----+  +----+----+----+----+  +----+----+----+----+  +----+----+----+----+  +-----+----+-------+
 // | 01 |  | 3B | 3C | 3D | 3E |  | 3F | 40 | 41 | 42 |  | 43 | 44 | 57 | 58 |  | 37x | 46 | 1D+45 |
 // +----+  +----+----+----+----+  +----+----+----+----+  +----+----+----+----+  +-----+----+-------+
-//                                     ***  keycodes suffixed by 'x' are extended ***
-// +----+----+----+----+----+----+----+----+----+----+----+----+----+--------+  +----+----+----+  +--------------------+
-// | 29 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 0A | 0B | 0C | 0D |   0E   |  | 52x| 47x| 49x|  | 45 | 35x| 37 | 4A  |
-// +-------------------------------------------------------------------------+  +----+----+----+  +----+----+----+-----+
-// |  0F  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 1A | 1B |      |  | 53x| 4Fx| 51x|  | 47 | 48 | 49 |     |
-// +------------------------------------------------------------------+  1C  |  +----+----+----+  +----+----+----| 4E  |
-// |  3A   | 1E | 1F | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 2B |     |                    | 4B | 4C | 4D |     |
-// +-------------------------------------------------------------------------+       +----+       +----+----+----+-----+
-// |  2A | 56 | 2C | 2D | 2E | 2F | 30 | 31 | 32 | 33 | 34 | 35 |     36     |       | 48x|       | 4F | 50 | 51 |     |
-// +-------------------------------------------------------------------------+  +----+----+----+  +---------+----| 1Cx |
-// |  1D  |  5Bx | 38 |           39           |  38x  |  5Cx |  5Dx |  1Dx  |  | 4Bx| 50x| 4Dx|  |    52   | 53 |     |
-// +------+------+----+------------------------+-------+------+------+-------+  +----+----+----+  +---------+----+-----+
+//                         ***  keycodes suffixed by 'x' are extended ***
+// +----+----+----+----+----+----+----+----+----+----+----+----+----+--------+  +----+----+----+
+// | 29 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 0A | 0B | 0C | 0D |   0E   |  | 52x| 47x| 49x|
+// +-------------------------------------------------------------------------+  +----+----+----+
+// |  0F  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 1A | 1B |      |  | 53x| 4Fx| 51x|
+// +------------------------------------------------------------------+  1C  |  +----+----+----+
+// |  3A   | 1E | 1F | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 2B |     |
+// +-------------------------------------------------------------------------+       +----+
+// |  2A | 56 | 2C | 2D | 2E | 2F | 30 | 31 | 32 | 33 | 34 | 35 |     36     |       | 48x|
+// +-------------------------------------------------------------------------+  +----+----+----+
+// |  1D  |  5Bx | 38 |           39           |  38x  |  5Cx |  5Dx |  1Dx  |  | 4Bx| 50x| 4Dx|
+// +------+------+----+------------------------+-------+------+------+-------+  +----+----+----+
+//
+//         NumPad
+// +--------------------+
+// | 45 | 35x| 37 | 4A  |
+// +----+----+----+-----+
+// | 47 | 48 | 49 |     |
+// +----+----+----| 4E  |
+// | 4B | 4C | 4D |     |
+// +----+----+----+-----+
+// | 4F | 50 | 51 |     |
+// +---------+----| 1Cx |
+// |    52   | 53 |     |
+// +---------+----+-----+
 
 namespace kbdtypes
 {
@@ -165,43 +179,7 @@ namespace kbdtypes
         Release   = 0x8000,
     };
 
-    constexpr KbdFlags operator | (KbdFlags a, KbdFlags b) noexcept
-    {
-        return KbdFlags(underlying_cast(a) | underlying_cast(b));
-    }
-
-    constexpr KbdFlags operator & (KbdFlags a, KbdFlags b) noexcept
-    {
-        return KbdFlags(underlying_cast(a) & underlying_cast(b));
-    }
-
-    constexpr KbdFlags operator ^ (KbdFlags a, KbdFlags b) noexcept
-    {
-        return KbdFlags(underlying_cast(a) ^ underlying_cast(b));
-    }
-
-    constexpr KbdFlags& operator |= (KbdFlags& a, KbdFlags b) noexcept
-    {
-        a = KbdFlags(underlying_cast(a) | underlying_cast(b));
-        return a;
-    }
-
-    constexpr KbdFlags& operator &= (KbdFlags& a, KbdFlags b) noexcept
-    {
-        a = KbdFlags(underlying_cast(a) & underlying_cast(b));
-        return a;
-    }
-
-    constexpr KbdFlags& operator ^= (KbdFlags& a, KbdFlags b) noexcept
-    {
-        a = KbdFlags(underlying_cast(a) ^ underlying_cast(b));
-        return a;
-    }
-
-    constexpr KbdFlags operator ~ (KbdFlags a) noexcept
-    {
-        return KbdFlags(~underlying_cast(a));
-    }
+    REDEMPTION_DECLARE_ENUM_FLAGS_NS(kbdtypes, KbdFlags)
 
 
     // (same with SlotPath)
@@ -235,27 +213,7 @@ namespace kbdtypes
         KanaLock    = 0x08,
     };
 
-    constexpr KeyLocks operator | (KeyLocks a, KeyLocks b) noexcept
-    {
-        return KeyLocks(underlying_cast(a) | underlying_cast(b));
-    }
-
-    constexpr KeyLocks operator & (KeyLocks a, KeyLocks b) noexcept
-    {
-        return KeyLocks(underlying_cast(a) & underlying_cast(b));
-    }
-
-    constexpr KeyLocks& operator |= (KeyLocks& a, KeyLocks b) noexcept
-    {
-        a = KeyLocks(underlying_cast(a) | underlying_cast(b));
-        return a;
-    }
-
-    constexpr KeyLocks& operator &= (KeyLocks& a, KeyLocks b) noexcept
-    {
-        a = KeyLocks(underlying_cast(a) & underlying_cast(b));
-        return a;
-    }
+    REDEMPTION_DECLARE_ENUM_FLAGS_NS(kbdtypes, KeyLocks)
 
 
     // Scancode + Extended
@@ -414,11 +372,19 @@ namespace kbdtypes
                      | underlying_cast(flags & (KbdFlags::Extended | KbdFlags::Extended1)));
     }
 
+    constexpr bool is_released(KbdFlags flags) noexcept
+    {
+        return underlying_cast(flags) & underlying_cast(KbdFlags::Release);
+    }
+
+    constexpr bool is_pressed(KbdFlags flags) noexcept
+    {
+        return !is_released(flags);
+    }
+
     constexpr Scancode pressed_scancode(KbdFlags flags, Scancode scancode) noexcept
     {
-        return (underlying_cast(flags) & underlying_cast(KbdFlags::Release))
-            ? Scancode()
-            : scancode;
+        return is_pressed(flags) ? Scancode() : scancode;
     }
 
     constexpr bool keycode_is_compressable_to_byte(KeyCode keycode) noexcept

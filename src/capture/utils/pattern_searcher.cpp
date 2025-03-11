@@ -20,7 +20,7 @@
 
 #include "capture/utils/pattern_searcher.hpp"
 #include "utils/sugar/scope_exit.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 #include "core/error.hpp"
 #include "utils/log.hpp"
 
@@ -194,7 +194,7 @@ PatternSearcher::PatternSearcher(
             .offset_data = 0,
         };
 
-        str_patterns = byte_copy(str_patterns, patt);
+        str_patterns = bytes_copy_and_advance(str_patterns, patt);
         *str_patterns++ = '\0';
 
         *compile_arrays_it.expressions++ = compile_arrays_it.patterns;
@@ -234,7 +234,9 @@ PatternSearcher::PatternSearcher(
             }
         }
         else {
-            compile_arrays_it.patterns = byte_copy(compile_arrays_it.patterns, patt);
+            compile_arrays_it.patterns = bytes_copy_and_advance(
+                compile_arrays_it.patterns, patt
+            );
         }
 
         if (exact_type_mask & flag) {

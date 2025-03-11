@@ -21,7 +21,7 @@
 #include "capture/fdx_capture.hpp"
 #include "utils/sugar/array_view.hpp"
 #include "utils/sugar/to_sv.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 #include "utils/strutils.hpp"
 #include "utils/fileutils.hpp"
 
@@ -40,10 +40,10 @@ TflSuffixGenerator::string_type TflSuffixGenerator::name_at(uint64_t i)
         *p++ = ',';
         auto num_str = int_to_decimal_chars(i);
         if (num_str.size() < empty_suffix.size()) {
-            p = byte_copy(p, empty_suffix.drop_back(num_str.size()));
+            p = bytes_copy_and_advance(p, empty_suffix.drop_back(num_str.size()));
         }
-        p = byte_copy(p, num_str);
-        p = byte_copy(p, ".tfl"_av);
+        p = bytes_copy_and_advance(p, num_str);
+        p = bytes_copy_and_advance(p, ".tfl"_av);
         return buffer.set_end_string_ptr(p);
     });
 }

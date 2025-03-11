@@ -28,5 +28,7 @@ RED_AUTO_TEST_CASE(TestTranslation)
         == "3 minutes before closing."_av
     );
 
-    RED_CHECK_EQUAL(tr(trkeys::login), "Login");
+    RED_CHECK(tr(trkeys::login) == "Login"_av);
+    RED_CHECK(tr.nfmt_len(trkeys::close_box_minute_timer, 3) == 25);
+    RED_CHECK(tr.nfmt_len(trkeys::close_box_minute_timer, 11) == 26);
 }

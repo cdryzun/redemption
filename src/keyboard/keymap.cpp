@@ -430,6 +430,11 @@ bool Keymap::is_shift_pressed() const noexcept
     return bool(shift_01u(_key_mods));
 }
 
+bool Keymap::is_altgr_pressed() const noexcept
+{
+    return bool(altgr_01u(_key_mods));
+}
+
 void Keymap::reset_mods(KeyLocks locks) noexcept
 {
     _key_mods.reset();

@@ -44,15 +44,6 @@ inline uint32_t unicode_to_ksym(uint32_t uc) noexcept
     return uc | 0x01000000;
 }
 
-constexpr uint32_t vnc_key_LCtrl = 0xffe3;
-constexpr uint32_t vnc_key_RCtrl = 0xffe4;
-constexpr uint32_t vnc_key_LShift = 0xffe1;
-constexpr uint32_t vnc_key_RShift = 0xffe2;
-constexpr uint32_t vnc_key_LAlt = 0xffe9;
-constexpr uint32_t vnc_key_RAlt = 0xffea;
-constexpr uint32_t vnc_key_LWin = 0xffeb;
-constexpr uint32_t vnc_key_RWin = 0xffec;
-
 inline uint32_t keycode_to_sym(kbdtypes::KeyCode keycode, kbdtypes::KeyModFlags mods) noexcept
 {
     using kbdtypes::KeyCode;
@@ -89,14 +80,14 @@ inline uint32_t keycode_to_sym(kbdtypes::KeyCode keycode, kbdtypes::KeyModFlags 
         case KeyCode::PrintScreen: return 0xfd1d;
         case KeyCode::PauseFirstPart: return 0xff13;
 
-        case KeyCode::LCtrl: return vnc_key_LCtrl;
-        case KeyCode::RCtrl: return vnc_key_RCtrl;
-        case KeyCode::LShift: return vnc_key_LShift;
-        case KeyCode::RShift: return vnc_key_RShift;
-        case KeyCode::LAlt: return vnc_key_LAlt;
-        case KeyCode::RAlt: return vnc_key_RAlt;
-        case KeyCode::LWin: return vnc_key_LWin;
-        case KeyCode::RWin: return vnc_key_RWin;
+        case KeyCode::LCtrl: return KeymapSym::Key::LCtrl;
+        case KeyCode::RCtrl: return KeymapSym::Key::RCtrl;
+        case KeyCode::LShift: return KeymapSym::Key::LShift;
+        case KeyCode::RShift: return KeymapSym::Key::RShift;
+        case KeyCode::LAlt: return KeymapSym::Key::LAlt;
+        case KeyCode::RAlt: return KeymapSym::Key::RAlt;
+        case KeyCode::LWin: return KeymapSym::Key::LWin;
+        case KeyCode::RWin: return KeymapSym::Key::RWin;
         case KeyCode::ContextMenu: return 0xff67;
 
         case KeyCode::CapsLock: return 0xffe5;
@@ -612,15 +603,15 @@ KeymapSym::Keys KeymapSym::reset_mods(KeyLocks locks) noexcept
         keys.len += mods_.test_as_uint(mod);
     };
 
-    push(vnc_key_RAlt, KeyMod::RAlt);
-    push(vnc_key_LAlt, KeyMod::LAlt);
-    push(vnc_key_LCtrl, KeyMod::LCtrl);
-    push(vnc_key_RCtrl, KeyMod::RCtrl);
-    push(vnc_key_LShift, KeyMod::LShift);
-    push(vnc_key_RShift, KeyMod::RShift);
+    push(Key::RAlt, KeyMod::RAlt);
+    push(Key::LAlt, KeyMod::LAlt);
+    push(Key::LCtrl, KeyMod::LCtrl);
+    push(Key::RCtrl, KeyMod::RCtrl);
+    push(Key::LShift, KeyMod::LShift);
+    push(Key::RShift, KeyMod::RShift);
     // Window key has an event on release, discard
-    // push(vnc_key_LWin, KeyMod::LMeta);
-    // push(vnc_key_RWin, KeyMod::RMeta);
+    // push(Key::LWin, KeyMod::LMeta);
+    // push(Key::RWin, KeyMod::RMeta);
 
     mods_.reset();
     mods_.sync_locks(locks);

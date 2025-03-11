@@ -163,8 +163,26 @@ cp_spec = {
         ('mod_vnc:show_common_cipher_list', 'show_common_cipher_list', False),
         ('mod_vnc:force_authentication_method', 'force_authentication_method', ""),
     },
+    'clipboard': {
+        ('vnc_clipboard:clipboard_encoding', 'clipboard_encoding', "latin1"),
+        ('vnc_clipboard:bogus_infinite_loop_strategy', 'bogus_infinite_loop_strategy', 0),
+    },
+    'file_transfer': {
+        ('vnc_file_transfer:max_item_in_gui', 'max_item_in_gui', 100000),
+        ('vnc_file_transfer:max_file_transfer_list', 'max_file_transfer_list', 10000),
+        ('vnc_file_transfer:max_file_size', 'max_file_size', 268435456),
+    },
     'capture': {
         ('capture:disable_keyboard_log', 'disable_keyboard_log', 3),
+    },
+    'file_verification': {
+        ('file_verification:enable_up', 'enable_up', False),
+        ('file_verification:enable_down', 'enable_down', False),
+        ('file_verification:log_if_accepted', 'log_if_accepted', True),
+        ('file_verification:max_file_size_rejected', 'max_file_size_rejected', 256),
+    },
+    'file_storage': {
+        ('file_storage:store_file', 'store_file', "never"),
     },
 }, {
     'session_log:keyboard_input_masking_level': 0,

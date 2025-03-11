@@ -55,10 +55,84 @@ struct delayed_build_string_buffer
 {
     enum class ResultLen : std::size_t;
 
+    struct Builder
+    {
+        Builder(writable_chars_view buffer) noexcept
+          : curr(buffer.begin())
+          , buffer(buffer)
+        {}
+
+        void push(char c) noexcept
+        {
+            assert(curr < buffer.end());
+            *curr++ = c;
+        }
+
+        void push(chars_view s) noexcept
+        {
+            assert(s.size() < static_cast<size_t>(buffer.end() - curr));
+            memcpy(curr, s.data(), s.size());
+            curr += s.size();
+        }
+
+        void push_if_not_empty(char c) noexcept
+        {
+            if (!is_empty())
+            {
+                push(c);
+            }
+        }
+
+        void push_if_not_empty(chars_view s) noexcept
+        {
+            if (!is_empty())
+            {
+                push(s);
+            }
+        }
+
+        void push_if_empty(char c) noexcept
+        {
+            if (!is_empty())
+            {
+                push(c);
+            }
+        }
+
+        void push_if_empty(chars_view s) noexcept
+        {
+            if (!is_empty())
+            {
+                push(s);
+            }
+        }
+
+        bool is_empty() const noexcept
+        {
+            return curr == buffer.begin();
+        }
+
+        ResultLen eos() noexcept
+        {
+            assert(curr < buffer.end());
+            *curr++ = '\0';
+            return ResultLen(curr - buffer.begin() - 1);
+        }
+
+    private:
+        char* curr;
+        writable_chars_view buffer;
+    };
+
     delayed_build_string_buffer(writable_chars_view null_terminated_buffer) noexcept
       : null_terminated_buffer(null_terminated_buffer)
     {
         assert(!null_terminated_buffer.empty());
+    }
+
+    Builder builder() noexcept
+    {
+        return null_terminated_buffer;
     }
 
     writable_chars_view chars_without_null_terminated() noexcept
@@ -122,6 +196,8 @@ private:
     writable_chars_view null_terminated_buffer;
 };
 
+struct delayed_build_t {};
+
 
 // N = size without null character
 template<std::size_t N>
@@ -130,35 +206,39 @@ struct static_string
     using size_type = std::size_t;
     using msize_type = detail::select_minimal_size_t<N>;
 
-    struct delayed_build_t {};
-
-    static_string() noexcept
+    constexpr static_string() noexcept
     {
         m_str[0] = '\0';
     }
 
+    /// \tparam Builder [](delayed_build_string_buffer) -> delayed_build_string_buffer::ResultLen
     template<class Builder>
-    static_string(delayed_build_t, Builder&& builder)
+    constexpr static_string(delayed_build_t, Builder&& builder)
+        noexcept(noexcept(builder(delayed_build_string_buffer(writable_chars_view{}))))
     {
         delayed_build(builder);
     }
 
+    /// \tparam Builder [](delayed_build_string_buffer) -> delayed_build_string_buffer::ResultLen
     template<class Builder>
-    static static_string from_builder(Builder&& builder)
+    constexpr static static_string from_builder(Builder&& builder)
+        noexcept(noexcept(builder(delayed_build_string_buffer(writable_chars_view{}))))
     {
         return static_string(delayed_build_t(), builder);
     }
 
     // C++20: default version when N < 128|256
     template<class C>
-    static_string(C const& cont) /* NOLINT(bugprone-forwarding-reference-overload) */
+        requires(!std::is_same_v<C, static_string>)
+    explicit constexpr static_string(C const& cont)
         noexcept(noexcept(make_bounded_array_view<0, N>(cont)))
     {
         operator=(cont);
     }
 
     template<class C>
-    static_string& operator=(C const& cont) /* NOLINT(bugprone-forwarding-reference-overload) */
+        requires(!std::is_same_v<C, static_string>)
+    constexpr static_string& operator=(C const& cont)
         noexcept(noexcept(make_bounded_array_view<0, N>(cont)))
     {
         auto av = make_bounded_array_view<0, N>(cont);
@@ -183,7 +263,7 @@ struct static_string
     }
 
     /// \return \c false when the input string is greater than \c max_capacity(), otherwise \c true.
-    bool try_assign(chars_view str) noexcept
+    constexpr bool try_assign(chars_view str) noexcept
     {
         if (str.size() <= N)
         {
@@ -194,87 +274,89 @@ struct static_string
         return false;
     }
 
+    /// \tparam Builder [](delayed_build_string_buffer) -> delayed_build_string_buffer::ResultLen
     template<class Builder>
-    void delayed_build(Builder&& builder)
+    constexpr void delayed_build(Builder&& builder)
+        noexcept(noexcept(builder(delayed_build_string_buffer(writable_chars_view{}))))
     {
         auto res = builder(delayed_build_string_buffer(make_writable_array_view(m_str)));
         static_assert(std::is_same_v<decltype(res), delayed_build_string_buffer::ResultLen>);
         m_len = checked_int(res);
     }
 
-    static std::size_t max_capacity() noexcept
+    constexpr static std::size_t max_capacity() noexcept
     {
         return N;
     }
 
-    bounded_chars_view<1, N+1> view_with_null_terminator() const noexcept
+    constexpr bounded_chars_view<1, N+1> view_with_null_terminator() const noexcept
     {
         return bounded_chars_view<1, N+1>::assumed(data(), size() + 1);
     }
 
     /// \pre i <= N
-    char& operator[](std::size_t i) noexcept
+    constexpr char& operator[](std::size_t i) noexcept
     {
         return m_str[i];
     }
 
     /// \pre i <= N
-    char operator[](std::size_t i) const noexcept
+    constexpr char operator[](std::size_t i) const noexcept
     {
         return m_str[i];
     }
 
-    std::size_t size() const noexcept
+    constexpr std::size_t size() const noexcept
     {
         return m_len;
     }
 
-    msize_type msize() const noexcept
+    constexpr msize_type msize() const noexcept
     {
         return m_len;
     }
 
-    char* data() noexcept
+    constexpr char* data() noexcept
     {
         return m_str.data();
     }
 
-    char const* data() const noexcept
+    constexpr char const* data() const noexcept
     {
         return m_str.data();
     }
 
-    bool empty() const noexcept
+    constexpr bool empty() const noexcept
     {
         return m_len == 0;
     }
 
-    char const* c_str() const noexcept
+    constexpr char const* c_str() const noexcept
     {
         return m_str.data();
     }
 
-    char* begin() noexcept
+    constexpr char* begin() noexcept
     {
         return data();
     }
 
-    char const* begin() const noexcept
+    constexpr char const* begin() const noexcept
     {
         return data();
     }
 
-    char* end() noexcept
+    constexpr char* end() noexcept
     {
         return data() + size();
     }
 
-    char const* end() const noexcept
+    constexpr char const* end() const noexcept
     {
         return data() + size();
     }
 
-    void clear() noexcept
+    constexpr void clear() noexcept
     {
         m_len = 0;
         m_str[0] = '\0';
@@ -289,10 +371,10 @@ private:
 
 
 template<std::size_t MaxSize, class... Strings>
-[[nodiscard]] inline auto static_str_concat(Strings const&... strs);
+[[nodiscard]] constexpr auto static_str_concat(Strings const&... strs);
 
 template<std::size_t N, class... Strings>
-inline void static_str_assign(static_string<N>& str, Strings const&... strs);
+constexpr void static_str_assign(static_string<N>& str, Strings const&... strs);
 
 
 template<std::size_t N>
@@ -320,20 +402,20 @@ namespace detail
     };
 
 
-    inline char to_static_string_view_or_char(char c) noexcept
+    constexpr char to_static_string_view_or_char(char c) noexcept
     {
         return c;
     }
 
     template<class String>
-    inline auto to_static_string_view_or_char(String const& str)
+    constexpr auto to_static_string_view_or_char(String const& str)
     {
         return bounded_array_view_with<char, sequence_to_size_bounds_t<String>>(str);
     }
 
 
     template<std::size_t AtLeast, std::size_t AtMost>
-    inline char* append_from_bounded_av_or_char(char* s, bounded_array_view<char, AtLeast, AtMost> av) noexcept
+    constexpr char* append_from_bounded_av_or_char(char* s, bounded_array_view<char, AtLeast, AtMost> av) noexcept
     {
         if constexpr (AtMost != 0) {
             detail::memcpy_possibly_more<
@@ -347,7 +429,7 @@ namespace detail
         }
     }
 
-    inline char* append_from_bounded_av_or_char(char* s, char c) noexcept
+    constexpr char* append_from_bounded_av_or_char(char* s, char c) noexcept
     {
         *s = c;
         return s + 1;
@@ -357,7 +439,7 @@ namespace detail
     struct static_string_set_size
     {
         template<std::size_t N>
-        static void set_size(static_string<N>& s, std::size_t n) noexcept
+        constexpr static void set_size(static_string<N>& s, std::size_t n) noexcept
         {
             s.m_len = checked_int(n);
         }
@@ -365,7 +447,7 @@ namespace detail
 
 
     template<class... AvOrChar>
-    inline std::size_t static_str_concat_impl(char* p, AvOrChar const&... strs) noexcept
+    constexpr std::size_t static_str_concat_impl(char* p, AvOrChar const&... strs) noexcept
     {
         char* e = p;
         (..., void(e = detail::append_from_bounded_av_or_char(e, strs)));
@@ -376,7 +458,7 @@ namespace detail
 
 // test_static_string.cpp fails to compile with gcc-8 and a default value for MaxSize
 template<std::size_t MaxSize, class... Strings>
-[[nodiscard]] inline auto static_str_concat(Strings const&... strs)
+[[nodiscard]] constexpr auto static_str_concat(Strings const&... strs)
 {
     constexpr auto max_size = (std::size_t() + ... + detail::static_str_len<Strings>::value);
     static_assert(max_size <= MaxSize);
@@ -389,13 +471,13 @@ template<std::size_t MaxSize, class... Strings>
 
 // workaround for gcc-8
 template<class... Strings>
-[[nodiscard]] inline auto static_str_concat(Strings const&... strs)
+[[nodiscard]] constexpr auto static_str_concat(Strings const&... strs)
 {
     return static_str_concat<4096>(strs...);
 }
 
 template<std::size_t N, class... Strings>
-inline void static_str_assign(static_string<N>& str, Strings const&... strs)
+constexpr void static_str_assign(static_string<N>& str, Strings const&... strs)
 {
     constexpr auto max_size = (std::size_t() + ... + detail::static_str_len<Strings>::value);
     static_assert(max_size <= N);

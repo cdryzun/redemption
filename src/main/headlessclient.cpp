@@ -263,6 +263,7 @@ int main(int argc, char const** argv)
         };
 
         ErrorMessageCtx err_msg_ctx;
+        Translator translator = MsgTranslationCatalog::default_catalog();
 
         try {
             /*
@@ -272,8 +273,7 @@ int main(int argc, char const** argv)
                 ? create_mod_rdp(
                     gd, osd, redir_info, ini, front, client_info, rail_client_execute,
                     kbdtypes::KeyLocks(), glyph, theme, event_container, session_log,
-                    err_msg_ctx, MsgTranslationCatalog::default_catalog(),
-                    file_system_license_store, random, cctx,
+                    err_msg_ctx, translator, file_system_license_store, random, cctx,
                     server_auto_reconnect_packet,
                     std::exchange(perform_automatic_reconnection, PerformAutomaticReconnection::No),
                     maybe_make_transport_record
@@ -281,7 +281,8 @@ int main(int argc, char const** argv)
                 : create_mod_vnc(
                     gd, ini, front, client_info, rail_client_execute,
                     get_layout(client_info.keylayout), kbdtypes::KeyLocks(),
-                    glyph, theme, event_container, session_log, err_msg_ctx, random
+                    glyph, theme, event_container, session_log, err_msg_ctx,
+                    translator, random, cctx
                 );
 
             mod.reset(mod_pack.mod);
@@ -391,7 +392,7 @@ int main(int argc, char const** argv)
         catch (Error const& e) {
             LOG(LOG_ERR, "Headless Client: Exception raised = %s !", e.errmsg());
             err_msg_ctx.visit_msg([&](TrKey const* k, zstring_view s) {
-                auto msg = k ? MsgTranslationCatalog::default_catalog().msgid(*k) : s;
+                auto msg = k ? translator(*k) : s;
                 auto extra = k ? s : zstring_view();
                 auto sep = extra.empty() ? ""_zv : " "_zv;
                 LOG(LOG_ERR, "Headless Client: msg: %s%s%s", msg, sep, extra);

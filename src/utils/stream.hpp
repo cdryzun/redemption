@@ -89,13 +89,13 @@ public:
     }
 
     // returns true if there is enough data available to read n bytes
-    [[nodiscard]] bool in_check_rem(const unsigned n) const noexcept {
+    [[nodiscard]] bool in_check_rem(size_t n) const noexcept {
         return (n <= this->in_remain());
     }
 
     [[nodiscard]] size_t in_remain() const noexcept {
         assert(this->p.p <= this->end);
-        return this->end - this->p.p;
+        return static_cast<size_t>(this->end - this->p.p);
     }
 
 
@@ -104,7 +104,7 @@ public:
     }
 
     [[nodiscard]] size_t get_capacity() const noexcept {
-        return this->end - this->begin;
+        return static_cast<size_t>(this->end - this->begin);
     }
 
     // go back by the given amount (like rewind but relative)
@@ -178,7 +178,7 @@ public:
 
     uint32_t in_uint24_be() noexcept {
         assert(this->in_check_rem(3));
-        uint32_t value = (this->in_uint8() << 16);
+        uint32_t value = (static_cast<uint32_t>(this->in_uint8()) << 16);
         value += this->in_uint16_be();
         return value;
     }
@@ -224,12 +224,12 @@ public:
         this->in_copy_bytes({v, n});
     }
 
-    [[nodiscard]] bytes_view view_bytes(unsigned int n) const noexcept {
+    [[nodiscard]] bytes_view view_bytes(size_t n) const noexcept {
         assert(this->in_check_rem(n));
         return u8_array_view{this->get_current(), n};
     }
 
-    bytes_view in_skip_bytes(unsigned int n) noexcept
+    bytes_view in_skip_bytes(size_t n) noexcept
     {
         assert(this->in_check_rem(n));
         bytes_view ret(this->get_current(), n);
@@ -384,7 +384,7 @@ public:
     OutStream & operator=(OutStream const &) = delete;
 
     [[nodiscard]] size_t tailroom() const noexcept {
-        return  this->end - this->p;
+        return  static_cast<size_t>(this->end - this->p);
     }
 
     [[nodiscard]] writable_bytes_view get_tail() const noexcept {
@@ -592,7 +592,7 @@ public:
 
     void out_DEP(int16_t point) noexcept {
         if ((point > 0x3F)||(point < -64)){
-            this->out_uint16_be(point|0x8000);
+            this->out_uint16_be(static_cast<uint16_t>(point)|0x8000);
         }
         else {
             this->out_uint8(point&0x7F);
@@ -601,7 +601,7 @@ public:
 
     void out_sint8(int8_t v) noexcept {
         assert(this->has_room(1));
-        *(this->p++) = v;
+        *(this->p++) = static_cast<uint8_t>(v);
     }
 
     void out_uint16_le(uint16_t v) noexcept {
@@ -660,7 +660,7 @@ public:
     }
 
     [[nodiscard]] size_t get_capacity() const noexcept {
-        return this->end - this->begin;
+        return static_cast<size_t>(this->end - this->begin);
     }
 
     /// set current position to start buffer (\a p = \a begin)
@@ -681,10 +681,12 @@ public:
         this->out_copy_bytes({v, n});
     }
 
-    void out_clear_bytes(size_t n) noexcept {
+    writable_bytes_view out_clear_bytes(size_t n) noexcept {
         assert(this->has_room(n));
+        writable_bytes_view ret(this->p, n);
         memset(this->p, 0, n);
         this->p += n;
+        return ret;
     }
 
     void out_bytes_le(const uint8_t nb, const unsigned value) noexcept {
@@ -708,6 +710,11 @@ struct StaticOutStream : OutStream
     static constexpr std::size_t original_capacity() noexcept
     {
         return N;
+    }
+
+    constexpr uint8_t (&internal_array() noexcept)[N]
+    {
+        return array_;
     }
 
 private:
@@ -822,13 +829,13 @@ struct OutReservedStreamHelper
     }
 
     void rewind() noexcept {
-        this->reserved_leading_space += this->payload_stream.get_data() - this->head_ptr;
-        this->head_ptr = this->payload_stream.get_data();
+        this->rewind_head();
         this->payload_stream.rewind();
     }
 
     void rewind_head() noexcept {
-        this->reserved_leading_space += this->payload_stream.get_data() - this->head_ptr;
+        this->reserved_leading_space
+          += static_cast<size_t>(this->payload_stream.get_data() - this->head_ptr);
         this->head_ptr = this->payload_stream.get_data();
     }
 

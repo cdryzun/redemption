@@ -40,19 +40,30 @@ namespace detail
 
     // probably a buffer type
     template<std::size_t N, class R>
-    struct filter_dangerous_implicit_array_view<char[N], R> {};
+    struct filter_dangerous_implicit_array_view<char[N], R>
+    {};
 
     template<std::size_t N, class R>
-    struct filter_dangerous_implicit_array_view<uint8_t[N], R> {};
+    struct filter_dangerous_implicit_array_view<uint8_t[N], R>
+    {};
 
     template<std::size_t N, class R>
-    struct filter_dangerous_implicit_array_view<const char[N], R> {};
+    struct filter_dangerous_implicit_array_view<const char[N], R>
+    {};
 
     template<std::size_t N, class R>
-    struct filter_dangerous_implicit_array_view<const uint8_t[N], R> {};
+    struct filter_dangerous_implicit_array_view<const uint8_t[N], R>
+    {};
 
     template<class T, class R>
-    struct filter_dangerous_implicit_array_view<T&, R> : filter_dangerous_implicit_array_view<T, R> {};
+    struct filter_dangerous_implicit_array_view<T&, R>
+      : filter_dangerous_implicit_array_view<T, R>
+    {};
+
+    template<class T, class R>
+    struct filter_dangerous_implicit_array_view<T&&, R>
+      : filter_dangerous_implicit_array_view<T, R>
+    {};
 
     template<class T>
     using value_type_from_seq_t
@@ -197,11 +208,36 @@ struct array_view
     }
 
     [[nodiscard]]
+    constexpr array_view from_offset(size_type offset, size_type offset2) const noexcept
+    {
+        return before(offset2).from_offset(offset);
+    }
+
+    [[nodiscard]]
+    constexpr array_view from_offset(const_pointer p1, const_pointer p2) const noexcept
+    {
+        return before(p2).from_offset(p1);
+    }
+
+    [[nodiscard]]
+    constexpr array_view before(size_type offset) const noexcept
+    {
+        assert(offset <= size());
+        return {data(), offset};
+    }
+
+    [[nodiscard]]
     constexpr array_view before(const_pointer p) const noexcept
     {
         assert(begin() <= p);
         assert(p <= end());
         return {begin(), p};
+    }
+
+    [[nodiscard]]
+    constexpr array_view after(size_type offset) const noexcept
+    {
+        after(data() + offset);
     }
 
     [[nodiscard]]
@@ -391,6 +427,32 @@ struct writable_array_view
     }
 
     [[nodiscard]]
+    constexpr writable_array_view from_offset(size_type offset, size_type offset2) noexcept
+    {
+        return before(offset2).from_offset(offset);
+    }
+
+    [[nodiscard]]
+    constexpr writable_array_view from_offset(pointer p1, pointer p2) noexcept
+    {
+        return before(p2).from_offset(p1);
+    }
+
+    [[nodiscard]]
+    constexpr writable_array_view from_offset(const_pointer p1, const_pointer p2) noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        return before(p2).from_offset(p1);
+    }
+
+    [[nodiscard]]
+    constexpr writable_array_view before(size_type offset) noexcept
+    {
+        assert(offset <= size());
+        return writable_array_view{data(), offset};
+    }
+
+    [[nodiscard]]
     constexpr writable_array_view before(pointer p) noexcept
     {
         assert(begin() <= p);
@@ -405,6 +467,12 @@ struct writable_array_view
         assert(begin() <= p);
         assert(p <= end());
         return writable_array_view{begin(), checked_int(p - begin())};
+    }
+
+    [[nodiscard]]
+    constexpr writable_array_view after(size_type offset) noexcept
+    {
+        return after(data() + offset);
     }
 
     [[nodiscard]]
@@ -447,11 +515,36 @@ struct writable_array_view
     }
 
     [[nodiscard]]
+    constexpr array_view<value_type> from_offset(size_type offset, size_type offset2) const noexcept
+    {
+        return before(offset2).from_offset(offset);
+    }
+
+    [[nodiscard]]
+    constexpr array_view<value_type> from_offset(const_pointer p1, const_pointer p2) const noexcept
+    {
+        return before(p2).from_offset(p1);
+    }
+
+    [[nodiscard]]
+    constexpr array_view<value_type> before(size_type offset) const noexcept
+    {
+        assert(offset <= size());
+        return {begin(), offset};
+    }
+
+    [[nodiscard]]
     constexpr array_view<value_type> before(const_pointer p) const noexcept
     {
         assert(begin() <= p);
         assert(p <= end());
         return {begin(), p};
+    }
+
+    [[nodiscard]]
+    constexpr array_view<value_type> after(size_type offset) const noexcept
+    {
+        return after(data() + offset);
     }
 
     [[nodiscard]]

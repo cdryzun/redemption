@@ -132,7 +132,7 @@ void ClipboardChannel::send_file_contents_request(
         pos_low,
         pos_high,
         (request_type == RDPECLIP::FILECONTENTS_SIZE)
-            ? RDPECLIP::FILECONTENTS_SIZE_CB_REQUESTED
+            ? 8
             : max_bytes_to_read,
         lock_id,
         has_lock_id && bool(this->general_flags & RDPECLIP::CB_CAN_LOCK_CLIPDATA)

@@ -144,6 +144,19 @@ char const* parse_value(zstring_view str, uint8_t(&value)[N])
     return nullptr;
 }
 
+char const* parse_value(zstring_view str, RdpHostname & value)
+{
+    if (str.size() < RdpHostname::hostname_len_with_zero_terminal) {
+        return "hostname is limited to 15 chars";
+    }
+
+    value = RdpHostname::from_ascii(
+        bounded_array_view<char, 0, RdpHostname::hostname_len_with_zero_terminal>::assumed(str)
+    );
+
+    return nullptr;
+}
+
 template<class Fn>
 auto apply_on_client_info(ClientInfo& client_info, Fn fn)
 {
@@ -492,6 +505,10 @@ namespace
 
 #undef MK_DEF
 
+    template<>
+    struct headless_config_type_to_string<RdpHostname>
+    { static constexpr char const* value = "uint8_t*"; };
+
     template<class T>
     struct headless_config_type_to_string_enum
     : headless_config_type_to_string<std::underlying_type_t<T>>
@@ -555,6 +572,9 @@ std::string headless_client_info_config_as_string(ClientInfo const& client_info)
         }
         else if constexpr (std::is_enum_v<Mem>) {
             s += int_to_decimal_chars(underlying_cast(mem)).sv();
+        }
+        else if constexpr (std::is_same_v<Mem, RdpHostname>) {
+            s += std::string_view(mem.utf8_fixed_maybe_invalid().c_str());
         }
         else {
             s += int_to_decimal_chars(mem).sv();

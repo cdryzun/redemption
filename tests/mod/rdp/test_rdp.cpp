@@ -30,7 +30,6 @@
 #include "core/channels_authorizations.hpp"
 #include "client/common/new_mod_rdp.hpp"
 #include "mod/rdp/rdp_params.hpp"
-#include "mod/rdp/mod_rdp_factory.hpp"
 #include "utils/theme.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/error_message_ctx.hpp"
@@ -78,7 +77,7 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
     info.screen_info.height = 600;
     info.rdp5_performanceflags = PERF_DISABLE_WALLPAPER;
 
-    snprintf(info.hostname,sizeof(info.hostname),"test");
+    info.hostname = RdpHostname::from_ascii("test"_sized_av);
 
     info.order_caps.orderSupport[TS_NEG_DSTBLT_INDEX]     = 1;
     info.order_caps.orderSupport[TS_NEG_PATBLT_INDEX]     = 1;
@@ -162,7 +161,6 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
     NullSessionLog session_log;
     ErrorMessageCtx err_msg_ctx;
     const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
-    ModRdpFactory mod_rdp_factory;
     gdi::NullOsd osd;
 
     RedirectionInfo redir_info;
@@ -170,7 +168,7 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen, channels_authorizations,
-        mod_rdp_params, license_store, ini, nullptr, mod_rdp_factory);
+        mod_rdp_params, license_store, ini);
 
     RED_CHECK_EQUAL(info.screen_info.width, 800);
     RED_CHECK_EQUAL(info.screen_info.height, 600);

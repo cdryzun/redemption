@@ -1,26 +1,6 @@
 /*
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-   Product name: redemption, a FLOSS RDP proxy
-   Copyright (C) Wallix 2010
-   Author(s): Christophe Grosjean, Javier Caverni, Meng Tan,
-              Jennifer Inthavong
-   Based on xrdp Copyright (C) Jay Sorg 2004-2010
-
-   Unit test for Lightweight UTF library
-
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
@@ -129,34 +109,21 @@ RED_AUTO_TEST_CASE(TestUTF8_UTF16_witch_control_character)
     RED_CHECK_EQUAL(15u, nbbytes_utf8);
 }
 
-RED_AUTO_TEST_CASE(TestUTF8_UTF16_witch_CrLf)
+RED_AUTO_TEST_CASE(TestUTF8_UTF16_2)
 {
     uint8_t source[] = { 'a', 'b', 'c', 'e', 'd', 'e', 'f', 0x0A, '@', 0};
     uint8_t expected_targetCr[] =   { 'a', 0, 'b', 0, 'c', 0, 'e', 0, 'd', 0,
                                       'e', 0, 'f', 0,
                                       0x0A, 0 /* newline */,
                                       '@', 0, };
-    uint8_t expected_targetCrLf[] = { 'a', 0, 'b', 0, 'c', 0, 'e', 0, 'd', 0,
-                                      'e', 0, 'f', 0,
-                                      0x0D, 0 /* carriage return */,
-                                      0x0A, 0 /* newline */,
-                                      '@', 0, };
     const size_t target_lengthCr   = sizeof(expected_targetCr)/sizeof(expected_targetCr[0]);
-    const size_t target_lengthCrLf = sizeof(expected_targetCrLf)/sizeof(expected_targetCrLf[0]);
     uint8_t targetCr[target_lengthCr];
-    uint8_t targetCrLf[target_lengthCrLf];
 
     size_t nbbytes_utf16 = UTF8toUTF16({std::data(source), std::size(source)-1}, targetCr, target_lengthCr);
 
     // Check result
     RED_CHECK_EQUAL(target_lengthCr, nbbytes_utf16);
     RED_CHECK_EQUAL_RANGES(targetCr, expected_targetCr);
-
-    nbbytes_utf16 = UTF8toUTF16_CrLf({std::data(source), std::size(source)-1}, targetCrLf, target_lengthCrLf);
-
-    // Check result
-    RED_CHECK_EQUAL(target_lengthCrLf, nbbytes_utf16);
-    RED_CHECK_EQUAL_RANGES(targetCrLf, expected_targetCrLf);
 }
 
 RED_AUTO_TEST_CASE(TestUTF32toUTF8) {
@@ -184,16 +151,6 @@ RED_AUTO_TEST_CASE(TestUTF8toUnicodeIterator) {
     RED_CHECK(*u);            ++u;
     RED_CHECK_EQUAL(*u, uint8_t('o')); ++u;
     RED_CHECK_EQUAL(*u, uint8_t(0));
-}
-
-RED_AUTO_TEST_CASE(TestIsUtf8String) {
-    RED_CHECK(is_utf8_string(byte_ptr_cast("abcd"), -1));
-    RED_CHECK(is_utf8_string(byte_ptr_cast("Téléphone"), -1));
-    RED_CHECK(is_utf8_string(byte_ptr_cast("T\xc3\x9al\xc3\x9aphone"), -1));
-    RED_CHECK(!is_utf8_string(byte_ptr_cast("T\xc3\x9al\xc3""aphone"), -1));
-    RED_CHECK(is_utf8_string(byte_ptr_cast("T\xc3\x9al\xc3""aphone"), 4));
-    RED_CHECK(!is_utf8_string(byte_ptr_cast("T\xe9l\xe9phone"), -1));
-    RED_CHECK(is_utf8_string(byte_ptr_cast("Téléphone"), 10));
 }
 
 RED_AUTO_TEST_CASE(TestUTF16ToLatin1) {
@@ -225,74 +182,6 @@ RED_AUTO_TEST_CASE(TestUTF16ToLatin1_1) {
     RED_CHECK_EQUAL(x, number_of_characters);
 
     RED_CHECK(char_ptr_cast(latin1_dst) == "100 \x80"sv);
-}
-
-RED_AUTO_TEST_CASE(TestLatin1ToUTF16)
-{
-    const uint8_t latin1_src[] = "trap\xe9zo\xef" "dal";
-    const size_t number_of_characters = sizeof(latin1_src) - 1;
-    const size_t utf16_chars_count = number_of_characters * 2;
-
-    // "trapézoïdal"
-    const auto utf16_expected = "\x74\x00\x72\x00\x61\x00\x70\x00"
-                                "\xe9\x00\x7a\x00\x6f\x00\xef\x00"
-                                "\x64\x00\x61\x00\x6c\x00\x00\x00"_av;
-
-    uint8_t utf16_dst[32];
-
-    RED_CHECK_EQUAL(
-        Latin1toUTF16({latin1_src, number_of_characters+1}, utf16_dst, sizeof(utf16_dst)),
-        utf16_chars_count + 2);
-
-    RED_CHECK(make_array_view(utf16_dst, utf16_chars_count + 2) == utf16_expected);
-
-    uint8_t utf8_dst[16]{};
-
-    RED_CHECK_EQUAL(
-        UTF16toUTF8(utf16_dst, utf16_chars_count + 2, utf8_dst, sizeof(utf8_dst)),
-        number_of_characters + 1 + 2 /* 'é' => 0xC3 0xA9, 'ï' => 0xC3 0xAF */);
-
-    RED_CHECK(char_ptr_cast(utf8_dst) == "trapézoïdal"sv);
-}
-
-RED_AUTO_TEST_CASE(TestLatin1ToUTF16_1) {
-    auto latin1_src = "100 \x80\0"_av;
-
-    auto utf16_expected = "\x31\x00\x30\x00\x30\x00\x20\x00"  // "100 €"
-                          "\xac\x20\x00\x00"_av;
-
-    uint8_t utf16_dst[32];
-
-    RED_CHECK(array_view(utf16_dst, Latin1toUTF16(latin1_src, utf16_dst, sizeof(utf16_dst))) ==
-        utf16_expected);
-
-    uint8_t utf8_dst[16];
-
-    RED_CHECK(array_view(utf8_dst, UTF16toUTF8(utf16_dst, latin1_src.size() * 2, utf8_dst, sizeof(utf8_dst))) ==
-        "100 €\0"_av); /* '€' => 0xE2 0x82 0xAC */
-}
-
-RED_AUTO_TEST_CASE(TestLatin1ToUTF16_2) {
-    auto latin1_src = "100 \x80"
-                      "\x0a"
-                      "trap\xe9zo\xef" "dal\0"_av;
-
-    auto utf16_expected = "\x31\x00\x30\x00\x30\x00\x20\x00"  // "100 €"
-                          "\xac\x20"
-                          "\x0d\x00\x0a\x00"                  // "\r\n"
-                          "\x74\x00\x72\x00\x61\x00\x70\x00"  // "trapézoïdal"
-                          "\xe9\x00\x7a\x00\x6f\x00\xef\x00"
-                          "\x64\x00\x61\x00\x6c\x00\x00\x00"_av;
-
-    uint8_t utf16_dst[64];
-
-    RED_CHECK(array_view(utf16_dst, Latin1toUTF16(latin1_src, utf16_dst, sizeof(utf16_dst))) ==
-        utf16_expected);
-
-    uint8_t utf8_dst[32];
-
-    RED_CHECK(array_view(utf8_dst, UTF16toUTF8(utf16_dst, latin1_src.size() * 2, utf8_dst, sizeof(utf8_dst))) ==
-        "100 €\r\ntrapézoïdal\0"_av);
 }
 
 RED_AUTO_TEST_CASE(TestLatin1ToUTF8) {
@@ -472,14 +361,6 @@ RED_AUTO_TEST_CASE(TestUTF8ToResizableUTF16)
     RED_CHECK(result == "a\0b\0c\0"_av);
 }
 
-RED_AUTO_TEST_CASE(TestUTF8StrLenInChar)
-{
-    RED_CHECK_EQUAL(4u, UTF8StrLenInChar(byte_ptr_cast("abcd")));
-    RED_CHECK_EQUAL(0u, UTF8StrLenInChar(byte_ptr_cast("")));
-    RED_CHECK_EQUAL(4u, UTF8StrLenInChar("éric"));
-    RED_CHECK_EQUAL(4u, UTF8StrLenInChar("€uro"));
-}
-
 RED_AUTO_TEST_CASE(Test_is_ASCII_string)
 {
     RED_CHECK(is_ASCII_string(byte_ptr_cast("abcd")));
@@ -645,4 +526,513 @@ RED_AUTO_TEST_CASE(Test_utf16_to_unicode32)
     // invalid (2 surrogage high)
     RED_CHECK(decoder.convert(0xde80) == 0);
     RED_CHECK(decoder.previous_codepoint() == 0);
+}
+
+RED_AUTO_TEST_CASE(Test_cp1252_to_utf_8_16_32)
+{
+    auto _pattern = ut::PatternViewSaver::ascii();
+    auto _min_len = ut::AsciiMinLenSaver{0};
+
+    uint8_t dst_buffer[64];
+    auto dst_view = make_writable_array_view(dst_buffer);
+
+    StringConvertResult result;
+
+    struct D {
+        chars_view input;
+        chars_view expected_utf8;
+        chars_view expected_utf16;
+    };
+
+    for (auto d : {
+        D{
+            .input = "trap\xe9zo\xef""dal"_av,
+            .expected_utf8 = "trapézoïdal"_av,
+            .expected_utf16 =
+                "t\0r\0""a\0p\0"
+                "\xe9\0z\0o\0\xef\0"
+                "d\0""a\0l\0"_av,
+        },
+        D{
+            .input = "a ascii sequence !!"_av,
+            .expected_utf8 = "a ascii sequence !!"_av,
+            .expected_utf16 =
+                "a\0 \0a\0s\0c\0i\0i\0 \0s\0e\0q\0u\0e\0n\0c\0e\0 \0!\0!\0"_av,
+        },
+        D{
+            .input = "100 \x80"_av,
+            .expected_utf8 = "100 €"_av,
+            .expected_utf16 = "1\0""0\0""0\0 \0\xac\x20"_av
+        },
+        D{
+            .input = "100 \x80\ntrap\xe9zo\xef""dal"_av,
+            .expected_utf8 = "100 €\ntrapézoïdal"_av,
+            .expected_utf16 =
+                "1\0""0\0""0\0 \0\xac\x20\n\0"
+                "t\0r\0""a\0p\0"
+                "\xe9\0z\0o\0\xef\0"
+                "d\0""a\0l\0"_av
+        },
+        D{
+            .input = "\x87\x8c\x87"_av,
+            .expected_utf8 = "‡Œ‡"_av,
+            .expected_utf16 = "\x21\x20""\x52\x01""\x21\x20"_av
+        },
+    })
+    {
+        RED_TEST_INFO_SCOPE("input = " << d.input);
+        RED_TEST_CONTEXT("cp1252 to utf16")
+        {
+            RED_CHECK(
+                (result = cp1252_to_utf16le.partial(d.input, dst_view)).out
+                ==
+                d.expected_utf16
+            );
+            RED_CHECK(result.in == ""_av);
+        }
+        RED_TEST_CONTEXT("cp1252 to utf8")
+        {
+            RED_CHECK(
+                (result = cp1252_to_utf8.partial(d.input, dst_view)).out
+                ==
+                ut::utf8(d.expected_utf8)
+            );
+            RED_CHECK(result.in == ""_av);
+        }
+    }
+
+    /*
+     * Partial utf16
+     */
+
+    auto input = "ascii with not ascii\xe9 etc"_av;
+    auto expected_utf16 =
+        "a\0s\0c\0i\0i\0 \0w\0i\0t\0h\0 \0n\0o\0t\0 "
+        "\0a\0s\0c\0i\0i\0\xe9\0 \0e\0t\0c\0"_av;
+
+    for (unsigned i = 0; i <= input.size(); ++i)
+    {
+        auto input2 = input.drop_front(i);
+        auto expected2 = expected_utf16.drop_front(i * 2);
+        RED_TEST_INFO_SCOPE("input = " << input2);
+        RED_CHECK(
+            (result = cp1252_to_utf16le.partial(input2, dst_view)).out
+            ==
+            expected2
+        );
+        RED_CHECK(result.in == ""_av);
+    }
+
+    {
+        RED_TEST_INFO_SCOPE("input = " << input);
+        RED_CHECK(
+            (result = cp1252_to_utf16le.partial(input, dst_view.first(9))).out
+            ==
+            expected_utf16.first(8)
+        );
+        RED_CHECK(result.in == input.drop_front(4));
+    }
+
+    {
+        auto _pattern = ut::PatternViewSaver::utf8();
+
+        RED_CHECK((result = cp1252_to_utf8.partial("abc"_av, dst_view.first(1))).out == "a"_av);
+        RED_CHECK(result.in == "bc"_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("abc"_av, dst_view.first(2))).out == "ab"_av);
+        RED_CHECK(result.in == "c"_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("abc"_av, dst_view.first(3))).out == "abc"_av);
+        RED_CHECK(result.in == ""_av);
+
+        RED_CHECK((result = cp1252_to_utf8.partial("\xE9"_av, dst_view.first(1))).out == ""_av);
+        RED_CHECK(result.in == "\xE9"_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("\xE9"_av, dst_view.first(2))).out == "é"_av);
+        RED_CHECK(result.in == ""_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("\xE9"_av, dst_view.first(3))).out == "é"_av);
+        RED_CHECK(result.in == ""_av);
+
+        RED_CHECK((result = cp1252_to_utf8.partial("\x8c"_av, dst_view.first(1))).out == ""_av);
+        RED_CHECK(result.in == "\x8c"_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("\x8c"_av, dst_view.first(2))).out == "Œ"_av);
+        RED_CHECK(result.in == ""_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("\x8c"_av, dst_view.first(3))).out == "Œ"_av);
+        RED_CHECK(result.in == ""_av);
+
+        RED_CHECK((result = cp1252_to_utf8.partial("\x87"_av, dst_view.first(2))).out == ""_av);
+        RED_CHECK(result.in == "\x87"_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("\x87"_av, dst_view.first(2))).out == ""_av);
+        RED_CHECK(result.in == "\x87"_av);
+        RED_CHECK((result = cp1252_to_utf8.partial("\x87"_av, dst_view.first(3))).out == "‡"_av);
+        RED_CHECK(result.in == ""_av);
+    }
+
+    /*
+     * utf32
+     */
+
+    RED_CHECK_HEX16(cp1252_to_utf32(0x80) == 0x20ac);
+    RED_CHECK_HEX16(cp1252_to_utf32(0xe9) == 0x00e9);
+    RED_CHECK_HEX16(cp1252_to_utf32(0x8c) == 0x0152);
+}
+
+RED_AUTO_TEST_CASE(Test_utf16le_to_cp1252)
+{
+    auto _pattern = ut::PatternViewSaver::ascii();
+    auto _min_len = ut::AsciiMinLenSaver{0};
+
+    auto is_not_latin1_valid_code = [](unsigned i) {
+        return i == 0x81 || i == 0x8D || i == 0x8F || i == 0x90 || i == 0x9D;
+    };
+
+    // check ascii
+    for (unsigned i = 0; i <= 0xff; ++i)
+    {
+        // skip invalid code
+        if (i >= 0x80 && i <= 0x9F && !is_not_latin1_valid_code(i))
+        {
+            continue;
+        }
+
+        char str[2] {};
+        if (i >= 20 && i < 0x80)
+        {
+            str[0] = static_cast<char>(i);
+        }
+
+        auto c = static_cast<uint8_t>(i);
+        RED_TEST_CONTEXT("cp1252 = " << c << " '" << str << "'")
+        {
+            uint8_t input[] { c, 0 };
+            uint8_t output[1];
+            uint8_t expected[1] { c };
+            auto result = utf16le_to_cp1252.partial(
+                make_array_view(input),
+                make_writable_array_view(output)
+            );
+            RED_CHECK(result.success);
+            RED_CHECK(result.in == ""_av);
+            RED_CHECK(result.out == make_array_view(expected));
+        }
+    }
+
+    // encoding error
+    for (unsigned i = 0x80; i <= 0x9F; ++i)
+    {
+        if (is_not_latin1_valid_code(i))
+        {
+            continue;
+        }
+
+        auto c = static_cast<uint8_t>(i);
+        RED_TEST_CONTEXT("encoding error (range 0x80 - 0x9F) = " << c)
+        {
+            uint8_t input[] { c, 0 };
+            uint8_t output[1];
+            auto result = utf16le_to_cp1252.partial(
+                make_array_view(input),
+                make_writable_array_view(output)
+            );
+            RED_CHECK(!result.success);
+            RED_CHECK(result.in == make_array_view(input));
+            RED_CHECK(result.out == ""_av);
+        }
+    }
+
+    struct D
+    {
+        uint8_t utf16_char[2];
+    };
+
+    uint8_t expected = 0x80;
+
+    // cp1252 range in 2 btyes
+    for (auto d : {
+        // €
+        D{{0xac,0x20}},
+        D{{0x81,0x00}},
+        // ‚
+        D{{0x1a,0x20}},
+        // ƒ
+        D{{0x92,0x01}},
+        // „
+        D{{0x1e,0x20}},
+        // …
+        D{{0x26,0x20}},
+        // †
+        D{{0x20,0x20}},
+        // ‡
+        D{{0x21,0x20}},
+        // ˆ
+        D{{0xc6,0x02}},
+        // ‰
+        D{{0x30,0x20}},
+        // Š
+        D{{0x60,0x01}},
+        // ‹
+        D{{0x39,0x20}},
+        // Œ
+        D{{0x52,0x01}},
+        D{{0x8d,0x00}},
+        // Ž
+        D{{0x7d,0x01}},
+        D{{0x8f,0x00}},
+        D{{0x90,0x00}},
+        // ‘
+        D{{0x18,0x20}},
+        // ’
+        D{{0x19,0x20}},
+        // “
+        D{{0x1c,0x20}},
+        // ”
+        D{{0x1d,0x20}},
+        // •
+        D{{0x22,0x20}},
+        // –
+        D{{0x13,0x20}},
+        // —
+        D{{0x14,0x20}},
+        // ˜
+        D{{0xdc,0x02}},
+        // ™
+        D{{0x22,0x21}},
+        // š
+        D{{0x61,0x01}},
+        // ›
+        D{{0x3a,0x20}},
+        // œ
+        D{{0x53,0x01}},
+        D{{0x9d,0x00}},
+        // ž
+        D{{0x7e,0x01}},
+        // Ÿ
+        D{{0x78,0x01}},
+    })
+    {
+        RED_TEST_CONTEXT("utf16 = " << d.utf16_char[0] << " " << d.utf16_char[1])
+        {
+            uint8_t output[1];
+            auto result = utf16le_to_cp1252.partial(
+                make_array_view(d.utf16_char),
+                make_writable_array_view(output)
+            );
+            RED_CHECK(result.success);
+            RED_CHECK(result.in == ""_av);
+            RED_CHECK(result.out == bytes_view(&expected, 1));
+        }
+        uint8_t buf8[] {
+            d.utf16_char[0], d.utf16_char[1],
+            d.utf16_char[0], d.utf16_char[1],
+            d.utf16_char[0], d.utf16_char[1],
+            d.utf16_char[0], d.utf16_char[1],
+        };
+        RED_TEST_CONTEXT("utf16 = " << d.utf16_char[0] << " " << d.utf16_char[1] << " (4 times)")
+        {
+            uint8_t output[4];
+            uint8_t expected4[4] { expected, expected, expected, expected };
+            auto result = utf16le_to_cp1252.partial(
+                make_array_view(buf8),
+                make_writable_array_view(output)
+            );
+            RED_CHECK(result.success);
+            RED_CHECK(result.in == ""_av);
+            RED_CHECK(result.out == make_array_view(expected4));
+        }
+        ++expected;
+    }
+
+    // uncorrespondancy utf16 to cp1252
+    for (auto d : {
+        D{{0x20,0x02}},
+        D{{0x78,0x03}},
+    })
+    {
+        RED_TEST_CONTEXT("utf16 = " << d.utf16_char[0] << ' ' << d.utf16_char[1])
+        {
+            uint8_t output[1];
+            auto result = utf16le_to_cp1252.partial(
+                make_array_view(d.utf16_char),
+                make_writable_array_view(output)
+            );
+            RED_CHECK(!result.success);
+            RED_CHECK(result.in == make_array_view(d.utf16_char));
+            RED_CHECK(result.out == ""_av);
+        }
+        uint8_t buf8[] {
+            d.utf16_char[0], d.utf16_char[1],
+            d.utf16_char[0], d.utf16_char[1],
+            d.utf16_char[0], d.utf16_char[1],
+            d.utf16_char[0], d.utf16_char[1],
+        };
+        RED_TEST_CONTEXT("utf16 = " << d.utf16_char[0] << ' ' << d.utf16_char[1] << " (4 times)")
+        {
+            uint8_t output[4];
+            auto result = utf16le_to_cp1252.partial(
+                make_array_view(buf8),
+                make_writable_array_view(output)
+            );
+            RED_CHECK(!result.success);
+            RED_CHECK(result.in == make_array_view(buf8));
+            RED_CHECK(result.out == ""_av);
+        }
+    }
+
+    auto str = bounded_bytes_view{"\xAC\x20 \0a\0 \0t\0e\0s\0t\0 \0\xbd\0!\0"_sized_av};
+    RED_TEST_CONTEXT("utf16 = " << chars_view{str.as_chars()})
+    {
+        auto buffer = utf16le_to_cp1252.buffer_from(str);
+        RED_CHECK(buffer.result().success);
+        RED_CHECK(buffer.result().out == "\x80 a test \xbd!"_av);
+        writable_bounded_array_view<uint8_t, 11, 11> _ = buffer.result().out;
+    }
+}
+
+RED_AUTO_TEST_CASE(Test_cp1252_to_utf16le_lf_to_crlf)
+{
+    auto _pattern = ut::PatternViewSaver::ascii();
+    auto _min_len = ut::AsciiMinLenSaver{0};
+
+    constexpr size_t output_buffer_len = 64;
+
+    struct D
+    {
+        bytes_view in;
+        bytes_view expected_out_utf16le;
+        size_t buf_len = output_buffer_len;
+        bytes_view expected_in_cp1252_result = ""_av;
+    };
+
+    for (auto d : {
+        D{
+            .in = "100 \x80"_av, // 100 €
+            .expected_out_utf16le = "1\0""0\0""0\0 \0\xac\x20"_av,
+        },
+        D{
+            .in = "trap\xe9zo\xef""dal"_av,
+            .expected_out_utf16le = "t\0r\0a\0p\0\xe9\0z\0o\0\xef\0d\0a\0l\0"_av,
+        },
+        D{
+            .in = "100 \x80\ntrap\xe9zo\xef""dal"_av, // 100 €\n .....
+            .expected_out_utf16le =
+                "1\0""0\0""0\0 \0\xac\x20""\r\0\n\0"
+                "t\0r\0a\0p\0\xe9\0z\0o\0\xef\0d\0a\0l\0"_av,
+        },
+        D{
+            .in = "1\n234567"_av,
+            .expected_out_utf16le = "1\0""\r\0\n\0""2\0""3\0""4\0""5\0""6\0""7\0"_av,
+        },
+        D{
+            .in = "123456\n7"_av,
+            .expected_out_utf16le = "1\0""2\0""3\0""4\0""5\0""6\0""\r\0\n\0""7\0"_av,
+        },
+        D{
+            .in = "\n\n\n\n\nE"_av,
+            .expected_out_utf16le = "\r\0\n\0""\r\0\n\0""\r\0\n\0""\r\0\n\0""\r\0\n\0""E\0"_av,
+        },
+        D{
+            .in = "a"_av,
+            .expected_out_utf16le = "a\0"_av,
+            .buf_len = 2,
+        },
+        D{
+            .in = "\n"_av,
+            .expected_out_utf16le = ""_av,
+            .buf_len = 3,
+            .expected_in_cp1252_result = "\n"_av,
+        },
+        D{
+            .in = "\n\n\n\n\nE"_av,
+            .expected_out_utf16le = "\r\0\n\0""\r\0\n\0""\r\0\n\0"_av,
+            .buf_len = 14,
+            .expected_in_cp1252_result = "\n\nE"_av,
+        },
+    })
+    {
+        RED_TEST_CONTEXT("input = " << d.in << " (cp1252 to utf16le+CrLf) | buf_len = " << d.buf_len)
+        {
+            uint8_t output[output_buffer_len] {};
+            auto result = cp1252_to_utf16le_lf_to_crlf.partial(
+                d.in,
+                make_writable_array_view(output).first(d.buf_len)
+            );
+            RED_CHECK(result.in == d.expected_in_cp1252_result);
+            RED_CHECK(result.out == d.expected_out_utf16le);
+        }
+    }
+}
+
+RED_AUTO_TEST_CASE(Test_utf8_to_utf16le_lf_to_crlf)
+{
+    auto _pattern = ut::PatternViewSaver::ascii();
+    auto _min_len = ut::AsciiMinLenSaver{0};
+
+    constexpr size_t output_buffer_len = 64;
+
+    struct D
+    {
+        bytes_view in;
+        bytes_view expected_out_utf16le;
+        size_t buf_len = output_buffer_len;
+        bytes_view expected_in_cp1252_result = ""_av;
+    };
+
+    for (auto d : {
+        D{
+            .in = "100 €"_av, // 100 €
+            .expected_out_utf16le = "1\0""0\0""0\0 \0\xac\x20"_av,
+        },
+        D{
+            .in = "trapézoïdal"_av,
+            .expected_out_utf16le = "t\0r\0a\0p\0\xe9\0z\0o\0\xef\0d\0a\0l\0"_av,
+        },
+        D{
+            .in = "100 €\ntrapézoïdal"_av, // 100 €\n .....
+            .expected_out_utf16le =
+                "1\0""0\0""0\0 \0\xac\x20""\r\0\n\0"
+                "t\0r\0a\0p\0\xe9\0z\0o\0\xef\0d\0a\0l\0"_av,
+        },
+        D{
+            .in = "1\n234567"_av,
+            .expected_out_utf16le = "1\0""\r\0\n\0""2\0""3\0""4\0""5\0""6\0""7\0"_av,
+        },
+        D{
+            .in = "123456\n7"_av,
+            .expected_out_utf16le = "1\0""2\0""3\0""4\0""5\0""6\0""\r\0\n\0""7\0"_av,
+        },
+        D{
+            .in = "\n\n\n\n\nE"_av,
+            .expected_out_utf16le = "\r\0\n\0""\r\0\n\0""\r\0\n\0""\r\0\n\0""\r\0\n\0""E\0"_av,
+        },
+        D{
+            .in = "a"_av,
+            .expected_out_utf16le = "a\0"_av,
+            .buf_len = 2,
+        },
+        D{
+            .in = "\n"_av,
+            .expected_out_utf16le = ""_av,
+            .buf_len = 3,
+            .expected_in_cp1252_result = "\n"_av,
+        },
+        D{
+            .in = "\n\n\n\n\nE"_av,
+            .expected_out_utf16le = "\r\0\n\0""\r\0\n\0""\r\0\n\0"_av,
+            .buf_len = 14,
+            .expected_in_cp1252_result = "\n\nE"_av,
+        },
+        D{
+            .in = "abcedef\n@\0"_av,
+            .expected_out_utf16le = "a\0b\0c\0e\0d\0e\0f\0\r\0\n\0@\0\0\0"_av,
+        },
+    })
+    {
+        RED_TEST_CONTEXT("input = " << ut::utf8(d.in) << " (utf8 to utf16le+CrLf) | buf_len = " << d.buf_len)
+        {
+            uint8_t output[output_buffer_len] {};
+            auto result = utf8_to_utf16le_lf_to_crlf.partial(
+                d.in,
+                make_writable_array_view(output).first(d.buf_len)
+            );
+            RED_CHECK(result.in == d.expected_in_cp1252_result);
+            RED_CHECK(result.out == d.expected_out_utf16le);
+        }
+    }
 }

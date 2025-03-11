@@ -298,6 +298,7 @@ RdpPointer const& dot_pointer() noexcept;
 RdpPointer const& null_pointer() noexcept;
 RdpPointer const& system_normal_pointer() noexcept;
 RdpPointer const& slashed_circle_pointer() noexcept;
+RdpPointer const& link_pointer_pointer() noexcept;
 
 enum class PredefinedPointer : uint8_t
 {
@@ -311,7 +312,8 @@ enum class PredefinedPointer : uint8_t
     NWSE,
     WE,
     SlashedCircle,
+    Pointer,
 };
-constexpr inline uint8_t predefined_pointer_count = int(PredefinedPointer::SlashedCircle) + 1;
+constexpr inline uint8_t predefined_pointer_count = int(PredefinedPointer::Pointer) + 1;
 
 RdpPointer const& predefined_pointer_to_pointer(PredefinedPointer pointer) noexcept;

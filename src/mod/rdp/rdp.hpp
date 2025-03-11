@@ -103,7 +103,6 @@
 struct FileValidatorService;
 # include "mod/rdp/windowing_api.hpp"
 #else
-# include "mod/file_validator_service.hpp"
 # include "mod/rdp/channels/rail_session_manager.hpp"
 # include "mod/rdp/channels/rail_channel.hpp"
 # include "mod/rdp/channels/sespro_alternate_shell_based_launcher.hpp"
@@ -113,7 +112,6 @@ struct FileValidatorService;
 # include "mod/rdp/channels/cliprdr_client_simulator.hpp"
 # include "mod/rdp/channels/cliprdr_unexpected_pdu_filter.hpp"
 # include "mod/rdp/channels/cliprdr_winxp_message_compensator.hpp"
-# include "mod/rdp/channels/validator_params.hpp"
 # include "mod/rdp/channels/virtual_channel_filter.hpp"
 # include "mod/rdp/channels/clipboard_virtual_channels_params.hpp"
 # include "mod/rdp/channels/drdynvc_channel.hpp"
@@ -128,7 +126,6 @@ struct FileValidatorService;
 
 #include "mod/mod_api.hpp"
 
-#include "mod/rdp/mod_rdp_factory.hpp"
 #include "mod/rdp/mod_rdp_variables.hpp"
 #include "mod/rdp/rdp_api.hpp"
 #include "mod/rdp/mod_rdp_callback.hpp"
@@ -277,7 +274,7 @@ public:
     };
 
 private:
-    ModRDPParams::ClipboardParams clipboard;
+    ModRDPParams::GetClipboardParams get_clipboard_params;
 
     ModRDPParams::DynamicChannelsParams dynamic_channels;
 
@@ -334,8 +331,6 @@ public:
     } drive;
 
 private:
-    ModRdpFactory& mod_rdp_factory;
-
     std::unique_ptr<VirtualChannelDataSender>     clipboard_to_client_sender;
     std::unique_ptr<VirtualChannelDataSender>     clipboard_to_server_sender;
 
@@ -379,8 +374,6 @@ private:
     gdi::OsdApi & osd;
     EventContainer & events;
     SessionLogApi& session_log;
-    FileValidatorService * file_validator_service;
-    ValidatorParams validator_params;
     ModRdpCallbacks & callbacks;
 
     const bool bogus_freerdp_clipboard;
@@ -396,8 +389,6 @@ public:
         gdi::OsdApi & osd,
         EventContainer & events,
         SessionLogApi& session_log,
-        FileValidatorService * file_validator_service,
-        ModRdpFactory& mod_rdp_factory,
         ModRdpCallbacks & callbacks)
     : channels_authorizations(channels_authorizations)
     , enable_auth_channel(mod_rdp_params.application_params.alternate_shell[0]
@@ -407,19 +398,16 @@ public:
     , gen(gen)
     , session_probe(mod_rdp_params.session_probe_params)
     , remote_app(mod_rdp_params.remote_app_params, mod_rdp_params.perform_automatic_reconnection)
-    , clipboard(mod_rdp_params.clipboard_params)
+    , get_clipboard_params(mod_rdp_params.get_clipboard_params)
     , dynamic_channels(mod_rdp_params.dynamic_channels_params)
     , file_system(mod_rdp_params.file_system_params)
     , asynchronous_tasks(events)
     , drive(mod_rdp_params.application_params, mod_rdp_params.drive_params, asynchronous_tasks, verbose)
-    , mod_rdp_factory(mod_rdp_factory)
     , cliprdr_vc_filter(clipboard_to_client_sender, clipboard_to_server_sender)
     , verbose(verbose)
     , osd(osd)
     , events(events)
     , session_log(session_log)
-    , file_validator_service(file_validator_service)
-    , validator_params(mod_rdp_params.validator_params)
     , callbacks(callbacks)
     , bogus_freerdp_clipboard(mod_rdp_params.bogus_freerdp_clipboard)
     , windows_xp_clipboard_support(mod_rdp_params.windows_xp_clipboard_support)
@@ -487,7 +475,7 @@ public:
             }
 
             this->remote_programs_session_manager = std::make_unique<RemoteProgramsSessionManager>(
-                this->events, gd, mod_rdp, mod_rdp_params.validator_params.translator,
+                this->events, gd, mod_rdp, mod_rdp_params.translator,
                 mod_rdp_params.font, mod_rdp_params.theme, session_probe_window_title.c_str(),
                 not_null_ptr{mod_rdp_params.remote_app_params.rail_client_execute},
                 mod_rdp_params.remote_app_params.rail_disconnect_message_delay,
@@ -566,7 +554,10 @@ private:
         return std::make_unique<ToClientSender>(front, *channel, this->has_dump_verbose(channel_name));
     }
 
-    inline void create_clipboard_virtual_channel(FrontAPI & front, ServerTransportContext & stc)
+    inline void create_clipboard_virtual_channel(
+        FrontAPI & front,
+        ServerTransportContext & stc,
+        Translator tr)
     {
         assert(!this->clipboard_to_client_sender
             && !this->clipboard_to_server_sender);
@@ -607,25 +598,12 @@ private:
 
         if (this->clipboard_to_client_sender)
         {
-            ClipboardVirtualChannelParams cvc_params;
-            cvc_params.clipboard_down_authorized = this->channels_authorizations.cliprdr_down_is_authorized();
-            cvc_params.clipboard_up_authorized   = this->channels_authorizations.cliprdr_up_is_authorized();
-            cvc_params.clipboard_file_authorized = this->channels_authorizations.cliprdr_file_is_authorized();
-            cvc_params.log_only_relevant_clipboard_activities = this->clipboard.log_only_relevant_activities;
-            cvc_params.log_clipboard_text = this->clipboard.log_text;
-            cvc_params.validator_params = this->validator_params;
-
             this->clipboard_virtual_channel = std::make_unique<ClipboardVirtualChannel>(
                 this->events,
                 this->osd,
-                std::move(cvc_params),
-                this->file_validator_service,
-                ClipboardVirtualChannel::FileStorage{
-                    this->mod_rdp_factory.get_fdx_capture(),
-                    this->mod_rdp_factory.always_file_storage,
-                    this->mod_rdp_factory.tmp_dir,
-                },
+                this->get_clipboard_params(this->channels_authorizations),
                 this->session_log,
+                tr,
                 this->verbose
             );
 
@@ -768,7 +746,7 @@ private:
         FrontAPI& front,
         ServerTransportContext & stc,
         GeneralCaps const & client_general_caps,
-        const char (& client_name)[128]
+        RdpHostname const & client_name
     ) {
         assert(!this->file_system_to_client_sender && !this->file_system_to_server_sender);
 
@@ -797,7 +775,7 @@ private:
             "",
             client_name,
             ::getpid(),
-            this->drive.proxy_managed_prefix.c_str(),
+            this->drive.proxy_managed_prefix,
             fsvc_params,
             this->session_log,
             this->verbose);
@@ -818,7 +796,7 @@ public:
         const bool bogus_refresh_rect,
         const uint32_t monitor_count,
         GeneralCaps const & client_general_caps,
-        const char (& client_name)[128]
+        RdpHostname const & client_name
     ) {
         assert(!this->session_probe_to_server_sender);
 
@@ -920,10 +898,11 @@ public:
     void process_cliprdr_event(
         InStream & stream, uint32_t length, uint32_t flags, size_t chunk_size,
         FrontAPI& front,
-        ServerTransportContext & stc)
+        ServerTransportContext & stc,
+        Translator tr)
     {
         if (!this->cliprdr_client_simulator && !this->cliprdr_unexpected_pdu_filter) {
-            this->create_clipboard_virtual_channel(front, stc);
+            this->create_clipboard_virtual_channel(front, stc, tr);
         }
 
         this->cliprdr_vc_filter.get_previous_filter_ptr()->process_server_message(
@@ -937,7 +916,7 @@ public:
         FrontAPI& front,
         ServerTransportContext & stc,
         GeneralCaps const & client_general_caps,
-        const char (& client_name)[128]
+        RdpHostname const & client_name
     ) {
         if (auth_channel_message.empty()) {
             return;
@@ -1038,7 +1017,7 @@ public:
         FrontAPI& front,
         ServerTransportContext & stc,
         GeneralCaps const & client_general_caps,
-        const char (& client_name)[128]
+        RdpHostname const & client_name
     ) {
         (void)length;
         (void)chunk_size;
@@ -1142,9 +1121,10 @@ public:
 
     void send_to_mod_cliprdr_channel(InStream & chunk, size_t length, uint32_t flags,
                             FrontAPI& front,
-                            ServerTransportContext & stc) {
+                            ServerTransportContext & stc,
+                            Translator tr) {
         if (!this->cliprdr_client_simulator && !this->cliprdr_unexpected_pdu_filter) {
-            this->create_clipboard_virtual_channel(front, stc);
+            this->create_clipboard_virtual_channel(front, stc, tr);
         }
 
         this->cliprdr_vc_filter.get_next_filter_ptr()->process_client_message(
@@ -1174,7 +1154,7 @@ public:
                             FrontAPI& front,
                             ServerTransportContext & stc,
                             GeneralCaps const & client_general_caps,
-                            const char (& client_name)[128])
+                            RdpHostname const & client_name)
     {
         if (!this->file_system.enable_rdpdr_data_analysis
          &&  this->channels_authorizations.rdpdr_type_all_is_authorized()
@@ -1496,7 +1476,7 @@ public:
         FrontAPI& front,
         ServerTransportContext & stc,
         GeneralCaps const & client_general_caps,
-        const char (& client_name)[128])
+        RdpHostname const & client_name)
     {
         if (!this->file_system.enable_rdpdr_data_analysis
          &&  this->channels_authorizations.rdpdr_type_all_is_authorized()
@@ -1591,7 +1571,8 @@ public:
         GeneralCaps const & client_general_caps,
         ModRdpVariables vars,
         RailCaps const & client_rail_caps,
-        const char (& client_name)[128]
+        RdpHostname const & client_name,
+        Translator tr
     ) {
         const CHANNELS::ChannelDef * mod_channel = this->mod_channel_list.get_by_name(front_channel_name);
         if (!mod_channel) {
@@ -1604,7 +1585,7 @@ public:
 
         switch (front_channel_name) {
             case channel_names::cliprdr:
-                this->send_to_mod_cliprdr_channel(chunk, length, flags, front, stc);
+                this->send_to_mod_cliprdr_channel(chunk, length, flags, front, stc, tr);
                 break;
             case channel_names::rail:
                 this->send_to_mod_rail_channel(chunk, length, flags, front, stc, vars, client_rail_caps);
@@ -1629,7 +1610,7 @@ public:
         GeneralCaps const & client_general_caps,
         ModRdpVariables vars,
         RailCaps const & client_rail_caps,
-        const char (& client_name)[128],
+        RdpHostname const & client_name,
         const uint32_t monitor_count,
         const bool bogus_refresh_rect,
         const Translator tr)
@@ -1811,7 +1792,7 @@ class mod_rdp : public mod_api, public rdp_api, public sespro_api
     rdp_orders orders;
     RfxDecoder rfxDecoder;
 
-    char client_name[128] = {};
+    RdpHostname client_name;
 
     kbdtypes::KeyLocks last_key_locks;
     bool first_scancode = true;
@@ -1972,17 +1953,12 @@ public:
       , const ModRDPParams & mod_rdp_params
       , LicenseApi & license_store
       , ModRdpVariables vars
-      , [[maybe_unused]] FileValidatorService * file_validator_service
-      , ModRdpFactory& mod_rdp_factory
     )
 #ifndef __EMSCRIPTEN__
         : spvc_callbacks(*this, osd)
         , channels(
             channels_authorizations, mod_rdp_params, mod_rdp_params.verbose,
-            gen, osd, events, session_log,
-            file_validator_service,
-            mod_rdp_factory,
-            spvc_callbacks
+            gen, osd, events, session_log, spvc_callbacks
         )
 #else
         : channels(channels_authorizations)
@@ -1990,8 +1966,7 @@ public:
         , redir_info(redir_info)
         , disconnect_on_logon_user_change(mod_rdp_params.disconnect_on_logon_user_change)
         , logon_info(
-            truncatable_bounded_array_view(chars_view{
-                info.hostname, strnlen(info.hostname, std::size(info.hostname))}),
+            info.hostname,
             mod_rdp_params.hide_client_name,
             mod_rdp_params.target_user,
             mod_rdp_params.split_domain)
@@ -2011,6 +1986,7 @@ public:
                     }
                 }
                 , *this)
+        , client_name(info.hostname)
         , last_key_locks(mod_rdp_params.key_locks)
         , verbose(mod_rdp_params.verbose)
         , cache_verbose(mod_rdp_params.cache_verbose)
@@ -2065,7 +2041,6 @@ public:
     {
         #ifdef __EMSCRIPTEN__
         (void)events;
-        (void)mod_rdp_factory;
         (void)session_log;
         #endif
 
@@ -2084,8 +2059,6 @@ public:
 
         this->decrypt.encryptionMethod = 2; /* 128 bits */
         this->encrypt.encryptionMethod = 2; /* 128 bits */
-
-        snprintf(this->client_name, sizeof(this->client_name), "%s", info.hostname);
 
         char program[512] = {};
         char directory[512] = {};
@@ -2593,7 +2566,7 @@ public:
         this->channels.send_to_mod_channel(
             front_channel_name, chunk, length, flags,
             this->front, stc, this->client_general_caps, this->vars,
-            this->client_rail_caps, this->client_name
+            this->client_rail_caps, this->client_name, this->tr
         );
 #else
         if (CHANNELS::ChannelDef const * mod_channel
@@ -3084,7 +3057,7 @@ public:
             else if (mod_channel.name == channel_names::cliprdr) {
                 ServerTransportContext stc{
                     this->trans, this->encrypt, this->negociation_result};
-                this->channels.process_cliprdr_event(sec.payload, length, flags, chunk_size, this->front, stc);
+                this->channels.process_cliprdr_event(sec.payload, length, flags, chunk_size, this->front, stc, this->tr);
             }
             else if (mod_channel.name == channel_names::rail) {
                 ServerTransportContext stc{

@@ -45,6 +45,7 @@ Author(s): Jonathan Poelen
 #define RED_ERROR(...) BOOST_ERROR(__VA_ARGS__) /*NOLINT*/
 
 #define RED_TEST_INFO BOOST_TEST_INFO
+#define RED_TEST_INFO_SCOPE BOOST_TEST_INFO_SCOPE
 #define RED_TEST_DONT_PRINT_LOG_VALUE BOOST_TEST_DONT_PRINT_LOG_VALUE
 #define RED_TEST_PRINT_TYPE_FUNCTION_NAME boost_test_print_type
 #define RED_TEST_PRINT_TYPE_STRUCT_NAME boost::test_tools::tt_detail::print_log_value
@@ -75,6 +76,10 @@ Author(s): Jonathan Poelen
 #  define RED_CHECK_GT(a, b) BOOST_CHECK(((a) > (b))) /*NOLINT*/
 #  define RED_CHECK_GE(a, b) BOOST_CHECK(((a) >= (b))) /*NOLINT*/
 #  define RED_CHECK(...) BOOST_CHECK((__VA_ARGS__)) /*NOLINT*/
+#  define RED_CHECK_HEX8(...) BOOST_TEST((__VA_ARGS__)) /*NOLINT*/
+#  define RED_CHECK_HEX16(...) BOOST_TEST((__VA_ARGS__)) /*NOLINT*/
+#  define RED_CHECK_HEX32(...) BOOST_TEST((__VA_ARGS__)) /*NOLINT*/
+#  define RED_CHECK_HEX64(...) BOOST_TEST((__VA_ARGS__)) /*NOLINT*/
 #  define RED_CHECK_MESSAGE(x, ...) BOOST_CHECK_MESSAGE((x), __VA_ARGS__) /*NOLINT*/
 #  define RED_CHECK_EQUAL_COLLECTIONS(...) BOOST_CHECK(std::equal(__VA_ARGS__)) /*NOLINT*/
 #  define RED_CHECK_PREDICATE(...) BOOST_CHECK_PREDICATE(__VA_ARGS__) /*NOLINT*/
@@ -116,6 +121,10 @@ Author(s): Jonathan Poelen
 #  define RED_CHECK_GT(a, b) BOOST_CHECK((a) > (b)) /*NOLINT*/
 #  define RED_CHECK_GE(a, b) BOOST_CHECK((a) >= (b)) /*NOLINT*/
 #  define RED_CHECK(...) BOOST_CHECK(__VA_ARGS__) /*NOLINT*/
+#  define RED_CHECK_HEX8(...) BOOST_TEST(__VA_ARGS__, ::ut::hex_int::u8()) /*NOLINT*/
+#  define RED_CHECK_HEX16(...) BOOST_TEST(__VA_ARGS__, ::ut::hex_int::u16()) /*NOLINT*/
+#  define RED_CHECK_HEX32(...) BOOST_TEST(__VA_ARGS__, ::ut::hex_int::u32()) /*NOLINT*/
+#  define RED_CHECK_HEX64(...) BOOST_TEST(__VA_ARGS__, ::ut::hex_int::u64()) /*NOLINT*/
 #  define RED_CHECK_MESSAGE(...) BOOST_CHECK_MESSAGE(__VA_ARGS__) /*NOLINT*/
 #  define RED_CHECK_EQUAL_COLLECTIONS(...) BOOST_CHECK_EQUAL_COLLECTIONS(__VA_ARGS__) /*NOLINT*/
 #  define RED_CHECK_PREDICATE(...) BOOST_CHECK_PREDICATE(__VA_ARGS__) /*NOLINT*/
@@ -374,6 +383,23 @@ namespace ut
 
             if (!r) {
                 detail::print_hex_int_compare(ar.message().stream(), x, y, h.ndigit, OP::revert());
+            }
+
+            return ar;
+        }
+
+        template<class E, class OP>
+            requires std::is_enum_v<E>
+        inline assertion_result
+        hex_int_compare(E x, E y, hex_int h, OP const* /*op*/)
+        {
+            using I = std::underlying_type_t<E>;
+
+            bool const r = op::op_to_predicate<OP>::compute(x, y);
+            assertion_result ar(r);
+
+            if (!r) {
+                detail::print_hex_int_compare(ar.message().stream(), I(x), I(y), h.ndigit, OP::revert());
             }
 
             return ar;

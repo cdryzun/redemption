@@ -34,7 +34,6 @@ class RedirectionInfo;
 class Random;
 class ModRDPParams;
 class FileValidatorService;
-class ModRdpParams;
 class ModRdpFactory;
 class ChannelsAuthorizations;
 class SessionLogApi;
@@ -59,7 +58,5 @@ std::unique_ptr<mod_api> new_mod_rdp(
     const ChannelsAuthorizations& channels_authorizations,
     const ModRDPParams& mod_rdp_params,
     LicenseApi& license_store,
-    ModRdpVariables vars,
-    FileValidatorService * file_validator_service,
-    ModRdpFactory& mod_rdp_factory
+    ModRdpVariables vars
 );

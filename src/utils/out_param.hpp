@@ -14,7 +14,20 @@ struct OutParam
     {}
 
     OutParam(OutParam const&) = default;
-    OutParam& operator==(OutParam const&) = delete;
+    OutParam& operator=(OutParam const&) = delete;
 
     T& out_value;
+};
+
+template<class T>
+struct InOutParam
+{
+    explicit InOutParam(T& inout_value) noexcept
+    : inout_value(inout_value)
+    {}
+
+    InOutParam(InOutParam const&) = default;
+    InOutParam& operator=(InOutParam const&) = delete;
+
+    T& inout_value;
 };

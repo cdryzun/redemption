@@ -32,6 +32,7 @@
 #include "core/server_cert_params.hpp"
 #include "core/RDP/clipboard.hpp"
 #include "core/RDP/orders/RDPOrdersSecondaryColorCache.hpp"
+#include "core/WinNT/time.hpp"
 
 #include "gdi/graphic_api.hpp"
 
@@ -42,17 +43,29 @@
 #include "utils/zlib.hpp"
 #include "utils/monotonic_clock.hpp"
 #include "utils/stream.hpp"
+#include "utils/sugar/not_null_ptr.hpp"
+
+#include "system/ssl_sha256.hpp"
 
 #include "mod/mod_api.hpp"
 #include "mod/tls_params.hpp"
 
-#include "mod/vnc/encoder/copyrect.hpp"
-#include "mod/vnc/encoder/cursor.hpp"
-#include "mod/vnc/encoder/hextile.hpp"
-#include "mod/vnc/encoder/raw.hpp"
-#include "mod/vnc/encoder/rre.hpp"
-#include "mod/vnc/encoder/zrle.hpp"
+#include "mod/vnc/encoders/copyrect.hpp"
+#include "mod/vnc/encoders/cursor.hpp"
+#include "mod/vnc/encoders/hextile.hpp"
+#include "mod/vnc/encoders/raw.hpp"
+#include "mod/vnc/encoders/rre.hpp"
+#include "mod/vnc/encoders/zrle.hpp"
+#include "mod/vnc/encoders/rfb/cut_text.hpp"
+#include "mod/vnc/encoders/uvnc_file_transfer.hpp"
 #include "mod/vnc/vnc_verbose.hpp"
+
+#include "mod/vnc/rdp_adapters/cliprdr_adapter.hpp"
+#include "mod/vnc/rdp_adapters/vnc_file_list.hpp"
+#include "mod/vnc/rdp_adapters/cliprdr_file_list.hpp"
+
+#include "mod/vnc/file_transfer/file_transfer_gui.hpp"
+#include "mod/vnc/vnc_params.hpp"
 
 #include "configs/autogen/enums.hpp"
 
@@ -60,13 +73,14 @@
 class UltraDSM;
 class ClientExecute;
 
+enum class FileValidatorId : uint32_t;
+
 // got extracts of VNC documentation from
 // https://github.com/rfbproto/rfbproto
 
 class mod_vnc : public mod_api
 {
-
-    static constexpr uint32_t MAX_CLIPBOARD_DATA_SIZE = 1024 * 64;
+    // TODO
     static constexpr int maxSpokenVncProcotol = 3 * 1000 + 8; // 3.8
 
     /* mod data */
@@ -149,6 +163,16 @@ public:
             this->write(out_stream, this->mod_mouse_state);
         }
 
+        uint16_t mouse_x() const noexcept
+        {
+            return this->x;
+        }
+
+        uint16_t mouse_y() const noexcept
+        {
+            return this->y;
+        }
+
     private:
         uint8_t mod_mouse_state = 0;
         uint16_t x = 0;
@@ -167,7 +191,6 @@ public:
             this->write(out_stream, this->mod_mouse_state);
         }
     } mouse;
-
 
 
 private:
@@ -195,16 +218,6 @@ private:
     VNCVerbose verbose;
 
     KeymapSym keymapSym;
-
-    StaticOutStream<MAX_CLIPBOARD_DATA_SIZE> to_vnc_clipboard_data;
-    uint32_t to_vnc_clipboard_data_size = 0;
-    uint32_t to_vnc_clipboard_data_remaining;
-
-    const bool enable_clipboard_up;   // true clipboard available, false clipboard unavailable
-    const bool enable_clipboard_down; // true clipboard available, false clipboard unavailable
-
-    bool client_use_long_format_names = false;
-    bool server_use_long_format_names = true;
 
     /** @brief state of the VNC state machine */
     enum VncState {
@@ -247,23 +260,15 @@ private:
     VncState state = WAIT_SECURITY_TYPES;
     VeNCryptState vencryptState = WAIT_VENCRYPT_VERSION;
 
-    bool     clipboard_requesting_for_data_is_delayed = false;
-    uint32_t clipboard_requested_format_id            = 0;
-    MonotonicTimePoint clipboard_last_client_data_timestamp {};
-    ClipboardEncodingType clipboard_server_encoding_type;
-    bool clipboard_owned_by_client = true;
-    VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop = VncBogusClipboardInfiniteLoop::delayed;
-    uint32_t clipboard_general_capability_flags = 0;
     MonotonicTimePoint::duration session_time_start;
     ClientExecute* rail_client_execute = nullptr;
-    Zdecompressor<> zd;
 
     Random & rand;
-    gdi::GraphicApi & gd;
+    not_null_ptr<gdi::GraphicApi> gd;
+    gdi::GraphicApi & original_gd;
     EventsGuard events_guard;
-    EventRef clipboard_timeout_timer;
 
-    SessionLogApi& session_log;
+    SessionLogApi & session_log;
 
     /** @brief type of VNC authentication */
     enum VncAuthType : int32_t {
@@ -294,6 +299,144 @@ private:
 
     const bool cursor_pseudo_encoding_supported;
 
+    Zdecompressor<> zd;
+
+    // FT / Cb features
+    //@{
+    // TODO u8 or u16
+    enum class FtFlags : uint32_t;
+    REDEMPTION_DECLARE_ENUM_FLAGS_IN_CLASS(FtFlags)
+
+    struct FT;
+    friend FT;
+
+    struct dynamic_non_null_cstring
+    {
+        dynamic_non_null_cstring() = default;
+
+        ~dynamic_non_null_cstring();
+
+        void init(chars_view str);
+
+        char const * c_str() const noexcept
+        {
+            return m_str;
+        }
+
+    private:
+        void _free() noexcept;
+
+        char const * m_str = "";
+    };
+
+
+    enum class TransferValidatorStatus : uint8_t;
+
+    enum class FileStorageOption : uint8_t
+    {
+        OnInvalidFile,
+        Always,
+    };
+
+    struct TransferedFileCtx
+    {
+        TransferedFileCtx & operator = (TransferedFileCtx const &) = delete;
+
+        struct TflFile;
+
+        struct Utf8FileName
+        {
+            Utf8FileName() noexcept {}
+
+            explicit Utf8FileName(VNC::UVncFile::PathView file_name) noexcept
+            {
+                reset(file_name);
+            }
+
+            Utf8FileName(Utf8FileName const &) noexcept;
+
+            Utf8FileName & operator = (Utf8FileName const &) noexcept;
+
+            void reset(VNC::UVncFile::PathView file_name) noexcept;
+
+            void reset() noexcept
+            {
+                m_len = 0;
+            }
+
+            bool is_empty() const noexcept
+            {
+                return m_len == 0;
+            }
+
+            chars_view av() const noexcept
+            {
+                return {char_ptr_cast(m_buffer), m_len};
+            }
+
+        private:
+            uint16_t m_len = 0;
+            uint8_t m_buffer[VNC::UVncFile::PathView::Bytes::at_most * 3];
+        };
+
+        struct Hash
+        {
+            uint8_t buffer[SslSha256::DIGEST_LENGTH];
+        };
+
+        struct File
+        {
+            File();
+            File(File &&) = default;
+            File & operator = (File &&) = default;
+
+            ~File();
+
+            std::unique_ptr<TflFile> tfl_file {};
+            TransferValidatorStatus validator_status {};
+            FileValidatorId validator_id {};
+            FileValidatorTargets validator_target = FileValidatorTargets::None;
+            Hash hash;
+            uint64_t file_size = 0;
+            Utf8FileName utf8_file_name {};
+        };
+
+        FileValidatorService * file_validator = nullptr;
+        FdxCapture * fdx_capture = nullptr;
+
+        FileValidatorTargets validator_targets = FileValidatorTargets::None;
+        FileValidatorTargets block_invalid_file = FileValidatorTargets::None;
+
+        FileStorageOption file_storage_option = FileStorageOption::OnInvalidFile;
+        bool log_if_accepted = false;
+
+        uint64_t original_max_blocked_file_size_rejected = 0;
+        // deal with original value and CB_HUGE_FILE_SUPPORT_ENABLED flag
+        uint64_t max_blocked_file_size_rejected_upload = 0;
+        uint64_t max_blocked_file_size_rejected_download = 0;
+
+        dynamic_non_null_cstring tmp_dir {};
+
+        std::vector<File> waiting_validator_file_list {};
+
+        SslSha256 sha2 {};
+
+        File current_file {};
+
+        ModVncParams::GetFileValidatorAndStorage get_file_validator_and_storage;
+    };
+
+    CHANNELS::ChannelDef const * cliprdr_chann;
+    FtFlags ft_flags {};
+    bool has_cursor = false;
+    VNC::CliprdrAdapter cliprdr;
+    VNC::CliprdrFileList cliprdr_file_list;
+    VNC::VncFileList uvnc_file_list;
+    VNC::FileTransferGui ft_gui;
+    UVNCFileTransferReader ft_reader;
+    TransferedFileCtx transfered_file_ctx;
+    //@}
+
     struct DoTlsParams
     {
         std::string certif_path;
@@ -310,6 +453,7 @@ public:
     mod_vnc( Transport & t
            , Random & rand
            , gdi::GraphicApi & gd
+           , Font const & glyphs
            , EventContainer & events
            , const char * username
            , const char * password
@@ -317,11 +461,8 @@ public:
            // TODO: front width and front height should be provided through info
            , uint16_t front_width
            , uint16_t front_height
-           , bool clipboard_up
-           , bool clipboard_down
+           , ModVncParams params
            , const char * encodings
-           , ClipboardEncodingType clipboard_server_encoding_type
-           , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
            , KeyLayout const& layout
            , kbdtypes::KeyLocks locks
            , bool server_is_macos
@@ -332,6 +473,7 @@ public:
            , SessionLogApi& session_log
            , ModTlsParams const& tls_params
            , std::string_view force_authentication_method
+           , Translator const& translator
     );
 
     ~mod_vnc();
@@ -796,9 +938,6 @@ public:
 
     void send_keyevents(KeymapSym::Keys keys);
 
-private:
-    void rdp_input_clip_data(bytes_view data);
-
 public:
     void rdp_input_synchronize(KeyLocks locks) override;
 
@@ -864,8 +1003,12 @@ private:
         JPEGQLA_PSEUDO_ENCODING      = -32,
         DESKTOPSIZE_PSEUDO_ENCODING  = -223,
         LASTRECT_PSEUDO_ENCODING     = -224,
+        // Required by UltraVNC (< 1.7.4) for CURSOR_PSEUDO_ENCODING...
+        // Excepted with "Force cursor shape" option (>= 1.7.4)
+        POINTER_POSITION_ENCODING    = -232, // 0xFFFFFF18
         CURSOR_PSEUDO_ENCODING       = -239,
         XCURSOR_PSEUDO_ENCODING      = -240,
+        UVNC_FILE_TRANSFER           = UVNCFileTransferReader::encoding_value,
     };
 
     // VNC Client to Server Messages
@@ -906,18 +1049,17 @@ private:
         VNC_CS_MSG_QEMU_CLIENT_MESSAGE            = 255,
     };
 
-    // VNC Client to Server Messages
-    enum VNC_server_to_client_messages {
-        VNC_SC_MSG_FRAMEBUFFER_UPDATE             = 0,
-        VNC_SC_MSG_SET_COLOUR_MAP_ENTRIES         = 1,
-        VNC_SC_MSG_BELL                           = 2,
-        VNC_SC_MSG_SERVER_CUT_TEXT                = 3,
-        VNC_SC_MSG_END_OF_CONTINUOUS_UPDATE       = 150,
-        VNC_SC_MSG_SERVER_STATE                   = 173,
-        VNC_SC_MSG_SERVER_FENCE                   = 248,
-        VNC_SC_MSG_XVP                            = 250,
-        VNC_SC_MSG_TIGHT                          = 252,
-        VNC_SC_MSG_GII                            = 253,
+    // https://github.com/rfbproto/rfbproto/blob/master/rfbproto.rst#75server-to-client-messages
+    enum class ServerToClientMessage : uint8_t
+    {
+        // must support
+        FramebufferUpdate = 0,
+        SetColourMapEntries = 1,
+        Bell = 2,
+        ServerCutText = 3,
+
+        // Optional message
+        FileTransfer = UVNCFileTransferReader::message_type,
     };
 
     class PasswordCtx
@@ -963,12 +1105,13 @@ private:
     PasswordCtx password_ctx;
     struct UpAndRunningCtx
     {
-        enum class State
+        enum class State : uint8_t
         {
             Header,
-            FrameBufferupdate,
+            FrameBufferUpdate,
             Palette,
             ServerCutText,
+            FileTransfer,
         };
 
         void restart() noexcept
@@ -985,41 +1128,46 @@ private:
                     return false;
                 }
 
-                this->message_type = VNC_server_to_client_messages(buf.av()[0]);
+                this->message_type = safe_int(buf.av()[0]);
 
                 buf.advance(1);
 
                 REDEMPTION_DIAGNOSTIC_PUSH()
-                REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
+                REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wcovered-switch-default")
                 switch (this->message_type)
                 {
-                    case VNC_SC_MSG_FRAMEBUFFER_UPDATE: /* framebuffer update */
-                        vnc.frame_buffer_update_ctx.start(vnc.bpp, to_bytes_per_pixel(vnc.bpp));
-                        this->state = State::FrameBufferupdate;
-                        return vnc.lib_frame_buffer_update(buf);
-                    case VNC_SC_MSG_SET_COLOUR_MAP_ENTRIES: /* palette */
-                        vnc.palette_update_ctx.start();
-                        this->state = State::Palette;
-                        return vnc.lib_palette_update(drawable, buf);
-                    case VNC_SC_MSG_BELL: /* bell */
-                        // TODO bell
-                        return true;
-                    case VNC_SC_MSG_SERVER_CUT_TEXT: /* clipboard */ /* ServerCutText */
-                        vnc.clipboard_data_ctx.start(
-                            vnc.enable_clipboard_down
-                         && vnc.get_channel_by_name(channel_names::cliprdr));
-                        this->state = State::ServerCutText;
-                        return vnc.lib_clip_data(buf);
-                    default:
-                        LOG(LOG_ERR, "unknown message type in vnc %u", message_type);
-                        throw Error(ERR_VNC);
+                case ServerToClientMessage::FramebufferUpdate: /* framebuffer update */
+                    vnc.frame_buffer_update_ctx.start(vnc.bpp, to_bytes_per_pixel(vnc.bpp));
+                    this->state = State::FrameBufferUpdate;
+                    return vnc.lib_frame_buffer_update(buf);
+
+                case ServerToClientMessage::SetColourMapEntries:
+                    vnc.palette_update_ctx.start();
+                    this->state = State::Palette;
+                    return vnc.lib_palette_update(drawable, buf);
+
+                case ServerToClientMessage::Bell:
+                    return true;
+
+                case ServerToClientMessage::ServerCutText:
+                    this->state = State::ServerCutText;
+                    return vnc.lib_clip_data(buf);
+
+                case ServerToClientMessage::FileTransfer:
+                    this->state = State::FileTransfer;
+                    return vnc.consume_file_transfer_packet(buf);
+
+                default:
+                    LOG(LOG_ERR, "unknown message type in vnc %u", message_type);
+                    throw Error(ERR_VNC);
                 }
                 REDEMPTION_DIAGNOSTIC_POP()
                 break;
 
-            case State::FrameBufferupdate: return vnc.lib_frame_buffer_update(buf);
+            case State::FrameBufferUpdate: return vnc.lib_frame_buffer_update(buf);
             case State::Palette:           return vnc.lib_palette_update(drawable, buf);
             case State::ServerCutText:     return vnc.lib_clip_data(buf);
+            case State::FileTransfer:      return vnc.consume_file_transfer_packet(buf);
             }
 
             return false;
@@ -1027,7 +1175,7 @@ private:
 
     private:
         State state = State::Header;
-        VNC_server_to_client_messages message_type;
+        ServerToClientMessage message_type;
     };
 
     bool doTlsSwitch();
@@ -1051,9 +1199,6 @@ private:
     bool treatVeNCrypt();
 
     bool draw_event_impl();
-
-private:
-    void check_timeout();
 
 private:
     struct FrameBufferUpdateCtx
@@ -1175,6 +1320,8 @@ private:
                             ? "RAW_ENCODING"
                             : (this->encoding == ZRLE_ENCODING)
                             ? "ZRLE_ENCODING"
+                            : (this->encoding == POINTER_POSITION_ENCODING)
+                            ? "POINTER_POSITION_ENCODING"
                             : "UNKNOWN_ENCODING",
                             this->encoding , this->x, this->y, this->cx, this->cy);
 
@@ -1193,7 +1340,7 @@ private:
                             this->encoder = VNC::Encoder::cursor_encoder(
                                 this->Bpp, Rect(this->x, this->y, this->cx, this->cy),
                                 vnc.red_shift, vnc.red_max, vnc.green_shift, vnc.green_max,
-                                vnc.blue_shift, vnc.blue_max, vnc.verbose);
+                                vnc.blue_shift, vnc.blue_max, vnc.has_cursor, vnc.verbose);
                             break;
                         case RAW_ENCODING:  /* raw */
                             this->encoder = VNC::Encoder::raw_encoder(
@@ -1208,6 +1355,12 @@ private:
                             this->encoder = VNC::Encoder::rre_encoder(
                                 this->bpp, this->Bpp, Rect(this->x, this->y, this->cx, this->cy));
                             break;
+                        case POINTER_POSITION_ENCODING:
+                            // ignore position sent by server
+                            // no data
+                            buf.advance(sz);
+                            r = Result::ok(State::Header);
+                            continue;
                         default:
                             LOG(LOG_ERR, "unexpected VNC encoding %d", encoding);
                             throw Error(ERR_VNC_UNEXPECTED_ENCODING_IN_LIB_FRAME_BUFFER);
@@ -1235,7 +1388,7 @@ private:
                         }
 
                         // Pre Assertion: we have an encoder
-                        switch (encoder(buf, vnc.gd)){
+                        switch (encoder(buf, *vnc.gd)){
                             case VNC::Encoder::EncoderState::Ready:
                                 r = Result::ok(State::Data);
                                 this->last = VNC::Encoder::EncoderState::Ready;
@@ -1352,17 +1505,17 @@ private:
 
         Result read_header(Buf64k & buf) noexcept
         {
-            if (buf.remaining() < 4)
+            if (buf.remaining() < 5)
             {
                 return Result::fail();
             }
 
-            InStream stream(buf.av(4));
+            InStream stream(buf.av(5));
             stream.in_skip_bytes(1);
             this->first_color = stream.in_uint16_be();
             this->num_colors = stream.in_uint16_be();
 
-            buf.advance(4);
+            buf.advance(5);
 
             if (this->first_color + this->num_colors > 256) {
                 LOG(LOG_ERR, "VNC: number of palette colors too large: %d",
@@ -1422,221 +1575,13 @@ private:
         return true;
     } // lib_palette_update
 
-    /******************************************************************************/
-    void lib_open_clip_channel() {
-        const CHANNELS::ChannelDef * channel = this->get_channel_by_name(channel_names::cliprdr);
-
-        if (channel) {
-            // Monitor ready PDU send to front
-            RDPECLIP::ServerMonitorReadyPDU server_monitor_ready_pdu;
-            RDPECLIP::CliprdrHeader         header(RDPECLIP::CB_MONITOR_READY, RDPECLIP::CB_RESPONSE_NONE, server_monitor_ready_pdu.size());
-
-            StaticOutStream<64> out_s;
-
-/*
-            //- Beginning of clipboard PDU Header ----------------------------
-            out_s.out_uint16_le(1); // MSG Type 2 bytes
-            out_s.out_uint16_le(0); // MSG flags 2 bytes
-            out_s.out_uint32_le(0); // Datalen of the rest of the message
-            //- End of clipboard PDU Header ----------------------------------
-            //- Beginning of Monitor Ready PDU payload ----------------------------
-            //- End of Monitor Ready PDU payload -------------------------------
-            out_s.out_clear_bytes(4);
-            out_s.mark_end();
-*/
-
-            header.emit(out_s);
-            server_monitor_ready_pdu.emit(out_s);
-
-            size_t chunk_size = out_s.get_offset();
-
-            this->send_to_front_channel( channel_names::cliprdr
-                                       , out_s.get_data()
-                                       , chunk_size // total size is chunk size
-                                       , chunk_size
-                                       ,   CHANNELS::CHANNEL_FLAG_FIRST
-                                         | CHANNELS::CHANNEL_FLAG_LAST
-                                       );
-        }
-        else {
-            LOG(LOG_ERR, "Clipboard Channel Redirection unavailable");
-        }
-    } // lib_open_clip_channel
-
-    //==============================================================================================================
-    [[nodiscard]] const CHANNELS::ChannelDef * get_channel_by_name(CHANNELS::ChannelNameId channel_name) const {
-    //==============================================================================================================
-        return this->front.get_channel_list().get_by_name(channel_name);
-    } // get_channel_by_name
-
-    class ClipboardDataCtx
+    [[nodiscard]]
+    const CHANNELS::ChannelDef * get_channel_by_name(CHANNELS::ChannelNameId channel_name) const
     {
-        enum class State
-        {
-            Header,
-            Data,
-            SkipData,
-        };
+        return this->front.get_channel_list().get_by_name(channel_name);
+    }
 
-        using Result = BasicResult<State>;
-
-    public:
-        explicit ClipboardDataCtx(VNCVerbose verbose)
-          : state(State::Header)
-          , verbose(verbose)
-          , clipboard_down_is_really_enabled(false)
-          , data_length(0)
-          , remaining_data_length(0)
-          , to_rdp_clipboard_data(make_array_view(this->to_rdp_clipboard_data_buffer))
-          , to_rdp_clipboard_data_is_utf8_encoded(false)
-        {}
-
-        void start(bool clipboard_down_is_really_enabled) noexcept
-        {
-            this->clipboard_down_is_really_enabled = clipboard_down_is_really_enabled;
-            this->remaining_data_length = 1; // sentinel
-            this->state = State::Header;
-        }
-
-        bool run(Buf64k & buf) noexcept
-        {
-            for (;;) {
-                Result r = [this, &buf]{
-                    switch (this->state) {
-                        case State::Header:   return this->read_header(buf);
-                        case State::Data:     return this->read_data(buf);
-                        case State::SkipData: return this->skip_data(buf);
-                    }
-                    REDEMPTION_UNREACHABLE();
-                }();
-
-                if (!r) {
-                    return false;
-                }
-                if (0 == this->remaining_data_length) {
-                    return true;
-                }
-                this->state = r;
-            }
-        }
-
-        [[nodiscard]] bool clipboard_is_enabled() const noexcept
-        {
-            return this->clipboard_down_is_really_enabled;
-        }
-
-        [[nodiscard]] bytes_view clipboard_data() const noexcept
-        {
-            return this->to_rdp_clipboard_data.get_consumed_bytes();
-        }
-
-        [[nodiscard]] bool clipboard_data_is_utf8_encoded() const noexcept
-        {
-            return this->to_rdp_clipboard_data_is_utf8_encoded;
-        }
-
-    private:
-        State    state;
-        VNCVerbose  verbose;
-
-        bool     clipboard_down_is_really_enabled;
-
-        uint32_t data_length;
-        uint32_t remaining_data_length;
-
-        uint8_t  to_rdp_clipboard_data_buffer[MAX_CLIPBOARD_DATA_SIZE];
-        InStream to_rdp_clipboard_data; // NOTE can be array_view
-
-        bool     to_rdp_clipboard_data_is_utf8_encoded;
-
-        Result read_header(Buf64k & buf) noexcept
-        {
-            if (buf.remaining() < 7) {
-                return Result::fail();
-            }
-
-            InStream stream(buf.av(7));
-            stream.in_skip_bytes(3);                   // padding(3)
-            this->data_length = stream.in_uint32_be(); // length(4)
-            this->remaining_data_length = this->data_length;
-            buf.advance(7);
-
-            LOG_IF(bool(this->verbose & VNCVerbose::basic_trace), LOG_INFO,
-                "mod_vnc::lib_clip_data: clipboard_data_length=%u", this->data_length);
-
-            this->to_rdp_clipboard_data = InStream(this->to_rdp_clipboard_data_buffer);
-
-            if (!clipboard_down_is_really_enabled) {
-                return Result::ok(State::SkipData);
-            }
-
-            if (this->data_length < this->to_rdp_clipboard_data.get_capacity()) {
-                return Result::ok(State::Data);
-            }
-
-            this->to_rdp_clipboard_data.in_skip_bytes(::snprintf(
-                ::char_ptr_cast(this->to_rdp_clipboard_data_buffer),
-                this->to_rdp_clipboard_data.get_capacity(),
-                "The text was too long to fit in the clipboard buffer. "
-                "The buffer size is limited to %zu bytes.",
-                this->to_rdp_clipboard_data.get_capacity()
-            ) + 1 /* Null character */);
-
-            this->to_rdp_clipboard_data_is_utf8_encoded = true;
-
-            return Result::ok(State::SkipData);
-        }
-
-        Result read_data(Buf64k & buf) noexcept
-        {
-            if (!buf.remaining()) {
-                return Result::fail();
-            }
-
-            auto const av = buf.av(std::min<uint32_t>(
-                this->remaining_data_length, buf.remaining()));
-
-            auto const buf_pos = this->data_length - this->remaining_data_length;
-            memcpy(this->to_rdp_clipboard_data_buffer + buf_pos, av.data(), av.size());
-            this->remaining_data_length -= av.size();
-            buf.advance(av.size());
-
-            if (this->remaining_data_length) {
-                return Result::ok(State::Data);
-            }
-
-            this->to_rdp_clipboard_data_buffer[this->data_length] = '\0';
-            this->to_rdp_clipboard_data.in_skip_bytes(this->data_length);
-
-            this->to_rdp_clipboard_data_is_utf8_encoded =
-                ::is_utf8_string(this->to_rdp_clipboard_data.get_data(), this->data_length);
-
-            if (bool(this->verbose & VNCVerbose::basic_trace)) {
-                LOG(LOG_INFO,
-                    "mod_vnc::lib_clip_data: to_rdp_clipboard_data_is_utf8_encoded=%s",
-                    (this->to_rdp_clipboard_data_is_utf8_encoded ? "yes" : "no"));
-                // if (this->data_length <= 64) {
-                   // hexdump_c(this->to_rdp_clipboard_data.get_data(), this->data_length);
-                // }
-            }
-
-            return Result::ok(State::Header);
-        }
-
-        Result skip_data(Buf64k & buf) noexcept
-        {
-            if (!buf.remaining()) {
-                return Result::fail();
-            }
-
-            const auto number_of_bytes_to_read =
-                std::min<size_t>(this->remaining_data_length, buf.remaining());
-            buf.advance(number_of_bytes_to_read);
-            this->remaining_data_length -= number_of_bytes_to_read;
-            return Result::ok(State::SkipData);
-        }
-    };
-    ClipboardDataCtx clipboard_data_ctx;
+    Rfb::CutTextReader server_cut_text_reader;
 
     //******************************************************************************
     // Entry point for VNC server clipboard content reception
@@ -1647,18 +1592,11 @@ private:
     //******************************************************************************
     bool lib_clip_data(Buf64k & buf);
 
-private:
-    void send_to_front_channel(CHANNELS::ChannelNameId mod_channel_name, uint8_t const * data,
-            size_t length, size_t chunk_size, int flags);
-public:
-    void send_to_mod_channel(CHANNELS::ChannelNameId front_channel_name, InStream & chunk, size_t length, uint32_t flags) override;
-
-private:
-    void send_clipboard_pdu_to_front(const OutStream & out_stream);
-
-    void clipboard_send_to_vnc_server(InStream & chunk, size_t length, uint32_t flags);
+    bool consume_file_transfer_packet(Buf64k& buf);
 
 public:
+    void send_to_mod_channel(CHANNELS::ChannelNameId front_channel_name, InStream & chunk, size_t total_length, uint32_t flags) override;
+
     // Front calls this member function when it became up and running.
     void rdp_gdi_up_and_running() override;
     void rdp_gdi_down() override {}
@@ -1667,7 +1605,6 @@ public:
         return (UP_AND_RUNNING == this->state);
     }
 
-public:
     bool server_error_encountered() const override { return false; }
 
     void disconnect() override;
@@ -1676,5 +1613,12 @@ public:
     { return Dimension(this->width, this->height); }
 
     void acl_update(AclFieldMask const&/* acl_fields*/) override {}
+
+    void file_validator_receive_event();
+
+
+private:
+    void send_to_cliprdr(bytes_view chunk, size_t total_length, VNC::ChannelFlags flags);
+    void send_to_cliprdr(bytes_view pdu);
 };
 

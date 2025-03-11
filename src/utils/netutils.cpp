@@ -164,7 +164,7 @@ namespace
         if (error_result) {
             *error_result = errmes;
         }
-        LOG(LOG_INFO, "Connection to %s failed with errno = %d (%s)", target, err, errmes);
+        LOG(LOG_ERR, "Connection to %s failed with errno = %d (%s)", target, err, errmes);
         return unique_fd{-1};
     }
 } // namespace

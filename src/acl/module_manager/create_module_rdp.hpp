@@ -102,7 +102,7 @@ ModPack create_mod_rdp(
     ClientInfo const& client_info_,
     ClientExecute & rail_client_execute,
     kbdtypes::KeyLocks key_locks,
-    Ref<Font const> glyphs,
+    Font const& glyphs,
     Theme & theme,
     EventContainer& events,
     SessionLogApi& session_log,

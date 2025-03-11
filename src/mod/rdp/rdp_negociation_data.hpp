@@ -28,6 +28,7 @@
 #include <climits>
 #include <string>
 
+#include "core/rdp_hostname.hpp"
 #include "utils/static_string.hpp"
 #include "utils/sugar/bounded_array_view.hpp"
 
@@ -44,8 +45,12 @@ struct RdpNegociationResult
 
 struct RdpLogonInfo
 {
-    RdpLogonInfo(bounded_chars_view<0, HOST_NAME_MAX> hostname, bool hide_client_name,
-                 char const* target_user, bool split_domain) noexcept;
+    RdpLogonInfo(
+        RdpHostname hostname,
+        bool hide_client_name,
+        chars_view target_user,
+        bool split_domain
+    ) noexcept;
 
     [[nodiscard]] std::string const& username() const noexcept { return this->_username; }
     [[nodiscard]] std::string const& domain() const noexcept { return this->_domain; }

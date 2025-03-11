@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redemption\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-18 15:51:+0100\n"
+"POT-Creation-Date: 2026-03-31 16:27:+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: utf-8\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 # id: OK
@@ -1014,4 +1014,322 @@ msgstr ""
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:229
 msgid "Unknown backend failure."
+msgstr ""
+
+# id: vnc_ft_list_loading
+# ctx: mod_vnc (file loading)
+#: src/translation/trkeys_def.hpp:232
+msgid "Loading."
+msgstr ""
+
+# id: vnc_ft_title
+# ctx: mod_vnc (file transfer) (0xf15c title)
+#: src/translation/trkeys_def.hpp:234
+msgid "File transfer"
+msgstr ""
+
+# id: vnc_ft_cb_pan_name
+# ctx: mod_vnc (file transfer) (rdp clipboard)
+#: src/translation/trkeys_def.hpp:236
+msgid "Local clipboard"
+msgstr ""
+
+# id: vnc_ft_cb_list_empty
+# ctx: mod_vnc (file transfer) (rdp clipboard)
+#: src/translation/trkeys_def.hpp:237
+msgid "No file in the clipboard."
+msgstr ""
+
+# id: vnc_ft_cb_list_loading
+# ctx: mod_vnc (file transfer) (rdp clipboard)
+#: src/translation/trkeys_def.hpp:238
+msgid "Retrieving items from the clipboard."
+msgstr ""
+
+# id: vnc_ft_cb_list_total
+# ctx: mod_vnc (file transfer) (rdp clipboard)
+#: src/translation/trkeys_def.hpp:239
+#, c-format
+msgid "There is %u item in the clipboard."
+msgid_plural "There are %u items in the clipboard."
+msgstr[0] ""
+msgstr[1] ""
+
+# id: vnc_ft_cb_to_paste_loading
+# ctx: mod_vnc (file transfer) (rdp clipboard)
+#: src/translation/trkeys_def.hpp:240
+msgid "Loading to paste."
+msgstr ""
+
+# id: vnc_ft_cb_to_paste_ready
+# ctx: mod_vnc (file transfer) (rdp clipboard)
+#: src/translation/trkeys_def.hpp:241
+msgid "Copy successful, ready to paste."
+msgstr ""
+
+# id: vnc_ft_vnc_pan_name
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:243
+msgid "Remote machine"
+msgstr ""
+
+# id: vnc_ft_vnc_list_disabled
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:244
+msgid "File transfer is disabled."
+msgstr ""
+
+# id: vnc_ft_vnc_list_empty
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:245
+msgid "This folder is empty."
+msgstr ""
+
+# id: vnc_ft_vnc_list_error
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:246
+msgid "Unknown error on specified directory."
+msgstr ""
+
+# id: vnc_ft_vnc_list_total_items
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:247
+#, c-format
+msgid "%u item"
+msgid_plural "%u items"
+msgstr[0] ""
+msgstr[1] ""
+
+# id: vnc_ft_vnc_list_selected_items
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:248
+#, c-format
+msgid "%u item selected"
+msgid_plural "%u items selected"
+msgstr[0] ""
+msgstr[1] ""
+
+# id: vnc_ft_vnc_header_filename
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:249
+msgid "Filename"
+msgstr ""
+
+# id: vnc_ft_vnc_header_size
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:250
+msgid "Size"
+msgstr ""
+
+# id: vnc_ft_vnc_header_modification_date
+# ctx: mod_vnc (file transfer) (vnc part)
+#: src/translation/trkeys_def.hpp:251
+msgid "Modification date"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_byte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:253
+msgid "B"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_kibibyte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:254
+msgid "KB"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_mebibyte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:255
+msgid "MB"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_gibibyte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:256
+msgid "GB"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_tebibyte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:257
+msgid "TB"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_pebibyte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:258
+msgid "PB"
+msgstr ""
+
+# id: vnc_ft_file_size_unit_exbibyte
+# ctx: mod_vnc (file transfer) (file size unit)
+#: src/translation/trkeys_def.hpp:259
+msgid "EB"
+msgstr ""
+
+# id: vnc_ft_shortcut_desktop
+# ctx: mod_vnc (file transfer) (directory shortcuts)
+#: src/translation/trkeys_def.hpp:261
+msgid "Desktop"
+msgstr ""
+
+# id: vnc_ft_shortcut_document
+# ctx: mod_vnc (file transfer) (directory shortcuts)
+#: src/translation/trkeys_def.hpp:262
+msgid "My Documents"
+msgstr ""
+
+# id: vnc_ft_shortcut_network
+# ctx: mod_vnc (file transfer) (directory shortcuts)
+#: src/translation/trkeys_def.hpp:263
+msgid "Network Favorites"
+msgstr ""
+
+# id: vnc_ft_drive_network
+# ctx: mod_vnc (file transfer) (file type)
+#: src/translation/trkeys_def.hpp:265
+msgid "Network Drive"
+msgstr ""
+
+# id: vnc_ft_drive_local
+# ctx: mod_vnc (file transfer) (file type)
+#: src/translation/trkeys_def.hpp:266
+msgid "Local Disk"
+msgstr ""
+
+# id: vnc_ft_drive_removable
+# ctx: mod_vnc (file transfer) (file type)
+#: src/translation/trkeys_def.hpp:267
+msgid "Media Disk"
+msgstr ""
+
+# id: vnc_ft_drive_cd_rom
+# ctx: mod_vnc (file transfer) (file type)
+#: src/translation/trkeys_def.hpp:268
+msgid "CD-ROM"
+msgstr ""
+
+# id: vnc_ft_type_folder
+# ctx: mod_vnc (file transfer) (file type)
+#: src/translation/trkeys_def.hpp:269
+msgid "Folder"
+msgstr ""
+
+# id: vnc_ft_copy_to_rdp
+# ctx: mod_vnc (file transfer) (action buttons)
+#: src/translation/trkeys_def.hpp:271
+msgid "\xEF\x84\x82 Copy"
+msgstr ""
+
+# id: vnc_ft_copy_to_vnc
+# ctx: mod_vnc (file transfer) (action buttons)
+#: src/translation/trkeys_def.hpp:272
+msgid "Copy \xEF\x84\x83"
+msgstr ""
+
+# id: vnc_ft_stop_to_rdp
+# ctx: mod_vnc (file transfer) (action buttons)
+#: src/translation/trkeys_def.hpp:273
+msgid "\xEF\x84\x82 Stop \xEF\x8a\x8d"
+msgstr ""
+
+# id: vnc_ft_stop_to_vnc
+# ctx: mod_vnc (file transfer) (action buttons)
+#: src/translation/trkeys_def.hpp:274
+msgid "\xEF\x8a\x8d Stop \xEF\x84\x83"
+msgstr ""
+
+# id: vnc_ft_stop_placeholder
+# ctx: mod_vnc (file transfer) (action buttons)
+#: src/translation/trkeys_def.hpp:275
+msgid "Stop"
+msgstr ""
+
+# id: vnc_ft_transfer_to_cb_in_progress
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:277
+msgid "Transfer to the clipboard in progress."
+msgstr ""
+
+# id: vnc_ft_transfer_to_cb_completed
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:278
+msgid "Transfer to the clipboard is completed."
+msgstr ""
+
+# id: vnc_ft_transfer_to_cb_aborted
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:279
+msgid "Transfer to the clipboard is aborted."
+msgstr ""
+
+# id: vnc_ft_transfer_to_cb_error
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:280
+msgid "Transfer to the clipboard has an unexpected error."
+msgstr ""
+
+# id: vnc_ft_transfer_to_vnc_in_progress
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:281
+msgid "Transfer to the target in progress."
+msgstr ""
+
+# id: vnc_ft_transfer_to_vnc_aborted
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:282
+msgid "Transfer to the target is aborted."
+msgstr ""
+
+# id: vnc_ft_transfer_to_vnc_completed
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:283
+msgid "Transfer to the target is completed."
+msgstr ""
+
+# id: vnc_ft_transfer_to_vnc_error
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:284
+msgid "Transfer to the target has an unexpected error."
+msgstr ""
+
+# id: vnc_ft_transfer_eta_hours_minutes
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:285
+#, c-format
+msgid "%u hours and %u minutes remaining."
+msgstr ""
+
+# id: vnc_ft_transfer_eta_minutes_seconds
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:286
+#, c-format
+msgid "%u minutes and %u seconds remaining."
+msgstr ""
+
+# id: vnc_ft_transfer_eta_seconds
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:287
+#, c-format
+msgid "%u seconds remaining."
+msgstr ""
+
+# id: vnc_ft_transfer_file_error
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:288
+msgid "File: "
+msgstr ""
+
+# id: vnc_ft_transfer_item_unit
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:289
+msgid "items"
+msgstr ""
+
+# id: vnc_ft_transfer_byte_unit
+# ctx: mod_vnc (file transfer) (progress)
+#: src/translation/trkeys_def.hpp:290
+msgid "bytes"
 msgstr ""

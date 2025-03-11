@@ -367,14 +367,6 @@ allow_multiple_handshake = boolean(default=False)
 
 [mod_vnc]
 
-# Check this option to enable the clipboard upload (from client to target server).
-# This only supports text data clipboard (not files).
-clipboard_up = boolean(default=False)
-
-# Check this option to enable the clipboard download (from target server to client).
-# This only supports text data clipboard (not files).
-clipboard_down = boolean(default=False)
-
 # Sets additional graphics encoding types that will be negotiated with the VNC target server:
 # &nbsp; &nbsp;   2: RRE
 # &nbsp; &nbsp;   5: HEXTILE
@@ -383,17 +375,11 @@ clipboard_down = boolean(default=False)
 #_advanced
 encodings = string(default="")
 
-# VNC target server clipboard text data encoding type.
-#_advanced
-server_clipboard_encoding_type = option('utf-8', 'latin1', default="latin1")
+#_hidden
+clipboard_up = boolean(default=False)
 
-# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
-# This option indicates the strategy to adopt in such situations.
-# &nbsp; &nbsp;   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
-# &nbsp; &nbsp;   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
-# &nbsp; &nbsp;   2: continued: No special processing is done, the proxy always responds immediately.
-#_advanced
-bogus_clipboard_infinite_loop = option(0, 1, 2, default=0)
+#_hidden
+clipboard_down = boolean(default=False)
 
 [ocr]
 
@@ -841,6 +827,7 @@ mod_rdp = integer(min=0, default=0)
 # - copyrect_encoder= 0x00020000
 # - copyrect_trace  = 0x00040000
 # - keymap          = 0x00080000
+# - clipboard_dump  = 0x00100000
 #_advanced
 #_hex
 #_display_name=Mod VNC

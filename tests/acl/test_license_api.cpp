@@ -35,7 +35,6 @@
 #include "core/channels_authorizations.hpp"
 #include "client/common/new_mod_rdp.hpp"
 #include "mod/rdp/rdp_params.hpp"
-#include "mod/rdp/mod_rdp_factory.hpp"
 #include "utils/theme.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/error_message_ctx.hpp"
@@ -87,7 +86,7 @@ namespace
 
         info.order_caps.orderSupportExFlags = 0xFFFF;
 
-        snprintf(info.hostname, sizeof(info.hostname), "CLT02");
+        info.hostname = RdpHostname::from_ascii("CLT02"_sized_av);
 
         return info;
     }
@@ -189,7 +188,6 @@ namespace
 
         gdi::NullOsd osd;
         const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
-        ModRdpFactory mod_rdp_factory;
         // To always get the same client random, in tests
         LCGRandom gen;
 
@@ -199,7 +197,7 @@ namespace
                 trans, front.gd(), osd, event_manager.get_events(),
                 session_log, err_msg_ctx, front, info, redir_info, gen,
                 channels_authorizations, get_mod_rdp_params(),
-                license_store, ini, nullptr, mod_rdp_factory);
+                license_store, ini);
             LOG(LOG_INFO, "--- new mod");
             return mod;
         }

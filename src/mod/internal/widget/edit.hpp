@@ -86,17 +86,22 @@ public:
 
     bool has_text() const noexcept;
     Text get_text() const noexcept;
-    /// \result unspecifed behavior when text is not a number
+    array_view<uint32_t> get_utf32_text() const noexcept;
+    /// \result unspecifed result when text is not a number
     unsigned get_text_as_uint() const noexcept;
+
+    std::size_t remaining_chars_for_insertion() const noexcept;
 
     Font const& get_font() const noexcept { return *font; }
     Colors get_colors() const noexcept { return colors; }
 
+    void set_text(array_view<uint32_t> text, TextOptions opts);
     void set_text(bytes_view text, TextOptions opts);
 
     void update_width(uint16_t width);
 
     void insert_chars(array_view<uint32_t> ucs, Redraw redraw);
+    void remove_right_at(std::size_t i, Redraw redraw);
 
     void rdp_input_invalidate(Rect clip) override;
 
@@ -204,6 +209,8 @@ private:
 
     void remove_right(FontCharPtr const* old_position, int shift, Redraw redraw);
     void remove_left(FontCharPtr const* old_position, int shift, Redraw redraw);
+
+    void process_set_text_options(std::size_t old_pos, int shift, TextOptions opts);
 
 
     int x_cursor;

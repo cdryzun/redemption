@@ -99,13 +99,13 @@ template<> struct is_valid_enum_value<Language>
     constexpr static bool is_valid(uint64_t n) { return n <= 1; }
 };
 
-enum class ClipboardEncodingType : uint8_t
+enum class VncClipboardEncoding : uint8_t
 {
     utf8 = 0,
     latin1 = 1,
 };
 
-template<> struct is_valid_enum_value<ClipboardEncodingType>
+template<> struct is_valid_enum_value<VncClipboardEncoding>
 {
     constexpr static bool is_valid(uint64_t n) { return n <= 1; }
 };
@@ -362,7 +362,7 @@ template<> struct is_valid_enum_value<SessionProbeOnLaunchFailure>
     constexpr static bool is_valid(uint64_t n) { return n <= 2; }
 };
 
-enum class VncBogusClipboardInfiniteLoop : uint8_t
+enum class VncBogusClipboardInfiniteLoopStrategy : uint8_t
 {
     // Clipboard processing is deferred and, if necessary, the token is left with the client.
     delayed = 0,
@@ -372,7 +372,7 @@ enum class VncBogusClipboardInfiniteLoop : uint8_t
     continued = 2,
 };
 
-template<> struct is_valid_enum_value<VncBogusClipboardInfiniteLoop>
+template<> struct is_valid_enum_value<VncBogusClipboardInfiniteLoopStrategy>
 {
     constexpr static bool is_valid(uint64_t n) { return n <= 2; }
 };

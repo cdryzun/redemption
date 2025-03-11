@@ -127,6 +127,6 @@ RED_AUTO_TEST_CASE(TestStaticString)
 
 RED_AUTO_TEST_CASE(TestStaticStringTruncated)
 {
-    static_string<5> s = truncatable_bounded_array_view("abcdefg"_sized_av);
+    static_string<5> s { truncatable_bounded_array_view("abcdefg"_sized_av) };
     RED_CHECK_EQUAL(s, "abcde"_av);
 }

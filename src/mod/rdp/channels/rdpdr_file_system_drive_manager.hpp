@@ -109,8 +109,8 @@ public:
     };
 
 public:
-    bool enable_drive(DriveName const& drive_name, std::string_view directory_drive_path);
-    bool enable_session_probe_drive(std::string_view directory);
+    bool enable_drive(DriveName const& drive_name, chars_view directory_drive_path);
+    bool enable_session_probe_drive(chars_view directory);
 
     [[nodiscard]] uint32_t get_session_probe_drive_id() const { return this->session_probe_drive_id; }
 
@@ -136,10 +136,7 @@ public:
     }
 
 private:
-    uint32_t enable_drive(
-        DriveName drive_name,
-        std::string_view directory_drive_path,
-        bool read_only);
+    uint32_t enable_drive(DriveName drive_name, chars_view directory_drive_path, bool read_only);
 
     void process_server_create_drive_request(
         rdpdr::DeviceIORequest const & device_io_request,

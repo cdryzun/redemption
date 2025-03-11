@@ -35,6 +35,7 @@
 #include "core/channel_names.hpp"
 #include "core/channels_authorizations.hpp"
 #include "core/server_cert_params.hpp"
+#include "core/rdp_hostname.hpp"
 #include "gdi/screen_info.hpp"
 #include "mod/tls_params.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
@@ -165,7 +166,7 @@ private:
 
     uint8_t client_random[SEC_RANDOM_SIZE] = { 0 };
 
-    std::string const real_client_name;
+    RdpHostname::Utf8ZStringMaybeInvalid const real_client_name;
     LicenseApi& license_store;
     const bool use_license_store;
 

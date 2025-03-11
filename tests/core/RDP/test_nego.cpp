@@ -110,7 +110,7 @@ RED_AUTO_TEST_CASE(TestNego)
     TimeBase time_base{MonotonicTimePoint{167426s + 178586us}, {}};
 
     RdpNego nego(
-        "test", "127.0.0.1",
+        "test"_av, "127.0.0.1",
         true,  // enable nla
         false,  // enable krb
         false,  // allow nla ntlm fallback

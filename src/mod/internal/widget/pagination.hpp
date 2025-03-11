@@ -70,12 +70,14 @@ struct WidgetPagination final : Widget
         return m_total;
     }
 
+    /// \return true when page is valid is not the current page.
+    bool is_new_page(uint32_t page) const noexcept;
+
     bool set_page(uint32_t page, TriggerUpdatePageEvent trigger_event);
     bool prev_page(Cycle enable_cycle, TriggerUpdatePageEvent trigger_event);
     bool next_page(Cycle enable_cycle, TriggerUpdatePageEvent trigger_event);
 
     void update(Data data);
-
 
     NextFocusResult next_focus(FocusDirection dir, FocusStrategy strategy) override;
 
@@ -83,6 +85,20 @@ struct WidgetPagination final : Widget
     void focus() override;
     void blur() override;
 
+    enum class FocusElement : uint8_t
+    {
+        None,
+        First,
+        Prev,
+        Edit,
+        Next,
+        Last,
+    };
+
+    void set_focus_elem(FocusElement elem);
+    FocusElement get_focus_elem() const noexcept;
+
+    bool is_on_edit(uint16_t x) const noexcept;
 
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
@@ -92,6 +108,7 @@ struct WidgetPagination final : Widget
 
     void rdp_input_unicode(KbdFlags flag, uint16_t unicode) override;
 
+    void submit();
 
     void rdp_input_invalidate(Rect r) override;
 

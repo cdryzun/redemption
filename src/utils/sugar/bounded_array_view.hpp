@@ -76,6 +76,9 @@ namespace detail
     template<class T>
     struct dynamic_array_view_storage
     {
+        constexpr dynamic_array_view_storage() noexcept
+        {}
+
         constexpr dynamic_array_view_storage(T* p, std::size_t n) noexcept
         : p(p), n(n)
         {}
@@ -96,8 +99,8 @@ namespace detail
         }
 
     private:
-        T* p;
-        std::size_t n;
+        T* p = nullptr;
+        std::size_t n = 0;
     };
 
     template<class T, std::size_t N>
@@ -204,6 +207,11 @@ struct recomputable_bounded_array_view : Policy
 
 namespace detail
 {
+    template<class ArrayView, class Policy>
+    inline constexpr bool is_writable_view_v<recomputable_bounded_array_view<ArrayView, Policy>>
+      = is_writable_view_v<ArrayView>;
+
+
     template<class>
     struct is_recomputable_bounded_array_view_impl
     : std::false_type
@@ -248,37 +256,46 @@ struct bounded_array_view
     using const_iterator = T const*;
     using const_pointer = T const*;
     using size_type = std::size_t;
+    using msize_type = detail::select_minimal_size_t<AtMost>;
 
     static constexpr std::size_t at_least = AtLeast;
     static constexpr std::size_t at_most = AtMost;
+    static constexpr msize_type msize_at_least = AtLeast;
+    static constexpr msize_type msize_at_most = AtMost;
 
 public:
-    // C++20: enable when AtLeast == AtMost == 0
-    constexpr bounded_array_view() = delete;
+    constexpr bounded_array_view() noexcept requires(AtLeast == 0) = default;
     constexpr bounded_array_view(bounded_array_view && other) noexcept = default;
     constexpr bounded_array_view(bounded_array_view const & other) noexcept = default;
     constexpr bounded_array_view & operator = (bounded_array_view && other) noexcept = default;
     constexpr bounded_array_view & operator = (bounded_array_view const & other) noexcept = default;
 
-    // C++20: enable when AtLeast == AtMost == 0
-    constexpr bounded_array_view(std::nullptr_t /*null*/) = delete;
+    constexpr bounded_array_view(std::nullptr_t /*null*/)
+        noexcept requires(AtLeast == 0)
+        : bounded_array_view()
+    {}
 
+    template<class UInt>
+    constexpr bounded_array_view(const_pointer p, UInt len) noexcept
+        requires(AtLeast == 0 && std::is_unsigned_v<UInt> && static_cast<UInt>(~UInt{}) <= at_most)
+    : _array(p, len)
+    {}
 
     static constexpr bounded_array_view assumed(const_pointer p, const_pointer e) noexcept
     {
         assert(p <= e);
-        return bounded_array_view(p, std::size_t(e-p));
+        return bounded_array_view(priv{}, p, std::size_t(e-p));
     }
 
     static constexpr bounded_array_view assumed(const_pointer p, std::size_t n) noexcept
     {
-        return bounded_array_view(p, n);
+        return bounded_array_view(priv{}, p, n);
     }
 
     template<class U = void, class = std::enable_if_t<AtLeast == AtMost, U>>
     static constexpr bounded_array_view assumed(const_pointer p) noexcept
     {
-        return bounded_array_view(p, AtLeast);
+        return bounded_array_view(priv{}, p, AtLeast);
     }
 
     template<class C>
@@ -289,13 +306,15 @@ public:
         if constexpr (detail::is_recomputable_bounded_array_view_impl<Seq>::value) {
             return bounded_array_view(a);
         }
-        else if constexpr (detail::is_bounded_sequence_impl<Seq>::value) {
-            using Bounds = typename detail::sequence_to_size_bounds_impl<Seq>::type;
-            static_assert(AtLeast <= Bounds::at_least);
-            static_assert(Bounds::at_most <= AtMost);
+        else {
+            if constexpr (detail::is_bounded_sequence_impl<Seq>::value) {
+                using Bounds = typename detail::sequence_to_size_bounds_impl<Seq>::type;
+                static_assert(AtLeast <= Bounds::at_least);
+                static_assert(Bounds::at_most <= AtMost);
+            }
+            auto av = make_array_view(static_cast<C&&>(a));
+            return bounded_array_view(priv{}, av.data(), av.size());
         }
-        auto av = make_array_view(static_cast<C&&>(a));
-        return bounded_array_view(av.data(), av.size());
     }
 
 
@@ -326,6 +345,14 @@ public:
     {}
 
 
+    template<std::size_t NewAtLeast = 0, std::size_t NewAtMost = AtMost>
+        requires(NewAtLeast <= AtLeast && NewAtMost >= AtMost)
+    bounded_array_view<T, NewAtLeast, NewAtMost> resizable() const noexcept
+    {
+        return bounded_array_view<T, NewAtLeast, NewAtMost>::assumed(data(), size());
+    }
+
+
     [[nodiscard]]
     constexpr size_type size() const noexcept requires(AtLeast != AtMost)
     {
@@ -339,21 +366,21 @@ public:
     }
 
     [[nodiscard]]
-    constexpr detail::select_minimal_size_t<AtMost> msize() const noexcept
+    constexpr msize_type msize() const noexcept
         requires(AtLeast != AtMost)
     {
-        return detail::select_minimal_size_t<AtMost>(_array.size());
+        return msize_type(_array.size());
     }
 
     [[nodiscard]]
-    static constexpr detail::select_minimal_size_t<AtMost> msize() noexcept
+    static constexpr msize_type msize() noexcept
         requires(AtLeast == AtMost)
     {
         return AtMost;
     }
 
     [[nodiscard]]
-    static constexpr size_type fized_size() noexcept requires(AtLeast == AtMost)
+    static constexpr size_type fixed_size() noexcept requires(AtLeast == AtMost)
     {
         return AtLeast;
     }
@@ -406,10 +433,10 @@ public:
     // TODO free functions
     //@{
     [[nodiscard]]
-    constexpr array_view<T> first(size_type n) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> first(size_type n) const noexcept
     {
         assert(n <= size());
-        return {data(), n};
+        return bounded_array_view<T, 0, AtMost>::assumed(data(), n);
     }
 
     template<std::size_t n>
@@ -429,10 +456,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> last(size_type n) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> last(size_type n) const noexcept
     {
         assert(n <= size());
-        return {data() + size() - n, n};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + size() - n, n);
     }
 
     template<std::size_t n>
@@ -452,10 +479,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> from_offset(size_type offset) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> from_offset(size_type offset) const noexcept
     {
         assert(offset <= size());
-        return {data() + offset, size() - offset};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + offset, size() - offset);
     }
 
     template<std::size_t offset>
@@ -482,11 +509,77 @@ public:
         return from_offset<detail::static_uint<Offset>::value>();
     }
 
+
     [[nodiscard]]
-    constexpr array_view<T> subarray(size_type offset, size_type count) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> before(size_type offset) const noexcept
+    {
+        assert(offset <= size());
+        return bounded_array_view<T, 0, AtMost>::assumed(data(), offset);
+    }
+
+    template<std::size_t offset>
+    [[nodiscard]]
+    constexpr bounded_array_view<T, offset, offset> before() const noexcept
+    {
+        static_assert(offset <= AtLeast);
+        return {data(), offset};
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> before(pointer p) const noexcept
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return bounded_array_view<T, 0, AtMost>::assumed(begin(), p);
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> before(const_pointer p) const noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return bounded_array_view<T, 0, AtMost>::assumed(begin(), p);
+    }
+
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> after(size_type offset) const noexcept
+    {
+        after(data() + offset);
+    }
+
+    template<std::size_t offset>
+    [[nodiscard]]
+    constexpr auto after() const noexcept
+    {
+        return from_offset<offset + 1>();
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> after(pointer p) const noexcept
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return bounded_array_view<T, 0, AtMost>::assumed(p + 1, end());
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> after(const_pointer p) const noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return bounded_array_view<T, 0, AtMost>::assumed(begin() + (p - begin()) + 1, end());
+    }
+
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost>
+    subarray(size_type offset, size_type count) const noexcept
     {
         assert(offset <= size() && count <= size() - offset);
-        return {data() + offset, count};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + offset, count);
     }
 
     template<std::size_t offset, std::size_t count>
@@ -513,10 +606,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> drop_front(size_type count) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> drop_front(size_type count) const noexcept
     {
         assert(count <= size());
-        return {data() + count, size() - count};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + count, size() - count);
     }
 
     template<std::size_t count>
@@ -538,10 +631,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> drop_back(size_type count) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> drop_back(size_type count) const noexcept
     {
         assert(count <= size());
-        return {data(), size() - count};
+        return bounded_array_view<T, 0, AtMost>::assumed(data(), size() - count);
     }
 
     template<std::size_t count>
@@ -600,7 +693,8 @@ public:
     //@}
 
 private:
-    explicit constexpr bounded_array_view(const_pointer p, std::size_t len) noexcept
+    struct priv {};
+    explicit constexpr bounded_array_view(priv, const_pointer p, std::size_t len) noexcept
     : _array(p, len)
     {
         assert(AtLeast <= len);
@@ -617,6 +711,12 @@ bounded_array_view(T&&) -> bounded_array_view<
     Bounds::at_least, Bounds::at_most
 >;
 
+template<class T, class UInt>
+    requires std::is_unsigned_v<UInt>
+bounded_array_view(T * p, UInt len) -> bounded_array_view<
+    T, 0, static_cast<UInt>(~UInt{})
+>;
+
 
 template<class T, std::size_t AtLeast, std::size_t AtMost>
 struct writable_bounded_array_view
@@ -630,36 +730,46 @@ struct writable_bounded_array_view
     using const_iterator = T const*;
     using const_pointer = T const*;
     using size_type = std::size_t;
+    using msize_type = detail::select_minimal_size_t<AtMost>;
 
     static constexpr std::size_t at_least = AtLeast;
     static constexpr std::size_t at_most = AtMost;
+    static constexpr msize_type msize_at_least = AtLeast;
+    static constexpr msize_type msize_at_most = AtMost;
 
 public:
-    // C++20: enable when AtLeast == AtMost == 0
-    constexpr writable_bounded_array_view() = delete;
+    constexpr writable_bounded_array_view() noexcept requires(AtLeast == 0) = default;
     constexpr writable_bounded_array_view(writable_bounded_array_view && other) noexcept = default;
     constexpr writable_bounded_array_view(writable_bounded_array_view const & other) noexcept = default;
     constexpr writable_bounded_array_view & operator = (writable_bounded_array_view && other) noexcept = default;
     constexpr writable_bounded_array_view & operator = (writable_bounded_array_view const & other) noexcept = default;
 
-    // C++20: enable when AtLeast == AtMost == 0
-    constexpr writable_bounded_array_view(std::nullptr_t /*null*/) = delete;
+    constexpr writable_bounded_array_view(std::nullptr_t /*null*/)
+        noexcept requires(AtLeast == 0)
+        : writable_bounded_array_view()
+    {}
+
+    template<class UInt>
+    constexpr writable_bounded_array_view(const_pointer p, UInt len) noexcept
+        requires(AtLeast == 0 && std::is_unsigned_v<UInt> && static_cast<UInt>(~UInt{}) <= at_most)
+    : _array(p, len)
+    {}
 
     static constexpr writable_bounded_array_view assumed(pointer p, const_pointer e) noexcept
     {
         assert(p <= e);
-        return writable_bounded_array_view(p, std::size_t(e-p));
+        return writable_bounded_array_view(priv{}, p, std::size_t(e-p));
     }
 
     static constexpr writable_bounded_array_view assumed(pointer p, std::size_t n) noexcept
     {
-        return writable_bounded_array_view(p, n);
+        return writable_bounded_array_view(priv{}, p, n);
     }
 
     template<class U = void, class = std::enable_if_t<AtLeast == AtMost, U>>
     static constexpr writable_bounded_array_view assumed(pointer p) noexcept
     {
-        return writable_bounded_array_view(p, AtLeast);
+        return writable_bounded_array_view(priv{}, p, AtLeast);
     }
 
     template<class C>
@@ -670,13 +780,15 @@ public:
         if constexpr (detail::is_recomputable_bounded_array_view_impl<Seq>::value) {
             return writable_bounded_array_view(a);
         }
-        if constexpr (detail::is_bounded_sequence_impl<Seq>::value) {
-            using Bounds = typename detail::sequence_to_size_bounds_impl<Seq>::type;
-            static_assert(AtLeast <= Bounds::at_least);
-            static_assert(Bounds::at_most <= AtMost);
+        else {
+            if constexpr (detail::is_bounded_sequence_impl<Seq>::value) {
+                using Bounds = typename detail::sequence_to_size_bounds_impl<Seq>::type;
+                static_assert(AtLeast <= Bounds::at_least);
+                static_assert(Bounds::at_most <= AtMost);
+            }
+            auto av = make_writable_array_view(static_cast<C&&>(a));
+            return writable_bounded_array_view(priv{}, av.data(), av.size());
         }
-        auto av = make_writable_array_view(static_cast<C&&>(a));
-        return writable_bounded_array_view(av.data(), av.size());
     }
 
 
@@ -719,6 +831,21 @@ public:
     {}
 
 
+    template<std::size_t NewAtLeast = 0, std::size_t NewAtMost = AtMost>
+        requires(NewAtLeast <= AtLeast && NewAtMost >= AtMost)
+    writable_bounded_array_view<T, NewAtLeast, NewAtMost> resizable() noexcept
+    {
+        return writable_bounded_array_view<T, NewAtLeast, NewAtMost>::assumed(data(), size());
+    }
+
+    template<std::size_t NewAtLeast = 0, std::size_t NewAtMost = AtMost>
+        requires(NewAtLeast <= AtLeast && NewAtMost >= AtMost)
+    bounded_array_view<T, NewAtLeast, NewAtMost> resizable() const noexcept
+    {
+        return bounded_array_view<T, NewAtLeast, NewAtMost>::assumed(data(), size());
+    }
+
+
     [[nodiscard]]
     constexpr size_type size() const noexcept requires(AtLeast != AtMost)
     {
@@ -732,21 +859,21 @@ public:
     }
 
     [[nodiscard]]
-    constexpr detail::select_minimal_size_t<AtMost> msize() const noexcept
+    constexpr msize_type msize() const noexcept
         requires(AtLeast != AtMost)
     {
-        return detail::select_minimal_size_t<AtMost>(_array.size());
+        return msize_type(_array.size());
     }
 
     [[nodiscard]]
-    static constexpr detail::select_minimal_size_t<AtMost> msize() noexcept
+    static constexpr msize_type msize() noexcept
         requires(AtLeast == AtMost)
     {
         return AtLeast;
     }
 
     [[nodiscard]]
-    static constexpr size_type fized_size() noexcept requires(AtLeast == AtMost)
+    static constexpr size_type fixed_size() noexcept requires(AtLeast == AtMost)
     {
         return AtLeast;
     }
@@ -844,10 +971,10 @@ public:
     // TODO free functions
     //@{
     [[nodiscard]]
-    constexpr writable_array_view<T> first(size_type n) noexcept
+    constexpr writable_bounded_array_view<T, 0, AtMost> first(size_type n) noexcept
     {
         assert(n <= size());
-        return writable_array_view<T>{data(), n};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data(), n);
     }
 
     template<std::size_t n>
@@ -867,10 +994,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> first(size_type n) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> first(size_type n) const noexcept
     {
         assert(n <= size());
-        return {data(), n};
+        return bounded_array_view<T, 0, AtMost>::assumed(data(), n);
     }
 
     template<std::size_t n>
@@ -891,10 +1018,10 @@ public:
 
 
     [[nodiscard]]
-    constexpr writable_array_view<T> last(size_type n) noexcept
+    constexpr writable_bounded_array_view<T, 0, AtMost> last(size_type n) noexcept
     {
         assert(n <= size());
-        return writable_array_view<T>{data() + size() - n, n};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data() + size() - n, n);
     }
 
     template<std::size_t n>
@@ -915,10 +1042,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> last(size_type n) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> last(size_type n) const noexcept
     {
         assert(n <= size());
-        return {data() + size() - n, n};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + size() - n, n);
     }
 
     template<std::size_t n>
@@ -939,10 +1066,10 @@ public:
 
 
     [[nodiscard]]
-    constexpr writable_array_view<T> from_offset(size_type offset) noexcept
+    constexpr writable_bounded_array_view<T, 0, AtMost> from_offset(size_type offset) noexcept
     {
         assert(offset <= size());
-        return writable_array_view<T>{data() + offset, size() - offset};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data() + offset, size() - offset);
     }
 
     template<std::size_t offset>
@@ -970,10 +1097,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> from_offset(size_type offset) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> from_offset(size_type offset) const noexcept
     {
         assert(offset <= size());
-        return {data() + offset, size() - offset};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + offset, size() - offset);
     }
 
     template<std::size_t offset>
@@ -1002,10 +1129,138 @@ public:
 
 
     [[nodiscard]]
-    constexpr writable_array_view<T> subarray(size_type offset, size_type count) noexcept
+    constexpr writable_bounded_array_view<T, 0, AtMost> before(size_type offset) noexcept
+    {
+        assert(offset <= size());
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data(), offset);
+    }
+
+    template<std::size_t offset>
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, offset, offset> before() noexcept
+    {
+        static_assert(offset <= AtLeast);
+        return writable_array_view{data(), offset};
+    }
+
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, 0, AtMost> before(pointer p) noexcept
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(begin(), p);
+    }
+
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, 0, AtMost> before(const_pointer p) noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(begin(), checked_int(p - begin()));
+    }
+
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> before(size_type offset) const noexcept
+    {
+        assert(offset <= size());
+        return bounded_array_view<T, 0, AtMost>::assumed(data(), offset);
+    }
+
+    template<std::size_t offset>
+    [[nodiscard]]
+    constexpr bounded_array_view<T, offset, offset> before() const noexcept
+    {
+        static_assert(offset <= AtLeast);
+        return bounded_array_view<T, 0, AtMost>::assumed(data(), offset);
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> before(pointer p) const noexcept
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return bounded_array_view<T, 0, AtMost>::assumed(begin(), p);
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> before(const_pointer p) const noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p <= end());
+        return bounded_array_view<T, 0, AtMost>::assumed(begin(), checked_int(p - begin()));
+    }
+
+
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, 0, AtMost> after(size_type offset) noexcept
+    {
+        after(data() + offset);
+    }
+
+    template<std::size_t offset>
+    [[nodiscard]]
+    constexpr auto after() noexcept
+    {
+        return from_offset<offset + 1>();
+    }
+
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, 0, AtMost> after(pointer p) noexcept
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(p + 1, end());
+    }
+
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, 0, AtMost> after(const_pointer p) noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(begin() + (p - begin()) + 1, end());
+    }
+
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> after(size_type offset) const noexcept
+    {
+        after(data() + offset);
+    }
+
+    template<std::size_t offset>
+    [[nodiscard]]
+    constexpr auto after() const noexcept
+    {
+        return from_offset<offset + 1>();
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> after(pointer p) const noexcept
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return bounded_array_view<T, 0, AtMost>::assumed(p + 1, end());
+    }
+
+    [[nodiscard]]
+    constexpr bounded_array_view<T, 0, AtMost> after(const_pointer p) const noexcept
+        requires(!std::is_same_v<pointer, const_pointer>)
+    {
+        assert(begin() <= p);
+        assert(p < end());
+        return bounded_array_view<T, 0, AtMost>::assumed(begin() + (p - begin()) + 1, end());
+    }
+
+
+    [[nodiscard]]
+    constexpr writable_bounded_array_view<T, 0, AtMost> subarray(size_type offset, size_type count) noexcept
     {
         assert(offset <= size() && count <= size() - offset);
-        return writable_array_view<T>{data() + offset, count};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data() + offset, count);
     }
 
     template<std::size_t offset, std::size_t count>
@@ -1033,10 +1288,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> subarray(size_type offset, size_type count) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> subarray(size_type offset, size_type count) const noexcept
     {
         assert(offset <= size() && count <= size() - offset);
-        return {data() + offset, count};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + offset, count);
     }
 
     template<std::size_t offset, std::size_t count>
@@ -1064,10 +1319,10 @@ public:
 
 
     [[nodiscard]]
-    constexpr writable_array_view<T> drop_front(size_type count) noexcept
+    constexpr writable_bounded_array_view<T, 0, AtMost> drop_front(size_type count) noexcept
     {
         assert(count <= size());
-        return writable_array_view<T>{data() + count, size() - count};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data() + count, size() - count);
     }
 
     template<std::size_t count>
@@ -1089,10 +1344,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> drop_front(size_type count) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> drop_front(size_type count) const noexcept
     {
         assert(count <= size());
-        return {data() + count, size() - count};
+        return bounded_array_view<T, 0, AtMost>::assumed(data() + count, size() - count);
     }
 
     template<std::size_t count>
@@ -1115,10 +1370,10 @@ public:
 
 
     [[nodiscard]]
-    constexpr writable_array_view<T> drop_back(size_type count) noexcept
+    constexpr writable_bounded_array_view<T, 0, AtMost> drop_back(size_type count) noexcept
     {
         assert(count <= size());
-        return writable_array_view<T>{data(), size() - count};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data(), size() - count);
     }
 
     template<std::size_t count>
@@ -1140,10 +1395,10 @@ public:
     }
 
     [[nodiscard]]
-    constexpr array_view<T> drop_back(size_type count) const noexcept
+    constexpr bounded_array_view<T, 0, AtMost> drop_back(size_type count) const noexcept
     {
         assert(count <= size());
-        return {data(), size() - count};
+        return writable_bounded_array_view<T, 0, AtMost>::assumed(data(), size() - count);
     }
 
     template<std::size_t count>
@@ -1240,7 +1495,8 @@ public:
     //@}
 
 private:
-    explicit constexpr writable_bounded_array_view(pointer p, std::size_t len) noexcept
+    struct priv {};
+    explicit constexpr writable_bounded_array_view(priv, pointer p, std::size_t len) noexcept
     : _array(p, len)
     {
         assert(AtLeast <= len);
@@ -1255,6 +1511,12 @@ template<class T, class Bounds = sequence_to_size_bounds_t<T>>
 writable_bounded_array_view(T&&) -> writable_bounded_array_view<
     detail::value_type_from_seq_t<T&&>,
     Bounds::at_least, Bounds::at_most
+>;
+
+template<class T, class UInt>
+    requires std::is_unsigned_v<UInt>
+writable_bounded_array_view(T * p, UInt len) -> writable_bounded_array_view<
+    T, 0, static_cast<UInt>(~UInt{})
 >;
 
 
@@ -1332,6 +1594,21 @@ make_bounded_array_view(T const (&arr)[N]) noexcept
     return bounded_array_view<T, N, N>::assumed(arr, N);
 }
 
+template<std::size_t AtLeast, std::size_t AtMost, class T>
+constexpr bounded_array_view<T, AtLeast, AtMost>
+make_assumed_bounded_array_view(array_view<T> av) noexcept
+{
+    return bounded_array_view<T, AtLeast, AtMost>::assumed(av);
+}
+
+template<std::size_t AtLeast, std::size_t AtMost, class T>
+constexpr bounded_array_view<T, AtLeast, AtMost>
+make_assumed_bounded_array_view(T const * ptr) noexcept
+{
+    return bounded_array_view<T, AtLeast, AtMost>::assumed(ptr);
+}
+
+
 namespace detail
 {
     template<bool>
@@ -1408,6 +1685,20 @@ constexpr writable_bounded_array_view<T, N, N>
 make_writable_bounded_array_view(T (&arr)[N]) noexcept
 {
     return writable_bounded_array_view<T, N, N>::assumed(arr, N);
+}
+
+template<std::size_t AtLeast, std::size_t AtMost, class T>
+constexpr writable_bounded_array_view<T, AtLeast, AtMost>
+make_assumed_writable_bounded_array_view(writable_array_view<T> av) noexcept
+{
+    return bounded_array_view<T, AtLeast, AtMost>::assumed(av);
+}
+
+template<std::size_t AtLeast, std::size_t AtMost, class T>
+constexpr writable_bounded_array_view<T, AtLeast, AtMost>
+make_assumed_writable_bounded_array_view(T * ptr) noexcept
+{
+    return bounded_array_view<T, AtLeast, AtMost>::assumed(ptr);
 }
 
 namespace detail

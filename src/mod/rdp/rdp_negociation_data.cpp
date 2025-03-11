@@ -24,10 +24,11 @@
 
 #include <cstring>
 #include "utils/log.hpp"
+#include "utils/strutils.hpp"
 #include "mod/rdp/rdp_negociation_data.hpp"
 
-RdpLogonInfo::RdpLogonInfo(bounded_chars_view<0, HOST_NAME_MAX> hostname, bool hide_client_name,
-                           char const* target_user, bool split_domain) noexcept :
+RdpLogonInfo::RdpLogonInfo(RdpHostname hostname, bool hide_client_name,
+                           chars_view target_user, bool split_domain) noexcept :
     hide_client_name(hide_client_name)
 {
     if (hide_client_name) {
@@ -42,12 +43,11 @@ RdpLogonInfo::RdpLogonInfo(bounded_chars_view<0, HOST_NAME_MAX> hostname, bool h
             return buffer.set_end_string_ptr(separator);
         });
     }
-    else{
-        this->_hostname = hostname;
+    else {
+        this->_hostname = hostname.utf8_fixed_maybe_invalid().zstr();
     }
 
-    chars_view target {target_user, strlen(target_user)};
-    chars_view username = target;
+    chars_view username = target_user;
     chars_view domain {};
 
     const char * separator = strchr(target_user, '\\');
@@ -57,21 +57,21 @@ RdpLogonInfo::RdpLogonInfo(bounded_chars_view<0, HOST_NAME_MAX> hostname, bool h
     {
         // Legacy username
         // Split only if there's no @, otherwise not a legacy username
-        domain = {target_user, separator};
-        username = chars_view{separator + 1, target.end()};
+        domain = target_user.before(separator);
+        username = target_user.after(separator);
     }
     else if (split_domain)
     {
         // Old behavior
         if (separator)
         {
-            domain = {target_user, separator};
-            username = chars_view{separator + 1, target.end()};
+            domain = target_user.before(separator);
+            username = target_user.after(separator);
         }
         else if (separator_a)
         {
-            domain = {separator_a + 1, target.end()};
-            username = chars_view{target_user, separator_a};
+            domain = target_user.after(separator_a);
+            username = target_user.before(separator_a);
             LOG(LOG_INFO, "mod_rdp: username_len=%zu", username.size());
         }
     }

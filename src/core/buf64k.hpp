@@ -21,8 +21,73 @@
 #pragma once
 
 #include "transport/transport.hpp" // InTransport
+#include "utils/sugar/bounded_bytes_view.hpp"
 
 #include <cstring>
+
+template<std::size_t Capacity>
+struct ConsumedBuffer
+{
+    explicit ConsumedBuffer(bool consumed, writable_bounded_bytes_view<0, Capacity> data) noexcept
+        : m_consumed(consumed)
+        , m_data(data)
+    {}
+
+    operator bool () const noexcept
+    {
+        #ifndef NDEBUG
+        m_checked = true;
+        #endif
+        return m_consumed;
+    }
+
+    writable_bounded_bytes_view<0, Capacity> data() noexcept
+    {
+        assert(m_consumed);
+        assert(m_checked);
+        return m_data;
+    }
+
+private:
+    bool m_consumed;
+    #ifndef NDEBUG
+    mutable bool m_checked = false;
+    #endif
+    writable_bounded_bytes_view<0, Capacity> m_data;
+};
+
+template<std::size_t N>
+struct ConsumedSizedBuffer
+{
+    explicit ConsumedSizedBuffer(writable_sized_bytes_view<N> data) noexcept
+        : m_consumed(true)
+        , m_data(data)
+    {}
+
+    explicit ConsumedSizedBuffer() noexcept = default;
+
+    operator bool () const noexcept
+    {
+        #ifndef NDEBUG
+        m_checked = true;
+        #endif
+        return m_consumed;
+    }
+
+    writable_sized_bytes_view<N> data() noexcept
+    {
+        assert(m_consumed);
+        assert(m_checked);
+        return writable_sized_bytes_view<N>::assumed(m_data);
+    }
+
+private:
+    bool m_consumed = false;
+    #ifndef NDEBUG
+    mutable bool m_checked = false;
+    #endif
+    writable_bytes_view m_data = {};
+};
 
 
 template<std::size_t Capacity, class SizeType>
@@ -33,6 +98,36 @@ struct BasicStaticBuffer
     using size_type = SizeType;
 
     BasicStaticBuffer() = default;
+
+    template<std::size_t N>
+    ConsumedSizedBuffer<N> consume() noexcept
+    {
+        if (remaining() >= N)
+        {
+            return ConsumedSizedBuffer<N>{
+                writable_sized_bytes_view<N>::assumed(get_buffer_and_advance(N))
+            };
+        }
+        return ConsumedSizedBuffer<N>{};
+    }
+
+    ConsumedBuffer<Capacity> consume(std::size_t n) noexcept
+    {
+        if (remaining() >= n)
+        {
+            return ConsumedBuffer<Capacity>{
+                true,
+                writable_bounded_bytes_view<0, Capacity>::assumed(get_buffer_and_advance(n)),
+            };
+        }
+        return ConsumedBuffer<Capacity>{false, {}};
+    }
+
+    writable_bounded_bytes_view<0, Capacity> consume_at_most(std::size_t n) noexcept
+    {
+        auto data = get_buffer_and_advance((n <= remaining()) ? n : remaining());
+        return writable_bounded_bytes_view<0, Capacity>::assumed(data);
+    }
 
     [[nodiscard]] size_type remaining() const noexcept
     {

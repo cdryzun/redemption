@@ -29,47 +29,53 @@ void Inifile::ConfigurationHolder::set_section(zstring_view section) {
     else if (section == "mod_vnc"_zv) {
         this->section_id = 9;
     }
-    else if (section == "session_log"_zv) {
+    else if (section == "vnc_clipboard"_zv) {
         this->section_id = 10;
     }
-    else if (section == "ocr"_zv) {
+    else if (section == "vnc_file_transfer"_zv) {
         this->section_id = 11;
     }
-    else if (section == "capture"_zv) {
+    else if (section == "session_log"_zv) {
         this->section_id = 12;
     }
-    else if (section == "audit"_zv) {
+    else if (section == "ocr"_zv) {
         this->section_id = 13;
     }
-    else if (section == "file_verification"_zv) {
+    else if (section == "capture"_zv) {
         this->section_id = 14;
     }
-    else if (section == "file_storage"_zv) {
+    else if (section == "audit"_zv) {
         this->section_id = 15;
     }
-    else if (section == "icap_server_down"_zv) {
+    else if (section == "file_verification"_zv) {
         this->section_id = 16;
     }
-    else if (section == "icap_server_up"_zv) {
+    else if (section == "file_storage"_zv) {
         this->section_id = 17;
     }
-    else if (section == "websocket"_zv) {
+    else if (section == "icap_server_down"_zv) {
         this->section_id = 18;
     }
-    else if (section == "internal_mod"_zv) {
+    else if (section == "icap_server_up"_zv) {
         this->section_id = 19;
     }
-    else if (section == "mod_replay"_zv) {
+    else if (section == "websocket"_zv) {
         this->section_id = 20;
     }
-    else if (section == "translation"_zv) {
+    else if (section == "internal_mod"_zv) {
         this->section_id = 21;
     }
-    else if (section == "theme"_zv) {
+    else if (section == "mod_replay"_zv) {
         this->section_id = 22;
     }
-    else if (section == "debug"_zv) {
+    else if (section == "translation"_zv) {
         this->section_id = 23;
+    }
+    else if (section == "theme"_zv) {
+        this->section_id = 24;
+    }
+    else if (section == "debug"_zv) {
+        this->section_id = 25;
     }
     else if (static_cast<cfg::debug::config>(this->variables).value) {
         LOG(LOG_WARNING, "unknown section [%s]", section);
@@ -1699,22 +1705,6 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
     }
     else if (this->section_id == 9) {
         if (0) {}
-        else if (key == "clipboard_up"_zv) {
-            ::config_parse_and_log(
-                this->section_name, key.c_str(),
-                static_cast<cfg::mod_vnc::clipboard_up&>(this->variables).value,
-                ::configs::spec_type<bool>{},
-                value
-            );
-        }
-        else if (key == "clipboard_down"_zv) {
-            ::config_parse_and_log(
-                this->section_name, key.c_str(),
-                static_cast<cfg::mod_vnc::clipboard_down&>(this->variables).value,
-                ::configs::spec_type<bool>{},
-                value
-            );
-        }
         else if (key == "encodings"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
@@ -1728,22 +1718,6 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 this->section_name, key.c_str(),
                 static_cast<cfg::mod_vnc::support_cursor_pseudo_encoding&>(this->variables).value,
                 ::configs::spec_type<bool>{},
-                value
-            );
-        }
-        else if (key == "server_clipboard_encoding_type"_zv) {
-            ::config_parse_and_log(
-                this->section_name, key.c_str(),
-                static_cast<cfg::mod_vnc::server_clipboard_encoding_type&>(this->variables).value,
-                ::configs::spec_type<std::string>{},
-                value
-            );
-        }
-        else if (key == "bogus_clipboard_infinite_loop"_zv) {
-            ::config_parse_and_log(
-                this->section_name, key.c_str(),
-                static_cast<cfg::mod_vnc::bogus_clipboard_infinite_loop&>(this->variables).value,
-                ::configs::spec_type<VncBogusClipboardInfiniteLoop>{},
                 value
             );
         }
@@ -1843,6 +1817,12 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "clipboard_up"_zv) {
+            // ignored
+        }
+        else if (key == "clipboard_down"_zv) {
+            // ignored
+        }
 
         else if (static_cast<cfg::debug::config>(this->variables).value) {
             LOG(LOG_WARNING, "unknown parameter %s in section [%s]",
@@ -1850,6 +1830,94 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
         }
     }
     else if (this->section_id == 10) {
+        if (0) {}
+        else if (key == "enable_clipboard_upload"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_clipboard::enable_clipboard_upload&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
+        else if (key == "enable_clipboard_download"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_clipboard::enable_clipboard_download&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
+        else if (key == "clipboard_encoding"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_clipboard::clipboard_encoding&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
+        else if (key == "bogus_infinite_loop_strategy"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_clipboard::bogus_infinite_loop_strategy&>(this->variables).value,
+                ::configs::spec_type<VncBogusClipboardInfiniteLoopStrategy>{},
+                value
+            );
+        }
+
+        else if (static_cast<cfg::debug::config>(this->variables).value) {
+            LOG(LOG_WARNING, "unknown parameter %s in section [%s]",
+                key, this->section_name);
+        }
+    }
+    else if (this->section_id == 11) {
+        if (0) {}
+        else if (key == "enable_file_upload"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_file_transfer::enable_file_upload&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
+        else if (key == "enable_file_download"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_file_transfer::enable_file_download&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
+        else if (key == "max_item_in_gui"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_file_transfer::max_item_in_gui&>(this->variables).value,
+                ::configs::spec_type<uint32_t>{},
+                value
+            );
+        }
+        else if (key == "max_file_transfer_list"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_file_transfer::max_file_transfer_list&>(this->variables).value,
+                ::configs::spec_type<uint32_t>{},
+                value
+            );
+        }
+        else if (key == "max_file_size"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::vnc_file_transfer::max_file_size&>(this->variables).value,
+                ::configs::spec_type<uint64_t>{},
+                value
+            );
+        }
+
+        else if (static_cast<cfg::debug::config>(this->variables).value) {
+            LOG(LOG_WARNING, "unknown parameter %s in section [%s]",
+                key, this->section_name);
+        }
+    }
+    else if (this->section_id == 12) {
         if (0) {}
         else if (key == "enable_session_log_file"_zv) {
             ::config_parse_and_log(
@@ -1881,7 +1949,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 11) {
+    else if (this->section_id == 13) {
         if (0) {}
         else if (key == "version"_zv) {
             ::config_parse_and_log(
@@ -1929,7 +1997,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 12) {
+    else if (this->section_id == 14) {
         if (0) {}
         else if (key == "hash_path"_zv) {
             ::config_parse_and_log(
@@ -2025,7 +2093,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 13) {
+    else if (this->section_id == 15) {
         if (0) {}
         else if (key == "enable_keyboard_log"_zv) {
             ::config_parse_and_log(
@@ -2153,7 +2221,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 14) {
+    else if (this->section_id == 16) {
         if (0) {}
         else if (key == "socket_path"_zv) {
             ::config_parse_and_log(
@@ -2257,7 +2325,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 15) {
+    else if (this->section_id == 17) {
         if (0) {}
         else if (key == "store_file"_zv) {
             ::config_parse_and_log(
@@ -2273,13 +2341,13 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 16) {
-        // all members are external
-    }
-    else if (this->section_id == 17) {
-        // all members are external
-    }
     else if (this->section_id == 18) {
+        // all members are external
+    }
+    else if (this->section_id == 19) {
+        // all members are external
+    }
+    else if (this->section_id == 20) {
         if (0) {}
         else if (key == "enable_websocket"_zv) {
             ::config_parse_and_log(
@@ -2311,7 +2379,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 19) {
+    else if (this->section_id == 21) {
         if (0) {}
         else if (key == "enable_target_field"_zv) {
             ::config_parse_and_log(
@@ -2351,7 +2419,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 20) {
+    else if (this->section_id == 22) {
         if (0) {}
         else if (key == "replay_path"_zv) {
             ::config_parse_and_log(
@@ -2383,7 +2451,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 21) {
+    else if (this->section_id == 23) {
         if (0) {}
         else if (key == "login_language"_zv) {
             ::config_parse_and_log(
@@ -2399,7 +2467,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 22) {
+    else if (this->section_id == 24) {
         if (0) {}
         else if (key == "enable_theme"_zv) {
             ::config_parse_and_log(
@@ -2623,7 +2691,7 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 key, this->section_name);
         }
     }
-    else if (this->section_id == 23) {
+    else if (this->section_id == 25) {
         if (0) {}
         else if (key == "primary_user"_zv) {
             ::config_parse_and_log(

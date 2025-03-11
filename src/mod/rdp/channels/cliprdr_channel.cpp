@@ -683,15 +683,15 @@ ClipboardVirtualChannel::ClipCtx::OptionalLockId::lock_id() const
 
 
 ClipboardVirtualChannel::ClipCtx::ClipCtx(
-    std::string const& target_name,
+    FileValidatorTargets target,
     bool verify_file_before_transfer,
     bool verify_text_before_transfer,
     uint64_t max_file_size_rejected,
     char const* tmp_dir)
-: verify_file_before_transfer(verify_file_before_transfer && not target_name.empty())
-, verify_text_before_transfer(verify_text_before_transfer && not target_name.empty())
+: verify_file_before_transfer(verify_file_before_transfer && target != FileValidatorTargets::None)
+, verify_text_before_transfer(verify_text_before_transfer && target != FileValidatorTargets::None)
 , max_file_size_rejected(max_file_size_rejected)
-, validator_target_name(target_name)
+, validator_target(target)
 {
     static_assert(RDPECLIP::FileDescriptor::size()
         == decltype(this->file_descriptor_stream)::original_capacity());
@@ -1541,10 +1541,10 @@ struct ClipboardVirtualChannel::ClipCtx::D
                 self, current_format_list, flags, in_header, true, clip.requested_format_id,
                 bytes_view{}, is_client_to_server);
         }
-        else if (!clip.validator_target_name.empty()
+        else if (clip.validator_target != FileValidatorTargets::None
             && (is_client_to_server
-                ? self.params.validator_params.enable_clipboard_text_up
-                : self.params.validator_params.enable_clipboard_text_down
+                ? self.validator_params.enable_text_upload
+                : self.validator_params.enable_text_download
             )
         ) {
             switch (clip.requested_format_id) {
@@ -1562,10 +1562,11 @@ struct ClipboardVirtualChannel::ClipCtx::D
                             NoLockData::D::set_rejected_text(clip.nolock_data);
                         }
                         else {
+                            auto target_name = file_validator_target_to_string(clip.validator_target);
                             const auto validator_id = (RDPECLIP::CF_TEXT == clip.requested_format_id)
                                 ? self.file_validator->open_text(clip.clip_text_locale_identifier,
-                                                                 clip.validator_target_name)
-                                : self.file_validator->open_unicode(clip.validator_target_name);
+                                                                 target_name)
+                                : self.file_validator->open_unicode(target_name);
 
                             if (clip.verify_text_before_transfer) {
                                 clip.nolock_data.data.file_name = "clipboard text";
@@ -1701,7 +1702,7 @@ struct ClipboardVirtualChannel::ClipCtx::D
             return false;
         };
 
-        if (!self.params.clipboard_file_authorized) {
+        if (!self.params.file_authorized) {
             return send_error();
         }
 
@@ -1986,9 +1987,9 @@ struct ClipboardVirtualChannel::ClipCtx::D
 
         auto new_file_validator_id = [&self, &clip](std::string_view file_name){
             FileValidatorId file_validator_id{};
-            if (!clip.validator_target_name.empty()) {
-                file_validator_id = self.file_validator->open_file(
-                    file_name, clip.validator_target_name);
+            if (clip.validator_target != FileValidatorTargets::None) {
+                auto target_name = file_validator_target_to_string(clip.validator_target);
+                file_validator_id = self.file_validator->open_file(file_name, target_name);
             }
             return file_validator_id;
         };
@@ -2469,7 +2470,7 @@ struct ClipboardVirtualChannel::ClipCtx::D
         }
 
         static_assert(SslSha256::DIGEST_LENGTH == decltype(file_contents_range.sig)::digest_len);
-        auto const digest_str = static_array_to_hexadecimal_lower_zchars(
+        auto const digest_str = static_array_to_hexadecimal_lower_chars(
             file_contents_range.sig.digest());
 
         auto file_size = int_to_decimal_zchars(real_file_size(file_contents_range));
@@ -2512,7 +2513,7 @@ struct ClipboardVirtualChannel::ClipCtx::D
                 : RDPECLIP::get_FormatId_name_av(requestedFormatId);
 
             bool log_current_activity
-                = !self.params.log_only_relevant_clipboard_activities
+                = !self.params.log_only_relevant_activities
                || !format_name
                || !ranges_equal(utf8_format, Cliprdr::formats::preferred_drop_effect.ascii_name);
 
@@ -2553,7 +2554,7 @@ struct ClipboardVirtualChannel::ClipCtx::D
             {
                 assert(!(data_to_dump.size() & 1));
 
-                if (self.params.log_clipboard_text) {
+                if (self.params.log_text) {
                     const size_t length_of_data_to_dump = std::min(
                         data_to_dump.size(), max_length_of_data_to_dump * 2);
 
@@ -2603,59 +2604,62 @@ struct ClipboardVirtualChannel::ClipCtx::D
 ClipboardVirtualChannel::ClipboardVirtualChannel(
     EventContainer& events,
     gdi::OsdApi& osd_api,
-    const ClipboardVirtualChannelParams & params,
-    FileValidatorService * file_validator_service,
-    FileStorage file_storage,
+    ClipboardVirtualChannelParams params,
     SessionLogApi& session_log,
+    Translator translator,
     RDPVerbose verbose)
 : BaseVirtualChannel(&filter_to_client_sender, &filter_to_server_sender)
 , filter_to_client_sender(*this)
 , filter_to_server_sender(*this)
-// TODO decompose (extract validatorparam)
 , params([&]{
-    auto p = params;
-    if (!file_validator_service) {
-        p.validator_params.up_target_name.clear();
-        p.validator_params.down_target_name.clear();
+    auto & pv = params.validator_params.file;
+    if (!pv.file_validator_service) {
+        pv.targets = FileValidatorTargets::None;
     }
     else {
+        auto & tv = params.validator_params.text;
         LOG(LOG_INFO, "ClipboardVirtualChannel: enable file validator service:"
-            " up=%s  down=%s  block_invalid_file_up=%d block_invalid_file_down=%d  block_invalid_text_up=%d block_invalid_text_down=%d",
-            p.validator_params.up_target_name,
-            p.validator_params.down_target_name,
-            p.validator_params.block_invalid_file_up,
-            p.validator_params.block_invalid_file_down,
-            p.validator_params.block_invalid_text_up,
-            p.validator_params.block_invalid_text_down);
+            " up=%s  down=%s  block_invalid_file_upload=%d block_invalid_file_download=%d  block_invalid_text_upload=%d block_invalid_text_download=%d",
+            file_validator_target_to_string(pv.targets & FileValidatorTargets::Upload),
+            file_validator_target_to_string(pv.targets & FileValidatorTargets::Download),
+            pv.block_invalid_file_upload,
+            pv.block_invalid_file_download,
+            tv.block_invalid_text_upload,
+            tv.block_invalid_text_download);
     }
-    return p;
+    return params.cliprdr_params;
 }())
-, file_validator(file_validator_service)
-, fdx_capture(file_storage.fdx_capture)
-, tmp_dir(std::move(file_storage.tmp_dir))
+, validator_params {
+    .enable_text_upload = params.validator_params.text.enable_text_upload,
+    .enable_text_download = params.validator_params.text.enable_text_download,
+    .log_if_accepted = params.validator_params.file.log_if_accepted,
+}
+, file_validator(params.validator_params.file.file_validator_service)
+, fdx_capture(params.file_storage_params.fdx_capture)
+, tmp_dir(av_auto_cast{params.validator_params.file.tmp_dir})
 , session_log(session_log)
 , verbose(verbose)
-, always_file_storage(file_storage.always_file_storage)
+, always_file_storage(params.file_storage_params.always_file_storage)
 , client_ctx(
-    this->params.validator_params.up_target_name,
-    this->params.validator_params.block_invalid_file_up,
-    this->params.validator_params.block_invalid_text_up,
-    this->params.validator_params.max_file_size_rejected,
+    params.validator_params.file.targets & FileValidatorTargets::Upload,
+    params.validator_params.file.block_invalid_file_upload,
+    params.validator_params.text.block_invalid_text_upload,
+    params.validator_params.file.max_blocked_file_size_rejected,
     this->tmp_dir.empty() ? "/tmp/" : this->tmp_dir.c_str())
 , server_ctx(
-    this->params.validator_params.down_target_name,
-    this->params.validator_params.block_invalid_file_down,
-    this->params.validator_params.block_invalid_text_down,
-    this->params.validator_params.max_file_size_rejected,
+    params.validator_params.file.targets & FileValidatorTargets::Download,
+    params.validator_params.file.block_invalid_file_download,
+    params.validator_params.text.block_invalid_text_download,
+    params.validator_params.file.max_blocked_file_size_rejected,
     this->tmp_dir.empty() ? "/tmp/" : this->tmp_dir.c_str())
 , osd{
     events,
     osd_api,
-    this->params.validator_params.translator,
-    this->params.validator_params.osd_delay,
-    (this->params.validator_params.osd_delay.count()
-        && (this->params.validator_params.block_invalid_file_down
-         || this->params.validator_params.block_invalid_file_up))
+    translator,
+    params.validator_params.osd_delay,
+    (params.validator_params.osd_delay.count()
+        && (params.validator_params.file.block_invalid_file_download
+         || params.validator_params.file.block_invalid_file_upload))
 }
 {}
 
@@ -2795,7 +2799,7 @@ void ClipboardVirtualChannel::process_server_message(uint32_t total_length,
                 *this, flags, header,
                 this->to_server_sender_ptr(),
                 this->to_client_sender_ptr(),
-                this->params.clipboard_down_authorized || this->params.clipboard_up_authorized,
+                this->params.download_authorized || this->params.upload_authorized,
                 this->server_ctx,
                 chunk.remaining_bytes());
         }
@@ -2808,7 +2812,7 @@ void ClipboardVirtualChannel::process_server_message(uint32_t total_length,
         case RDPECLIP::CB_FORMAT_DATA_REQUEST: {
             ClipCtx::D::format_data_request(this->client_ctx, chunk.remaining_bytes(), this->verbose);
 
-            if (!this->params.clipboard_up_authorized) {
+            if (!this->params.upload_authorized) {
                 LOG_IF(bool(this->verbose & RDPVerbose::cliprdr), LOG_INFO,
                     "ClipboardVirtualChannel::process_server_format_data_request_pdu: "
                         "Client to server Clipboard operation is not allowed.");
@@ -2902,8 +2906,8 @@ void ClipboardVirtualChannel::process_client_message(
                 *this, flags, header,
                 this->to_client_sender_ptr(),
                 this->to_server_sender_ptr(),
-                this->params.clipboard_down_authorized
-                || this->params.clipboard_up_authorized,
+                this->params.download_authorized
+                || this->params.upload_authorized,
                 this->client_ctx,
                 chunk.remaining_bytes());
         }
@@ -2915,8 +2919,8 @@ void ClipboardVirtualChannel::process_client_message(
 
         case RDPECLIP::CB_FORMAT_DATA_REQUEST: {
             ClipCtx::D::format_data_request(this->server_ctx, chunk.remaining_bytes(), this->verbose);
-            send_message_to_server = this->params.clipboard_down_authorized;
-            if (!this->params.clipboard_down_authorized) {
+            send_message_to_server = this->params.download_authorized;
+            if (!this->params.download_authorized) {
                 LOG_IF(bool(this->verbose & RDPVerbose::cliprdr), LOG_INFO,
                     "ClipboardVirtualChannel::process_client_message: "
                         "Server to client Clipboard operation is not allowed.");
@@ -3012,7 +3016,7 @@ void ClipboardVirtualChannel::DLP_antivirus_check_channels_files()
         auto& result_content = this->file_validator->get_content();
 
         auto process_text = [&](Direction direction){
-            if (!is_accepted || this->params.validator_params.log_if_accepted) {
+            if (!is_accepted || this->validator_params.log_if_accepted) {
                 dlpav_report_text(
                     file_validator_id,
                     this->session_log,
@@ -3021,7 +3025,7 @@ void ClipboardVirtualChannel::DLP_antivirus_check_channels_files()
         };
 
         auto process_file = [&](Direction direction, std::string_view file_name){
-            if (!is_accepted || this->params.validator_params.log_if_accepted) {
+            if (!is_accepted || this->validator_params.log_if_accepted) {
                 dlpav_report_file(
                     file_name,
                     this->session_log,

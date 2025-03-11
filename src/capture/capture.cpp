@@ -29,7 +29,7 @@
 #include "utils/recording_progress.hpp"
 
 #include "utils/sugar/array_view.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 #include "utils/sugar/unique_fd.hpp"
 #include "utils/sugar/not_null_ptr.hpp"
 #include "utils/sugar/noncopyable.hpp"
@@ -255,7 +255,7 @@ public:
             utf8_char = utf8_char.drop_front(n);
         }
 
-        p = byte_copy(p, utf8_char);
+        p = bytes_copy_and_advance(p, utf8_char);
         total_len += utf8_char.size();
     }
 

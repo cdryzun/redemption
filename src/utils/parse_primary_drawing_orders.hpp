@@ -22,6 +22,8 @@ Author(s): Jonathan Poelen
 
 #include "core/RDP/capabilities/order.hpp"
 
+#include <array>
+
 PrimaryDrawingOrdersSupport parse_primary_drawing_orders(char const* orders, bool bEnableLog) noexcept;
 
 // Apparently, these primary drawing orders are supported

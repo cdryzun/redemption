@@ -9,6 +9,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "core/font.hpp"
 #include "utils/theme.hpp"
 #include "utils/mathutils.hpp"
+#include "utils/glyph_names.hpp"
 
 
 WidgetPagination::Colors
@@ -124,35 +125,9 @@ struct WidgetPagination::D
         }
     };
 
-    static array_view<FontCharPtr> first_button_text(WidgetPagination const & self) noexcept
-    {
-        return {self.m_chars, 2};
-    }
-
-    static array_view<FontCharPtr> prev_button_text(WidgetPagination const & self) noexcept
-    {
-        return {self.m_chars, 1};
-    }
-
-    static array_view<FontCharPtr> next_button_text(WidgetPagination const & self) noexcept
-    {
-        return {self.m_chars + 3, 1};
-    }
-
-    static array_view<FontCharPtr> last_button_text(WidgetPagination const & self) noexcept
-    {
-        return {self.m_chars + 2, 2};
-    }
-
-
-    static YInfo first_or_prev_y_info(WidgetPagination const & self) noexcept
+    static YInfo y_info(WidgetPagination const & self) noexcept
     {
         return {*self.m_chars[0], self.cy()};
-    }
-
-    static YInfo next_or_last_y_info(WidgetPagination const & self) noexcept
-    {
-        return {*self.m_chars[3], self.cy()};
     }
 
     enum FocusMode
@@ -201,35 +176,19 @@ struct WidgetPagination::D
                 break;
 
             case Item::First:
-                draw_text(
-                    self.m_offsets[First],
-                    first_or_prev_y_info(self).top_pad,
-                    first_button_text(self)
-                );
+                draw_text(self.m_offsets[First], y_info(self).top_pad, {self.m_chars + 0, 1});
                 break;
 
             case Item::Prev:
-                draw_text(
-                    self.m_offsets[Prev],
-                    first_or_prev_y_info(self).top_pad,
-                    prev_button_text(self)
-                );
+                draw_text(self.m_offsets[Prev], y_info(self).top_pad, {self.m_chars + 1, 1});
                 break;
 
             case Item::Next:
-                draw_text(
-                    self.m_offsets[Next],
-                    next_or_last_y_info(self).top_pad,
-                    next_button_text(self)
-                );
+                draw_text(self.m_offsets[Next], y_info(self).top_pad, {self.m_chars + 2, 1});
                 break;
 
             case Item::Last:
-                draw_text(
-                    self.m_offsets[Last],
-                    next_or_last_y_info(self).top_pad,
-                    last_button_text(self)
-                );
+                draw_text(self.m_offsets[Last], y_info(self).top_pad, {self.m_chars + 3, 1});
                 break;
         }
     }
@@ -246,18 +205,11 @@ WidgetPagination::WidgetPagination(
     , m_line_h{font.max_height()}
     , m_label_total_len{2}
     , m_redraw_after_event{redraw_after_event == RedrawAfterEvent::Yes}
-    /*
-        ['◀', '◂', '▸', '▶', ...]
-         ~~~                 prev text button
-         ~~~~~~~~            first text button
-                   ~~~~~~~~  last text button
-                        ~~~  next text button
-     */
     , m_chars{
-        &font.item(0x25C0).view, // ◀
-        &font.item(0x25C2).view, // ◂ for ◀◂
-        &font.item(0x25B8).view, // ▸ for ▸▶
-        &font.item(0x25B6).view, // ▶
+        &font.item(GlyphNames::angles_left).view, // «
+        &font.item(GlyphNames::angle_left).view, // ‹
+        &font.item(GlyphNames::angle_right).view, // ›
+        &font.item(GlyphNames::angles_right).view, // »
         &font.item('/').view,
         &font.item(' ').view,
     }
@@ -274,11 +226,13 @@ WidgetPagination::WidgetPagination(
     auto x_pad = mmax({
         // max_offset
         m_chars[0]->offsetx,
+        m_chars[1]->offsetx,
         m_chars[2]->offsetx,
         m_chars[3]->offsetx,
         // incby_minus_widths
         checked_cast<int8_t>( m_chars[0]->incby - m_chars[0]->width ),
         checked_cast<int8_t>( m_chars[1]->incby - m_chars[1]->width ),
+        checked_cast<int8_t>( m_chars[2]->incby - m_chars[2]->width ),
         checked_cast<int8_t>( m_chars[3]->incby - m_chars[3]->width ),
     });
 
@@ -291,16 +245,14 @@ WidgetPagination::WidgetPagination(
     m_offsets[D::First] = D::X_BBOX + x_pad - m_chars[0]->offsetx;
 
     m_offsets[D::Prev] = m_offsets[D::First]
-                       + x_pad - m_chars[0]->offsetx
-                       + m_chars[0]->incby
-                       + m_chars[1]->offsetx + m_chars[1]->width
                        + x_pad
-                       + D::X_PAD_BUTTON * 2 + 1;
+                       + m_chars[0]->width
+                       + D::X_PAD_BUTTON * 2 + 1
+                       + x_pad - m_chars[1]->offsetx;
 
     m_offsets[D::Edit] = m_offsets[D::Prev]
-                       + x_pad - m_chars[0]->offsetx
-                       + m_chars[0]->width
                        + x_pad
+                       + m_chars[1]->width
                        + D::X_PAD_LABEL_EDIT * 2 + 1
                        + x_pad;
 
@@ -310,48 +262,45 @@ WidgetPagination::WidgetPagination(
                        + x_pad
                        + D::label_prefix_w(*this)
                        + label_w - D::label_last_fc_incby_minus_width(*this)
-                       + x_pad - m_chars[3]->offsetx
-                       + D::X_PAD_LABEL_EDIT * 2 + 1;
+                       + D::X_PAD_LABEL_EDIT * 2 + 1
+                       + x_pad - m_chars[2]->offsetx;
 
     m_offsets[D::Last] = m_offsets[D::Next]
-                       + x_pad - m_chars[3]->offsetx
-                       + m_chars[3]->width
                        + x_pad
-                       + D::X_PAD_BUTTON * 2 + 1;
+                       + m_chars[2]->width
+                       + D::X_PAD_BUTTON * 2 + 1
+                       + x_pad - m_chars[3]->offsetx;
 
     int16_t bbox_x_pad = D::X_BBOX + x_pad;
 
-    m_bbox_offsets[D::First * 2 + 0] = 1;
+    m_bbox_offsets[D::First * 2 + 0] = 0;
     m_bbox_offsets[D::First * 2 + 1] = m_bbox_offsets[D::First * 2]
                                      + bbox_x_pad * 2
-                                     + m_chars[0]->incby
-                                     + m_chars[1]->offsetx + m_chars[1]->width;
+                                     + m_chars[0]->width + 1;
 
     m_bbox_offsets[D::Prev * 2 + 0] = m_offsets[D::Prev] + 1
-                                    - (bbox_x_pad - m_chars[0]->offsetx);
+                                    - (bbox_x_pad - m_chars[1]->offsetx);
     m_bbox_offsets[D::Prev * 2 + 1] = m_bbox_offsets[D::Prev * 2]
                                     + bbox_x_pad * 2
-                                    + m_chars[0]->width;
+                                    + m_chars[1]->width + 1;
 
     m_bbox_offsets[D::Next * 2 + 0] = m_offsets[D::Next] + 1
-                                    - (bbox_x_pad - m_chars[3]->offsetx);
+                                    - (bbox_x_pad - m_chars[2]->offsetx);
     m_bbox_offsets[D::Next * 2 + 1] = m_bbox_offsets[D::Next * 2]
                                     + bbox_x_pad * 2
-                                    + m_chars[3]->width;
+                                    + m_chars[2]->width + 1;
 
     m_bbox_offsets[D::Last * 2 + 0] = m_offsets[D::Last] + 1
-                                    - (bbox_x_pad - m_chars[2]->offsetx);
+                                    - (bbox_x_pad - m_chars[3]->offsetx);
     m_bbox_offsets[D::Last * 2 + 1] = m_bbox_offsets[D::Last * 2]
                                     + bbox_x_pad * 2
-                                    + m_chars[2]->incby
-                                    + m_chars[3]->offsetx + m_chars[3]->width;
+                                    + m_chars[3]->width + 1;
 
     set_wh(
         checked_int{
             m_offsets[D::Last]
-          + x_pad - m_chars[2]->offsetx
-          + m_chars[2]->incby
-          + m_chars[3]->offsetx + m_chars[3]->width
+          + x_pad
+          + m_chars[3]->width
           + x_pad
           + D::X_BBOX + 1
         },
@@ -406,6 +355,11 @@ void WidgetPagination::update(Data data)
     m_bbox_offsets[D::Last*2 + 1] += shift_button;
 
     set_wh(checked_int{cx() + diff_label_and_edit_w}, cy());
+}
+
+bool WidgetPagination::is_new_page(uint32_t page) const noexcept
+{
+    return D::is_valid_page(*this, page);
 }
 
 bool WidgetPagination::set_page(uint32_t page, TriggerUpdatePageEvent trigger_event)
@@ -506,6 +460,38 @@ void WidgetPagination::focus()
 {
     has_focus = true;
     D::blur_or_focus(*this, D::FocusMode::Focus);
+}
+
+void WidgetPagination::set_focus_elem(FocusElement elem)
+{
+    auto new_focus = Item(underlying_cast(elem));
+
+    if (has_focus)
+    {
+        blur();
+        m_focus_item = new_focus;
+        focus();
+    }
+    else
+    {
+        m_focus_item = new_focus;
+    }
+}
+
+WidgetPagination::FocusElement WidgetPagination::get_focus_elem() const noexcept
+{
+    if (has_focus && m_focus_item < Item::Label)
+    {
+        return FocusElement(underlying_cast(m_focus_item));
+    }
+    return FocusElement::None;
+}
+
+#include "utils/log.hpp"
+bool WidgetPagination::is_on_edit(uint16_t x) const noexcept
+{
+    LOG(LOG_DEBUG, "%d <= %d <= %d = %d", m_edit.x(), x, m_edit.eright(), x >= m_edit.x() && x <= m_edit.eright());
+    return x >= m_edit.x() && x < m_edit.eright();
 }
 
 void WidgetPagination::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
@@ -675,6 +661,27 @@ void WidgetPagination::rdp_input_scancode(KbdFlags flags, Scancode scancode, uin
     }
 }
 
+void WidgetPagination::submit()
+{
+    switch (m_focus_item)
+    {
+        case Item::None:
+        case Item::Label:
+            return;
+
+        case Item::Edit:
+            m_edit.submit();
+            return;
+
+        case Item::First:
+        case Item::Prev:
+        case Item::Next:
+        case Item::Last:
+            D::process_act_button(*this, m_focus_item);
+            break;
+    }
+}
+
 void WidgetPagination::rdp_input_invalidate(Rect r)
 {
     auto clip = r.intersect(get_rect());
@@ -719,26 +726,20 @@ void WidgetPagination::rdp_input_invalidate(Rect r)
         }
     };
 
-    D::YInfo y_info1 = D::first_or_prev_y_info(*this);
-    D::YInfo y_info2 = D::next_or_last_y_info(*this);
+    auto draw_icon = [&](int x1, int x2, int offset_x, D::YInfo y_info, Item item, FontCharPtr fc){
+        draw_text(x1, x2, offset_x, fc->offsetx + fc->incby + 1, y_info, item, {&fc, 1});
+    };
 
-    int16_t prev_w = m_chars[0]->offsetx + m_chars[0]->incby + 1;
-    int16_t next_w = m_chars[3]->offsetx + m_chars[3]->incby + 1;
-    int16_t first_w = prev_w + m_chars[1]->offsetx + m_chars[1]->incby;
-    int16_t last_w = next_w + m_chars[2]->offsetx + m_chars[2]->incby;
+    auto y_info = D::y_info(*this);
 
     // first button
-    draw_text(0, m_offsets[D::Prev], m_offsets[D::First], first_w,
-              y_info1, Item::First, D::first_button_text(*this));
+    draw_icon(0, m_offsets[D::Prev], m_offsets[D::First], y_info, Item::First, m_chars[0]);
     // prev button
-    draw_text(m_offsets[D::Prev], m_offsets[D::Edit], 0, prev_w,
-              y_info1, Item::Prev, D::prev_button_text(*this));
+    draw_icon(m_offsets[D::Prev], m_offsets[D::Edit], 0, y_info, Item::Prev, m_chars[1]);
     // next button
-    draw_text(m_offsets[D::Next], m_offsets[D::Last], 0, next_w,
-              y_info2, Item::Next, D::next_button_text(*this));
+    draw_icon(m_offsets[D::Next], m_offsets[D::Last], 0, y_info, Item::Next, m_chars[2]);
     // last button
-    draw_text(m_offsets[D::Last], cx(), 0, last_w,
-              y_info2, Item::Last, D::last_button_text(*this));
+    draw_icon(m_offsets[D::Last], cx(), 0, y_info, Item::Last, m_chars[3]);
 
     // edit
     D::set_edit_position(*this);

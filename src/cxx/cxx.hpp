@@ -101,18 +101,18 @@
 # define REDEMPTION_LIKELY(x) __builtin_expect(!!(x), 1)
 # define REDEMPTION_UNLIKELY(x) __builtin_expect(!!(x), 0)
 # define REDEMPTION_NOINLINE __attribute__((noinline))
-# define REDEMPTION_ALWAYS_INLINE __attribute__((always_inline))
+# define REDEMPTION_ALWAYS_INLINE inline __attribute__((always_inline))
 # define REDEMPTION_LIB_EXPORT __attribute__((visibility("default")))
 #else
 # define REDEMPTION_LIKELY(x) (x)
 # define REDEMPTION_UNLIKELY(x) (x)
 # ifdef _MSC_VER
 #  define REDEMPTION_NOINLINE __declspec(noinline)
-#  define REDEMPTION_ALWAYS_INLINE __forceinline
+#  define REDEMPTION_ALWAYS_INLINE inline __forceinline
 #  define REDEMPTION_LIB_EXPORT __declspec(dllexport)
 # else
 #  define REDEMPTION_NOINLINE
-#  define REDEMPTION_ALWAYS_INLINE
+#  define REDEMPTION_ALWAYS_INLINE inline
 #  define REDEMPTION_LIB_EXPORT // REDEMPTION_WARNING("Unknown dynamic link import semantics.")
 # endif
 #endif

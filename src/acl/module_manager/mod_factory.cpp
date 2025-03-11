@@ -572,6 +572,9 @@ void ModFactory::create_vnc_mod(SessionLogApi& session_log)
         this->events,
         session_log,
         err_msg_ctx,
-        this->gen);
+        this->get_translator(),
+        this->gen,
+        this->cctx
+    );
     Impl::set_mod(*this, ModuleName::VNC, mod_pack, true);
 }

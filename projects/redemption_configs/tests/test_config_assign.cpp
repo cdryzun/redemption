@@ -245,12 +245,12 @@ RED_AUTO_TEST_CASE(TestIniAssign)
 
     ini.set<cfg::mod_replay::on_end_of_data>(true);
 
-    ini.set<cfg::mod_vnc::bogus_clipboard_infinite_loop>(VncBogusClipboardInfiniteLoop::duplicated);
-    ini.set<cfg::mod_vnc::clipboard_down>(true);
-    ini.set<cfg::mod_vnc::clipboard_up>(true);
+    ini.set<cfg::vnc_clipboard::bogus_infinite_loop_strategy>(VncBogusClipboardInfiniteLoopStrategy::duplicated);
+    ini.set<cfg::vnc_clipboard::enable_clipboard_download>(true);
+    ini.set<cfg::vnc_clipboard::enable_clipboard_upload>(true);
     ini.set<cfg::mod_vnc::encodings>(cslist);
     ini.set<cfg::mod_vnc::encodings>(slist);
-    ini.set<cfg::mod_vnc::server_clipboard_encoding_type>(ClipboardEncodingType::latin1);
+    ini.set<cfg::vnc_clipboard::clipboard_encoding>(VncClipboardEncoding::latin1);
 
     ini.set<cfg::session_log::keyboard_input_masking_level>(KeyboardInputMaskingLevel::unmasked);
 

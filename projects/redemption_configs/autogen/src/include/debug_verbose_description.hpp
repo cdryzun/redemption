@@ -84,7 +84,8 @@ constexpr char const* CONFIG_DESC_VNC = R"(- basic_trace     = 0x00000001
 - raw_trace       = 0x00010000
 - copyrect_encoder= 0x00020000
 - copyrect_trace  = 0x00040000
-- keymap          = 0x00080000)";
+- keymap          = 0x00080000
+- clipboard_dump  = 0x00100000)";
 
 constexpr char const* CONFIG_DESC_SCK = R"(- basic    = 0x0001
 - dump     = 0x0002

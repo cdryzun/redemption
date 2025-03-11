@@ -197,6 +197,12 @@ namespace types
         static_assert(std::is_base_of_v<impl::unsigned_base, T>);
     };
 
+    template<class T>
+    struct bytes
+    {
+        static_assert(std::is_base_of_v<impl::unsigned_base, T>);
+    };
+
     struct performance_flags {};
 }
 
@@ -219,6 +225,7 @@ enum class SpecAttributes : uint16_t
     image           = 1 << 5,
     external        = 1 << 6,
     adminkit        = 1 << 7,
+    hidden          = 1 << 8,
 };
 
 MK_ENUM_OP(SpecAttributes)

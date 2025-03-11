@@ -28,6 +28,7 @@ Author(s): Proxy Team
 #include <cstring>
 
 #include <string_view>
+#include <bit>
 
 
 constexpr std::size_t buffer_size_of_uint64_to_chars = 20;
@@ -181,36 +182,105 @@ char* int_to_fixed_hexadecimal_lower_chars(char* out, T n) noexcept;
 
 namespace detail
 {
-    inline constexpr char digit_pairs[][2] = {
-        {'0', '0'}, {'0', '1'}, {'0', '2'}, {'0', '3'}, {'0', '4'}, {'0', '5'},
-        {'0', '6'}, {'0', '7'}, {'0', '8'}, {'0', '9'}, {'1', '0'}, {'1', '1'},
-        {'1', '2'}, {'1', '3'}, {'1', '4'}, {'1', '5'}, {'1', '6'}, {'1', '7'},
-        {'1', '8'}, {'1', '9'}, {'2', '0'}, {'2', '1'}, {'2', '2'}, {'2', '3'},
-        {'2', '4'}, {'2', '5'}, {'2', '6'}, {'2', '7'}, {'2', '8'}, {'2', '9'},
-        {'3', '0'}, {'3', '1'}, {'3', '2'}, {'3', '3'}, {'3', '4'}, {'3', '5'},
-        {'3', '6'}, {'3', '7'}, {'3', '8'}, {'3', '9'}, {'4', '0'}, {'4', '1'},
-        {'4', '2'}, {'4', '3'}, {'4', '4'}, {'4', '5'}, {'4', '6'}, {'4', '7'},
-        {'4', '8'}, {'4', '9'}, {'5', '0'}, {'5', '1'}, {'5', '2'}, {'5', '3'},
-        {'5', '4'}, {'5', '5'}, {'5', '6'}, {'5', '7'}, {'5', '8'}, {'5', '9'},
-        {'6', '0'}, {'6', '1'}, {'6', '2'}, {'6', '3'}, {'6', '4'}, {'6', '5'},
-        {'6', '6'}, {'6', '7'}, {'6', '8'}, {'6', '9'}, {'7', '0'}, {'7', '1'},
-        {'7', '2'}, {'7', '3'}, {'7', '4'}, {'7', '5'}, {'7', '6'}, {'7', '7'},
-        {'7', '8'}, {'7', '9'}, {'8', '0'}, {'8', '1'}, {'8', '2'}, {'8', '3'},
-        {'8', '4'}, {'8', '5'}, {'8', '6'}, {'8', '7'}, {'8', '8'}, {'8', '9'},
-        {'9', '0'}, {'9', '1'}, {'9', '2'}, {'9', '3'}, {'9', '4'}, {'9', '5'},
-        {'9', '6'}, {'9', '7'}, {'9', '8'}, {'9', '9'}
+    inline constexpr uint32_t pow10_32[] = {
+        0u,
+        10u,
+        100u,
+        1000u,
+        10000u,
+        100000u,
+        1000000u,
+        10000000u,
+        100000000u,
+        1000000000u,
     };
 
-    template<class UInt>
-    inline char* to_decimal_chars_impl(char *end, UInt value) noexcept
+    constexpr int number_length(uint32_t dec) noexcept
     {
-        static_assert(std::is_unsigned_v<UInt>);
+        int t = (32 - std::countl_zero(dec)) * 1233 >> 12;
+        return (t - (dec < pow10_32[t]) + 1);
+    }
 
+    inline constexpr char const * digit_pairs
+      = "00010203040506070809"
+        "10111213141516171819"
+        "20212223242526272829"
+        "30313233343536373839"
+        "40414243444546474849"
+        "50515253545556575859"
+        "60616263646566676869"
+        "70717273747576777879"
+        "80818283848586878889"
+        "90919293949596979899";
+
+    inline char* push_2digits(char* p, uint64_t n) noexcept
+    {
+        assert(n < 100);
+        memcpy(p, detail::digit_pairs + n * 2, 2);
+        return p + 2;
+    }
+
+    inline char* push_2digits(char* p, int n) noexcept
+    {
+        assert(n >= 0 && n < 100);
+        memcpy(p, detail::digit_pairs + n * 2, 2);
+        return p + 2;
+    }
+
+    // https://github.com/jk-jeon/dragonbox/blob/master/source/dragonbox_to_chars.cpp
+    struct Split4DigitsBy2
+    {
+        inline Split4DigitsBy2(uint64_t n) noexcept
+            : d1{n * uint64_t{42949673}}
+            , d2{(d1 & uint32_t{0xffffffff}) * 100}
+        {
+            assert(/*0 <= n &&*/ n <= 9999);
+        }
+
+        inline uint64_t low() const noexcept
+        {
+            return d2 >> 32;
+        }
+
+        inline uint64_t high() const noexcept
+        {
+            return d1 >> 32;
+        }
+
+        inline char* push_low_in(char* p) const noexcept
+        {
+            return push_2digits(p, d2 >> 32);
+        }
+
+        inline char* push_high_in(char* p) const noexcept
+        {
+            return push_2digits(p, d1 >> 32);
+        }
+
+        inline char* push_in(char* p) const noexcept
+        {
+            p = push_high_in(p);
+            p = push_low_in(p);
+            return p;
+        }
+
+    private:
+        uint64_t d1;
+        uint64_t d2;
+    };
+
+    inline char* push_4digits(char* p, uint64_t n) noexcept
+    {
+        return Split4DigitsBy2{n}.push_in(p);
+    }
+
+    inline char* to_decimal_chars_impl(char *end, uint64_t value) noexcept
+    {
         char* out = end;
 
         while (value >= 100) {
             out -= 2;
-            memcpy(out, digit_pairs[value % 100], 2);
+            push_2digits(out, value % 100);
             value /= 100;
         }
 
@@ -220,7 +290,7 @@ namespace detail
         }
 
         out -= 2;
-        memcpy(out, digit_pairs[value], 2);
+        push_2digits(out, value);
         return out;
     }
 
@@ -230,20 +300,16 @@ namespace detail
         static_assert(std::is_integral_v<Int>);
         static_assert(sizeof(Int) <= 64);
 
+        auto abs_value = static_cast<uint64_t>(value); /* NOLINT(bugprone-signed-char-misuse, cert-str34-c) */
         if constexpr (std::is_signed_v<Int>) {
-            using UInt = std::conditional_t<(sizeof(Int) < sizeof(int)), unsigned, std::make_unsigned_t<Int>>;
-            auto abs_value = static_cast<UInt>(value); /* NOLINT(bugprone-signed-char-misuse, cert-str34-c) */
             bool negative = (value < 0);
             if (negative) abs_value = 0 - abs_value;
             char* begin = to_decimal_chars_impl(end, abs_value);
             if (negative) *--begin = '-';
             return begin;
         }
-        else if constexpr (sizeof(Int) < sizeof(unsigned)) {
-            return to_decimal_chars_impl(end, unsigned(value));
-        }
         else {
-            return to_decimal_chars_impl(end, value);
+            return to_decimal_chars_impl(end, abs_value);
         }
     }
 

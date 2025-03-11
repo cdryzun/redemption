@@ -384,6 +384,11 @@ WidgetEdit::Text WidgetEdit::get_text() const noexcept
     });
 }
 
+array_view<uint32_t> WidgetEdit::get_utf32_text() const noexcept
+{
+    return buffer().text();
+}
+
 unsigned WidgetEdit::get_text_as_uint() const noexcept
 {
     unsigned result = 0;
@@ -392,6 +397,34 @@ unsigned WidgetEdit::get_text_as_uint() const noexcept
         result += uc - '0';
     }
     return result;
+}
+
+std::size_t WidgetEdit::remaining_chars_for_insertion() const noexcept
+{
+    return buffer().remaining();
+}
+
+void WidgetEdit::set_text(array_view<uint32_t> text, TextOptions opts)
+{
+    auto const old_pos = buffer().current_pos();
+
+    buffer().remove_all();
+
+    x_cursor = D::start_x_cursor;
+    x_text = 0;
+
+    int shift = 0;
+
+    for (auto uc : text)
+    {
+        if (buffer().is_full())
+        {
+            break;
+        }
+        shift += buffer().replace_and_advance(uc, *font);
+    }
+
+    process_set_text_options(old_pos, shift, opts);
 }
 
 void WidgetEdit::set_text(bytes_view text, TextOptions opts)
@@ -415,6 +448,11 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
         [&]{ return !buffer().is_full(); }
     );
 
+    process_set_text_options(old_pos, shift, opts);
+}
+
+void WidgetEdit::process_set_text_options(std::size_t old_pos, int shift, TextOptions opts)
+{
     switch (opts.cursor_position) {
         case CusorPosition::KeepCursorPosition: {
             auto const fcs = buffer().font_chars();
@@ -472,6 +510,51 @@ void WidgetEdit::insert_chars(array_view<uint32_t> ucs, Redraw redraw)
     bool partial_update = move_cursor_to_right(shift);
     if (redraw == Redraw::Yes) {
         redraw_text({partial_update, old_it_ch, old_x_cursor});
+    }
+}
+
+void WidgetEdit::remove_right_at(std::size_t i, Redraw redraw)
+{
+    if (i >= buffer().font_chars().size()) {
+        return ;
+    }
+
+    auto current_pos = buffer().current_pos();
+    auto old_x_cursor = x_cursor;
+    auto old_x_text = x_text;
+    int partial_update = 2;
+    bool move_to_right = (current_pos < i);
+
+    int shift = 0;
+
+    if (current_pos < i) {
+        while (current_pos++ < i) {
+            shift += buffer().move_to_right();
+        }
+
+        partial_update = move_cursor_to_right(shift);
+    }
+    else if (i < current_pos) {
+        while (i < current_pos--) {
+            shift += buffer().move_to_left();
+        }
+
+        partial_update = move_cursor_to_left(shift);
+    }
+
+    buffer().remove_to_end();
+
+    if (redraw == Redraw::Yes) {
+        if (partial_update == 1) {
+            redraw_cursor(old_x_cursor);
+        }
+        else if (!partial_update) {
+            redraw_text({});
+            maybe_redraw_left_empty_padding(old_x_text);
+            if (move_to_right) {
+                redraw_right_empty_padding();
+            }
+        }
     }
 }
 

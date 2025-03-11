@@ -21,8 +21,8 @@ Author(s): Jonathan Poelen
 #pragma once
 
 #include "mod/mod_api.hpp"
+#include "mod/vnc/vnc_params.hpp"
 #include "mod/vnc/vnc_verbose.hpp"
-#include "configs/autogen/enums.hpp"
 
 #include <memory>
 #include <string_view>
@@ -35,6 +35,8 @@ class SessionLogApi;
 class KeyLayout;
 class Random;
 class EventContainer;
+class Translator;
+class Font;
 
 namespace gdi
 {
@@ -50,17 +52,15 @@ std::unique_ptr<mod_api> new_mod_vnc(
     Transport & t
   , Random & random
   , gdi::GraphicApi & gd
+  , Font const & glyphs
   , EventContainer & events
   , const char * username
   , const char * password
   , FrontAPI & front
   , uint16_t front_width
   , uint16_t front_height
-  , bool clipboard_up
-  , bool clipboard_down
+  , ModVncParams vnc_params
   , const char * encodings
-  , ClipboardEncodingType clipboard_server_encoding_type
-  , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
   , KeyLayout const& layout
   , kbdtypes::KeyLocks locks
   , bool server_is_macos
@@ -71,4 +71,5 @@ std::unique_ptr<mod_api> new_mod_vnc(
   , SessionLogApi& session_log
   , ModTlsParams const& tls_params
   , std::string_view force_authentication_method
+  , Translator const& translator
 );

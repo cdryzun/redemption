@@ -25,7 +25,6 @@
 #pragma once
 
 #include "acl/mod_pack.hpp"
-#include "utils/ref.hpp"
 
 class Inifile;
 class FrontAPI;
@@ -34,10 +33,12 @@ class ClientExecute;
 class Font;
 class Random;
 class Theme;
+class Translator;
 class EventContainer;
 class SessionLogApi;
 class ErrorMessageCtx;
 class KeyLayout;
+class CryptoContext;
 
 namespace kbdtypes
 {
@@ -57,9 +58,11 @@ ModPack create_mod_vnc(
     ClientExecute& rail_client_execute,
     KeyLayout const& layout,
     kbdtypes::KeyLocks locks,
-    Ref<Font const> glyphs,
+    Font const& glyphs,
     Theme & theme,
     EventContainer& events,
     SessionLogApi& session_log,
     ErrorMessageCtx& err_msg_ctx,
-    Random & rand);
+    Translator const& translator,
+    Random & rand,
+    CryptoContext & cctx);

@@ -244,12 +244,8 @@ namespace cfg
     };
 
     struct mod_vnc {
-        struct clipboard_up;
-        struct clipboard_down;
         struct encodings;
         struct support_cursor_pseudo_encoding;
-        struct server_clipboard_encoding_type;
-        struct bogus_clipboard_infinite_loop;
         struct server_is_macos;
         struct server_unix_alt;
         struct enable_ipv6;
@@ -262,6 +258,21 @@ namespace cfg
         struct tls_signature_algorithms;
         struct show_common_cipher_list;
         struct force_authentication_method;
+    };
+
+    struct vnc_clipboard {
+        struct enable_clipboard_upload;
+        struct enable_clipboard_download;
+        struct clipboard_encoding;
+        struct bogus_infinite_loop_strategy;
+    };
+
+    struct vnc_file_transfer {
+        struct enable_file_upload;
+        struct enable_file_download;
+        struct max_item_in_gui;
+        struct max_file_transfer_list;
+        struct max_file_size;
     };
 
     struct session_log {

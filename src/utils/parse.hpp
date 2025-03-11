@@ -154,7 +154,7 @@ public:
         this->p += v.size();
     }
 
-    void in_skip_bytes(unsigned int n) noexcept {
+    void in_skip_bytes(size_t n) noexcept {
         this->p+=n;
     }
 

@@ -11,6 +11,8 @@
   {"name": "session_probe"},
   {"name": "server_cert"},
   {"name": "mod_vnc", "connpolicyName": "vnc"},
+  {"name": "vnc_clipboard", "connpolicyName": "clipboard"},
+  {"name": "vnc_file_transfer", "connpolicyName": "file_transfer"},
   {"name": "session_log"},
   {"name": "ocr"},
   {"name": "capture"},
@@ -2559,26 +2561,6 @@
     },
     {
       "section": "mod_vnc",
-      "name": "clipboard_up",
-      "type": "bool",
-      "value": false,
-      "description": "Check this option to enable the clipboard upload (from client to target server).\nThis only supports text data clipboard (not files).",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "logStategy": "1"
-    },
-    {
-      "section": "mod_vnc",
-      "name": "clipboard_down",
-      "type": "bool",
-      "value": false,
-      "description": "Check this option to enable the clipboard download (from target server to client).\nThis only supports text data clipboard (not files).",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "logStategy": "1"
-    },
-    {
-      "section": "mod_vnc",
       "name": "encodings",
       "type": "list",
       "value": "",
@@ -2596,32 +2578,6 @@
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
-    },
-    {
-      "section": "mod_vnc",
-      "name": "server_clipboard_encoding_type",
-      "type": "enumStr",
-      "value": "latin1",
-      "description": "VNC target server clipboard text data encoding type.",
-      "aclName": "vnc_server_clipboard_encoding_type",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "advanced": true,
-      "logStategy": "1",
-      "subtype": "ClipboardEncodingType"
-    },
-    {
-      "section": "mod_vnc",
-      "name": "bogus_clipboard_infinite_loop",
-      "type": "enum",
-      "value": 0,
-      "description": "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\nThis option indicates the strategy to adopt in such situations.",
-      "aclName": "vnc_bogus_clipboard_infinite_loop",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "advanced": true,
-      "logStategy": "1",
-      "subtype": "VncBogusClipboardInfiniteLoop"
     },
     {
       "section": "mod_vnc",
@@ -2752,6 +2708,116 @@
       "value": "",
       "description": "When specified, forces the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.\n  - noauth\n  - vncauth\n  - mslogon\n  - mslogoniiauth\n  - ultravnc_dsm_old\n  - ultravnc_dsm_new\n  - tlsnone\n  - tlsvnc\n  - tlsplain\n  - x509none\n  - x509vnc\n  - x509plain",
       "tags": ["workaround"],
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "mod_vnc",
+      "name": "clipboard_up",
+      "type": "bool",
+      "value": false,
+      "description": "",
+      "globalSpec": true,
+      "external": true,
+      "hidden": true
+    },
+    {
+      "section": "mod_vnc",
+      "name": "clipboard_down",
+      "type": "bool",
+      "value": false,
+      "description": "",
+      "globalSpec": true,
+      "external": true,
+      "hidden": true
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "enable_clipboard_upload",
+      "type": "bool",
+      "value": false,
+      "description": "Enable the clipboard upload (from client to target server).\nThis only supports text data clipboard, not files.",
+      "iniOnly": true
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "enable_clipboard_download",
+      "type": "bool",
+      "value": false,
+      "description": "Enable the clipboard download (from target server to client).\nThis only supports text data clipboard, not files.",
+      "iniOnly": true
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "clipboard_encoding",
+      "type": "enumStr",
+      "value": "latin1",
+      "description": "VNC target server clipboard text data encoding type.",
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1",
+      "subtype": "VncClipboardEncoding"
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "bogus_infinite_loop_strategy",
+      "type": "enum",
+      "value": 0,
+      "description": "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\nThis option indicates the strategy to adopt in such situations.",
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1",
+      "subtype": "VncBogusClipboardInfiniteLoopStrategy"
+    },
+    {
+      "section": "vnc_file_transfer",
+      "name": "enable_file_upload",
+      "type": "bool",
+      "value": false,
+      "description": "Enable the file transfer upload (from client to target server).\nThis feature is only supported by Ultra VNC server.",
+      "iniOnly": true
+    },
+    {
+      "section": "vnc_file_transfer",
+      "name": "enable_file_download",
+      "type": "bool",
+      "value": false,
+      "description": "Enable the file transfer download (from target server to client).\nThis feature is only supported by Ultra VNC server.",
+      "iniOnly": true
+    },
+    {
+      "section": "vnc_file_transfer",
+      "name": "max_item_in_gui",
+      "type": "u32",
+      "value": 100000,
+      "description": "Maximum item in folder showed by the GUI.",
+      "displayName": "Max item in GUI",
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "vnc_file_transfer",
+      "name": "max_file_transfer_list",
+      "type": "u32",
+      "value": 10000,
+      "description": "Maximum file number authorized for one upload or download.",
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "vnc_file_transfer",
+      "name": "max_file_size",
+      "type": "bytes",
+      "value": 268435456,
+      "description": "Maximum file size authorized for an upload or a download.",
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -3219,6 +3285,7 @@
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
+      "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3231,6 +3298,7 @@
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
+      "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3307,6 +3375,7 @@
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -3320,6 +3389,7 @@
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
+      "vnc": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -3341,6 +3411,7 @@
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
+      "vnc": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "RdpStoreFile"
@@ -4030,7 +4101,7 @@
       "name": "proxy_opt",
       "type": "str",
       "value": "",
-      "description": "",
+      "description": "Not used when <code>[globals]enable_wab_integration</code> is off.",
       "aclToProxy": true,
       "resetBackToSelector": true,
       "logStategy": "1"
@@ -4891,7 +4962,7 @@
       "name": "mod_vnc",
       "type": "u32",
       "value": 0,
-      "description": "- basic_trace     = 0x00000001\n- keymap_stack    = 0x00000002\n- draw_event      = 0x00000004\n- input           = 0x00000008\n- connection      = 0x00000010\n- hextile_encoder = 0x00000020\n- cursor_encoder  = 0x00000040\n- clipboard       = 0x00000080\n- zrle_encoder    = 0x00000100\n- zrle_trace      = 0x00000200\n- hextile_trace   = 0x00000400\n- cursor_trace    = 0x00001000\n- rre_encoder     = 0x00002000\n- rre_trace       = 0x00004000\n- raw_encoder     = 0x00008000\n- raw_trace       = 0x00010000\n- copyrect_encoder= 0x00020000\n- copyrect_trace  = 0x00040000\n- keymap          = 0x00080000",
+      "description": "- basic_trace     = 0x00000001\n- keymap_stack    = 0x00000002\n- draw_event      = 0x00000004\n- input           = 0x00000008\n- connection      = 0x00000010\n- hextile_encoder = 0x00000020\n- cursor_encoder  = 0x00000040\n- clipboard       = 0x00000080\n- zrle_encoder    = 0x00000100\n- zrle_trace      = 0x00000200\n- hextile_trace   = 0x00000400\n- cursor_trace    = 0x00001000\n- rre_encoder     = 0x00002000\n- rre_trace       = 0x00004000\n- raw_encoder     = 0x00008000\n- raw_trace       = 0x00010000\n- copyrect_encoder= 0x00020000\n- copyrect_trace  = 0x00040000\n- keymap          = 0x00080000\n- clipboard_dump  = 0x00100000",
       "displayName": "Mod VNC",
       "globalSpec": true,
       "hex": true,

@@ -206,7 +206,7 @@ RED_AUTO_TEST_CASE(ClientNameRequest1)
 
     StaticOutStream<1200> out_stream;
 
-    rdpdr::emit_client_name_request(out_stream, "rzh"_av, 0x1);
+    rdpdr::emit_client_name_request(out_stream, RdpHostname::from_ascii("rzh"_sized_av), 0x1);
 
     RED_CHECK(out_stream.get_produced_bytes() == in_data);
 }
@@ -228,7 +228,7 @@ RED_AUTO_TEST_CASE(ClientNameRequest2)
 
     StaticOutStream<1200> out_stream;
 
-    rdpdr::emit_client_name_request(out_stream, "RDP-TEST"_av, 0x2D16624D);
+    rdpdr::emit_client_name_request(out_stream, RdpHostname::from_ascii("RDP-TEST"_sized_av), 0x2D16624D);
 
     RED_CHECK(out_stream.get_produced_bytes() == in_data);
 }

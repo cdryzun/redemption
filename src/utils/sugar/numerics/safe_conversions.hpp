@@ -1,21 +1,6 @@
 /*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-*   Product name: redemption, a FLOSS RDP proxy
-*   Copyright (C) Wallix 2010-2016
-*   Author(s): Jonathan Poelen
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #pragma once
@@ -27,27 +12,26 @@
 
 // analogous to static_cast<> for integral types
 // with an assert macro if the conversion is overflow or underflow.
-template <class Dst, class Src>
+template<class Dst, class Src>
 constexpr Dst checked_cast(Src value) noexcept;
 
 
 // analogous to static_cast<> for integral types,
 // except that use std::clamp if the conversion is overflow or underflow.
-template <class Dst, class Src>
+template<class Dst, class Src>
 constexpr Dst saturated_cast(Src value) noexcept;
 
 
 // analogous to static_cast<> for integral types
 // with an static_assert if the conversion is possibly overflow or underflow.
-template <class Dst, class Src>
+template<class Dst, class Src>
 constexpr Dst safe_cast(Src value) noexcept;
 
 
 namespace detail
 {
     template<class T>
-    using is_numeric_convertible = std::integral_constant<bool,
-        std::is_integral<T>::value || std::is_enum<T>::value>;
+    inline constexpr bool is_numeric_convertible_v = std::is_integral_v<T> || std::is_enum_v<T>;
 }
 
 
@@ -85,7 +69,8 @@ struct checked_int
         return *this;
     }
 
-    template<class U, class = std::enable_if_t<detail::is_numeric_convertible<U>::value>>
+    template<class U>
+        requires detail::is_numeric_convertible_v<U>
     constexpr operator U () const noexcept { return checked_cast<U>(i); }
 
     constexpr operator T () const noexcept { return this->i; }
@@ -131,7 +116,8 @@ struct saturated_int
         return *this;
     }
 
-    template<class U, class = std::enable_if_t<detail::is_numeric_convertible<U>::value>>
+    template<class U>
+        requires detail::is_numeric_convertible_v<U>
     constexpr operator U () const noexcept { return saturated_cast<U>(i); }
 
     constexpr operator T () const noexcept { return this->i; }
@@ -177,7 +163,8 @@ struct safe_int
         return *this;
     }
 
-    template<class U, class = std::enable_if_t<detail::is_numeric_convertible<U>::value>>
+    template<class U>
+        requires detail::is_numeric_convertible_v<U>
     constexpr operator U () const noexcept { return safe_cast<U>(i); }
 
     constexpr operator T () const noexcept { return this->i; }
@@ -192,13 +179,6 @@ private:
 template<class T> safe_int(T i) -> safe_int<T>;
 template<class T> checked_int(T i) -> checked_int<T>;
 template<class T> saturated_int(T i) -> saturated_int<T>;
-
-namespace std
-{
-    template<class T> struct underlying_type< ::safe_int<T>     > { using type = T; };
-    template<class T> struct underlying_type< ::checked_int<T>  > { using type = T; };
-    template<class T> struct underlying_type< ::saturated_int<T>> { using type = T; };
-}
 
 // Implementation
 
@@ -222,15 +202,15 @@ namespace detail
         using type = T;
     };
 
-    template <class Dst, class Src>
+    template<class Dst, class Src>
     constexpr int check_int(Src const & /*unused*/) noexcept
     {
-        static_assert(is_numeric_convertible<Src>::value, "Argument must be an integral.");
-        static_assert(is_numeric_convertible<Dst>::value, "Dst must be an integral.");
+        static_assert(is_numeric_convertible_v<Src>, "Argument must be an integral.");
+        static_assert(is_numeric_convertible_v<Dst>, "Dst must be an integral.");
         return 1;
     }
 
-    template <class Dst, class Src>
+    template<class Dst, class Src>
     constexpr Dst checked_cast(type_<Dst> /*unused*/, Src value) noexcept
     {
     #ifndef NDEBUG
@@ -252,13 +232,13 @@ namespace detail
         return static_cast<Dst>(value);
     }
 
-    template <class Dst>
+    template<class Dst>
     constexpr Dst checked_cast(type_<Dst> /*unused*/, Dst value) noexcept
     {
         return value;
     }
 
-    template <class Dst, class Src>
+    template<class Dst, class Src>
     constexpr Dst saturated_cast(type_<Dst> /*unused*/, Src value) noexcept
     {
         if constexpr (std::is_signed<Dst>::value == std::is_signed<Src>::value && sizeof(Dst) >= sizeof(Src)) {
@@ -276,7 +256,7 @@ namespace detail
         return dst_limits::min() > value ? dst_limits::min() : new_max_value;
     }
 
-    template <class Dst>
+    template<class Dst>
     constexpr Dst saturated_cast(type_<Dst> /*unused*/, Dst value) noexcept
     {
         return value;
@@ -305,20 +285,20 @@ namespace detail
 }  // namespace detail
 
 
-template <class Dst, class Src>
+template<class Dst, class Src>
 constexpr Dst checked_cast(Src value) noexcept
 {
-    static_assert(detail::check_int<Dst>(value) );
+    static_assert(detail::check_int<Dst>(value));
     using dst_type = detail::underlying_type_or_integral_t<Dst>;
     using src_type = detail::underlying_type_or_integral_t<Src>;
     return static_cast<Dst>(detail::checked_cast(detail::type_<dst_type>{}, static_cast<src_type>(value)));
 }
 
 
-template <class Dst, class Src>
+template<class Dst, class Src>
 constexpr Dst saturated_cast(Src value) noexcept
 {
-    static_assert(detail::check_int<Dst>(value) );
+    static_assert(detail::check_int<Dst>(value));
     using dst_type = detail::underlying_type_or_integral_t<Dst>;
     using src_type = detail::underlying_type_or_integral_t<Src>;
     return static_cast<Dst>(detail::saturated_cast(detail::type_<dst_type>{}, static_cast<src_type>(value)));
@@ -331,10 +311,10 @@ using is_safe_convertible = std::integral_constant<bool, detail::is_safe_convert
     detail::underlying_type_or_integral_t<To>
 >::value>;
 
-template <class Dst, class Src>
+template<class Dst, class Src>
 constexpr Dst safe_cast(Src value) noexcept
 {
-    static_assert(detail::check_int<Dst>(value) );
+    static_assert(detail::check_int<Dst>(value));
     static_assert(is_safe_convertible<Src, Dst>::value, "Unsafe conversion.");
     return static_cast<Dst>(value);
 }

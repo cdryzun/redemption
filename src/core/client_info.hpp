@@ -46,6 +46,7 @@
 #include "core/RDP/capabilities/window.hpp"
 #include "core/RDP/caches/glyphcache.hpp"
 #include "core/RDP/rdp_performance_flags.hpp"
+#include "core/rdp_hostname.hpp"
 #include "keyboard/keylayout.hpp"
 #include "gdi/screen_info.hpp"
 #include "utils/get_printable_password.hpp"
@@ -85,10 +86,11 @@ struct ClientInfo
 
     //uint32_t desktop_cache = 0;
     bool use_compact_packets = false; /* rdp5 smaller packets */
-    char hostname[16] = {0};
+    // TODO should be a static_array
+    RdpHostname hostname;
     uint32_t build = 0;
     KeyLayout::KbdId keylayout {};
-    // TODO should be a Sized array
+    // TODO should be a static_string
     char username[257] = {0};
     char password[257] = {0};
     char domain[257] = {0};

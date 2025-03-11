@@ -116,7 +116,7 @@
     }
   ]
 }, {
-  "name": "ClipboardEncodingType",
+  "name": "VncClipboardEncoding",
   "category": "autoincrement",
   "nameWhenDescription": true,
   "values": [
@@ -316,7 +316,7 @@
     }
   ]
 }, {
-  "name": "VncBogusClipboardInfiniteLoop",
+  "name": "VncBogusClipboardInfiniteLoopStrategy",
   "category": "autoincrement",
   "nameWhenDescription": true,
   "values": [

@@ -49,7 +49,7 @@ REDEMPTION_CXXFLAGS +=
 EXE_DEPENDENCIES +=
     <cxxflags>"--no-entry"
     # <linkflags>"-s ABORTING_MALLOC=0"
-    <linkflags>"-s EXPORTED_RUNTIME_METHODS=['stringToUTF16']"
+    <linkflags>"-s EXPORTED_RUNTIME_METHODS=stringToUTF16,HEAPU8,HEAPU16"
 
     <linkflags>"-s STACK_SIZE=1MB"
     <linkflags>"-s INITIAL_MEMORY=2MB"
@@ -241,6 +241,7 @@ constant TEST_DEPENDENCIES :
     <linkflags>--bind
     <linkflags>"-s STACK_SIZE=131072"
     <linkflags>"-s EXIT_RUNTIME=1"
+    <linkflags>"-s EXPORTED_RUNTIME_METHODS=HEAPU8,HEAPU16"
 ;
 
 obj log_test.o : $(REDEMPTION_TEST_PATH)/includes/test_only/log_as_logtest.cpp

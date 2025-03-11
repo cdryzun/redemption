@@ -13,7 +13,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "translation/translation.hpp"
 #include "translation/trkeys.hpp"
 #include "utils/sugar/buf_maker.hpp"
-#include "utils/sugar/byte_copy.hpp"
+#include "utils/sugar/bytes_copy.hpp"
 #include "utils/theme.hpp"
 
 #include <numeric>
@@ -253,11 +253,11 @@ void WidgetSelector::WidgetGrid::init_lines(
          */
 
         auto authorization_text = D::allocate_view<char>(mbr, authorization.size());
-        byte_copy(authorization_text.data(), authorization);
+        bytes_copy(authorization_text, authorization);
         line.authorization_text = authorization_text;
 
         auto target_text = D::allocate_view<char>(mbr, target.size());
-        byte_copy(target_text.data(), target);
+        bytes_copy(target_text, target);
         line.target_text = target_text;
 
         chars_view const texts[] { authorization, target, protocol, };

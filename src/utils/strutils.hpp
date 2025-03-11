@@ -42,6 +42,7 @@ template<class... Strings>
 void str_assign(std::string& str, Strings const&... strs);
 
 
+/// \return pointer to the matching byte, otherwise \c nullptr.
 inline char const* strchr(chars_view str, char pattern) noexcept
 {
     // cast to u8 to prevent overflow when char -> int in memchr
@@ -49,11 +50,28 @@ inline char const* strchr(chars_view str, char pattern) noexcept
     return static_cast<char const*>(std::memchr(str.data(), c, str.size()));
 }
 
+/// \return pointer to the matching byte, otherwise \c nullptr.
 inline char* strchr(writable_chars_view str, char pattern) noexcept
 {
     // cast to u8 to prevent overflow when char -> int in memchr
     auto c = static_cast<uint8_t>(pattern);
     return static_cast<char*>(std::memchr(str.data(), c, str.size()));
+}
+
+/// \return pointer to the matching byte, otherwise \c nullptr.
+inline char const* strrchr(chars_view str, char pattern) noexcept
+{
+    // cast to u8 to prevent overflow when char -> int in memchr
+    auto c = static_cast<uint8_t>(pattern);
+    return static_cast<char const*>(memrchr(str.data(), c, str.size()));
+}
+
+/// \return pointer to the matching byte, otherwise \c nullptr.
+inline char* strrchr(writable_chars_view str, char pattern) noexcept
+{
+    // cast to u8 to prevent overflow when char -> int in memchr
+    auto c = static_cast<uint8_t>(pattern);
+    return static_cast<char*>(memrchr(str.data(), c, str.size()));
 }
 
 namespace utils
