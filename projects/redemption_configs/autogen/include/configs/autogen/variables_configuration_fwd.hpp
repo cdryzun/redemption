@@ -55,6 +55,7 @@ namespace cfg
         struct ssl_cipher_list;
         struct tls_1_3_ciphersuites;
         struct tls_key_exchange_groups;
+        struct tls_signature_algorithms;
         struct show_common_cipher_list;
         struct enable_nla;
         struct disable_tsk_switch_shortcuts;

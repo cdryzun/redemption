@@ -72,14 +72,16 @@ inline char const* apply_tls_config(
     SSL_CTX* ctx, TlsConfig const& tls_config, bool verbose, char const* funcname)
 {
     LOG_IF(verbose, LOG_INFO,
-        "TLSContext::%s: TLS: min_level=%u%s, max_level=%u%s, cipher_list='%s', TLSv1.3 ciphersuites='%s'",
+        "TLSContext::%s: TLS: min_level=%u%s, max_level=%u%s, cipher_list='%s', TLSv1.3 ciphersuites='%s', signature_algorithms='%s'",
         funcname,
         tls_config.min_level, tls_config.min_level == 0 ? " (system-wide)" : "",
         tls_config.max_level, tls_config.max_level == 0 ? " (system-wide)" : "",
         tls_config.cipher_list.empty() ? "(system-wide)"
             : tls_config.cipher_list.c_str(),
         tls_config.tls_1_3_ciphersuites.empty() ? "(system-wide)"
-            : tls_config.tls_1_3_ciphersuites.c_str()
+            : tls_config.tls_1_3_ciphersuites.c_str(),
+        tls_config.signature_algorithms.empty() ? "(system-wide)"
+            : tls_config.signature_algorithms.c_str()
     );
 
     auto to_version = [](uint32_t level) {
@@ -130,6 +132,11 @@ inline char const* apply_tls_config(
     // when not defined, use system default
     if (not tls_config.tls_1_3_ciphersuites.empty()) {
         CHECK_CALL(SSL_CTX_set_ciphersuites, ctx, tls_config.tls_1_3_ciphersuites.c_str());
+    }
+
+    // when not defined, use system default
+    if (not tls_config.signature_algorithms.empty()) {
+        CHECK_CALL(SSL_CTX_set1_sigalgs_list, ctx, tls_config.signature_algorithms.c_str());
     }
 
 #undef CHECK_CALL

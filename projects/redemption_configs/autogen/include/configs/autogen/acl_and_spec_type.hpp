@@ -54,6 +54,7 @@ template<> struct acl_and_spec_type<cfg::client::tls_max_level> { using type = u
 template<> struct acl_and_spec_type<cfg::client::ssl_cipher_list> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::client::tls_1_3_ciphersuites> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::client::tls_key_exchange_groups> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::client::tls_signature_algorithms> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::client::show_common_cipher_list> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::client::enable_nla> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::client::disable_tsk_switch_shortcuts> { using type = bool; };

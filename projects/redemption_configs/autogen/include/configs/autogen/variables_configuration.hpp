@@ -567,6 +567,22 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
+    /// Configure the supported server signature algorithms. <br/>
+    /// Empty to apply system-wide configuration. <br/>
+    /// The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme. <br/>
+    /// algorithm is one of RSA, RSA-PSS or ECDSA. <br/>
+    /// hash is one of SHA224, SHA256, SHA384 or SHA512. <br/>
+    /// signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256. <br/>
+    /// This list needs at least one signature algorithm compatible with the RDP Proxy certificate. <br/>
+    /// type: std::string <br/>
+    /// displayName: TLS signature algorithms <br/>
+    /// default: "" <br/>
+    struct client::tls_signature_algorithms {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = std::string;
+        using mapped_type = std::string;
+        type value {  };
+    };
     /// Show in the logs the common cipher list supported by client and server <br/>
     /// ⚠ Only for debug purposes <br/>
     /// type: bool <br/>
@@ -5421,6 +5437,7 @@ struct client
 : cfg::client::ssl_cipher_list
 , cfg::client::tls_1_3_ciphersuites
 , cfg::client::tls_key_exchange_groups
+, cfg::client::tls_signature_algorithms
 , cfg::client::ignore_logon_password
 , cfg::client::allow_using_multiple_monitors
 , cfg::client::allow_scale_factor
