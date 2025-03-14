@@ -1761,6 +1761,7 @@ void session_start_wss(unique_fd sck, MonotonicTimePoint sck_start_time, Inifile
                 .cipher_list = ini.get<cfg::client::ssl_cipher_list>(),
                 .tls_1_3_ciphersuites = ini.get<cfg::client::tls_1_3_ciphersuites>(),
                 .key_exchange_groups = ini.get<cfg::client::tls_key_exchange_groups>(),
+                .signature_algorithms = ini.get<cfg::client::tls_signature_algorithms>(),
                 .show_common_cipher_list = ini.get<cfg::client::show_common_cipher_list>(),
             },
         }
