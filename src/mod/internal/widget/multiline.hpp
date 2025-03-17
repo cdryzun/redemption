@@ -1,60 +1,82 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2013
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #pragma once
 
 #include "mod/internal/widget/widget.hpp"
 #include "gdi/text_metrics.hpp"
 
-class WidgetMultiLine : public Widget
+class Theme;
+
+class MultiLineText
 {
 public:
-    WidgetMultiLine(gdi::GraphicApi & drawable,
-                    Color fgcolor, Color bgcolor, Font const & font,
-                    int xtext = 0, int ytext = 0); /*NOLINT*/
+    MultiLineText() = default;
 
-    WidgetMultiLine(gdi::GraphicApi & drawable,
-                    chars_view text, unsigned max_width,
-                    Color fgcolor, Color bgcolor, Font const & font,
-                    int xtext = 0, int ytext = 0); /*NOLINT*/
+    MultiLineText(Font const & font, unsigned max_width, chars_view text);
 
-    void set_text(bytes_view text, unsigned max_width);
-    void set_text(gdi::MultiLineTextMetrics&& line_metrics);
+    void set_text(Font const & font, unsigned max_width, chars_view text);
+    void set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines);
 
-    void rdp_input_invalidate(Rect clip) override;
+    Dimension dimension() const noexcept;
 
-    Dimension get_optimal_dim() const override;
-
-    Color get_bg_color() const noexcept
+    struct Data
     {
-        return this->bg_color;
+        int16_t x;
+        int16_t y;
+        Rect clip;
+        RDPColor fgcolor;
+        RDPColor bgcolor;
+        bool draw_bg_rect;
+    };
+
+    void draw(gdi::GraphicApi & drawable, Data data);
+
+    array_view<gdi::MultiLineTextMetrics::Line> lines() const noexcept
+    {
+        return m_lines.lines();
+    }
+
+    uint16_t max_width() const noexcept
+    {
+        return m_lines.max_width();
+    }
+
+    static uint16_t line_sep() noexcept
+    {
+        return 1;
     }
 
 private:
-    gdi::MultiLineTextMetrics line_metrics;
+    uint16_t m_cy_line = 0;
+    gdi::MultiLineTextMetrics m_lines;
+};
 
-    int x_text;
-    int y_text;
-    int cy_text;
-    Color bg_color;
-    Color fg_color;
-    Font const & font;
+
+class WidgetMultiLine : public Widget
+{
+public:
+    struct Colors
+    {
+        Color fg;
+        Color bg;
+
+        static Colors from_theme(Theme const& theme) noexcept;
+    };
+
+    WidgetMultiLine(gdi::GraphicApi & drawable, Font const & font,
+                    unsigned max_width, chars_view text, Colors colors);
+
+    WidgetMultiLine(gdi::GraphicApi & drawable, Colors colors);
+
+    void set_text(Font const & font, unsigned max_width, chars_view text);
+    void set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines);
+
+    void rdp_input_invalidate(Rect clip) override;
+
+private:
+    Colors colors;
+    MultiLineText multi_line;
 };

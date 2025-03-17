@@ -17,12 +17,14 @@ void gdi_draw_border(
         drawable.draw(RDPOpaqueRect(rect, color), clip, color_ctx);
     };
 
+    auto const bw = border_width;
+
     // top
-    draw(Rect(x, y, cx - border_width, border_width));
+    draw(Rect(x, y, cx, bw));
     // left
-    draw(Rect(x, checked_int(y + border_width), border_width, cy - border_width));
+    draw(Rect(x, checked_int(y + bw), bw, cy - bw * 2));
     // right
-    draw(Rect(checked_int(x + cx - border_width), y, border_width, cy));
+    draw(Rect(checked_int(x + cx - bw), checked_int(y + bw), bw, cy - bw * 2));
     // bottom
-    draw(Rect(x, checked_int(y + cy - border_width), cx - border_width, border_width));
+    draw(Rect(x, checked_int(y + cy - bw), cx, bw));
 }

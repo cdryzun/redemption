@@ -70,6 +70,7 @@ private:
 
     WidgetButton   exit;
     Widget *       extra_button;
+    Font const & font;
 
     bool hasform;
     bool hide_back_to_selector;

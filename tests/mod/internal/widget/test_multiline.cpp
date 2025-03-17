@@ -1,23 +1,7 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 #include "test_only/test_framework/check_img.hpp"
@@ -30,131 +14,66 @@
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/multiline/"
 
-constexpr auto short_message_ml =
-    "line 1\n"
-    "line 2\n"
-    "\n"
-    "line 3, blah blah\n"
-    "line 4"
-    ""_av;
-
 struct TestWidgetMultiLineCtx
 {
-    TestGraphic drawable{800, 600};
-    WidgetMultiLine wmultiline;
+    TestGraphic drawable;
+    chars_view text;
 
-    TestWidgetMultiLineCtx(chars_view text, int xtext = 0, int ytext = 0)
-    : wmultiline(
-        drawable, text, 4096, NamedBGRColor::BLUE, NamedBGRColor::CYAN,
-        global_font_deja_vu_14(), xtext, ytext)
+    WidgetMultiLine make_multi_line()
     {
-        wmultiline.set_wh(wmultiline.get_optimal_dim());
+        return WidgetMultiLine(
+            drawable, global_font_deja_vu_14(), 4096, text,
+            {
+                .fg = NamedBGRColor::BLUE,
+                .bg = NamedBGRColor::CYAN,
+            }
+        );
     }
 };
 
 RED_AUTO_TEST_CASE(TraceWidgetMultiLine)
 {
-    TestWidgetMultiLineCtx ctx(short_message_ml, 4, 2);
+    TestWidgetMultiLineCtx ctx{
+        {1500, 150},
+        "line 1\n"
+        "line 2\n"
+        "\n"
+        "line 3, blah blah\n"
+        "line 4"
+        ""_av
+    };
 
-    ctx.wmultiline.set_xy(0, 0);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
+    auto multi_line = ctx.make_multi_line();
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_1.png");
-}
+    int16_t y_step = 20;
+    int16_t x_step = 130;
+    for (int16_t py = 0; py < 3; ++py) {
+        auto compute_x = [=](int i){
+            return checked_int{py * x_step * 4 + x_step * i - 10};
+        };
+        int16_t y = py * y_step - y_step;
+        Rect rect;
 
-RED_AUTO_TEST_CASE(TraceWidgetMultiLine2)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
+        multi_line.set_xy(compute_x(0), y);
+        multi_line.rdp_input_invalidate(multi_line.get_rect());
 
-    ctx.wmultiline.set_xy(10, 100);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
+        multi_line.set_xy(compute_x(1), y);
+        rect = multi_line.get_rect();
+        rect.cy /= 2;
+        multi_line.rdp_input_invalidate(rect);
 
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_2.png");
-}
+        multi_line.set_xy(compute_x(2), y);
+        rect = multi_line.get_rect();
+        rect.cy /= 2;
+        rect.y += rect.cy;
+        multi_line.rdp_input_invalidate(rect);
 
-RED_AUTO_TEST_CASE(TraceWidgetMultiLine3)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
+        multi_line.set_xy(compute_x(3), y);
+        rect = multi_line.get_rect();
+        rect.cy /= 2;
+        rect.y += rect.cy / 2;
+        multi_line.rdp_input_invalidate(rect);
+    }
 
-    ctx.wmultiline.set_xy(-10, 500);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_3.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetMultiLine4)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
-
-    ctx.wmultiline.set_xy(770, 500);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_4.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetMultiLine5)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
-
-    ctx.wmultiline.set_xy(-20, -7);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_5.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetMultiLine6)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
-
-    ctx.wmultiline.set_xy(760, -7);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_6.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetMultiLineClip)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
-
-    ctx.wmultiline.set_xy(760, -7);
-    ctx.wmultiline.rdp_input_invalidate(Rect(
-        20 + ctx.wmultiline.x(),
-        ctx.wmultiline.y(),
-        ctx.wmultiline.cx(),
-        ctx.wmultiline.cy()
-    ));
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_7.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetMultiLineClip2)
-{
-    TestWidgetMultiLineCtx ctx(short_message_ml);
-
-    ctx.wmultiline.set_xy(0, 0);
-    ctx.wmultiline.rdp_input_invalidate(Rect(
-        20 + ctx.wmultiline.x(),
-        5 + ctx.wmultiline.y(),
-        30,
-        10
-    ));
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_8.png");
-}
-
-RED_AUTO_TEST_CASE(TraceWidgetMultiLineTooLong)
-{
-    TestWidgetMultiLineCtx ctx(
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
-        "Curabitur sit amet eros rutrum mi ultricies tempor.\n"
-        "Nam non magna sit amet dui vestibulum feugiat.\n"
-        "Praesent vitae purus et lacus tincidunt lobortis.\n"
-        "Nam lacinia purus luctus ante congue facilisis.\n"
-        "Donec sodales mauris luctus ante ultrices blandit."
-        ""_av);
-
-    ctx.wmultiline.set_xy(0, 0);
-    ctx.wmultiline.rdp_input_invalidate(ctx.wmultiline.get_rect());
-
-    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multiline_9.png");
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "multi_line.png");
 }

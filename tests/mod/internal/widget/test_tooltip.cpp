@@ -35,17 +35,13 @@
 RED_AUTO_TEST_CASE(TraceWidgetTooltip)
 {
     TestGraphic drawable(300, 150);
-
-    BGRColor fg_color = NamedBGRColor::RED;
-    BGRColor bg_color = NamedBGRColor::YELLOW;
-    BGRColor border_color = NamedBGRColor::BLACK;
-    int16_t x = 10;
-    int16_t y = 10;
-
-    WidgetTooltip wtooltip(drawable, "testémq"_av, 4096, fg_color, bg_color, border_color, global_font_deja_vu_14());
-    Dimension dim = wtooltip.get_optimal_dim();
-    wtooltip.set_wh(dim);
-    wtooltip.set_xy(x, y);
+    WidgetTooltip wtooltip(drawable, global_font_deja_vu_14(), 4096, "testémq"_av, {
+        .fg = NamedBGRColor::RED,
+        .bg = NamedBGRColor::YELLOW,
+        .border = NamedBGRColor::BLACK
+    });
+    wtooltip.set_wh(wtooltip.get_optimal_dim());
+    wtooltip.set_xy(10, 10);
 
     // ask to widget to redraw
     wtooltip.rdp_input_invalidate(Rect(0, 0, 100, 100));
@@ -97,9 +93,10 @@ RED_AUTO_TEST_CASE(TraceWidgetTooltipScreen)
                     "multilines !"_av);
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "tooltip_4.png");
 
-    parent.tooltip->set_text("Test tooltip\n"
+    parent.tooltip->set_text(global_font_deja_vu_14(), parent.cx(),
+                             "Test tooltip\n"
                              "Text modification\n"
-                             "text has been changed !"_av, parent.cx());
+                             "text has been changed !"_av);
     parent.rdp_input_invalidate(parent.get_rect());
 
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "tooltip_5.png");

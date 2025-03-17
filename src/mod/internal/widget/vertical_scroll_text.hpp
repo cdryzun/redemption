@@ -20,8 +20,7 @@
 
 #pragma once
 
-#include "mod/internal/widget/widget.hpp"
-#include "gdi/text_metrics.hpp"
+#include "mod/internal/widget/multiline.hpp"
 
 
 class Font;
@@ -32,7 +31,7 @@ public:
     WidgetVerticalScrollText(
         gdi::GraphicApi& drawable, chars_view text,
         Color fg_color, Color bg_color, Color focus_color,
-        Font const& font, uint16_t xtext = 0, uint16_t ytext = 0); /*NOLINT*/
+        Font const& font);
 
     void set_xy(int16_t x, int16_t y) override;
 
@@ -57,7 +56,10 @@ public:
     }
 
 private:
-    void _update_cursor_button_y();
+    struct D;
+    friend D;
+
+    void _update_cursor_button_y_and_redraw(int new_y);
     bool _scroll_up();
     bool _scroll_down();
 
@@ -77,9 +79,6 @@ private:
     int mouse_start_y = 0;
     int mouse_y = 0;
 
-    uint16_t x_text;
-    uint16_t y_text;
-
     Dimension const button_dim;
     uint16_t cursor_button_h;
 
@@ -97,5 +96,5 @@ private:
     ButtonType selected_button = ButtonType::None;
 
     std::string text;
-    gdi::MultiLineTextMetrics line_metrics;
+    MultiLineText multiline_text;
 };

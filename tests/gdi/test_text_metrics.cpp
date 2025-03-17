@@ -26,6 +26,8 @@
 
 #include "gdi/text_metrics.hpp"
 #include "utils/sugar/to_sv.hpp"
+#include "utils/utf.hpp"
+#include "core/font.hpp"
 #include "test_only/core/font.hpp"
 #include "test_only/gdi/test_graphic.hpp"
 
@@ -56,62 +58,114 @@ RED_AUTO_TEST_CASE(TextMetrics)
 }
 
 
-struct LineForTest : bytes_view
+struct LinesForTest
 {
-    std::string_view sv() const
-    {
-        return to_sv(as_chars());
-    }
+    array_view<gdi::MultiLineTextMetrics::Line> fc_lines;
+    array_view<std::string_view> str_lines;
+    Font const& font;
 
-    bool operator == (LineForTest const& other) const
+    bool operator == (LinesForTest const& other) const
     {
-        return sv() == other.sv();
+        auto fc_lines = other.fc_lines.empty() ? this->fc_lines : other.fc_lines;
+        auto str_lines = other.str_lines.empty() ? this->str_lines : other.str_lines;
+        if (fc_lines.size() != str_lines.size()) {
+            return false;
+        }
+
+        auto str_line_it = str_lines.begin();
+        for (auto fc_line : fc_lines) {
+            UTF8TextReader utf8_reader{*str_line_it};
+            for (auto fc : fc_line) {
+                if (!utf8_reader.has_value()) {
+                    return false;
+                }
+                if (*fc != font.item(utf8_reader.next()).view) {
+                    return false;
+                }
+            }
+            if (utf8_reader.has_value()) {
+                return false;
+            }
+            ++str_line_it;
+        }
+
+        return true;
     }
 };
 
 #if !REDEMPTION_UNIT_TEST_FAST_CHECK
-static ut::assertion_result test_comp_lines(
-    array_view<LineForTest> const& a,
-    array_view<LineForTest> const& b)
+static ut::assertion_result test_comp_lines(LinesForTest const& a, LinesForTest const& b)
 {
-    return ut::ops::compare_collection_EQ(a, b, [&](std::ostream& out, size_t pos, ...) /*NOLINT*/
+    if (a == b) {
+        return ut::assertion_result{true};
+    }
+
+    auto fc_lines = a.fc_lines.empty() ? b.fc_lines : a.fc_lines;
+    std::size_t n = 0;
+    for (auto fc_line : fc_lines) {
+        n += fc_line.size();
+    }
+    std::unique_ptr<char[]> ascii_buf(new char[n]);
+    std::vector<std::string_view> lines;
+    lines.resize(fc_lines.size());
+    auto charp = ascii_buf.get();
+
+    auto fc_to_uc = [&a](FontCharView const& fc){
+        for (uint32_t uc = ' '; uc < '~'; ++uc) {
+            if (a.font.item(uc).view.data == fc.data) {
+                return uc;
+            }
+        }
+        return uint32_t{};
+    };
+
+    auto line_it = lines.begin();
+    for (auto fc_line : fc_lines) {
+        auto start = charp;
+        for (auto fc : fc_line) {
+            auto uc = fc_to_uc(*fc);
+            *charp++ = checked_int(uc ? uc : '_');
+        }
+        *line_it++ = {start, charp};
+    }
+
+    auto a_lines = array_view{lines};
+    auto b_lines = a.str_lines.empty() ? b.str_lines : a.str_lines;
+
+    return ut::ops::compare_collection_EQ(a_lines, b_lines, [&](std::ostream& out, size_t pos, char const* op)
     {
-        auto put_view = [&](std::ostream& oss, auto av){
-            if (av.empty()) {
+        auto put_view = [&](std::ostream& oss, array_view<std::string_view> lines){
+            if (lines.empty()) {
                 oss << "--";
             }
             else {
                 size_t i = 0;
-                auto put = [&](LineForTest const& line) {
-                    oss << (i == pos ? "*{" : "{") << std::quoted(line.sv()) << "}";
+                auto put = [&](std::string_view line) {
+                    oss << (i == pos ? "*{" : "{") << std::quoted(line) << "}";
                     ++i;
                 };
-                put(av.front());
-                for (auto const& l : av.from_offset(1)) {
+                put(lines.front());
+                for (auto const& l : lines.from_offset(1)) {
                     oss << " ";
                     put(l);
                 }
             }
         };
 
-        ut::put_data_with_diff(out, a, "!=", b, put_view);
+        ut::put_data_with_diff(out, a_lines, op, b_lines, put_view);
     });
 }
 
-RED_TEST_DISPATCH_COMPARISON_EQ((), (::array_view<::LineForTest>), (::array_view<::LineForTest>), ::test_comp_lines)
+RED_TEST_DISPATCH_COMPARISON_EQ((), (LinesForTest), (LinesForTest), ::test_comp_lines)
 #endif
 
-#define TEST_LINES(font, s, max_width, ...) [&](                                          \
-    gdi::MultiLineTextMetrics const& metrics                                              \
-) {                                                                                       \
-    bytes_view expected_[] {__VA_ARGS__};                                                 \
-    array_view lines_ = metrics.lines();                                                  \
-    array_view<LineForTest> expected{                                                     \
-        static_cast<LineForTest const*>(&expected_[0]), std::size(expected_)}; /*NOLINT*/ \
-    array_view lines = {                                                                  \
-        static_cast<LineForTest const*>(lines_.data()), lines_.size()}; /*NOLINT*/        \
-    RED_CHECK(lines == expected);                                                         \
-}(gdi::MultiLineTextMetrics(font, s ""_av, max_width))
+#define TEST_LINES(font, s, max_width, ...) do {                 \
+    gdi::MultiLineTextMetrics metrics(font, s ""_av, max_width); \
+    std::string_view expected_[] __VA_ARGS__;                    \
+    LinesForTest expected{{}, make_array_view(expected_), font}; \
+    LinesForTest lines = {metrics.lines(), {}, font};            \
+    RED_CHECK(lines == expected);                                \
+} while (0)
 
 
 RED_AUTO_TEST_CASE(MultiLineTextMetrics)
@@ -120,131 +174,131 @@ RED_AUTO_TEST_CASE(MultiLineTextMetrics)
 
     RED_TEST(gdi::MultiLineTextMetrics(font14, ""_av, 0).lines().size() == 0);
 
-    TEST_LINES(font14, "ab", 0,
-        "a"_av,
-        "b"_av,
-    );
+    TEST_LINES(font14, "ab", 0, {
+        "a",
+        "b",
+    });
 
-    TEST_LINES(font14, "abc", 100,
-        "abc"_av,
-    );
+    TEST_LINES(font14, "abc", 100, {
+        "abc",
+    });
 
-    TEST_LINES(font14, "abc", 17,
-        "ab"_av,
-        "c"_av,
-    );
+    TEST_LINES(font14, "abc", 17, {
+        "ab",
+        "c",
+    });
 
-    TEST_LINES(font14, "abc", 1,
-        "a"_av,
-        "b"_av,
-        "c"_av,
-    );
+    TEST_LINES(font14, "abc", 1, {
+        "a",
+        "b",
+        "c",
+    });
 
-    TEST_LINES(font14, "a\nb\nc", 100,
-        "a"_av,
-        "b"_av,
-        "c"_av,
-    );
+    TEST_LINES(font14, "a\nb\nc", 100, {
+        "a",
+        "b",
+        "c",
+    });
 
-    TEST_LINES(font14, "a\nb\nc", 17,
-        "a"_av,
-        "b"_av,
-        "c"_av,
-    );
+    TEST_LINES(font14, "a\nb\nc", 17, {
+        "a",
+        "b",
+        "c",
+    });
 
-    TEST_LINES(font14, "a\nb\nc", 1,
-        "a"_av,
-        "b"_av,
-        "c"_av,
-    );
+    TEST_LINES(font14, "a\nb\nc", 1, {
+        "a",
+        "b",
+        "c",
+    });
 
-    TEST_LINES(font14, "ab cd", 17,
-        "ab"_av,
-        "cd"_av,
-    );
+    TEST_LINES(font14, "ab cd", 17, {
+        "ab",
+        "cd",
+    });
 
-    TEST_LINES(font14, "ab   cd", 17,
-        "ab"_av,
-        "cd"_av,
-    );
+    TEST_LINES(font14, "ab   cd", 17, {
+        "ab",
+        "cd",
+    });
 
-    TEST_LINES(font14, "ab cd", 1,
-        "a"_av,
-        "b"_av,
-        "c"_av,
-        "d"_av,
-    );
+    TEST_LINES(font14, "ab cd", 1, {
+        "a",
+        "b",
+        "c",
+        "d",
+    });
 
-    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 50,
-        "annvh"_av,
-        "g jgsy"_av,
-        "kfhdis"_av,
-        "hnvlkj"_av,
-        "gks"_av,
-        "hxk.hf"_av,
-    );
+    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 50, {
+        "annvh",
+        "g jgsy",
+        "kfhdis",
+        "hnvlkj",
+        "gks",
+        "hxk.hf",
+    });
 
-    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 150,
-        "annvhg jgsy kfhdis"_av,
-        "hnvlkj gks hxk.hf"_av,
-    );
+    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 150, {
+        "annvhg jgsy kfhdis",
+        "hnvlkj gks hxk.hf",
+    });
 
-    TEST_LINES(font14, "veryverylonglonglong string", 100,
-        "veryverylongl"_av,
-        "onglong"_av,
-        "string"_av,
-    );
+    TEST_LINES(font14, "veryverylonglonglong string", 100, {
+        "veryverylongl",
+        "onglong",
+        "string",
+    });
 
-    TEST_LINES(font14, "  veryverylonglonglong string", 100,
-        ""_av,
-        "veryverylongl"_av,
-        "onglong"_av,
-        "string"_av,
-    );
+    TEST_LINES(font14, "  veryverylonglonglong string", 100, {
+        "",
+        "veryverylongl",
+        "onglong",
+        "string",
+    });
 
-    TEST_LINES(font14, "  veryverylonglonglong string", 130,
-        ""_av,
-        "veryverylonglongl"_av,
-        "ong string"_av,
-    );
+    TEST_LINES(font14, "  veryverylonglonglong string", 130, {
+        "",
+        "veryverylonglongl",
+        "ong string",
+    });
 
-    TEST_LINES(font14, "  veryverylonglonglong\n string", 100,
-        ""_av,
-        "veryverylongl"_av,
-        "onglong"_av,
-        " string"_av,
-    );
+    TEST_LINES(font14, "  veryverylonglonglong\n string", 100, {
+        "",
+        "veryverylongl",
+        "onglong",
+        " string",
+    });
 
-    TEST_LINES(font14, "  veryverylonglonglong \nstring", 100,
-        ""_av,
-        "veryverylongl"_av,
-        "onglong"_av,
-        "string"_av,
-    );
+    TEST_LINES(font14, "  veryverylonglonglong \nstring", 100, {
+        "",
+        "veryverylongl",
+        "onglong",
+        "string",
+    });
 
-    TEST_LINES(font14, "bla bla\n\n - abc\n - def", 100,
-        "bla bla"_av,
-        ""_av,
-        " - abc"_av,
-        " - def"_av,
-    );
+    TEST_LINES(font14, "bla bla\n\n - abc\n - def", 100, {
+        "bla bla",
+        "",
+        " - abc",
+        " - def",
+    });
 
-    TEST_LINES(font14, "Le pastafarisme (mot-valise faisant référence aux pâtes et au mouvement rastafari) est originellement une parodie de religion1,2,3,4 dont la divinité est le Monstre en spaghetti volant (Flying Spaghetti Monster)5,6 créée en 2005 par Bobby Henderson, alors étudiant de l'université d'État de l'Oregon. Depuis, le pastafarisme a été reconnu administrativement comme religion par certains pays7,8,9,10,11, et rejeté en tant que telle par d'autres12,13,14.", 273,
-        "Le pastafarisme (mot-valise faisant"_av,
-        "référence aux pâtes et au"_av,
-        "mouvement rastafari) est"_av,
-        "originellement une parodie de"_av,
-        "religion1,2,3,4 dont la divinité est le"_av,
-        "Monstre en spaghetti volant (Flying"_av,
-        "Spaghetti Monster)5,6 créée en 2005"_av,
-        "par Bobby Henderson, alors étudiant"_av,
-        "de l'université d'État de l'Oregon."_av,
-        "Depuis, le pastafarisme a été reconnu"_av,
-        "administrativement comme religion"_av,
-        "par certains pays7,8,9,10,11, et rejeté"_av,
-        "en tant que telle par"_av,
-        "d'autres12,13,14."_av,
-    );
+    TEST_LINES(font14, "Le pastafarisme (mot-valise faisant référence aux pâtes et au mouvement rastafari) est originellement une parodie de religion1,2,3,4 dont la divinité est le Monstre en spaghetti volant (Flying Spaghetti Monster)5,6 créée en 2005 par Bobby Henderson, alors étudiant de l'université d'État de l'Oregon. Depuis, le pastafarisme a été reconnu administrativement comme religion par certains pays7,8,9,10,11, et rejeté en tant que telle par d'autres12,13,14.", 273, {
+        "Le pastafarisme (mot-valise faisant",
+        "référence aux pâtes et au",
+        "mouvement rastafari) est",
+        "originellement une parodie de",
+        "religion1,2,3,4 dont la divinité est le",
+        "Monstre en spaghetti volant (Flying",
+        "Spaghetti Monster)5,6 créée en 2005",
+        "par Bobby Henderson, alors étudiant",
+        "de l'université d'État de l'Oregon.",
+        "Depuis, le pastafarisme a été reconnu",
+        "administrativement comme religion",
+        "par certains pays7,8,9,10,11, et rejeté",
+        "en tant que telle par",
+        "d'autres12,13,14.",
+    });
 }
 
 

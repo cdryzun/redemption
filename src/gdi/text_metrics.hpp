@@ -37,12 +37,13 @@ struct TextMetrics
     int height = 0;
 
     explicit TextMetrics(const Font & font, bytes_view utf8_text);
-
-    static int char_width(const Font & font, uint32_t unicode);
 };
 
 struct MultiLineTextMetrics
 {
+    using Char = FontCharView const *;
+    using Line = array_view<Char>;
+
     explicit MultiLineTextMetrics() noexcept = default;
     explicit MultiLineTextMetrics(const Font& font, bytes_view utf8_text, unsigned max_width);
 
@@ -64,7 +65,7 @@ struct MultiLineTextMetrics
 
     ~MultiLineTextMetrics();
 
-    array_view<bytes_view> lines() const noexcept
+    array_view<Line> lines() const noexcept
     {
         return {d.lines, d.nb_line};
     }
@@ -76,7 +77,7 @@ struct MultiLineTextMetrics
 
 private:
     struct Data {
-        bytes_view* lines = nullptr;
+        Line* lines = nullptr;
         unsigned nb_line = 0;
         uint16_t max_width = 0;
     };
@@ -162,6 +163,21 @@ struct DrawTextPadding
                 .right = left_right,
                 .bottom = top_bottom,
                 .left = left_right,
+            };
+        }
+    };
+
+    struct Right
+    {
+        uint16_t right;
+
+        operator DrawTextPadding () const noexcept
+        {
+            return {
+                .top = 0,
+                .right = right,
+                .bottom = 0,
+                .left = 0,
             };
         }
     };

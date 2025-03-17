@@ -1,95 +1,128 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2013
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "mod/internal/widget/multiline.hpp"
 #include "gdi/graphic_api.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
+#include "utils/theme.hpp"
 
 
-WidgetMultiLine::WidgetMultiLine(
-    gdi::GraphicApi & drawable,
-    Color fgcolor, Color bgcolor, Font const & font,
-    int xtext, int ytext)
-: Widget(drawable, Focusable::Yes)
-, x_text(xtext)
-, y_text(ytext)
-, cy_text(0)
-, bg_color(bgcolor)
-, fg_color(fgcolor)
-, font(font)
-{}
-
-WidgetMultiLine::WidgetMultiLine(
-    gdi::GraphicApi & drawable,
-    chars_view text, unsigned max_width,
-    Color fgcolor, Color bgcolor, Font const & font,
-    int xtext, int ytext)
-: WidgetMultiLine(drawable, fgcolor, bgcolor, font, xtext, ytext)
+MultiLineText::MultiLineText(const Font& font, unsigned int max_width, chars_view text)
 {
-    this->set_text(text, max_width);
+    set_text(font, max_width, text);
 }
 
-void WidgetMultiLine::set_text(bytes_view text, unsigned max_width)
+void MultiLineText::set_text(Font const & font, unsigned max_width, chars_view text)
 {
-    this->set_text(gdi::MultiLineTextMetrics(this->font, text, max_width));
+    // TODO garbage text buffer
+    set_text(font.max_height(), gdi::MultiLineTextMetrics(font, text, max_width));
 }
 
-void WidgetMultiLine::set_text(gdi::MultiLineTextMetrics&& line_metrics)
+void MultiLineText::set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines)
 {
-    this->line_metrics = std::move(line_metrics);
-    this->cy_text = this->font.max_height();
+    m_lines = std::move(lines);
+    m_cy_line = font_max_height;
 }
 
-void WidgetMultiLine::rdp_input_invalidate(Rect clip)
+Dimension MultiLineText::dimension() const noexcept
 {
-    Rect rect_intersect = clip.intersect(this->get_rect());
+    auto n = m_lines.lines().size();
+    auto sep = n ? n * line_sep() : 0;
+    return Dimension{
+        checked_int{m_lines.max_width()},
+        checked_int{m_cy_line * n + sep},
+    };
+}
+
+void MultiLineText::draw(gdi::GraphicApi& drawable, Data data)
+{
+    auto dim = dimension();
+    auto rect = Rect(data.x, data.y, dim.w, dim.h);
+    Rect rect_intersect = data.clip.intersect(rect);
 
     if (!rect_intersect.isempty()) {
-        int dy = this->y();
-        this->drawable.draw(
-            RDPOpaqueRect(rect_intersect, this->bg_color),
-            this->get_rect(), gdi::ColorCtx::depth24());
-        for (auto const& line : this->line_metrics.lines()) {
-            dy += this->y_text;
-            gdi::server_draw_text(this->drawable
-                                , this->font
-                                , this->x_text + this->x()
-                                , dy
-                                , line
-                                , this->fg_color
-                                , this->bg_color
-                                , gdi::ColorCtx::depth24()
-                                , rect_intersect.intersect(
-                                    Rect(this->x(), dy, this->cx(), this->cy_text))
-                );
-            dy += this->cy_text;
+        if (data.draw_bg_rect) {
+            drawable.draw(
+                RDPOpaqueRect(rect_intersect, data.bgcolor),
+                rect, gdi::ColorCtx::depth24()
+            );
+        }
+
+        auto h_line = checked_cast<uint16_t>(m_cy_line + line_sep());
+
+        auto start = checked_cast<std::size_t>((rect_intersect.y - rect.y) / h_line);
+        auto stop = checked_cast<std::size_t>(
+            (rect_intersect.ebottom() - rect.y + h_line - 1) / h_line
+        );
+
+        rect.cy = h_line;
+        rect.y += h_line * start;
+
+        for (auto const& line : m_lines.lines().first(stop).drop_front(start)) {
+            gdi::draw_text(
+                drawable,
+                rect.x,
+                rect.y,
+                m_cy_line,
+                gdi::DrawTextPadding{},
+                line,
+                data.fgcolor,
+                data.bgcolor,
+                rect_intersect.intersect(rect)
+            );
+
+            rect.y += h_line;
         }
     }
 }
 
-Dimension WidgetMultiLine::get_optimal_dim() const
+
+WidgetMultiLine::Colors WidgetMultiLine::Colors::from_theme(const Theme& theme) noexcept
 {
-    return Dimension(
-        this->line_metrics.max_width() + this->x_text * 2,
-        (this->cy_text + this->y_text) * this->line_metrics.lines().size()
-    );
+    return {
+        .fg = theme.global.fgcolor,
+        .bg = theme.global.bgcolor,
+    };
+}
+
+
+WidgetMultiLine::WidgetMultiLine(gdi::GraphicApi & drawable, Colors colors)
+    : Widget(drawable, Focusable::Yes)
+    , colors(colors)
+{}
+
+WidgetMultiLine::WidgetMultiLine(
+    gdi::GraphicApi & drawable, Font const & font,
+    unsigned max_width, chars_view text, Colors colors
+)
+    : WidgetMultiLine(drawable, colors)
+{
+    set_text(font, max_width, text);
+}
+
+void WidgetMultiLine::set_text(Font const & font, unsigned max_width, chars_view text)
+{
+    multi_line.set_text(font, max_width, text);
+    set_wh(multi_line.dimension());
+}
+
+void WidgetMultiLine::set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines)
+{
+    multi_line.set_text(font_max_height, std::move(lines));
+    set_wh(multi_line.dimension());
+}
+
+void WidgetMultiLine::rdp_input_invalidate(Rect clip)
+{
+    multi_line.draw(drawable, {
+        .x = x(),
+        .y = y(),
+        .clip = clip.intersect(get_rect()),
+        .fgcolor = colors.fg,
+        .bgcolor = colors.bg,
+        .draw_bg_rect = true,
+    });
 }

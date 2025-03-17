@@ -357,7 +357,10 @@ RED_AUTO_TEST_CASE(EventWidgetChallenge)
         "porttitor tortor, sit amet tincidunt odio\n"
         "erat ut ligula. Fusce sit amet mauris neque.\n"
         "Sed orci augue, luctus in ornare sed,\n"
-        "adipiscing et arcu."_av,
+        "adipiscing et arcu.\n"
+        "Lorem ipsum dolor sit amet, consectetur\n"
+        "adipiscing elit. Nam purus lacus, luctus sit"
+        ""_av,
         WidgetDialogWithChallenge::ChallengeOpt::Echo);
 
     ctx.flat_dialog.challenge->set_text("challenge_test"_av, {WidgetEdit::Redraw::No});

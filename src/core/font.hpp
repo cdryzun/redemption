@@ -40,6 +40,8 @@ struct FontCharView
     uint8_t height = 0;
     uint8_t const* data = &_null_buffer;
 
+    bool operator==(FontCharView const&) const = default;
+
     [[nodiscard]] uint16_t datasize() const noexcept
     {
         return align4(nbbytes(this->width) * this->height);

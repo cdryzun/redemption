@@ -42,9 +42,7 @@ WidgetWait::WidgetWait(
     , onctrl_shift(events.onctrl_shift)
     , groupbox(drawable, caption,
                theme.global.fgcolor, theme.global.bgcolor, font)
-    , dialog(drawable,
-             theme.global.fgcolor, theme.global.bgcolor, font,
-             WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
+    , dialog(drawable, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
     , form(drawable, copy_paste, {events.onconfirm, events.onrefused},
            font, theme, tr, flags & ~HIDE_BACK_TO_SELECTOR, duration_max)
     , goselector(drawable, font, tr(trkeys::back_selector),
@@ -52,6 +50,7 @@ WidgetWait::WidgetWait(
     , exit(drawable, font, tr(trkeys::exit), WidgetButton::Colors::from_theme(theme),
            events.onrefused)
     , extra_button(extra_button)
+    , font(font)
     , hasform(showform)
     , hide_back_to_selector(flags & HIDE_BACK_TO_SELECTOR)
     , message_dialog(av_auto_cast{text})
@@ -92,9 +91,8 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
 
     int y = 20;
 
-    this->dialog.set_text(this->message_dialog, width - 60);
-    this->dialog.set_wh(this->dialog.get_optimal_dim());
-    this->dialog.set_xy(left + 30, top + y + 10);
+    this->dialog.set_text(this->font, width - 80, this->message_dialog);
+    this->dialog.set_xy(left + 40, top + y + 10);
 
     y = this->dialog.y() + this->dialog.cy() + 20;
 

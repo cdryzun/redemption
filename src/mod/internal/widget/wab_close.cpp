@@ -48,7 +48,7 @@ WidgetWabClose::WidgetWabClose(
 , target_value(drawable, font, target, WidgetLabel::Colors::from_theme(theme))
 , diagnostic_label(drawable, font, tr(trkeys::wab_close_diagnostic),
                    WidgetLabel::Colors::from_theme(theme))
-, diagnostic_value(drawable, theme.global.fgcolor, theme.global.bgcolor, font)
+, diagnostic_value(drawable, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
 , timeleft_label(drawable, font, tr(trkeys::wab_close_timeleft),
                 WidgetLabel::Colors::from_theme(theme))
 , timeleft_value(drawable, font, ""_av, WidgetLabel::Colors::from_theme(theme))
@@ -208,12 +208,11 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
     const bool short_diag = this->diagnostic_label.cx() > this->cx() - (x + 10)
                          || width < 400;
 
-    this->diagnostic_value.set_text(gdi::MultiLineTextMetrics(
-        this->font, this->diagnostic_text,
-        short_diag ? this->cx() : this->separator.cx() - x
-    ));
-    auto dim = this->diagnostic_value.get_optimal_dim();
-    this->diagnostic_value.set_wh(dim);
+    this->diagnostic_value.set_text(
+        this->font,
+        short_diag ? this->cx() : this->separator.cx() - x,
+        this->diagnostic_text
+    );
 
     if (short_diag) {
         y += this->diagnostic_label.cy() + 10;
@@ -247,7 +246,7 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     this->move_children_xy(0, (height - y) / 2);
 
-    dim = this->img.get_optimal_dim();
+    auto dim = this->img.get_optimal_dim();
     this->img.set_wh(dim);
 
     this->img.set_xy(left + (this->cx() - this->img.cx()) / 2,

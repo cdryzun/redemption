@@ -41,7 +41,7 @@ struct TestScrollCtx
         /*fg_color=*/NamedBGRColor::RED,
         /*bg_color=*/NamedBGRColor::YELLOW,
         /*focus_color=*/NamedBGRColor::WINBLUE,
-        global_font_deja_vu_14(), /*xtext=*/4)
+        global_font_deja_vu_14())
     {}
 
     void set_size(uint16_t w, uint16_t h, int16_t x = 0, int16_t y = 0)
@@ -93,8 +93,8 @@ RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextShortText)
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "short1.png");
 
     auto dim = ctx.scroll.get_optimal_dim();
-    RED_CHECK(dim.w == 78);
-    RED_CHECK(dim.h == 54);
+    RED_CHECK(dim.w == 71);
+    RED_CHECK(dim.h == 57);
 }
 
 RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextLongText)
@@ -136,8 +136,8 @@ RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextLongText)
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "long6_2.png");
 
     auto dim = ctx.scroll.get_optimal_dim();
-    RED_CHECK(dim.w == 281);
-    RED_CHECK(dim.h == 1008);
+    RED_CHECK(dim.w == 278);
+    RED_CHECK(dim.h == 1026);
     ctx.set_size(dim.w, dim.h);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "long_opti.png");
 }

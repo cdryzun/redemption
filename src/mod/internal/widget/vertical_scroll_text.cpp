@@ -1,57 +1,43 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2021
- *   Author(s): Proxies Team
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
 #include "gdi/graphic_api.hpp"
+#include "gdi/draw_utils.hpp"
 #include "mod/internal/widget/vertical_scroll_text.hpp"
-#include "mod/internal/widget/button.hpp"
 #include "utils/utf.hpp"
 #include "keyboard/keymap.hpp"
 
-namespace
+struct WidgetVerticalScrollText::D
 {
-    constexpr auto top_button_char = "▲"_av;
-    constexpr auto cursor_button_char = "▥"_av;
-    constexpr auto bottom_button_char = "▼"_av;
+    static constexpr auto top_button_char = "▲"_av;
+    static constexpr auto cursor_button_char = "▥"_av;
+    static constexpr auto bottom_button_char = "▼"_av;
 
-    Dimension get_optimal_button_dim(const Font& font)
+    static constexpr int16_t scroll_sep = 4;
+
+    static Dimension get_optimal_button_dim(const Font& font)
     {
         UTF8toUnicodeIterator unicode_iter(top_button_char.data());
         auto const& glyph = font.item(*unicode_iter).view;
         return Dimension(glyph.width + 8, glyph.height + 12);
     }
-} // anonymous namespace
+};
+
 
 WidgetVerticalScrollText::WidgetVerticalScrollText(
     gdi::GraphicApi& drawable, chars_view text,
     Color fg_color, Color bg_color, Color focus_color,
-    Font const & font, uint16_t xtext, uint16_t ytext)
+    Font const & font)
 : Widget(drawable, Focusable::No)
 , fg_color(fg_color)
 , bg_color(bg_color)
 , focus_color(focus_color)
 , font(font)
-, x_text(xtext)
-, y_text(ytext)
-, button_dim(get_optimal_button_dim(this->font))
+, button_dim(D::get_optimal_button_dim(this->font))
 , text(av_auto_cast{text})
 {
 }
@@ -68,53 +54,65 @@ void WidgetVerticalScrollText::set_wh(uint16_t w, uint16_t h)
     this->has_scroll = false;
 
     if (this->text.empty()) {
+        this->current_y = 0;
         return ;
     }
 
-    uint16_t const cx = this->cx() - this->x_text * 2;
+    uint16_t const cx = this->cx();
     uint16_t const cy = this->cy();
-    uint16_t const glyph_cy = this->font.max_height() + this->y_text;
+    uint16_t const glyph_cy = this->font.max_height() + this->multiline_text.line_sep();
 
     bool const force_scroll = (cx / 4) * (cy / glyph_cy)
                               < this->text.size() / 4 /* worst case: 4 bytes by character */;
 
     if (!force_scroll) {
-        this->line_metrics = gdi::MultiLineTextMetrics(this->font, this->text, cx);
+        this->multiline_text.set_text(this->font, cx, this->text);
     }
 
     // show scroll bar
-    if (force_scroll || cy < this->line_metrics.lines().size() * glyph_cy) {
+    if (force_scroll || cy < this->multiline_text.dimension().h) {
         this->has_scroll = true;
-        uint16_t const new_cx = cx - this->button_dim.w;
-        this->line_metrics = gdi::MultiLineTextMetrics(this->font, this->text, new_cx);
+        uint16_t const new_cx = cx - this->button_dim.w - D::scroll_sep;
+        this->multiline_text.set_text(this->font, new_cx, this->text);
 
-        const int text_h = int(this->line_metrics.lines().size() * glyph_cy - this->y_text);
+        const int text_h = this->multiline_text.dimension().h;
         const int total_scroll_h = std::max(cy - this->button_dim.h * 2, 1);
+
+        auto old_percent_scroll = this->total_h
+            ? static_cast<double>(this->current_y) / total_h
+            : 0;
 
         this->page_h = std::max(cy / glyph_cy - 1, 1) * glyph_cy;
         this->total_h = text_h - this->page_h;
-        this->cursor_button_h = text_h
-          ? std::max(uint16_t(this->page_h * total_scroll_h / text_h), this->button_dim.h)
-          : uint16_t();
+        this->cursor_button_h = std::max(
+            checked_cast<uint16_t>(this->page_h * total_scroll_h / text_h),
+            this->button_dim.h
+        );
         this->scroll_h = std::max(total_scroll_h - this->cursor_button_h, 1);
         this->cursor_button_y = int16_t(this->button_dim.h - 1);
+
+        this->current_y = std::min(
+            static_cast<int>(old_percent_scroll * this->page_h) / this->page_h,
+            this->total_h
+        );
+    }
+    else {
         this->current_y = 0;
     }
 }
 
 Dimension WidgetVerticalScrollText::get_optimal_dim() const
 {
-    return Dimension(
-        uint16_t(this->line_metrics.max_width() + this->x_text * 2),
-        uint16_t((this->font.max_height() + this->y_text) * this->line_metrics.lines().size()
-                 + this->y_text)
-    );
+    return multiline_text.dimension();
 }
 
-void WidgetVerticalScrollText::_update_cursor_button_y()
+void WidgetVerticalScrollText::_update_cursor_button_y_and_redraw(int new_y)
 {
-    this->cursor_button_y = this->scroll_h * this->current_y / this->total_h
-                          + this->button_dim.h;
+    this->current_y = new_y;
+    this->cursor_button_y = checked_int{
+        this->scroll_h * new_y / this->total_h + this->button_dim.h
+    };
+    this->rdp_input_invalidate(this->get_rect());
 }
 
 void WidgetVerticalScrollText::scroll_down()
@@ -138,9 +136,7 @@ bool WidgetVerticalScrollText::_scroll_down()
     const auto old_y = this->current_y;
     const auto new_y = std::min(this->current_y + this->page_h, this->total_h);
     if (old_y != new_y) {
-        this->current_y = new_y;
-        this->_update_cursor_button_y();
-        this->rdp_input_invalidate(this->get_rect());
+        _update_cursor_button_y_and_redraw(new_y);
         return true;
     }
     return false;
@@ -151,9 +147,7 @@ bool WidgetVerticalScrollText::_scroll_up()
     const auto old_y = this->current_y;
     const auto new_y = std::max(this->current_y - this->page_h, 0);
     if (old_y != new_y) {
-        this->current_y = new_y;
-        this->_update_cursor_button_y();
-        this->rdp_input_invalidate(this->get_rect());
+        _update_cursor_button_y_and_redraw(new_y);
         return true;
     }
     return false;
@@ -167,12 +161,12 @@ void WidgetVerticalScrollText::rdp_input_mouse(uint16_t device_flags, uint16_t x
     }
 
     auto update_scroll_bar = [this]{
-        this->rdp_input_invalidate(Rect(
-            this->x() + this->cx() - this->button_dim.w,
+        this->rdp_input_invalidate(Rect{
+            checked_int{this->x() + this->cx() - this->button_dim.w},
             this->y(),
             this->button_dim.w,
             this->cy()
-        ));
+        });
     };
 
     if (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)) {
@@ -180,7 +174,7 @@ void WidgetVerticalScrollText::rdp_input_mouse(uint16_t device_flags, uint16_t x
             return rx <= x && x < rx + rcx;
         };
 
-        if (!in_range(x, this->eright() - this->button_dim.w * 2, this->cx())) {
+        if (!in_range(x, checked_int{this->eright() - this->button_dim.w * 2}, this->cx())) {
             // outside
         }
         // cursor
@@ -233,9 +227,7 @@ void WidgetVerticalScrollText::rdp_input_mouse(uint16_t device_flags, uint16_t x
             }
 
             if (update) {
-                this->current_y = new_y;
-                this->_update_cursor_button_y();
-                this->rdp_input_invalidate(this->get_rect());
+                _update_cursor_button_y_and_redraw(new_y);
             }
         }
     }
@@ -249,7 +241,7 @@ void WidgetVerticalScrollText::rdp_input_mouse(uint16_t device_flags, uint16_t x
         }
     }
     else {
-        this->Widget::rdp_input_mouse(device_flags, x, y);
+        Widget::rdp_input_mouse(device_flags, x, y);
     }
 }
 
@@ -285,18 +277,21 @@ void WidgetVerticalScrollText::rdp_input_scancode(KbdFlags flags, Scancode scanc
 void WidgetVerticalScrollText::rdp_input_invalidate(Rect clip)
 {
     auto const rect = this->get_rect();
-    Rect rect_intersect = clip.intersect(rect);
+    Rect const rect_intersect = clip.intersect(rect);
 
     if (!rect_intersect.isempty()) {
-        auto opaque_rect = [this, &rect_intersect](Rect rect, RDPColor color){
+        auto opaque_rect = [this, &rect_intersect](int x, int y, int cx, int cy, RDPColor color){
             this->drawable.draw(
-                RDPOpaqueRect(rect, color),
+                RDPOpaqueRect(
+                    Rect{checked_int{x}, checked_int{y}, checked_int{cx}, checked_int{cy}},
+                    color
+                ),
                 rect_intersect,
                 gdi::ColorCtx::depth24()
             );
         };
 
-        opaque_rect(rect, this->bg_color);
+        opaque_rect(rect.x, rect.y, rect.cx, rect.cy, this->bg_color);
 
         if (this->has_scroll) {
             auto const bw = this->button_dim.w;
@@ -305,18 +300,11 @@ void WidgetVerticalScrollText::rdp_input_invalidate(Rect clip)
             auto const ry = rect.y;
             auto const rw = rect.cx;
             auto const rh = rect.cy;
-            auto const sx = int16_t(rx + rw - bw);
-            auto const cy = int16_t(this->cursor_button_y + ry);
+            auto const sx = checked_cast<int16_t>(rx + rw - bw);
+            auto const cy = checked_cast<int16_t>(this->cursor_button_y + ry);
 
-            auto draw_button_borders = [this, sx, bw, opaque_rect](int16_t y, uint16_t bh){
-                // top
-                opaque_rect(Rect(sx,            y,            bw,  2), this->fg_color);
-                // bottom
-                opaque_rect(Rect(sx,            y + bh - 2,   bw,  2), this->fg_color);
-                // left
-                opaque_rect(Rect(sx,            y + 2,   2,   bh - 4), this->fg_color);
-                // right
-                opaque_rect(Rect(sx + bw - 2,   y + 2,   2,   bh - 4), this->fg_color);
+            auto draw_button_borders = [this, sx, bw, rect_intersect](int16_t y, uint16_t bh){
+                gdi_draw_border(drawable, fg_color, sx, y, bw, bh, 2, rect_intersect, gdi::ColorCtx::depth24());
             };
 
             auto draw_text_button = [&](
@@ -325,67 +313,46 @@ void WidgetVerticalScrollText::rdp_input_invalidate(Rect clip)
                 bool const has_focus = (this->selected_button == button_type);
                 auto const bg = has_focus ? this->focus_color : this->bg_color;
                 if (has_focus) {
-                    opaque_rect(Rect(sx + 2, y + 2, bw - 4, bh - 4), bg);
+                    opaque_rect(sx + 2, y + 2, bw - 4, bh - 4, bg);
                 }
                 gdi::server_draw_text(
                     this->drawable, this->font,
-                    sx + 2, y + dy + 2,
-                    text, this->fg_color, bg,
-                    gdi::ColorCtx::depth24(), rect);
+                    checked_int{sx + 2}, checked_int{y + dy + 2},
+                    text, this->fg_color, bg, gdi::ColorCtx::depth24(), rect
+                );
             };
 
-            draw_text_button(top_button_char, ButtonType::Top, ry, bh, 0);
-            draw_text_button(cursor_button_char, ButtonType::Cursor, cy, this->cursor_button_h,
-                             (this->cursor_button_h - bh) / 2);
-            draw_text_button(bottom_button_char, ButtonType::Bottom, ry + rh - bh, bh, 0);
+            draw_text_button(D::top_button_char, ButtonType::Top, ry, bh, 0);
+            draw_text_button(D::cursor_button_char, ButtonType::Cursor, cy,
+                             this->cursor_button_h, (this->cursor_button_h - bh) / 2);
+            draw_text_button(D::bottom_button_char, ButtonType::Bottom,
+                             checked_int{ry + rh - bh}, bh, 0);
 
             // left scroll border
-            opaque_rect(Rect(sx,          ry + bh, 1, rh - bh * 2), this->fg_color);
+            opaque_rect(sx,          ry + bh, 1, rh - bh * 2, this->fg_color);
             // right scroll border
-            opaque_rect(Rect(sx + bw - 1, ry + bh, 1, rh - bh * 2), this->fg_color);
+            opaque_rect(sx + bw - 1, ry + bh, 1, rh - bh * 2, this->fg_color);
 
             // top button
             draw_button_borders(ry, bh);
             // cursor button
             draw_button_borders(cy, this->cursor_button_h);
             // bottom button
-            draw_button_borders(ry + rh - bh, bh);
+            draw_button_borders(checked_int{ry + rh - bh}, bh);
         }
 
         if (!this->has_scroll
          || (this->x() <= rect_intersect.x
           && rect_intersect.x <= this->x() + this->cx() - this->button_dim.w)
         ) {
-            uint16_t const glyph_cy = this->font.max_height() + this->y_text;
-
-            auto lines = this->line_metrics.lines();
-            size_t start = size_t(this->current_y) / glyph_cy;
-            size_t count = this->cy() / glyph_cy + 1;
-            start = std::min(start, lines.size());
-            lines = lines.from_offset(std::min(start, lines.size()));
-            lines = lines.first(std::min(count, lines.size()));
-
-            int dy = this->y() + int(start) * glyph_cy - this->current_y;
-            int const incy = this->y_text;
-            int16_t const dx = this->x_text + rect.x;
-            uint16_t const cx_text = rect.cx - (has_scroll ? this->button_dim.w : 0);
-            for (auto const& line : lines) {
-                dy += incy;
-                gdi::server_draw_text(
-                    this->drawable,
-                    this->font,
-                    dx,
-                    int16_t(dy),
-                    line,
-                    this->fg_color,
-                    this->bg_color,
-                    gdi::ColorCtx::depth24(),
-                    rect_intersect.intersect(
-                        Rect(rect.x, int16_t(dy), cx_text, this->font.max_height())
-                    )
-                );
-                dy += this->font.max_height();
-            }
+            multiline_text.draw(drawable, {
+                .x = x(),
+                .y = checked_int{y() - current_y},
+                .clip = rect_intersect,
+                .fgcolor = fg_color,
+                .bgcolor = bg_color,
+                .draw_bg_rect = false,
+            });
         }
     }
 }

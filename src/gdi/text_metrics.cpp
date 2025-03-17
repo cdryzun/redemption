@@ -26,171 +26,184 @@
 #include "utils/sugar/numerics/safe_conversions.hpp"
 #include "utils/utf.hpp"
 
-namespace
-{
-    bytes_view* multi_textmetrics_impl(
-        const Font& font,
-        bytes_view utf8_text,
-        const int max_width,
-        bytes_view* output,
-        int* real_max_width
-    ) {
-        auto push_line_and_width = [&](bytes_view line, int width) {
-            assert(gdi::TextMetrics(font, line).width == width);
-            *output++ = line;
-            *real_max_width = std::max(width, *real_max_width);
-        };
+static gdi::MultiLineTextMetrics::Line* multi_textmetrics_impl(
+    const Font& font,
+    bytes_view utf8_text,
+    const int max_width,
+    gdi::MultiLineTextMetrics::Line* line_it,
+    gdi::MultiLineTextMetrics::Char* char_it,
+    int* real_max_width
+) {
+    auto push_line_and_width = [&](gdi::MultiLineTextMetrics::Line line, int width) {
+        // TODO assert(gdi::TextMetrics(font, line).width == width);
+        *line_it++ = line;
+        *real_max_width = std::max(width, *real_max_width);
+    };
 
-        const int space_w = gdi::TextMetrics::char_width(font, ' ');
+    auto const& fc_space = font.item(' ').view;
+    int const space_w = fc_space.boxed_width();
 
-        uint8_t const* p = utf8_text.begin();
-        uint8_t const* end = utf8_text.end();
+    uint8_t const* p = utf8_text.begin();
+    uint8_t const* end = utf8_text.end();
 
-        UTF8Reader utf8_reader;
+    UTF8Reader utf8_reader;
 
-    _start:
+_start:
 
-        auto* start_line = p;
+    auto* start_line_fc = char_it;
 
-        // consume spaces and new lines
-        for (;;) {
-            // left spaces are ignored (empty line)
-            if (p == end) {
-                return output;
-            }
-
-            if (*p == ' ') {
-                ++p;
-                continue;
-            }
-
-            if (*p == '\n') {
-                *output++ = {};
-                ++p;
-                goto _start;
-            }
-
-            break;
+    // consume spaces and new lines
+    for (;;) {
+        // left spaces are ignored (empty line)
+        if (p == end) {
+            return line_it;
         }
 
-    _start_at_word:
-
-        auto* start_first_word = p;
-
-        int left_space_width = checked_cast<int>(p - start_line) * space_w;
-        int line_width = left_space_width;
-
-        // first word
-        for (;;) {
-            if (!utf8_reader.next({p, end})) {
-                push_line_and_width({start_line, p}, line_width);
-                return output;
-            }
-
-            auto uc = utf8_reader.unicode();
-
-            if (uc == ' ') {
-                break;
-            }
-
-            if (uc == '\n') {
-                push_line_and_width({start_line, p}, line_width);
-                ++p;
-                goto _start;
-            }
-
-            int w = gdi::TextMetrics::char_width(font, uc);
-
-            auto* new_p = utf8_reader.end_ptr;
-
-            // too long
-            if (max_width < line_width + w) [[unlikely]] {
-                if (left_space_width) {
-                    line_width -= left_space_width;
-                    left_space_width = 0;
-                    start_line = start_first_word;
-
-                    // insert new line
-                    *output++ = {};
-                }
-
-                // alway too long, push partial word
-                if (max_width < line_width + w) {
-                    if (start_first_word != p) {
-                        push_line_and_width({start_first_word, p}, line_width);
-                    }
-                    line_width = 0;
-                    start_line = p;
-                    start_first_word = p;
-                }
-            }
-
-            line_width += w;
-            p = new_p;
+        if (*p == ' ') {
+            ++p;
+            *char_it++ = &fc_space;
+            continue;
         }
 
-    _word:
-
-        // right space after word
-        assert(*p == ' ');
-        int line_to_end_word_width = line_width;
-        auto* end_word = p;
-        while (++p < end && *p == ' ') {
-        }
-
-        int sep_width = checked_cast<int>(p - end_word) * space_w;
-
-        if (p == end || *p == '\n' || max_width < line_width + sep_width) {
-            push_line_and_width({start_line, end_word}, line_width);
-            if (p == end) {
-                return output;
-            }
-            if (*p == '\n') {
-                ++p;
-            }
+        if (*p == '\n') {
+            *line_it++ = {};
+            ++p;
             goto _start;
         }
 
-        line_width += sep_width;
-
-        auto* start_word = p;
-
-        // other words
-        for (;;) {
-            if (!utf8_reader.next({p, end})) {
-                push_line_and_width({start_line, p}, line_width);
-                return output;
-            }
-
-            auto uc = utf8_reader.unicode();
-
-            if (uc == ' ') {
-                goto _word;
-            }
-
-            if (uc == '\n') {
-                push_line_and_width({start_line, p}, line_width);
-                ++p;
-                goto _start;
-            }
-
-            int w = gdi::TextMetrics::char_width(font, uc);
-
-            auto* new_p = utf8_reader.end_ptr;
-
-            // too long
-            if (max_width < line_width + w) [[unlikely]] {
-                push_line_and_width({start_line, end_word}, line_to_end_word_width);
-                start_line = start_word;
-                p = start_word;
-                goto _start_at_word;
-            }
-
-            line_width += w;
-            p = new_p;
-        }
+        break;
     }
-} // namespace
+
+_start_at_word:
+
+    auto* start_first_word_fc = char_it;
+
+    int left_space_width = checked_cast<int>(char_it - start_line_fc) * space_w;
+    int line_width = left_space_width;
+
+    // first word
+    for (;;) {
+        if (!utf8_reader.next({p, end})) {
+            push_line_and_width({start_line_fc, char_it}, line_width);
+            return line_it;
+        }
+
+        auto uc = utf8_reader.unicode();
+
+        if (uc == ' ') {
+            break;
+        }
+
+        if (uc == '\n') {
+            push_line_and_width({start_line_fc, char_it}, line_width);
+            ++p;
+            goto _start;
+        }
+
+        auto const& fc = font.item(uc).view;
+        int w = fc.boxed_width();
+
+        auto* new_p = utf8_reader.end_ptr;
+
+        // word too long
+        if (max_width < line_width + w) [[unlikely]] {
+            if (left_space_width) {
+                line_width -= left_space_width;
+                left_space_width = 0;
+
+                // insert new line
+                *line_it++ = {};
+            }
+
+            // alway too long, push partial word
+            if (max_width < line_width + w) {
+                if (start_first_word_fc != char_it) {
+                    push_line_and_width({start_first_word_fc, char_it}, line_width);
+                }
+                line_width = 0;
+                start_line_fc = char_it;
+                start_first_word_fc = char_it;
+            }
+        }
+
+        *char_it++ = &fc;
+        line_width += w;
+        p = new_p;
+    }
+
+_word:
+
+    // right space after word
+    assert(*p == ' ');
+    int line_to_end_word_width = line_width;
+    auto* end_word = p;
+    while (++p < end && *p == ' ') {
+    }
+
+    auto n_space = p - end_word;
+    int sep_width = checked_cast<int>(n_space) * space_w;
+
+    if (p == end || *p == '\n' || max_width < line_width + sep_width) {
+        push_line_and_width({start_line_fc, char_it}, line_width);
+        if (p == end) {
+            return line_it;
+        }
+        if (*p == '\n') {
+            ++p;
+        }
+        goto _start;
+    }
+
+    line_width += sep_width;
+
+    // insert left space
+    auto* end_word_fc = char_it;
+    for (std::ptrdiff_t i = 0; i < n_space; ++i) {
+        *char_it++ = &fc_space;
+    }
+
+    auto* start_word = p;
+    auto* start_word_fc = char_it;
+
+    // other words
+    for (;;) {
+        if (!utf8_reader.next({p, end})) {
+            push_line_and_width({start_line_fc, char_it}, line_width);
+            return line_it;
+        }
+
+        auto uc = utf8_reader.unicode();
+
+        if (uc == ' ') {
+            goto _word;
+        }
+
+        if (uc == '\n') {
+            push_line_and_width({start_line_fc, char_it}, line_width);
+            ++p;
+            goto _start;
+        }
+
+        auto const& fc = font.item(uc).view;
+        int w = fc.boxed_width();
+
+        auto* new_p = utf8_reader.end_ptr;
+
+        // too long
+        if (max_width < line_width + w) [[unlikely]] {
+            push_line_and_width({start_line_fc, end_word_fc}, line_to_end_word_width);
+            start_line_fc = start_word_fc;
+            char_it = start_word_fc;
+            p = start_word;
+            goto _start_at_word;
+        }
+
+        *char_it++ = &fc;
+        line_width += w;
+        p = new_p;
+    }
+}
+
 
 namespace gdi
 {
@@ -203,16 +216,10 @@ TextMetrics::TextMetrics(const Font & font, bytes_view utf8_text)
         width += font_item.offsetx + font_item.incby;
     };
     utf8_for_each(utf8_text,
-        [&](uint32_t uc){ width += char_width(font, uc); },
+        [&](uint32_t uc){ width += font.item(uc).view.boxed_width(); },
         invalid_char,
         invalid_char
     );
-}
-
-int TextMetrics::char_width(Font const& font, uint32_t c)
-{
-    FontCharView const& font_item = font.item(c).view;
-    return font_item.offsetx + font_item.incby;
 }
 
 MultiLineTextMetrics::MultiLineTextMetrics(
@@ -222,13 +229,18 @@ MultiLineTextMetrics::MultiLineTextMetrics(
         return;
     }
 
-    using Line = bytes_view;
-
-    void* mem = aligned_alloc(alignof(Line), utf8_text.size() * 2 * sizeof(Line));
-    d.lines = static_cast<bytes_view*>(mem);
+    static_assert(alignof(Line) == alignof(Char));
+    void* mem = aligned_alloc(alignof(Line), utf8_text.size() * (sizeof(Char) + sizeof(Line)));
+    d.lines = static_cast<Line*>(mem);
+    auto* chars_buf = reinterpret_cast<Char*>(d.lines + utf8_text.size());
 
     int real_max_width = 0;
-    auto* end = multi_textmetrics_impl(font, utf8_text, int(max_width), d.lines, &real_max_width);
+    auto* end = multi_textmetrics_impl(
+        font, utf8_text, checked_int(max_width), d.lines, chars_buf, &real_max_width
+    );
+    if (real_max_width) {
+        ++real_max_width;
+    }
     d.max_width = checked_int(real_max_width);
     d.nb_line = checked_int(end - d.lines);
 }

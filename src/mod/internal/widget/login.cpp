@@ -24,7 +24,6 @@
 #include "gdi/graphic_api.hpp"
 #include "keyboard/keymap.hpp"
 #include "mod/internal/widget/login.hpp"
-#include "mod/internal/widget/multiline_borders.hpp"
 #include "utils/theme.hpp"
 #include "translation/trkeys.hpp"
 
@@ -83,7 +82,7 @@ WidgetLogin::WidgetLogin(
     , message_label(drawable,
         login_message,
         theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
-        font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
+        font)
     , img(drawable,
           theme.enable_theme ? theme.logo_path.c_str() :
           app_path(AppPath::LoginWabBlue),
@@ -130,6 +129,8 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
     this->set_xy(left, top);
     this->set_wh(width, height);
 
+    constexpr int MULTILINE_X_PADDING = 10;
+
     bool label_as_placeholder = (width <= 640);
 
     const Dimension edit_dim = {
@@ -172,11 +173,10 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
             const int bloc_h = labels_h + full_borders_h + img_cy;
             const int max_message_h = height - bloc_h;
 
-            this->message_label.set_wh(cbloc_w, max_message_h);
-            const Dimension message_dim {
-                uint16_t(cbloc_w),
-                this->message_label.get_optimal_dim().h
-            };
+            this->message_label.set_wh(cbloc_w - MULTILINE_X_PADDING * 2, max_message_h);
+            const Dimension message_dim = this->message_label.get_optimal_dim();
+
+            int msg_y = original_space_h;
 
             if (message_dim.h <= max_message_h) {
                 this->message_label.set_wh(message_dim);
@@ -188,22 +188,21 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
 
                 if (message_dim.h + total_message_info_border_h < y && height - y >= bloc_h) {
                     start_y = y;
-                    this->message_label.set_wh(message_dim);
                     y = (y - message_dim.h - total_message_info_border_h) / 2 + original_space_h;
                     if (y + edit_dim.h - space_h + message_dim.h < start_y) {
                         y += edit_dim.h - space_h;
                     }
-                    this->message_label.set_xy(left + cbloc_x, top + y);
+                    msg_y = y;
                 }
                 else {
                     start_y = message_dim.h + total_message_info_border_h;
-                    this->message_label.set_xy(left + cbloc_x, top + original_space_h);
                 }
             }
             else {
                 start_y = max_message_h + total_message_info_border_h;
-                this->message_label.set_xy(left + cbloc_x, top + original_space_h);
             }
+
+            this->message_label.set_xy(left + cbloc_x + MULTILINE_X_PADDING, top + msg_y);
 
             space_h = original_space_h;
             break;
@@ -215,8 +214,8 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         // no space between widget
         else if (labels_h + min_message_h + img_cy <= height) {
             start_y = height - (labels_h + img_cy);
-            this->message_label.set_wh(cbloc_w, start_y);
-            this->message_label.set_xy(left + cbloc_x, top);
+            this->message_label.set_wh(cbloc_w - MULTILINE_X_PADDING * 2, start_y);
+            this->message_label.set_xy(left + cbloc_x + MULTILINE_X_PADDING, top);
             break;
         }
         // image as background
@@ -227,8 +226,8 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         }
         else {
             start_y = edit_dim.h * 3;
-            this->message_label.set_wh(cbloc_w, start_y);
-            this->message_label.set_xy(left + cbloc_x, top);
+            this->message_label.set_wh(cbloc_w - MULTILINE_X_PADDING * 2, start_y);
+            this->message_label.set_xy(left + cbloc_x + MULTILINE_X_PADDING, top);
             break;
         }
     }

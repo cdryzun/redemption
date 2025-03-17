@@ -25,7 +25,6 @@
 #include "mod/internal/widget/password.hpp"
 #include "mod/internal/widget/edit.hpp"
 #include "mod/internal/copy_paste.hpp"
-#include "mod/internal/widget/multiline_borders.hpp"
 #include "utils/theme.hpp"
 #include "keyboard/keymap.hpp"
 #include "gdi/graphic_api.hpp"
@@ -44,8 +43,7 @@ WidgetDialogBase::WidgetDialogBase(
     , title(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     , separator(drawable, theme.global.separator_color)
     , dialog(drawable, text,
-             theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
-             font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y)
+             theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color, font)
     , link(link)
     , challenge(challenge_)
     , ok(drawable, font, ok_text, WidgetButton::Colors::from_theme(theme), events.onsubmit)
@@ -100,6 +98,8 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     this->set_xy(left, top);
     this->set_wh(width, height);
 
+    constexpr int MULTILINE_X_PADDING = 10;
+
     int16_t y            = top;
     int16_t total_height = 0;
 
@@ -107,14 +107,14 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     y            += this->title.cy();
     total_height += this->title.cy();
 
-    int total_width = (width > 620) ? 600 : width - 20;
+    int total_width = (width > 620) ? 600 : width - MULTILINE_X_PADDING * 2;
 
     this->dialog.set_wh(
-            this->challenge ?
-                total_width :
-                width * 4 / 5 - WIDGET_MULTILINE_BORDER_X * 2,
-            height / 2
-        );
+        this->challenge
+            ? total_width
+            : width * 4 / 5 - MULTILINE_X_PADDING * 2,
+        height / 2
+    );
     {
         auto dim = this->dialog.get_optimal_dim();
         if (dim.h < this->dialog.cy()) {
@@ -123,14 +123,14 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     }
 
     if (!this->challenge) {
-        total_width = std::max(this->dialog.cx(), this->title.cx());
+        total_width = std::max(this->dialog.cx() + MULTILINE_X_PADDING * 2, this->title.cx() + 0);
     }
 
     if (this->link) {
         this->link->show.set_wh(
                 this->challenge ?
                     total_width :
-                    width * 4 / 5 - WIDGET_MULTILINE_BORDER_X * 2,
+                    width * 4 / 5 - MULTILINE_X_PADDING * 2,
                 height / 2
             );
 
@@ -148,14 +148,14 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     y            += 10;
     total_height += 10;
 
-    this->dialog.set_xy(this->separator.x(), y);
+    this->dialog.set_xy(this->separator.x() + (this->challenge ? 0 : MULTILINE_X_PADDING), y);
 
     y            += this->dialog.cy() + 10;
     total_height += this->dialog.cy() + 10;
 
     if (this->challenge) {
-        this->challenge->set_wh(total_width - 20, this->challenge->cy());
-        this->challenge->set_xy(this->separator.x() + 10, y);
+        this->challenge->set_wh(total_width - MULTILINE_X_PADDING * 2, this->challenge->cy());
+        this->challenge->set_xy(this->separator.x() + MULTILINE_X_PADDING, y);
 
         y            += this->challenge->cy() + 10;
         total_height += this->challenge->cy() + 10;
@@ -165,7 +165,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
 
     if (this->link) {
         // to activate
-        this->link->show.set_xy(this->separator.x(), y);
+        this->link->show.set_xy(this->dialog.x(), y);
 
         y            += this->link->show.cy() + 10;
         total_height += this->link->show.cy() + 10;
@@ -179,7 +179,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         const int label_dy = (dy - label_dim.h) / 2;
         const int button_dy = (dy - button_dim_h) / 2;
 
-        this->link->label.set_xy(this->separator.x() + WIDGET_MULTILINE_BORDER_X, y + label_dy);
+        this->link->label.set_xy(this->dialog.x(), y + label_dy);
 
         this->link->copy.set_xy(this->link->label.x() + label_dim.w + 2, y + button_dy);
 
@@ -196,12 +196,12 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     }
 
     if (this->cancel) {
-        this->cancel->set_xy(this->dialog.x() + total_width - (this->cancel->cx() + 10), y);
+        this->cancel->set_xy(this->separator.x() + total_width - (this->cancel->cx() + 10), y);
 
         this->ok.set_xy(this->cancel->x() - (this->ok.cx() + 10), y);
     }
     else {
-        this->ok.set_xy(this->dialog.x() + total_width - (this->ok.cx() + 10), y);
+        this->ok.set_xy(this->separator.x() + total_width - (this->ok.cx() + 10), y);
     }
 
     total_height += this->ok.cy();
@@ -331,7 +331,7 @@ WidgetDialogWithCopyableLink::WidgetDialogWithCopyableLink(
 : WidgetDialogBase::WidgetLink{
     .show = WidgetVerticalScrollText(drawable, link_value,
                 theme.global.fgcolor, theme.global.bgcolor, theme.global.focus_color,
-                font, WIDGET_MULTILINE_BORDER_X, WIDGET_MULTILINE_BORDER_Y),
+                font),
     .copied_msg = WidgetLabel(drawable, font, copied_msg_label,
                               WidgetLabel::Colors::from_theme(theme)),
     .label = WidgetLabel(drawable, font, link_label, WidgetLabel::Colors::from_theme(theme)),

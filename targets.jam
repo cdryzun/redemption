@@ -3000,6 +3000,7 @@ test-run tests/mod/internal/widget/test_dialog :
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/label.o
+  src/mod/internal/widget/multiline.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/mod/internal/widget/widget_rect.o
@@ -3575,6 +3576,7 @@ test-run tests/mod/internal/widget/test_vertical_scroll_text :
   src/keyboard/keymap.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/label.o
+  src/mod/internal/widget/multiline.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
