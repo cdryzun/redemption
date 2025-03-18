@@ -362,10 +362,10 @@ int draw_text(
     int x_start = clip.x;
 
     // skip invisible chars
-    if (it < end && x <= x_start) {
+    if (it < end && x < x_start) {
         do {
-            auto nextx = x + (*it)->offsetx + (*it)->incby;
-            if (nextx > x_start) {
+            auto nextx = x + (*it)->boxed_width();
+            if (nextx >= x_start) {
                 break;
             }
 
@@ -375,10 +375,16 @@ int draw_text(
     }
 
     if (!(it < end)) {
-        int w = padding.left + padding.right;
-        if (w) {
+        if (int w = fcs.empty() ? padding.left + padding.right : padding.right) {
+            int px = x;
+            if (fcs.empty()) {
+                px -= padding.left;
+            }
+            else {
+                w += fcs.back()->incby - fcs.back()->width;
+            }
             Rect rect(
-                checked_int(x - padding.left),
+                checked_int(px),
                 checked_int(y),
                 checked_int(w),
                 checked_int(max_height_text + padding.top + padding.bottom)
