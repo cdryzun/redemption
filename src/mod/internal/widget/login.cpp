@@ -140,8 +140,6 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
 
     this->error_message_label.set_wh(edit_dim.w, this->error_message_label.cy());
 
-    this->img.set_wh(this->img.get_optimal_dim());
-
     const int labels_w = std::max({
         login_edit.label_width(label_as_placeholder),
         password_edit.label_width(label_as_placeholder),

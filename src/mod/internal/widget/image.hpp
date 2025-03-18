@@ -1,23 +1,7 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #pragma once
 
@@ -26,16 +10,14 @@
 
 class WidgetImage : public Widget
 {
-    Bitmap bmp;
-
 public:
-    WidgetImage(gdi::GraphicApi& drawable,
-                const char *filename,
-                Color bg_color);
-
-    ~WidgetImage();
+    /// \param bg_color is used with a transparent image
+    WidgetImage(gdi::GraphicApi& drawable, const char *filename, Color bg_color);
 
     void rdp_input_invalidate(Rect clip) override;
 
-    Dimension get_optimal_dim() const override;
+private:
+    Bitmap bmp;
+    Bitmap last_bmp;
+    Rect last_rect;
 };

@@ -211,9 +211,6 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         this->link->copied_msg.move_xy(0, (height - total_height) / 2);
     }
 
-    auto dim = this->img.get_optimal_dim();
-    this->img.set_wh(dim);
-
     this->img.set_xy(left + (width - this->img.cx()) / 2,
                         top + (3 * (height - total_height) / 2 - this->img.cy()) / 2 + total_height);
     if (this->img.y() + this->img.cy() > top + height) {

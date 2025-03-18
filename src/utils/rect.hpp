@@ -160,10 +160,10 @@ struct Rect
     constexpr bool contains_pt(int16_t x, int16_t y) const noexcept
     {
         // return this->contains(Rect(x,y,1,1));
-        return x  >= this->x
-            && y  >= this->y
-            && x   < this->x + this->cx
-            && y   < this->y + this->cy;
+        return x >= this->x
+            && y >= this->y
+            && x  < this->x + this->cx
+            && y  < this->y + this->cy;
     }
 
     constexpr bool has_intersection(int16_t x, int16_t y) const noexcept
@@ -282,6 +282,37 @@ struct Rect
         int16_t min_bottom = std::min(in.ebottom(), this->ebottom());
 
         return Rect(max_x, max_y, uint16_t(min_right - max_x), uint16_t(min_bottom - max_y));
+    }
+
+    /// Intersection with a positive rect.
+    /// Equivalent to self.intersect(Rect(0, 0, max, max)).
+    constexpr Rect to_positive() const noexcept
+    {
+        Rect rect = *this;
+
+        auto ux = static_cast<uint16_t>(-rect.x);
+        auto uy = static_cast<uint16_t>(-rect.y);
+
+        if ((rect.x < 0 && rect.cx < ux) || (rect.y < 0 && rect.cy < uy)) {
+            return {
+                rect.x < 0 ? int16_t{} : rect.x,
+                rect.y < 0 ? int16_t{} : rect.y,
+                0,
+                0,
+            };
+        }
+
+        if (rect.x < 0) {
+            rect.x = 0;
+            rect.cx -= ux;
+        }
+
+        if (rect.y < 0) {
+            rect.y = 0;
+            rect.cy -= uy;
+        }
+
+        return rect;
     }
 
     constexpr Rect disjunct(Rect r) const noexcept

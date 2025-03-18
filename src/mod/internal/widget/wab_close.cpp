@@ -246,9 +246,6 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     this->move_children_xy(0, (height - y) / 2);
 
-    auto dim = this->img.get_optimal_dim();
-    this->img.set_wh(dim);
-
     this->img.set_xy(left + (this->cx() - this->img.cx()) / 2,
                      top + (3*(height - y) / 2 - this->img.cy()) / 2 + y);
     if (this->img.y() + this->img.cy() > top + height) {

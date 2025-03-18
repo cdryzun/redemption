@@ -27,6 +27,9 @@
 #include "mod/internal/widget/image.hpp"
 
 #include "utils/sugar/array_view.hpp"
+#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
+#include "utils/drawable.hpp"
+#include "gdi/graphic_api.hpp"
 
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/image/"
@@ -39,7 +42,7 @@ struct TestWidgetimageCtx
     TestWidgetimageCtx(const char * filename, BGRColor bg_color = NamedBGRColor::BLACK)
     : wimage(drawable, filename, bg_color)
     {
-        wimage.set_wh(wimage.get_optimal_dim());
+        // wimage.set_wh(wimage.get_optimal_dim());
     }
 };
 

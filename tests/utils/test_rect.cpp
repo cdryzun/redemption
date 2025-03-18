@@ -80,122 +80,82 @@ RED_AUTO_TEST_CASE(TestRect)
     RED_CHECK(not r.contains_pt(15,121));
     RED_CHECK(not r.contains_pt(21,115));
     RED_CHECK(not r.contains_pt(20,120));
-    RED_CHECK(not  r.contains_pt(19,120));
+    RED_CHECK(not r.contains_pt(19,120));
+
+    RED_CHECK(Rect().to_positive() == Rect());
+    RED_CHECK(Rect(10, 20, 5, 40).to_positive() == Rect(10, 20, 5, 40));
+    RED_CHECK(Rect(10, -20, 5, 40).to_positive() == Rect(10, 0, 5, 20));
+    RED_CHECK(Rect(-10, 20, 15, 40).to_positive() == Rect(0, 20, 5, 40));
+    RED_CHECK(Rect(-10, 20, 5, 40).to_positive() == Rect(0, 20, 0, 0));
+    RED_CHECK(Rect(20, -10, 40, 5).to_positive() == Rect(20, 0, 0, 0));
+
+    auto intersect = [](Rect a, Rect b) { return a.intersect(b); };
 
     /* we can build the intersection of two rect */
-    {
-        Rect i1(10, 110, 30, 30);
-        Rect i2(20, 120, 10, 10);
-        /* here i2 is include " in i1 : then it is the intersection */
-        Rect res = i1.intersect(i2);
-        RED_CHECK_EQUAL(20, res.x);
-        RED_CHECK_EQUAL(120, res.y);
-        RED_CHECK_EQUAL(30, res.eright());
-        RED_CHECK_EQUAL(130, res.ebottom());
-    }
+    RED_CHECK(intersect(
+            {10, 110, 30, 30},
+            {20, 120, 10, 10}
+        ) == Rect(
+            20, 120, 10, 10
+        ));
+    RED_CHECK(intersect(
+            {10, 110, 20, 20},
+            {20, 120, 20, 20}
+        ) == Rect(
+            20, 120, 10, 10
+        ));
+    /* This one is empty, it could yield any empty rect */
+    RED_CHECK(intersect(
+            {10, 110, 10, 10},
+            {20, 110, 20, 10}
+        ) == Rect(
+            20, 110, 0, 0
+        ));
+    RED_CHECK(intersect(
+            {10, 15, 20, 20},
+            {100, 90, 10, 30}
+        ) == Rect(
+            100, 90, 0, 0
+        ));
+    RED_CHECK(intersect(
+            {-10, -20, 110, 120},
+            {-5, -7, 155, 157}
+        ) == Rect(
+            -5, -7, 105, 107
+        ));
 
-    {
-        Rect i1(10, 110, 20, 20);
-        Rect i2(20, 120, 20, 20);
-
-        Rect res = i1.intersect(i2);
-        RED_CHECK_EQUAL(20, res.x);
-        RED_CHECK_EQUAL(120, res.y);
-        RED_CHECK_EQUAL(30, res.eright());
-        RED_CHECK_EQUAL(130, res.ebottom());
-    }
-
-    {
-        Rect i1(10, 110, 10, 10);
-        Rect i2(20, 110, 20, 10);
-        /* This one is empty, it could yield any empty rect */
-        /* but it returns canonical one */
-        Rect res = i1.intersect(i2);
-        RED_CHECK(res.isempty());
-        // Is it necessary to force empty rect to be canonical ?
-        RED_CHECK_EQUAL(20, res.x);
-        RED_CHECK_EQUAL(110, res.y);
-        RED_CHECK_EQUAL(20, res.eright());
-        RED_CHECK_EQUAL(110, res.ebottom());
-    }
-
-    {
-        Rect i1(-10, -20, 110, 120);
-        Rect i2(-5, -7, 155, 157);
-        /* here i2 is include " in i1 : then it is the intersection */
-        Rect res = i1.intersect(i2);
-        RED_CHECK_EQUAL(Rect(-5, -7, 105, 107), res);
-    }
-
+    auto disjunct = [](Rect a, Rect b) { return a.disjunct(b); };
 
     /* we can build the union of two rect */
-    {
-        Rect i1(10, 110, 30, 30);
-        Rect i2(20, 120, 10, 10);
-        /* here i2 is include " in i1 : then it is the intersection */
-        Rect res = i1.disjunct(i2);
-        RED_CHECK_EQUAL(10, res.x);
-        RED_CHECK_EQUAL(110, res.y);
-        RED_CHECK_EQUAL(40, res.eright());
-        RED_CHECK_EQUAL(140, res.ebottom());
-    }
+    /* here i2 is include " in i1 : then it is the intersection */
+    RED_CHECK(disjunct(
+            {10, 110, 30, 30},
+            {20, 120, 10, 10}
+        ) == Rect(
+            10, 110, 30, 30
+        ));
+    RED_CHECK(disjunct(
+            {10, 110, 20, 20},
+            {20, 120, 20, 20}
+        ) == Rect(
+            10, 110, 30, 30
+        ));
+    RED_CHECK(disjunct(
+            {10, 110, 10, 10},
+            {10, 110, 10, 10}
+        ) == Rect(
+            10, 110, 10, 10
+        ));
+    /* here i2 is include " in i1 : then it is the intersection */
+    RED_CHECK(disjunct(
+            {-10, -20, 110, 120},
+            {-5, -7, 155, 157}
+        ) == Rect(
+            -10, -20, 160, 170
+        ));
 
-    {
-        Rect i1(10, 110, 20, 20);
-        Rect i2(20, 120, 20, 20);
-
-        Rect res = i1.disjunct(i2);
-        RED_CHECK_EQUAL(10, res.x);
-        RED_CHECK_EQUAL(110, res.y);
-        RED_CHECK_EQUAL(40, res.eright());
-        RED_CHECK_EQUAL(140, res.ebottom());
-    }
-
-    {
-        Rect i1(10, 110, 10, 10);
-        Rect i2(10, 110, 10, 10);
-        Rect res = i1.disjunct(i2);
-
-        RED_CHECK_EQUAL(10, res.x);
-        RED_CHECK_EQUAL(110, res.y);
-        RED_CHECK_EQUAL(20, res.eright());
-        RED_CHECK_EQUAL(120, res.ebottom());
-    }
-
-    {
-        Rect i1(-10, -20, 110, 120);
-        Rect i2(-5, -7, 155, 157);
-        /* here i2 is include " in i1 : then it is the intersection */
-        Rect res = i1.disjunct(i2);
-        RED_CHECK_EQUAL(Rect(-10, -20, 160, 170), res);
-    }
-
-
-    {
-        /* we can move a rect by some offset */
-        Rect res(10, 110, 10, 10);
-        RED_CHECK_EQUAL(10, res.x);
-        RED_CHECK_EQUAL(110, res.y);
-        RED_CHECK_EQUAL(20, res.eright());
-        RED_CHECK_EQUAL(120, res.ebottom());
-
-        res = res.offset(10, 100);
-
-        RED_CHECK_EQUAL(20, res.x);
-        RED_CHECK_EQUAL(210, res.y);
-        RED_CHECK_EQUAL(30, res.eright());
-        RED_CHECK_EQUAL(220, res.ebottom());
-    }
-
-//     {
-//         /* from a rect we can get subrects of 1 pixel for each sides */
-//         Rect r(10, 110, 10, 10);
-//         const Rect inner = r.upper_side();
-//         RED_CHECK_EQUAL(10, inner.x);
-//         RED_CHECK_EQUAL(110, inner.y);
-//         RED_CHECK_EQUAL(20, inner.eright());
-//         RED_CHECK_EQUAL(111, inner.ebottom());
-//     }
+    /* we can move a rect by some offset */
+    RED_CHECK(Rect(10, 110, 10, 10).offset(10, 100) == Rect(20, 210, 10, 10));
 
     {
         /* check if a rectangle contains another */
@@ -224,7 +184,6 @@ RED_AUTO_TEST_CASE(TestRect)
         Rect good4(10, 10, 10, 9);
         RED_CHECK(not r.contains(bad4));
         RED_CHECK(r.contains(good4));
-
     }
 
     {
@@ -256,7 +215,6 @@ RED_AUTO_TEST_CASE(TestRect)
         RED_CHECK_NE(r, bad6);
         RED_CHECK_NE(r, bad7);
         RED_CHECK_NE(r, bad8);
-
     }
 
     // for RDP relative sending we often need to have difference of coordinates

@@ -20,7 +20,6 @@
  */
 
 #include "mod/internal/widget/wait.hpp"
-#include "mod/internal/widget/multiline_borders.hpp"
 #include "keyboard/keymap.hpp"
 
 #include "translation/translation.hpp"
