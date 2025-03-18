@@ -27,6 +27,8 @@
 #include "mod/internal/widget/screen.hpp"
 #include "keyboard/keymap.hpp"
 #include "keyboard/keylayouts.hpp"
+#include "utils/theme.hpp"
+
 #include "test_only/gdi/test_graphic.hpp"
 #include "test_only/core/font.hpp"
 #include "test_only/mod/internal/widget/notify_trace.hpp"

@@ -26,6 +26,8 @@
 #include "mod/internal/widget/screen.hpp"
 #include "keyboard/keymap.hpp"
 #include "keyboard/keylayouts.hpp"
+#include "utils/theme.hpp"
+
 #include "test_only/gdi/test_graphic.hpp"
 #include "test_only/core/font.hpp"
 
@@ -178,10 +180,25 @@ RED_AUTO_TEST_CASE(TestScreenEvent)
     RED_CHECK(notifier4.get_and_reset() == 1);
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "screen_3.png");
 
+    /*
+     * Tooltip
+     */
+
     wscreen.show_tooltip("tooltip test"_av, 30, 35, Rect(0, 0, 500, 41), wscreen.get_rect());
 
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "screen_12.png");
 
-    wscreen.show_tooltip(nullptr, 30, 35, Rect(), Rect());
+    wscreen.show_tooltip(nullptr, 30, 35, Rect(), Rect());  // or hide_tooltip()
+    RED_CHECK_IMG(drawable, IMG_TEST_PATH "screen_3.png");
+
+    wscreen.show_tooltip(
+        "Test tooltip\n"
+        "Text modification\n"
+        "text has been changed !"_av,
+        72, 42, Rect(0, 0, 400, 80), Rect()
+    );
+    RED_CHECK_IMG(drawable, IMG_TEST_PATH "screen_13.png");
+
+    wscreen.hide_tooltip();
     RED_CHECK_IMG(drawable, IMG_TEST_PATH "screen_3.png");
 }

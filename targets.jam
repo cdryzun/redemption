@@ -101,7 +101,6 @@ exe rdpproxy :
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
   src/mod/internal/widget/selector.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/mod/internal/widget/wab_close.o
   src/mod/internal/widget/wait.o
@@ -258,7 +257,6 @@ exe headlessclient :
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
-  src/mod/internal/widget/tooltip.o
   src/mod/rdp/channels/cliprdr_channel.o
   src/mod/rdp/channels/rdp_session_probe_wrapper.o
   src/mod/rdp/channels/rdpdr_file_system_drive_manager.o
@@ -2545,7 +2543,6 @@ test-run tests/mod/internal/test_close_mod :
   src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/wab_close.o
   src/mod/internal/widget/widget_rect.o
   src/translation/gettext.o
@@ -2636,7 +2633,6 @@ test-run tests/mod/internal/test_dialog_mod :
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/mod/internal/widget/widget_rect.o
   src/translation/gettext.o
@@ -2689,7 +2685,6 @@ test-run tests/mod/internal/test_interactive_target_mod :
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/widget_rect.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -2742,7 +2737,6 @@ test-run tests/mod/internal/test_login_mod :
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -2789,7 +2783,6 @@ test-run tests/mod/internal/test_rail_module_host_mod :
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
-  src/mod/internal/widget/tooltip.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -2960,7 +2953,6 @@ test-run tests/mod/internal/widget/test_delegated_copy :
   src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -3042,7 +3034,6 @@ test-run tests/mod/internal/widget/test_edit :
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -3293,7 +3284,6 @@ test-run tests/mod/internal/widget/test_login :
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -3433,7 +3423,6 @@ test-run tests/mod/internal/widget/test_screen :
   src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -3523,42 +3512,6 @@ test-run tests/mod/internal/widget/test_selector :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/mod/internal/widget/test_tooltip :
-  $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_tooltip.cpp
-:
-  crypto
-  png
-  app_path_test.o
-  src/core/RDP/RDPDrawable.o
-  src/core/RDP/rdp_pointer.o
-  src/core/error.o
-  src/core/font.o
-  src/gdi/clip_from_cmd.o
-  src/gdi/draw_utils.o
-  src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
-  src/keyboard/keymap.o
-  src/mod/internal/widget/composite.o
-  src/mod/internal/widget/label.o
-  src/mod/internal/widget/multiline.o
-  src/mod/internal/widget/screen.o
-  src/mod/internal/widget/tooltip.o
-  src/utils/bitmap.o
-  src/utils/bitmap_data_allocator.o
-  src/utils/bitmap_from_file.o
-  src/utils/drawable.o
-  src/utils/hexdump.o
-  src/utils/png.o
-  src/utils/rle.o
-  src/utils/stacktrace.o
-  src/utils/strutils.o
-  src/utils/utf.o
-  tests/includes/test_only/core/font.o
-  tests/includes/test_only/gdi/test_graphic.o
-  tests/includes/test_only/test_framework/check_img.o
-:
-  $(BOOST_STACKTRACE_LINKFLAGS)
-;
 test-run tests/mod/internal/widget/test_vertical_scroll_text :
   $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_vertical_scroll_text.cpp
 :
@@ -3574,8 +3527,6 @@ test-run tests/mod/internal/widget/test_vertical_scroll_text :
   src/gdi/text_metrics.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
-  src/mod/internal/widget/button.o
-  src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/utils/bitmap.o
@@ -5190,7 +5141,6 @@ obj src/mod/internal/widget/password.o : $(REDEMPTION_SRC_PATH)/mod/internal/wid
 obj src/mod/internal/widget/screen.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/screen.cpp ;
 obj src/mod/internal/widget/scroll.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/scroll.cpp ;
 obj src/mod/internal/widget/selector.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/selector.cpp ;
-obj src/mod/internal/widget/tooltip.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/tooltip.cpp ;
 obj src/mod/internal/widget/vertical_scroll_text.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/vertical_scroll_text.cpp ;
 obj src/mod/internal/widget/wab_close.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/wab_close.cpp ;
 obj src/mod/internal/widget/wait.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/wait.cpp ;
@@ -5451,7 +5401,6 @@ alias test_password : tests/mod/internal/widget/test_password ;
 alias test_screen : tests/mod/internal/widget/test_screen ;
 alias test_scroll : tests/mod/internal/widget/test_scroll ;
 alias test_selector : tests/mod/internal/widget/test_selector ;
-alias test_tooltip : tests/mod/internal/widget/test_tooltip ;
 alias test_vertical_scroll_text : tests/mod/internal/widget/test_vertical_scroll_text ;
 alias test_wab_close : tests/mod/internal/widget/test_wab_close ;
 alias test_wait : tests/mod/internal/widget/test_wait ;
@@ -5823,7 +5772,6 @@ alias tests/mod/internal/widget.norec :
   tests/mod/internal/widget/test_screen
   tests/mod/internal/widget/test_scroll
   tests/mod/internal/widget/test_selector
-  tests/mod/internal/widget/test_tooltip
   tests/mod/internal/widget/test_vertical_scroll_text
   tests/mod/internal/widget/test_wab_close
   tests/mod/internal/widget/test_wait
@@ -6306,7 +6254,6 @@ explicit
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
   src/mod/internal/widget/selector.o
-  src/mod/internal/widget/tooltip.o
   src/mod/internal/widget/vertical_scroll_text.o
   src/mod/internal/widget/wab_close.o
   src/mod/internal/widget/wait.o
@@ -6569,7 +6516,6 @@ explicit
   test_screen
   test_scroll
   test_selector
-  test_tooltip
   test_vertical_scroll_text
   test_wab_close
   test_wait

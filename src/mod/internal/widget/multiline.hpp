@@ -20,6 +20,8 @@ public:
     void set_text(Font const & font, unsigned max_width, chars_view text);
     void set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines);
 
+    void reset() noexcept;
+
     Dimension dimension() const noexcept;
 
     struct Data

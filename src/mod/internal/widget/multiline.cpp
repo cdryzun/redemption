@@ -27,6 +27,12 @@ void MultiLineText::set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics
     m_cy_line = font_max_height;
 }
 
+void MultiLineText::reset() noexcept
+{
+    m_lines = gdi::MultiLineTextMetrics();
+    m_cy_line = 0;
+}
+
 Dimension MultiLineText::dimension() const noexcept
 {
     auto n = m_lines.lines().size();

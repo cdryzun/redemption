@@ -1,47 +1,102 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
-#include "mod/internal/widget/screen.hpp"
-#include "mod/internal/widget/tooltip.hpp"
-#include "gdi/graphic_api.hpp"
+#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/RDP/rdp_pointer.hpp"
+#include "gdi/graphic_api.hpp"
+#include "gdi/draw_utils.hpp"
+#include "mod/internal/widget/screen.hpp"
+#include "utils/theme.hpp"
 
-#include <cassert>
+
+struct WidgetScreen::WidgetTooltip::D
+{
+    static const int border_width = 1;
+    static const int h_border = border_width + 9;
+    static const int w_border = border_width + 9;
+};
+
+
+WidgetScreen::WidgetTooltip::Colors
+WidgetScreen::WidgetTooltip::Colors::from_theme(const Theme& theme) noexcept
+{
+    return Colors{
+        .fg = theme.tooltip.fgcolor,
+        .bg = theme.tooltip.bgcolor,
+        .border = theme.tooltip.border_color,
+    };
+}
+
+
+WidgetScreen::WidgetTooltip::WidgetTooltip(
+    gdi::GraphicApi & drawable, Colors colors
+)
+    : Widget(drawable, Focusable::No)
+    , colors(colors)
+{
+}
+
+bool WidgetScreen::WidgetTooltip::has_text() const noexcept
+{
+    return !desc.lines().empty();
+}
+
+void WidgetScreen::WidgetTooltip::clear_text() noexcept
+{
+    desc.reset();
+}
+
+void WidgetScreen::WidgetTooltip::set_text(Font const & font, unsigned max_width, chars_view text)
+{
+    desc.set_text(font, max_width, text);
+    Dimension dim = desc.dimension();
+
+    set_wh(dim.w + 2 * D::w_border,
+           dim.h + 2 * D::h_border);
+}
+
+void WidgetScreen::WidgetTooltip::rdp_input_invalidate(Rect clip)
+{
+    auto rect = get_rect();
+    Rect rect_intersect = clip.intersect(rect);
+
+    if (!rect_intersect.isempty()) {
+        drawable.draw(
+            RDPOpaqueRect(rect, colors.bg),
+            rect_intersect, gdi::ColorCtx::depth24()
+        );
+
+        desc.draw(drawable, {
+            .x = checked_int{x() + D::w_border},
+            .y = checked_int{y() + D::h_border},
+            .clip = rect_intersect,
+            .fgcolor = colors.fg,
+            .bgcolor = colors.bg,
+            .draw_bg_rect = false,
+        });
+
+        gdi_draw_border(
+            drawable, colors.border, rect, D::border_width,
+            rect_intersect, gdi::ColorCtx::depth24()
+        );
+    }
+}
 
 
 WidgetScreen::WidgetScreen(
     gdi::GraphicApi & drawable, uint16_t width, uint16_t height,
-    Font const & font, Theme theme
+    Font const & font, Theme const& theme
 )
     : WidgetComposite(drawable, Focusable::Yes)
-    , theme(std::move(theme))
-    , tooltip(nullptr)
     , current_over(nullptr)
     , font(font)
+    , tooltip(drawable, WidgetTooltip::Colors::from_theme(theme))
 {
     this->set_wh(width, height);
     this->set_xy(0, 0);
 }
-
-WidgetScreen::~WidgetScreen() = default;
 
 void WidgetScreen::show_tooltip(
     chars_view text, int x, int y,
@@ -49,39 +104,31 @@ void WidgetScreen::show_tooltip(
     Rect const mouse_area)
 {
     if (text.empty()) {
-        if (this->tooltip) {
-            this->remove_widget(*this->tooltip);
-            this->rdp_input_invalidate(this->tooltip->get_rect());
-            this->tooltip.reset();
+        if (this->tooltip.has_text()) {
+            this->remove_widget(this->tooltip);
+            this->rdp_input_invalidate(this->tooltip.get_rect());
+            this->tooltip.clear_text();
         }
     }
-    else if (this->tooltip == nullptr) {
+    else if (!this->tooltip.has_text()) {
         Rect display_rect = this->get_rect();
         if (!preferred_display_rect.isempty()) {
             display_rect = display_rect.intersect(preferred_display_rect);
         }
 
         this->tooltip_mouse_area = mouse_area;
-        this->tooltip = std::make_unique<WidgetTooltip>(
-            this->drawable, this->font, this->cx(), text, WidgetTooltip::Colors{
-                .fg = this->theme.tooltip.fgcolor,
-                .bg = this->theme.tooltip.bgcolor,
-                .border = this->theme.tooltip.border_color,
-            }
-        );
-        Dimension dim = this->tooltip->get_optimal_dim();
-        this->tooltip->set_wh(dim);
+        this->tooltip.set_text(this->font, this->cx(), text);
 
-        int w = this->tooltip->cx();
-        int h = this->tooltip->cy();
+        int w = this->tooltip.cx();
+        int h = this->tooltip.cy();
         int sw = display_rect.x + display_rect.cx;
         int sh = display_rect.y + display_rect.cy;
         int posx = ((x + w) > sw) ? (sw - w) : x;
         int posy = (y - h >= display_rect.y) ? (y - h) : (y + h > sh) ? (sh - h) : y;
-        this->tooltip->set_xy(posx, posy);
+        this->tooltip.set_xy(checked_int{posx}, checked_int{posy});
 
-        this->add_widget(*this->tooltip);
-        this->rdp_input_invalidate(this->tooltip->get_rect());
+        this->add_widget(this->tooltip);
+        this->tooltip.rdp_input_invalidate(this->tooltip.get_rect());
     }
 }
 
@@ -133,7 +180,7 @@ void WidgetScreen::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y
 {
     this->redo_mouse_pointer_change(x, y);
 
-    if (this->tooltip) {
+    if (this->tooltip.has_text()) {
         if (device_flags & MOUSE_FLAG_MOVE) {
             if (!this->tooltip_mouse_area.contains_pt(x, y)) {
                 this->hide_tooltip();
@@ -149,7 +196,7 @@ void WidgetScreen::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y
 
 void WidgetScreen::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
 {
-    if (this->tooltip) {
+    if (this->tooltip.has_text()) {
         this->hide_tooltip();
     }
     WidgetComposite::rdp_input_scancode(flags, scancode, event_time, keymap);
@@ -157,7 +204,7 @@ void WidgetScreen::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_
 
 void WidgetScreen::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
 {
-    if (this->tooltip) {
+    if (this->tooltip.has_text()) {
         this->hide_tooltip();
     }
     WidgetComposite::rdp_input_unicode(flag, unicode);
