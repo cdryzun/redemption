@@ -16,15 +16,15 @@ Create log in another directory with `-p`/`--prefix`:
 ./split_log.py -p my_ouput_dir/ syslog wabproxy.log
 ```
 
-Trailing `/` is important because output filename is concatened without separator.
+Trailing `/` is important for directory, because output filename is concatenated without separator.
 
 
 # rdpproxy_color.awk
 
-(requiere gawk)
+(require gawk)
 
 ```sh
-./rdpproxy_color.awk <file.log
+./rdpproxy_color.awk file.log...
 # or
 grep my_pattern file.log... | ./rdpproxy_color.awk
 ```
