@@ -1,21 +1,6 @@
 /*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-*   Product name: redemption, a FLOSS RDP proxy
-*   Copyright (C) Wallix 2010-2015
-*   Author(s): Jonathan Poelen
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "gdi/text_metrics.hpp"
@@ -26,48 +11,47 @@
 #include "utils/sugar/numerics/safe_conversions.hpp"
 #include "utils/utf.hpp"
 
+// new line is a nullptr Char*
 static gdi::MultiLineTextMetrics::Line* multi_textmetrics_impl(
-    const Font& font,
-    bytes_view utf8_text,
-    const int max_width,
+    array_view<gdi::MultiLineTextMetrics::Char> fcs,
+    FontCharView const* fc_space,
+    int const preferred_max_width,
     gdi::MultiLineTextMetrics::Line* line_it,
-    gdi::MultiLineTextMetrics::Char* char_it,
-    int* real_max_width
+    int* max_width
 ) {
     auto push_line_and_width = [&](gdi::MultiLineTextMetrics::Line line, int width) {
         // TODO assert(gdi::TextMetrics(font, line).width == width);
         *line_it++ = line;
-        *real_max_width = std::max(width, *real_max_width);
+        *max_width = std::max(width, *max_width);
     };
 
-    auto const& fc_space = font.item(' ').view;
-    int const space_w = fc_space.boxed_width();
+    int const space_w = fc_space->boxed_width();
 
-    uint8_t const* p = utf8_text.begin();
-    uint8_t const* end = utf8_text.end();
+    auto fc_it = fcs.begin();
+    auto fc_end = fcs.end();
 
-    UTF8Reader utf8_reader;
+    auto is_newline = [](FontCharView const* fc){ return !fc; };
+    auto is_space = [&fc_space](FontCharView const* fc){ return fc == fc_space; };
 
 _start:
 
-    auto* start_line_fc = char_it;
+    auto* start_line_fc = fc_it;
 
     // consume spaces and new lines
     for (;;) {
         // left spaces are ignored (empty line)
-        if (p == end) {
+        if (fc_it == fc_end) {
             return line_it;
         }
 
-        if (*p == ' ') {
-            ++p;
-            *char_it++ = &fc_space;
+        if (is_space(*fc_it)) {
+            ++fc_it;
             continue;
         }
 
-        if (*p == '\n') {
+        if (is_newline(*fc_it)) {
             *line_it++ = {};
-            ++p;
+            ++fc_it;
             goto _start;
         }
 
@@ -76,37 +60,32 @@ _start:
 
 _start_at_word:
 
-    auto* start_first_word_fc = char_it;
+    auto* start_first_word_fc = fc_it;
 
-    int left_space_width = checked_cast<int>(char_it - start_line_fc) * space_w;
+    int left_space_width = checked_cast<int>(fc_it - start_line_fc) * space_w;
     int line_width = left_space_width;
 
     // first word
     for (;;) {
-        if (!utf8_reader.next({p, end})) {
-            push_line_and_width({start_line_fc, char_it}, line_width);
+        if (fc_it == fc_end) {
+            push_line_and_width({start_line_fc, fc_it}, line_width);
             return line_it;
         }
 
-        auto uc = utf8_reader.unicode();
-
-        if (uc == ' ') {
+        if (is_space(*fc_it)) {
             break;
         }
 
-        if (uc == '\n') {
-            push_line_and_width({start_line_fc, char_it}, line_width);
-            ++p;
+        if (is_newline(*fc_it)) {
+            push_line_and_width({start_line_fc, fc_it}, line_width);
+            ++fc_it;
             goto _start;
         }
 
-        auto const& fc = font.item(uc).view;
-        int w = fc.boxed_width();
-
-        auto* new_p = utf8_reader.end_ptr;
+        int w = (*fc_it)->boxed_width();
 
         // word too long
-        if (max_width < line_width + w) [[unlikely]] {
+        if (preferred_max_width < line_width + w) [[unlikely]] {
             if (left_space_width) {
                 line_width -= left_space_width;
                 left_space_width = 0;
@@ -116,91 +95,76 @@ _start_at_word:
             }
 
             // alway too long, push partial word
-            if (max_width < line_width + w) {
-                if (start_first_word_fc != char_it) {
-                    push_line_and_width({start_first_word_fc, char_it}, line_width);
+            if (preferred_max_width < line_width + w) {
+                if (start_first_word_fc != fc_it) {
+                    push_line_and_width({start_first_word_fc, fc_it}, line_width);
                 }
                 line_width = 0;
-                start_line_fc = char_it;
-                start_first_word_fc = char_it;
+                start_line_fc = fc_it;
+                start_first_word_fc = fc_it;
             }
         }
 
-        *char_it++ = &fc;
+        ++fc_it;
         line_width += w;
-        p = new_p;
     }
 
 _word:
 
     // right space after word
-    assert(*p == ' ');
+    assert(is_space(*fc_it));
     int line_to_end_word_width = line_width;
-    auto* end_word = p;
-    while (++p < end && *p == ' ') {
+    auto* end_word_fc = fc_it;
+    while (++fc_it < fc_end && is_space(*fc_it)) {
     }
 
-    auto n_space = p - end_word;
+    auto n_space = fc_it - end_word_fc;
     int sep_width = checked_cast<int>(n_space) * space_w;
 
-    if (p == end || *p == '\n' || max_width < line_width + sep_width) {
-        push_line_and_width({start_line_fc, char_it}, line_width);
-        if (p == end) {
+    if (fc_it == fc_end || is_newline(*fc_it) || preferred_max_width < line_width + sep_width) {
+        push_line_and_width({start_line_fc, end_word_fc}, line_width);
+        if (fc_it == fc_end) {
             return line_it;
         }
-        if (*p == '\n') {
-            ++p;
+        if (is_newline(*fc_it)) {
+            ++fc_it;
         }
         goto _start;
     }
 
     line_width += sep_width;
 
-    // insert left space
-    auto* end_word_fc = char_it;
-    for (std::ptrdiff_t i = 0; i < n_space; ++i) {
-        *char_it++ = &fc_space;
-    }
-
-    auto* start_word = p;
-    auto* start_word_fc = char_it;
+    auto* start_word_fc = fc_it;
 
     // other words
     for (;;) {
-        if (!utf8_reader.next({p, end})) {
-            push_line_and_width({start_line_fc, char_it}, line_width);
+        if (fc_it == fc_end) {
+            push_line_and_width({start_line_fc, fc_it}, line_width);
             return line_it;
         }
 
-        auto uc = utf8_reader.unicode();
-
-        if (uc == ' ') {
+        if (is_space(*fc_it)) {
             goto _word;
         }
 
-        if (uc == '\n') {
-            push_line_and_width({start_line_fc, char_it}, line_width);
-            ++p;
+        if (is_newline(*fc_it)) {
+            push_line_and_width({start_line_fc, fc_it}, line_width);
+            ++fc_it;
             goto _start;
         }
 
-        auto const& fc = font.item(uc).view;
-        int w = fc.boxed_width();
-
-        auto* new_p = utf8_reader.end_ptr;
+        int w = (*fc_it)->boxed_width();
 
         // too long
-        if (max_width < line_width + w) [[unlikely]] {
+        if (preferred_max_width < line_width + w) [[unlikely]] {
             push_line_and_width({start_line_fc, end_word_fc}, line_to_end_word_width);
             start_line_fc = start_word_fc;
-            char_it = start_word_fc;
-            p = start_word;
+            fc_it = start_word_fc;
             goto _start_at_word;
         }
 
-        *char_it++ = &fc;
+        ++fc_it;
         line_width += w;
-        p = new_p;
     }
 }
 
@@ -213,7 +177,7 @@ TextMetrics::TextMetrics(const Font & font, bytes_view utf8_text)
 {
     auto invalid_char = [&](auto){
         FontCharView const& font_item = font.unknown_glyph();
-        width += font_item.offsetx + font_item.incby;
+        width += font_item.boxed_width();
     };
     utf8_for_each(utf8_text,
         [&](uint32_t uc){ width += font.item(uc).view.boxed_width(); },
@@ -223,31 +187,125 @@ TextMetrics::TextMetrics(const Font & font, bytes_view utf8_text)
 }
 
 MultiLineTextMetrics::MultiLineTextMetrics(
-    const Font& font, bytes_view utf8_text, unsigned max_width)
+    const Font& font, unsigned preferred_max_width, bytes_view utf8_text)
 {
-    if (utf8_text.empty()) {
+    set_text(font, preferred_max_width, utf8_text);
+}
+
+void MultiLineTextMetrics::set_text(
+    Font const& font, unsigned preferred_max_width, bytes_view utf8_text)
+{
+    auto max_cap = ~decltype(d.char_capacity){} - 1 /* remove reserved space fc */;
+
+    if (utf8_text.empty() || utf8_text.size() > max_cap) {
+        d.clear_text();
         return;
     }
 
-    static_assert(alignof(Line) == alignof(Char));
-    void* mem = aligned_alloc(alignof(Line), utf8_text.size() * (sizeof(Char) + sizeof(Line)));
-    d.lines = static_cast<Line*>(mem);
-    auto* chars_buf = reinterpret_cast<Char*>(d.lines + utf8_text.size());
+    /*
+     * Allocate buffer
+     */
 
-    int real_max_width = 0;
-    auto* end = multi_textmetrics_impl(
-        font, utf8_text, checked_int(max_width), d.lines, chars_buf, &real_max_width
-    );
-    if (real_max_width) {
-        ++real_max_width;
+    if (utf8_text.size() > d.char_capacity) {
+        free(d.data);
+
+        static_assert(alignof(Line) == alignof(Char));
+
+        auto data_len = utf8_text.size() * (sizeof(Char) + sizeof(Line))
+            + sizeof(Char) /* reserved for space fc */;
+        d.data = aligned_alloc(alignof(Line), data_len);
+        if (!d.data) {
+            // insuffisant memory, ignore error
+            d = {};
+            return;
+        }
+
+        d.char_capacity = checked_int{utf8_text.size()};
     }
-    d.max_width = checked_int(real_max_width);
-    d.nb_line = checked_int(end - d.lines);
+
+    /*
+     * Text to FontChar
+     */
+
+    auto* chars_buf = static_cast<Char*>(d.data);
+    auto ch_it = chars_buf;
+
+    *ch_it++ = &font.item(' ').view;
+
+    auto invalid_char = [&](auto){ *ch_it++ = &font.unknown_glyph(); };
+    utf8_for_each(
+        utf8_text,
+        [&](uint32_t uc){
+            if (uc != '\n') [[likely]] {
+                *ch_it++ = &font.item(uc).view;
+            }
+            else {
+                *ch_it++ = nullptr;
+            }
+        },
+        invalid_char,
+        invalid_char
+    );
+
+    d.nb_chars = checked_int{ch_it - chars_buf};
+
+    /*
+     * Init lines
+     */
+
+    rewrap(preferred_max_width);
+}
+
+void MultiLineTextMetrics::rewrap(unsigned preferred_max_width) noexcept
+{
+    if (!d.nb_chars) {
+        return;
+    }
+
+    auto* ch_it = static_cast<Char*>(d.data);
+    auto* ch_end = ch_it + d.nb_chars;
+    auto* line_it = reinterpret_cast<Line*>(ch_end);  /* NOLINT */
+    auto* sp = *ch_it++;
+    int max_width = 0;
+    auto* end = multi_textmetrics_impl(
+        {ch_it, ch_end},
+        sp,
+        checked_int(preferred_max_width ? preferred_max_width - 1 : 0),
+        line_it,
+        &max_width
+    );
+
+    // otherwise, some last char are truncated :/
+    if (max_width) {
+        ++max_width;
+    }
+
+    d.max_width = checked_int(max_width);
+    d.nb_line = checked_int(end - line_it);
+}
+
+void MultiLineTextMetrics::Data::clear_text() noexcept
+{
+    nb_line = 0;
+    nb_chars = 0;
+    max_width = 0;
+}
+
+void MultiLineTextMetrics::clear() noexcept
+{
+    d.clear_text();
+}
+
+array_view<MultiLineTextMetrics::Line> MultiLineTextMetrics::lines() const noexcept
+{
+    auto* ch_it = static_cast<Char*>(d.data);
+    auto* line_it = reinterpret_cast<Line*>(ch_it + d.nb_chars);  /* NOLINT */
+    return {line_it, d.nb_line};
 }
 
 MultiLineTextMetrics::~MultiLineTextMetrics()
 {
-    free(d.lines);
+    free(d.data);
 }
 
 // BUG TODO static not const is a bad idea

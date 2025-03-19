@@ -54,7 +54,6 @@ void WidgetVerticalScrollText::set_wh(uint16_t w, uint16_t h)
     this->has_scroll = false;
 
     if (this->text.empty()) {
-        this->current_y = 0;
         return ;
     }
 
@@ -99,6 +98,10 @@ void WidgetVerticalScrollText::set_wh(uint16_t w, uint16_t h)
     else {
         this->current_y = 0;
     }
+}
+
+void WidgetVerticalScrollText::update_dimension(DimensionContraints contraints)
+{
 }
 
 Dimension WidgetVerticalScrollText::get_optimal_dim() const

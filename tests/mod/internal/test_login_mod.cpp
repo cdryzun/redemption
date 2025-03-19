@@ -33,6 +33,7 @@
 #include "keyboard/keymap.hpp"
 #include "keyboard/keylayouts.hpp"
 #include "core/events.hpp"
+#include "utils/theme.hpp"
 
 
 struct TestLoginModCtx

@@ -1,23 +1,6 @@
 /*
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-   Product name: redemption, a FLOSS RDP proxy
-   Copyright (C) Wallix 2020
-   Author(s): Christophe Grosjean, Jonathan Poelen
-
-   Unit test to conversion of RDP drawing orders to PNG images
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
@@ -159,12 +142,24 @@ static ut::assertion_result test_comp_lines(LinesForTest const& a, LinesForTest 
 RED_TEST_DISPATCH_COMPARISON_EQ((), (LinesForTest), (LinesForTest), ::test_comp_lines)
 #endif
 
-#define TEST_LINES(font, s, max_width, ...) do {                 \
-    gdi::MultiLineTextMetrics metrics(font, s ""_av, max_width); \
-    std::string_view expected_[] __VA_ARGS__;                    \
-    LinesForTest expected{{}, make_array_view(expected_), font}; \
-    LinesForTest lines = {metrics.lines(), {}, font};            \
-    RED_CHECK(lines == expected);                                \
+#define TEST_LINES(font, s, preferred_max_width, real_max_width, ...) do { \
+    gdi::MultiLineTextMetrics metrics(font, preferred_max_width, s ""_av); \
+    std::string_view expected_[] __VA_ARGS__;                              \
+    LinesForTest expected{{}, make_array_view(expected_), font};           \
+    LinesForTest lines = {metrics.lines(), {}, font};                      \
+    RED_CHECK(lines == expected);                                          \
+    RED_CHECK(metrics.max_width() == real_max_width);                      \
+    RED_TEST_CONTEXT("rewrap") {                                           \
+        metrics.rewrap(metrics.max_width());                               \
+        RED_CHECK(lines == expected);                                      \
+        RED_CHECK(metrics.max_width() == real_max_width);                  \
+    }                                                                      \
+        RED_TEST_CONTEXT("rewrap") {                                       \
+        metrics.clear();                                                   \
+        RED_CHECK((LinesForTest{metrics.lines(), {}, font})                \
+            == (LinesForTest{{}, {}, font}));                              \
+        RED_CHECK(metrics.max_width() == 0);                               \
+    }                                                                      \
 } while (0)
 
 
@@ -172,64 +167,64 @@ RED_AUTO_TEST_CASE(MultiLineTextMetrics)
 {
     auto& font14 = global_font_deja_vu_14();
 
-    RED_TEST(gdi::MultiLineTextMetrics(font14, ""_av, 0).lines().size() == 0);
+    RED_TEST(gdi::MultiLineTextMetrics(font14, 0, ""_av).lines().size() == 0);
 
-    TEST_LINES(font14, "ab", 0, {
+    TEST_LINES(font14, "ab", 0, 10, {
         "a",
         "b",
     });
 
-    TEST_LINES(font14, "abc", 100, {
+    TEST_LINES(font14, "abc", 100, 26, {
         "abc",
     });
 
-    TEST_LINES(font14, "abc", 17, {
+    TEST_LINES(font14, "abc", 18, 18, {
         "ab",
         "c",
     });
 
-    TEST_LINES(font14, "abc", 1, {
+    TEST_LINES(font14, "abc", 1, 10, {
         "a",
         "b",
         "c",
     });
 
-    TEST_LINES(font14, "a\nb\nc", 100, {
+    TEST_LINES(font14, "a\nb\nc", 100, 10, {
         "a",
         "b",
         "c",
     });
 
-    TEST_LINES(font14, "a\nb\nc", 17, {
+    TEST_LINES(font14, "a\nb\nc", 17, 10, {
         "a",
         "b",
         "c",
     });
 
-    TEST_LINES(font14, "a\nb\nc", 1, {
+    TEST_LINES(font14, "a\nb\nc", 1, 10, {
         "a",
         "b",
         "c",
     });
 
-    TEST_LINES(font14, "ab cd", 17, {
-        "ab",
-        "cd",
-    });
-
-    TEST_LINES(font14, "ab   cd", 17, {
+    TEST_LINES(font14, "ab cd", 18, 18, {
         "ab",
         "cd",
     });
 
-    TEST_LINES(font14, "ab cd", 1, {
+    TEST_LINES(font14, "ab   cd", 18, 18, {
+        "ab",
+        "cd",
+    });
+
+    TEST_LINES(font14, "ab cd", 1, 10, {
         "a",
         "b",
         "c",
         "d",
     });
 
-    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 50, {
+    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 50, 46, {
         "annvh",
         "g jgsy",
         "kfhdis",
@@ -238,52 +233,57 @@ RED_AUTO_TEST_CASE(MultiLineTextMetrics)
         "hxk.hf",
     });
 
-    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 150, {
+    TEST_LINES(font14, "annvhg jgsy kfhdis hnvlkj gks hxk.hf", 150, 137, {
         "annvhg jgsy kfhdis",
         "hnvlkj gks hxk.hf",
     });
 
-    TEST_LINES(font14, "veryverylonglonglong string", 100, {
+    TEST_LINES(font14, "veryverylonglonglong string", 100, 98, {
         "veryverylongl",
         "onglong",
         "string",
     });
 
-    TEST_LINES(font14, "  veryverylonglonglong string", 100, {
+    TEST_LINES(font14, "  veryverylonglonglong string", 100, 98, {
         "",
         "veryverylongl",
         "onglong",
         "string",
     });
 
-    TEST_LINES(font14, "  veryverylonglonglong string", 130, {
+    TEST_LINES(font14, "  veryverylonglonglong string", 130, 128, {
         "",
         "veryverylonglongl",
         "ong string",
     });
 
-    TEST_LINES(font14, "  veryverylonglonglong\n string", 100, {
+    TEST_LINES(font14, "  veryverylonglonglong\n string", 100, 98, {
         "",
         "veryverylongl",
         "onglong",
         " string",
     });
 
-    TEST_LINES(font14, "  veryverylonglonglong \nstring", 100, {
+    TEST_LINES(font14, "  veryverylonglonglong \nstring", 100, 98, {
         "",
         "veryverylongl",
         "onglong",
         "string",
     });
 
-    TEST_LINES(font14, "bla bla\n\n - abc\n - def", 100, {
+    TEST_LINES(font14, "  bla bla \nstring", 100, 56, {
+        "  bla bla",
+        "string",
+    });
+
+    TEST_LINES(font14, "bla bla\n\n - abc\n - def", 100, 46, {
         "bla bla",
         "",
         " - abc",
         " - def",
     });
 
-    TEST_LINES(font14, "Le pastafarisme (mot-valise faisant référence aux pâtes et au mouvement rastafari) est originellement une parodie de religion1,2,3,4 dont la divinité est le Monstre en spaghetti volant (Flying Spaghetti Monster)5,6 créée en 2005 par Bobby Henderson, alors étudiant de l'université d'État de l'Oregon. Depuis, le pastafarisme a été reconnu administrativement comme religion par certains pays7,8,9,10,11, et rejeté en tant que telle par d'autres12,13,14.", 273, {
+    TEST_LINES(font14, "Le pastafarisme (mot-valise faisant référence aux pâtes et au mouvement rastafari) est originellement une parodie de religion1,2,3,4 dont la divinité est le Monstre en spaghetti volant (Flying Spaghetti Monster)5,6 créée en 2005 par Bobby Henderson, alors étudiant de l'université d'État de l'Oregon. Depuis, le pastafarisme a été reconnu administrativement comme religion par certains pays7,8,9,10,11, et rejeté en tant que telle par d'autres12,13,14.", 274, 274, {
         "Le pastafarisme (mot-valise faisant",
         "référence aux pâtes et au",
         "mouvement rastafari) est",

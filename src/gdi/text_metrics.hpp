@@ -1,32 +1,18 @@
 /*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-*   Product name: redemption, a FLOSS RDP proxy
-*   Copyright (C) Wallix 2010-2015
-*   Author(s): Jonathan Poelen
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #pragma once
 
-#include "gdi/graphic_api.hpp"
 #include "utils/sugar/bytes_view.hpp"
+#include "gdi/graphic_api.hpp" // ColorCtx
 
-#include <memory>
 
 class Font;
 class FontCharView;
+class GraphicApi;
+
 
 namespace gdi
 {
@@ -45,30 +31,34 @@ struct MultiLineTextMetrics
     using Line = array_view<Char>;
 
     explicit MultiLineTextMetrics() noexcept = default;
-    explicit MultiLineTextMetrics(const Font& font, bytes_view utf8_text, unsigned max_width);
+    explicit MultiLineTextMetrics(
+        const Font& font, unsigned preferred_max_width, bytes_view utf8_text
+    );
 
     MultiLineTextMetrics(MultiLineTextMetrics const&) = delete;
-    MultiLineTextMetrics operator = (MultiLineTextMetrics const&) = delete;
+    MultiLineTextMetrics operator=(MultiLineTextMetrics const&) = delete;
 
-    MultiLineTextMetrics(MultiLineTextMetrics&& other) noexcept
-        : d(other.d)
-    {
-        other.d = Data();
-    }
+    // MultiLineTextMetrics(MultiLineTextMetrics&& other) noexcept
+    //     : d(other.d)
+    // {
+    //     other.d = Data();
+    // }
 
-    MultiLineTextMetrics& operator=(MultiLineTextMetrics&& other) noexcept
-    {
-        MultiLineTextMetrics g(std::move(*this));
-        std::swap(d, other.d);
-        return *this;
-    }
+    // MultiLineTextMetrics& operator=(MultiLineTextMetrics&& other) noexcept
+    // {
+    //     MultiLineTextMetrics g(std::move(*this));
+    //     std::swap(d, other.d);
+    //     return *this;
+    // }
 
     ~MultiLineTextMetrics();
 
-    array_view<Line> lines() const noexcept
-    {
-        return {d.lines, d.nb_line};
-    }
+    void set_text(Font const& font, unsigned preferred_max_width, bytes_view utf8_text);
+    void rewrap(unsigned preferred_max_width) noexcept;
+
+    void clear() noexcept;
+
+    array_view<Line> lines() const noexcept;
 
     uint16_t max_width() const noexcept
     {
@@ -77,9 +67,13 @@ struct MultiLineTextMetrics
 
 private:
     struct Data {
-        Line* lines = nullptr;
+        void* data = nullptr;
+        unsigned char_capacity = 0;
+        unsigned nb_chars = 0;
         unsigned nb_line = 0;
         uint16_t max_width = 0;
+
+        void clear_text() noexcept;
     };
 
     Data d;

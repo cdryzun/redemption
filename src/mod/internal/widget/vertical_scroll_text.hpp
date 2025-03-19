@@ -39,6 +39,50 @@ public:
 
     using Widget::set_wh;
 
+    struct DimensionContraints
+    {
+        struct Range
+        {
+            uint16_t min;
+            uint16_t max;
+        };
+
+        // intermediate for designated initializers of range or initialization with integer:
+        // update_dimension({5, ...});
+        // update_dimension({{.min=5, .max=5, ...}});
+        struct Length : Range
+        {
+            constexpr Length(uint16_t n) noexcept : Range{n, n} {}
+            constexpr Length(Range rng) noexcept : Range{rng} {}
+        };
+
+        struct PreferOptimalDimsBase
+        {
+            bool horizontal;
+            bool vertical;
+        };
+
+        // intermediate for designated initializers of pair or initialization with bool:
+        // update_dimension({..., false});
+        // update_dimension({..., {{.horizontal = false, .vertical = true}};});
+        struct PreferOptimalDims : PreferOptimalDimsBase
+        {
+            constexpr PreferOptimalDims(bool prefer_optimal_dim) noexcept
+                : PreferOptimalDimsBase{prefer_optimal_dim, prefer_optimal_dim}
+            {}
+
+            constexpr PreferOptimalDims(PreferOptimalDimsBase prefer_optimal_dim) noexcept
+                : PreferOptimalDimsBase{prefer_optimal_dim}
+            {}
+        };
+
+        Length width;
+        Length height;
+        PreferOptimalDims prefer_optimal_dimension = true;
+    };
+
+    void update_dimension(DimensionContraints contraints);
+
     Dimension get_optimal_dim() const override;
 
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;

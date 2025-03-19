@@ -17,19 +17,13 @@ MultiLineText::MultiLineText(const Font& font, unsigned int max_width, chars_vie
 
 void MultiLineText::set_text(Font const & font, unsigned max_width, chars_view text)
 {
-    // TODO garbage text buffer
-    set_text(font.max_height(), gdi::MultiLineTextMetrics(font, text, max_width));
-}
-
-void MultiLineText::set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines)
-{
-    m_lines = std::move(lines);
-    m_cy_line = font_max_height;
+    m_lines.set_text(font, max_width, text);
+    m_cy_line = font.max_height();
 }
 
 void MultiLineText::reset() noexcept
 {
-    m_lines = gdi::MultiLineTextMetrics();
+    m_lines.clear();
     m_cy_line = 0;
 }
 
@@ -112,12 +106,6 @@ WidgetMultiLine::WidgetMultiLine(
 void WidgetMultiLine::set_text(Font const & font, unsigned max_width, chars_view text)
 {
     multi_line.set_text(font, max_width, text);
-    set_wh(multi_line.dimension());
-}
-
-void WidgetMultiLine::set_text(uint16_t font_max_height, gdi::MultiLineTextMetrics&& lines)
-{
-    multi_line.set_text(font_max_height, std::move(lines));
     set_wh(multi_line.dimension());
 }
 

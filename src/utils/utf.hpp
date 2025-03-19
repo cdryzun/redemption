@@ -458,7 +458,7 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn)
 }
 
 /// Read a utf8 sequence is call function for each unicode point.
-/// NoChFn is function without parameter
+/// EmptyStringFn is function without parameter
 /// ChFn is function with as parameter
 ///     - utf8_char_1byte or
 ///     - utf8_char_2bytes or
@@ -469,16 +469,16 @@ bytes_view utf8_for_each(bytes_view utf8, ChFn&& ch_fn)
 /// TruncatedFn is function with as parameter
 ///     - utf8_char_truncated
 /// TruncatedFn: void(bytes_view{current_pos, utf8_end}) then stop the function
-template<class NoChFn, class ChFn, class ChErrorFn, class TruncatedFn>
+template<class EmptyStringFn, class ChFn, class ChErrorFn, class TruncatedFn>
 decltype(auto) utf8_read_one_char(
     bytes_view utf8,
-    NoChFn&& no_ch_fn,
+    EmptyStringFn&& empty_str_fn,
     ChFn&& ch_fn,
     ChErrorFn&& err_fn,
     TruncatedFn&& truncated_fn)
 {
     if (utf8.empty()) [[unlikely]] {
-        return no_ch_fn();
+        return empty_str_fn();
     }
 
     auto source = utf8.begin();
@@ -515,10 +515,10 @@ decltype(auto) utf8_read_one_char(
     }
 }
 
-template<class NoChFn, class ChFn>
-decltype(auto) utf8_read_one_char(bytes_view utf8, NoChFn&& no_ch_fn, ChFn&& ch_fn)
+template<class EmptyStringFn, class ChFn>
+decltype(auto) utf8_read_one_char(bytes_view utf8, EmptyStringFn&& empty_str_fn, ChFn&& ch_fn)
 {
-    return utf8_read_one_char(utf8, no_ch_fn, ch_fn, ch_fn, ch_fn);
+    return utf8_read_one_char(utf8, empty_str_fn, ch_fn, ch_fn, ch_fn);
 }
 
 struct UTF8Reader

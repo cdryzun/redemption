@@ -31,6 +31,7 @@
 #include "keyboard/keylayouts.hpp"
 #include "configs/config.hpp"
 #include "gdi/graphic_api_forwarder.hpp"
+#include "utils/theme.hpp"
 
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/close_mod/"

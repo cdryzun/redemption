@@ -20,6 +20,8 @@
 */
 
 #include "test_only/test_framework/redemption_unit_tests.hpp"
+#include "test_only/front/fake_front.hpp"
+#include "test_only/core/font.hpp"
 
 #include "configs/config.hpp"
 #include "core/RDP/capabilities/window.hpp"
@@ -28,9 +30,8 @@
 #include "mod/internal/interactive_target_mod.hpp"
 #include "keyboard/keymap.hpp"
 #include "keyboard/keylayouts.hpp"
-#include "test_only/front/fake_front.hpp"
-#include "test_only/core/font.hpp"
 #include "core/events.hpp"
+#include "utils/theme.hpp"
 
 struct TestInteractiveTargetModFixture
 {
