@@ -75,16 +75,6 @@ public:
 
     void acl_update(AclFieldMask const& acl_fields) override;
 
-    [[nodiscard]] Font const & font() const
-    {
-        return this->screen.font;
-    }
-
-    [[nodiscard]] Theme const & theme() const
-    {
-        return this->screen.theme;
-    }
-
     [[nodiscard]] Rect get_screen_rect() const
     {
         return this->screen.get_rect();

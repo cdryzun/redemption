@@ -25,6 +25,8 @@
 #include "core/events.hpp"
 #include "core/RDP/capabilities/window.hpp"
 #include "gdi/graphic_api_forwarder.hpp"
+#include "utils/theme.hpp"
+#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 
 #include "test_only/front/fake_front.hpp"
 #include "test_only/core/font.hpp"
@@ -34,9 +36,6 @@
 
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/rail_module_host_mod/"
-
-#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
-#include "gdi/graphic_api.hpp"
 
 struct TestRectMod : null_mod
 {
