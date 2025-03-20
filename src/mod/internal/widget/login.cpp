@@ -171,29 +171,32 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
             const int bloc_h = labels_h + full_borders_h + img_cy;
             const int max_message_h = height - bloc_h;
 
-            this->message_label.set_wh(cbloc_w - MULTILINE_X_PADDING * 2, max_message_h);
-            const Dimension message_dim = this->message_label.get_optimal_dim();
+            this->message_label.update_dimension({
+                .width = {{.min = 0, .max = checked_int{cbloc_w - MULTILINE_X_PADDING * 2}}},
+                .height = {{.min = 0, .max = checked_int{max_message_h}}},
+                .prefer_optimal_dimension = {{.horizontal = false, .vertical = true}},
+            });
+            const auto message_h = this->message_label.cy();
 
             int msg_y = original_space_h;
 
-            if (message_dim.h <= max_message_h) {
-                this->message_label.set_wh(message_dim);
+            if (message_h <= max_message_h) {
                 int y = height / 2 - original_space_h - edit_dim.h - space_h;
 
-                if (!(message_dim.h + total_message_info_border_h < y && height - y >= bloc_h)) {
+                if (!(message_h + total_message_info_border_h < y && height - y >= bloc_h)) {
                     y += edit_dim.h - space_h;
                 }
 
-                if (message_dim.h + total_message_info_border_h < y && height - y >= bloc_h) {
+                if (message_h + total_message_info_border_h < y && height - y >= bloc_h) {
                     start_y = y;
-                    y = (y - message_dim.h - total_message_info_border_h) / 2 + original_space_h;
-                    if (y + edit_dim.h - space_h + message_dim.h < start_y) {
+                    y = (y - message_h - total_message_info_border_h) / 2 + original_space_h;
+                    if (y + edit_dim.h - space_h + message_h < start_y) {
                         y += edit_dim.h - space_h;
                     }
                     msg_y = y;
                 }
                 else {
-                    start_y = message_dim.h + total_message_info_border_h;
+                    start_y = message_h + total_message_info_border_h;
                 }
             }
             else {

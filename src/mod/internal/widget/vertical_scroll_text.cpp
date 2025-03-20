@@ -38,8 +38,8 @@ WidgetVerticalScrollText::WidgetVerticalScrollText(
 , focus_color(focus_color)
 , font(font)
 , button_dim(D::get_optimal_button_dim(this->font))
-, text(av_auto_cast{text})
 {
+    multiline_text.set_text(font, text);
 }
 
 void WidgetVerticalScrollText::set_xy(int16_t x, int16_t y)
@@ -47,61 +47,68 @@ void WidgetVerticalScrollText::set_xy(int16_t x, int16_t y)
     Widget::set_xy(x, y);
 }
 
-void WidgetVerticalScrollText::set_wh(uint16_t w, uint16_t h)
+void WidgetVerticalScrollText::update_dimension(DimensionContraints contraints)
 {
-    Widget::set_wh(w, h);
+    auto compute_dim = [this, &contraints](Dimension optimal_dim, Dimension max_dim){
+        auto use_optimal = [this](DimensionContraints::ScrollState st){
+            return has_scroll ? st.with_scroll : st.without_scroll;
+        };
+
+        uint16_t w = use_optimal(contraints.prefer_optimal_dimension.horizontal)
+            ? std::max(std::min(optimal_dim.w, max_dim.w), contraints.width.min)
+            : max_dim.w;
+        uint16_t h = use_optimal(contraints.prefer_optimal_dimension.vertical)
+            ? std::max(std::min(optimal_dim.h, max_dim.h), contraints.height.min)
+            : max_dim.h;
+        return Dimension{w, h};
+    };
 
     this->has_scroll = false;
 
-    if (this->text.empty()) {
-        return ;
-    }
+    uint16_t const max_cx = contraints.width.max;
+    uint16_t const max_cy = contraints.height.max;
 
-    uint16_t const cx = this->cx();
-    uint16_t const cy = this->cy();
-    uint16_t const glyph_cy = this->font.max_height() + this->multiline_text.line_sep();
+    this->multiline_text.update_dimension(max_cx);
+    auto const dim = this->multiline_text.dimension();
 
-    bool const force_scroll = (cx / 4) * (cy / glyph_cy)
-                              < this->text.size() / 4 /* worst case: 4 bytes by character */;
-
-    if (!force_scroll) {
-        this->multiline_text.set_text(this->font, cx, this->text);
-    }
-
-    // show scroll bar
-    if (force_scroll || cy < this->multiline_text.dimension().h) {
-        this->has_scroll = true;
-        uint16_t const new_cx = cx - this->button_dim.w - D::scroll_sep;
-        this->multiline_text.set_text(this->font, new_cx, this->text);
-
-        const int text_h = this->multiline_text.dimension().h;
-        const int total_scroll_h = std::max(cy - this->button_dim.h * 2, 1);
-
-        auto old_percent_scroll = this->total_h
-            ? static_cast<double>(this->current_y) / total_h
-            : 0;
-
-        this->page_h = std::max(cy / glyph_cy - 1, 1) * glyph_cy;
-        this->total_h = text_h - this->page_h;
-        this->cursor_button_h = std::max(
-            checked_cast<uint16_t>(this->page_h * total_scroll_h / text_h),
-            this->button_dim.h
-        );
-        this->scroll_h = std::max(total_scroll_h - this->cursor_button_h, 1);
-        this->cursor_button_y = int16_t(this->button_dim.h - 1);
-
-        this->current_y = std::min(
-            static_cast<int>(old_percent_scroll * this->page_h) / this->page_h,
-            this->total_h
-        );
-    }
-    else {
+    if (max_cy >= dim.h) {
+        this->total_h = 0;
         this->current_y = 0;
+        Widget::set_wh(compute_dim(dim, {max_cx, max_cy}));
+        return;
     }
-}
 
-void WidgetVerticalScrollText::update_dimension(DimensionContraints contraints)
-{
+    this->has_scroll = true;
+
+    uint16_t const scroll_w = this->button_dim.w + D::scroll_sep;
+    uint16_t const new_cx = max_cx - scroll_w;
+    this->multiline_text.update_dimension(new_cx);
+
+    auto const optimal_dim = this->multiline_text.dimension();
+    auto const new_dim = compute_dim(optimal_dim, {new_cx, max_cy});
+    Widget::set_wh(new_dim.w + scroll_w, new_dim.h);
+
+    int const text_h = optimal_dim.h;
+    int const total_scroll_h = std::max(new_dim.h - this->button_dim.h * 2, 1);
+
+    auto old_percent_scroll = this->total_h && this->current_y
+        ? static_cast<double>(this->current_y) / total_h
+        : 0.0;
+
+    uint16_t const glyph_cy = this->multiline_text.line_height({.with_line_sep = true});
+    this->page_h = std::max(new_dim.h / glyph_cy - 1, 1) * glyph_cy;
+    this->total_h = text_h - this->page_h;
+    this->cursor_button_h = std::max(
+        checked_cast<uint16_t>(this->page_h * total_scroll_h / text_h),
+        this->button_dim.h
+    );
+    this->scroll_h = std::max(total_scroll_h - this->cursor_button_h, 1);
+    this->cursor_button_y = int16_t(this->button_dim.h - 1);
+
+    this->current_y = std::min(
+        static_cast<int>(old_percent_scroll * this->page_h) / this->page_h,
+        this->total_h
+    );
 }
 
 Dimension WidgetVerticalScrollText::get_optimal_dim() const

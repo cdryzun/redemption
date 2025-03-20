@@ -108,37 +108,36 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     total_height += this->title.cy();
 
     int total_width = (width > 620) ? 600 : width - MULTILINE_X_PADDING * 2;
+    auto scroll_text_contraints = WidgetVerticalScrollText::DimensionContraints{
+        .width = {{
+            .min = 0,
+            .max = checked_int{
+                this->challenge
+                    ? total_width
+                    : width * 4 / 5 - MULTILINE_X_PADDING * 2
+            }
+        }},
+        .height = {{
+            .min = 0,
+            .max = checked_int{height / 2}
+        }},
+        .prefer_optimal_dimension = {{
+            .horizontal = {{
+                .with_scroll = !this->challenge,
+                .without_scroll = true,
+            }},
+            .vertical = true,
+        }},
+    };
 
-    this->dialog.set_wh(
-        this->challenge
-            ? total_width
-            : width * 4 / 5 - MULTILINE_X_PADDING * 2,
-        height / 2
-    );
-    {
-        auto dim = this->dialog.get_optimal_dim();
-        if (dim.h < this->dialog.cy()) {
-            this->dialog.set_wh(dim.w, dim.h);
-        }
-    }
+    this->dialog.update_dimension(scroll_text_contraints);
 
     if (!this->challenge) {
         total_width = std::max(this->dialog.cx() + MULTILINE_X_PADDING * 2, this->title.cx() + 0);
     }
 
     if (this->link) {
-        this->link->show.set_wh(
-                this->challenge ?
-                    total_width :
-                    width * 4 / 5 - MULTILINE_X_PADDING * 2,
-                height / 2
-            );
-
-        auto dim = this->link->show.get_optimal_dim();
-        if (dim.h < this->link->show.cy()) {
-            this->link->show.set_wh(dim.w, dim.h);
-        }
-
+        this->link->show.update_dimension(scroll_text_contraints);
         total_width = std::max<int>(this->link->show.cx(), total_width);
     }
 
@@ -332,9 +331,10 @@ WidgetDialogWithCopyableLink::WidgetDialogWithCopyableLink(
     .copied_msg = WidgetLabel(drawable, font, copied_msg_label,
                               WidgetLabel::Colors::from_theme(theme)),
     .label = WidgetLabel(drawable, font, link_label, WidgetLabel::Colors::from_theme(theme)),
+    .link_value = link_value.as<std::vector>(),
     .copy = WidgetDelegatedCopy(
         drawable, [this]{
-            this->copy_paste.copy(this->show.get_text());
+            this->copy_paste.copy(this->link_value);
             this->show_copied_msg();
             this->next_focus();
         },

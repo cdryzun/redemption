@@ -150,12 +150,12 @@ RED_TEST_DISPATCH_COMPARISON_EQ((), (LinesForTest), (LinesForTest), ::test_comp_
     RED_CHECK(lines == expected);                                          \
     RED_CHECK(metrics.max_width() == real_max_width);                      \
     RED_TEST_CONTEXT("rewrap") {                                           \
-        metrics.rewrap(metrics.max_width());                               \
+        metrics.compute_lines(metrics.max_width());                        \
         RED_CHECK(lines == expected);                                      \
         RED_CHECK(metrics.max_width() == real_max_width);                  \
     }                                                                      \
         RED_TEST_CONTEXT("rewrap") {                                       \
-        metrics.clear();                                                   \
+        metrics.clear_text();                                              \
         RED_CHECK((LinesForTest{metrics.lines(), {}, font})                \
             == (LinesForTest{{}, {}, font}));                              \
         RED_CHECK(metrics.max_width() == 0);                               \
@@ -169,7 +169,14 @@ RED_AUTO_TEST_CASE(MultiLineTextMetrics)
 
     RED_TEST(gdi::MultiLineTextMetrics(font14, 0, ""_av).lines().size() == 0);
 
-    TEST_LINES(font14, "ab", 0, 10, {
+    // empty size
+    {
+        gdi::MultiLineTextMetrics metrics(font14, 0, "ab"_av);
+        RED_CHECK(metrics.max_width() == 0);
+        RED_CHECK(metrics.lines().size() == 0);
+    }
+
+    TEST_LINES(font14, "ab", 1, 10, {
         "a",
         "b",
     });

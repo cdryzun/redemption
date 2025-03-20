@@ -34,10 +34,10 @@ struct TestScrollCtx
     WidgetVerticalScrollText scroll;
     Keymap keymap{*find_layout_by_id(KeyLayout::KbdId(0x040C))};
 
-    TestScrollCtx(std::string text)
+    TestScrollCtx(chars_view text)
     : drawable(1, 1)
     , scroll(
-        this->drawable, std::move(text),
+        this->drawable, text,
         /*fg_color=*/NamedBGRColor::RED,
         /*bg_color=*/NamedBGRColor::YELLOW,
         /*focus_color=*/NamedBGRColor::WINBLUE,
@@ -47,7 +47,11 @@ struct TestScrollCtx
     void set_size(uint16_t w, uint16_t h, int16_t x = 0, int16_t y = 0)
     {
         this->scroll.set_xy(x, y);
-        this->scroll.set_wh(w, h);
+        this->scroll.update_dimension({
+            .width = w,
+            .height = h,
+            .prefer_optimal_dimension = false,
+        });
         this->drawable.resize(this->scroll.cx(), this->scroll.cy());
         this->draw();
     }
@@ -75,19 +79,19 @@ struct TestScrollCtx
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/mod/internal/widget/vertical_scroll_text/"
 
-constexpr char const* long_text =
+constexpr auto long_text =
 R"(Le pastafarisme (mot-valise faisant référence aux pâtes et au mouvement rastafari) est originellement une parodie de religion1,2,3,4 dont la divinité est le Monstre en spaghetti volant (Flying Spaghetti Monster)5,6 créée en 2005 par Bobby Henderson, alors étudiant de l'université d'État de l'Oregon. Depuis, le pastafarisme a été reconnu administrativement comme religion par certains pays7,8,9,10,11, et rejeté en tant que telle par d'autres12,13,14.
 
 Écrivant une lettre ouverte pour protester contre la décision du Comité d'Éducation de l'État du Kansas d'autoriser l'enseignement du dessein intelligent dans les cours de science au même titre que la théorie de l'évolution15, Henderson professe sa foi en un dieu créateur surnaturel dont l'apparence serait celle d'un plat de spaghetti et de boulettes de viande et demande que le pastafarisme reçoive une durée d'enseignement égale à celle du dessein intelligent et de la théorie de l'évolution.
 
 La lettre devient rapidement un phénomène Internet. Les croyances pastafariennes sont présentées sur le site internet d'Henderson (où il se décrit comme un « prophète ») et dans L'Évangile du monstre en spaghettis volant. La croyance centrale est qu'un Monstre en spaghetti volant, invisible et indétectable, a créé l'univers. Les pirates sont vénérés comme les premiers pastafariens, et les pastafariens affirment que le constant déclin du nombre de pirates au cours des dernières années a entraîné un accroissement significatif de la température mondiale.
 
-Cette parodie, qui peut être rapprochée de la théière de Russell ou de la Licorne rose invisible, est utilisée par des pastafariens qui s'engagent dans des parodies de disputes religieuses afin de faire valoir leur point de vue16.)";
+Cette parodie, qui peut être rapprochée de la théière de Russell ou de la Licorne rose invisible, est utilisée par des pastafariens qui s'engagent dans des parodies de disputes religieuses afin de faire valoir leur point de vue16.)"_av;
 
 
 RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextShortText)
 {
-    TestScrollCtx ctx("bla bla\nbla bla bla\nbla");
+    TestScrollCtx ctx("bla bla\nbla bla bla\nbla"_av);
 
     ctx.set_size(300, 200);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "short1.png");

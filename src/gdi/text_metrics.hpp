@@ -53,10 +53,20 @@ struct MultiLineTextMetrics
 
     ~MultiLineTextMetrics();
 
-    void set_text(Font const& font, unsigned preferred_max_width, bytes_view utf8_text);
-    void rewrap(unsigned preferred_max_width) noexcept;
+    /// Set a new text with a number of lines at 0.
+    /// \post lines().size() == 0
+    /// \post max_width() == 0
+    void set_text(Font const& font, bytes_view utf8_text);
 
-    void clear() noexcept;
+    void compute_lines(unsigned preferred_max_width) noexcept;
+
+    /// Equivalent of a call to \c set_text() with an empty text.
+    void clear_text() noexcept;
+
+    bool has_text() const noexcept
+    {
+        return d.nb_chars;
+    }
 
     array_view<Line> lines() const noexcept;
 
@@ -72,8 +82,6 @@ private:
         unsigned nb_chars = 0;
         unsigned nb_line = 0;
         uint16_t max_width = 0;
-
-        void clear_text() noexcept;
     };
 
     Data d;

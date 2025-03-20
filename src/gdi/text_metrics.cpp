@@ -18,7 +18,8 @@ static gdi::MultiLineTextMetrics::Line* multi_textmetrics_impl(
     int const preferred_max_width,
     gdi::MultiLineTextMetrics::Line* line_it,
     int* max_width
-) {
+) noexcept
+{
     auto push_line_and_width = [&](gdi::MultiLineTextMetrics::Line line, int width) {
         // TODO assert(gdi::TextMetrics(font, line).width == width);
         *line_it++ = line;
@@ -189,16 +190,17 @@ TextMetrics::TextMetrics(const Font & font, bytes_view utf8_text)
 MultiLineTextMetrics::MultiLineTextMetrics(
     const Font& font, unsigned preferred_max_width, bytes_view utf8_text)
 {
-    set_text(font, preferred_max_width, utf8_text);
+    set_text(font, utf8_text);
+    compute_lines(preferred_max_width);
 }
 
-void MultiLineTextMetrics::set_text(
-    Font const& font, unsigned preferred_max_width, bytes_view utf8_text)
+void MultiLineTextMetrics::set_text(Font const& font, bytes_view utf8_text)
 {
+    clear_text();
+
     auto max_cap = ~decltype(d.char_capacity){} - 1 /* remove reserved space fc */;
 
     if (utf8_text.empty() || utf8_text.size() > max_cap) {
-        d.clear_text();
         return;
     }
 
@@ -248,17 +250,17 @@ void MultiLineTextMetrics::set_text(
     );
 
     d.nb_chars = checked_int{ch_it - chars_buf};
-
-    /*
-     * Init lines
-     */
-
-    rewrap(preferred_max_width);
 }
 
-void MultiLineTextMetrics::rewrap(unsigned preferred_max_width) noexcept
+void MultiLineTextMetrics::compute_lines(unsigned preferred_max_width) noexcept
 {
     if (!d.nb_chars) {
+        return;
+    }
+
+    if (!preferred_max_width) {
+        d.max_width = 0;
+        d.nb_line = 0;
         return;
     }
 
@@ -270,12 +272,12 @@ void MultiLineTextMetrics::rewrap(unsigned preferred_max_width) noexcept
     auto* end = multi_textmetrics_impl(
         {ch_it, ch_end},
         sp,
-        checked_int(preferred_max_width ? preferred_max_width - 1 : 0),
+        checked_int(preferred_max_width - 1),  // re-add after
         line_it,
         &max_width
     );
 
-    // otherwise, some last char are truncated :/
+    // otherwise, the last column of some characters are truncated :/
     if (max_width) {
         ++max_width;
     }
@@ -284,16 +286,11 @@ void MultiLineTextMetrics::rewrap(unsigned preferred_max_width) noexcept
     d.nb_line = checked_int(end - line_it);
 }
 
-void MultiLineTextMetrics::Data::clear_text() noexcept
+void MultiLineTextMetrics::clear_text() noexcept
 {
-    nb_line = 0;
-    nb_chars = 0;
-    max_width = 0;
-}
-
-void MultiLineTextMetrics::clear() noexcept
-{
-    d.clear_text();
+    d.nb_line = 0;
+    d.nb_chars = 0;
+    d.max_width = 0;
 }
 
 array_view<MultiLineTextMetrics::Line> MultiLineTextMetrics::lines() const noexcept

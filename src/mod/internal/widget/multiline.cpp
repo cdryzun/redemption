@@ -10,20 +10,34 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/theme.hpp"
 
 
-MultiLineText::MultiLineText(const Font& font, unsigned int max_width, chars_view text)
+MultiLineText::MultiLineText(
+    Font const& font, unsigned int preferred_max_width, chars_view text)
 {
-    set_text(font, max_width, text);
+    set_text(font, preferred_max_width, text);
 }
 
-void MultiLineText::set_text(Font const & font, unsigned max_width, chars_view text)
+void MultiLineText::set_text(Font const & font, chars_view text)
 {
-    m_lines.set_text(font, max_width, text);
+    m_lines.set_text(font, text);
     m_cy_line = font.max_height();
+}
+
+void MultiLineText::set_text(
+    Font const & font, unsigned preferred_max_width, chars_view text)
+{
+    m_lines.set_text(font, text);
+    m_lines.compute_lines(preferred_max_width);
+    m_cy_line = font.max_height();
+}
+
+void MultiLineText::update_dimension(unsigned preferred_max_width) noexcept
+{
+    m_lines.compute_lines(preferred_max_width);
 }
 
 void MultiLineText::reset() noexcept
 {
-    m_lines.clear();
+    m_lines.clear_text();
     m_cy_line = 0;
 }
 
@@ -103,6 +117,7 @@ WidgetMultiLine::WidgetMultiLine(
     set_text(font, max_width, text);
 }
 
+// TODO remove ?
 void WidgetMultiLine::set_text(Font const & font, unsigned max_width, chars_view text)
 {
     multi_line.set_text(font, max_width, text);

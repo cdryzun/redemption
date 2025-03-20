@@ -29,6 +29,8 @@
 #include "mod/internal/widget/vertical_scroll_text.hpp"
 #include "mod/internal/widget/delegated_copy.hpp"
 #include "mod/internal/widget/widget_rect.hpp"
+#include <vector>
+
 
 class Theme;
 class CopyPaste;
@@ -41,6 +43,7 @@ public:
         WidgetVerticalScrollText show;
         WidgetLabel copied_msg;
         WidgetLabel label;
+        std::vector<char> link_value;
         WidgetDelegatedCopy copy;
         bool msg_showed = false;
     };

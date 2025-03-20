@@ -10,18 +10,22 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 class Theme;
 
+// TODO merge with gdi::MultiLineTextMetrics
 class MultiLineText
 {
 public:
     MultiLineText() = default;
 
-    MultiLineText(Font const & font, unsigned max_width, chars_view text);
+    MultiLineText(Font const & font, unsigned preferred_max_width, chars_view text);
 
-    void set_text(Font const & font, unsigned max_width, chars_view text);
-    // TODO update_dimension(unsigned max_width)
+    void set_text(Font const & font, chars_view text);
+    void set_text(Font const & font, unsigned preferred_max_width, chars_view text);
+
+    void update_dimension(unsigned preferred_max_width) noexcept;
 
     void reset() noexcept;
 
+    // TODO rename to optimal_dimension ?
     Dimension dimension() const noexcept;
 
     struct Data
@@ -49,6 +53,17 @@ public:
     static uint16_t line_sep() noexcept
     {
         return 1;
+    }
+
+    struct WithLineSep { bool with_line_sep; };
+
+    uint16_t line_height(WithLineSep with_sep) noexcept
+    {
+        auto h = m_cy_line;
+        if (with_sep.with_line_sep) {
+            h += line_sep();
+        }
+        return h;
     }
 
 private:
