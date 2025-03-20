@@ -58,13 +58,9 @@ public:
 
     void rdp_input_invalidate(Rect clip) override;
 
-    void set_xy(int16_t x, int16_t y) override;
-
     void set_wh(uint16_t w, uint16_t h) override;
 
     using Widget::set_wh;
-
-    Dimension get_optimal_dim() const override;
 
     // RdpInput
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;

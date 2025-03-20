@@ -52,10 +52,9 @@ struct TestScrollCtx
     )
     {
         scroll.set_max_value(50);
-        Dimension dim = this->scroll.get_optimal_dim();
-        dim = (scroll_direction == WidgetScrollBar::ScrollDirection::Horizontal)
-            ? Dimension{200, dim.h}
-            : Dimension{dim.w, 200}
+        Dimension dim = (scroll_direction == WidgetScrollBar::ScrollDirection::Horizontal)
+            ? Dimension{200, this->scroll.cy()}
+            : Dimension{this->scroll.cx(), 200}
             ;
         this->drawable.resize(align4(dim.w), dim.h);
         this->scroll.set_wh(this->drawable.width(), this->drawable.height());

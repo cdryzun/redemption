@@ -300,14 +300,6 @@ WidgetModuleHost::WidgetModuleHost(
 {
     this->pointer_flag = PointerType::Custom;
 
-    Dimension dim = this->hscroll.get_optimal_dim();
-    this->hscroll_height = dim.h;
-    this->hscroll.set_wh(this->hscroll.cx(), this->hscroll_height);
-
-    dim = this->vscroll.get_optimal_dim();
-    this->vscroll_width = dim.w;
-    this->vscroll.set_wh(this->vscroll_width, this->vscroll.cy());
-
     this->monitor_one.monitorCount              = 1;
     this->monitor_one.monitorDefArray[0].left   = 0;
     this->monitor_one.monitorDefArray[0].top    = 0;
@@ -341,7 +333,7 @@ void WidgetModuleHost::update_rects(const Dimension module_dim)
     }
     else {
         if (this->vision_rect.cx < module_dim.w) {
-            this->vision_rect.cy -= this->hscroll_height;
+            this->vision_rect.cy -= this->hscroll.cy();
 
             this->hscroll_added = true;
         }
@@ -350,7 +342,7 @@ void WidgetModuleHost::update_rects(const Dimension module_dim)
         }
 
         if (this->vision_rect.cy < module_dim.h) {
-            this->vision_rect.cx -= this->vscroll_width;
+            this->vision_rect.cx -= this->hscroll.cx();
 
             this->vscroll_added = true;
         }
@@ -359,13 +351,13 @@ void WidgetModuleHost::update_rects(const Dimension module_dim)
         }
 
         if ((this->vision_rect.cx < module_dim.w) && !this->hscroll_added) {
-            this->vision_rect.cy -= this->hscroll_height;
+            this->vision_rect.cy -= this->hscroll.cy();
 
             this->hscroll_added = true;
         }
 
         if ((this->vision_rect.cy < module_dim.h) && !this->vscroll_added) {
-            this->vision_rect.cx -= this->vscroll_width;
+            this->vision_rect.cx -= this->hscroll.cx();
 
             this->vscroll_added = true;
         }
@@ -407,7 +399,7 @@ void WidgetModuleHost::update_rects(const Dimension module_dim)
         this->hscroll.set_current_value(this->mod_visible_rect.x);
 
         this->hscroll.set_xy(this->vision_rect.x, this->vision_rect.y + this->vision_rect.cy);
-        this->hscroll.set_wh(this->vision_rect.cx, this->hscroll_height);
+        this->hscroll.set_wh(this->vision_rect.cx, this->hscroll.cy());
     }
     if (this->vscroll_added) {
         const unsigned int new_max_value = module_dim.h - this->vision_rect.cy;
@@ -421,7 +413,7 @@ void WidgetModuleHost::update_rects(const Dimension module_dim)
         this->vscroll.set_current_value(this->mod_visible_rect.y);
 
         this->vscroll.set_xy(this->vision_rect.x + this->vision_rect.cx, this->vision_rect.y);
-        this->vscroll.set_wh(this->vscroll_width, this->vision_rect.cy);
+        this->vscroll.set_wh(this->hscroll.cx(), this->vision_rect.cy);
     }
 }
 

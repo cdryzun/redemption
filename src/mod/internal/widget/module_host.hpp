@@ -123,9 +123,6 @@ private:
     WidgetScrollBar hscroll;
     WidgetScrollBar vscroll;
 
-    unsigned int hscroll_height = 0;
-    unsigned int vscroll_width  = 0;
-
     bool hscroll_added = false;
     bool vscroll_added = false;
 

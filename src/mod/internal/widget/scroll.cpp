@@ -95,7 +95,12 @@ WidgetScrollBar::WidgetScrollBar(
 , h_text(font.max_height())
 , icon_width{std::max(top_left_fc.width, bottom_right_fc.width)}
 , icon_height{std::max(top_left_fc.height, bottom_right_fc.height)}
-{}
+{
+    Widget::set_wh({
+        checked_int(icon_width + D::x_text * 2),
+        checked_int(icon_height + D::y_text * 2),
+    });
+}
 
 void WidgetScrollBar::compute_step_value()
 {
@@ -185,24 +190,10 @@ void WidgetScrollBar::rdp_input_invalidate(Rect clip)
     }
 }
 
-void WidgetScrollBar::set_xy(int16_t x, int16_t y)
-{
-    Widget::set_xy(x, y);
-    this->compute_step_value();
-}
-
 void WidgetScrollBar::set_wh(uint16_t w, uint16_t h)
 {
     Widget::set_wh(w, h);
     this->compute_step_value();
-}
-
-Dimension WidgetScrollBar::get_optimal_dim() const
-{
-    return {
-        checked_int(icon_width + D::x_text * 2),
-        checked_int(icon_height + D::y_text * 2),
-    };
 }
 
 // RdpInput
