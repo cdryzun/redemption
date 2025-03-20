@@ -146,8 +146,7 @@ RED_AUTO_TEST_CASE(TestPaste)
         },
         WidgetEventNotifier()
     );
-    Dimension dim = edit.get_optimal_dim();
-    edit.set_wh(120, dim.h);
+    edit.update_width(120);
     edit.rdp_input_invalidate(edit.get_rect());
 
     RED_REQUIRE(copy_paste.ready(front));

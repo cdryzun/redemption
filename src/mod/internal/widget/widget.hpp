@@ -258,11 +258,6 @@ public:
         }
     }
 
-    virtual Dimension get_optimal_dim() const
-    {
-        return Dimension(0, 0);
-    }
-
     virtual void clipboard_insert_utf8(zstring_view text)
     {
         (void)text;

@@ -170,20 +170,6 @@ void WidgetEditValid::init_focus()
     }
 }
 
-Dimension WidgetEditValid::get_optimal_dim() const
-{
-    auto dim = is_text_widget()
-        ? Dimension{edit_or_text.text.width(), edit_or_text.text.height()}
-        : Dimension{
-            static_cast<uint16_t>(buttons.valid_text->boxed_width()),
-            buttons.valid_text->height
-        };
-
-    dim.h += border_len * 2;
-
-    return dim;
-}
-
 uint16_t WidgetEditValid::label_width(bool is_placeholder) const noexcept
 {
     return label.text.width() + border_len * 2 + is_placeholder * x_placeholder;

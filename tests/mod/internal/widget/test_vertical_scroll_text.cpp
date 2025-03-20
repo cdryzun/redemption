@@ -95,10 +95,6 @@ RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextShortText)
 
     ctx.set_size(300, 200);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "short1.png");
-
-    auto dim = ctx.scroll.get_optimal_dim();
-    RED_CHECK(dim.w == 71);
-    RED_CHECK(dim.h == 57);
 }
 
 RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextLongText)
@@ -139,9 +135,6 @@ RED_AUTO_TEST_CASE(TestWidgetVerticalScrollTextLongText)
     ctx.input_key(Keymap::KeyCode::DownArrow);
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "long6_2.png");
 
-    auto dim = ctx.scroll.get_optimal_dim();
-    RED_CHECK(dim.w == 277);
-    RED_CHECK(dim.h == 1026);
-    ctx.set_size(dim.w, dim.h);
+    ctx.set_size(277, 1026);  // optimal values
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "long_opti.png");
 }

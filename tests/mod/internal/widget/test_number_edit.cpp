@@ -52,8 +52,7 @@ RED_AUTO_TEST_CASE(WidgetNumberEditEventPushChar)
     WidgetNumberEdit wnumber_edit(
         drawable, global_font_deja_vu_14(), copy_paste, colors, onsubmit
     );
-    Dimension dim = wnumber_edit.get_optimal_dim();
-    wnumber_edit.set_wh(100, dim.h);
+    wnumber_edit.update_width(100);
     wnumber_edit.set_text("123456"_av, {});
     wnumber_edit.init_focus();
 

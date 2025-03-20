@@ -363,16 +363,6 @@ uint16_t WidgetEdit::x_padding() noexcept
     return compute_optimal_dim(0, 0).w;
 }
 
-Dimension WidgetEdit::get_optimal_dim() const
-{
-    int w = 0;
-    for (FontCharView const* fc : buffer().font_chars()) {
-        w += fc_width(fc);
-    }
-
-    return compute_optimal_dim(w, h_text);
-}
-
 bool WidgetEdit::has_text() const noexcept
 {
     return !buffer().font_chars().empty();

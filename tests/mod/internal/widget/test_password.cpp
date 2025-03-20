@@ -51,7 +51,7 @@ RED_AUTO_TEST_CASE(TraceWidgetPassword)
 
     WidgetPassword pass(drawable, font, copy_paste, colors, onsubmit);
 
-    pass.set_wh(60, pass.get_optimal_dim().h);
+    pass.update_width(60);
     pass.init_focus();
     pass.rdp_input_invalidate(pass.get_rect());
 

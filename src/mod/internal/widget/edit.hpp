@@ -110,8 +110,6 @@ public:
 
     void blur() override;
 
-    Dimension get_optimal_dim() const override;
-
     void set_font(Font const & font, Redraw redraw);
 
     bool action_move_cursor_right(bool ctrl_is_pressed, Redraw redraw);

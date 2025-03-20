@@ -27,7 +27,6 @@ struct WidgetTestMod::WidgetTestModPrivate
         (void)front;
         (void)font;
         (void)theme;
-        // this->screen.add_widget(this->label);
     }
 
     // gdi::GraphicApi & gd;

@@ -111,11 +111,6 @@ void WidgetVerticalScrollText::update_dimension(DimensionContraints contraints)
     );
 }
 
-Dimension WidgetVerticalScrollText::get_optimal_dim() const
-{
-    return multiline_text.dimension();
-}
-
 void WidgetVerticalScrollText::_update_cursor_button_y_and_redraw(int new_y)
 {
     this->current_y = new_y;

@@ -122,9 +122,8 @@ RED_AUTO_TEST_CASE(WidgetEditGd)
     };
 
     for (auto & d : datas) {
-        Dimension dim = d.edit.get_optimal_dim();
         d.edit.set_xy(d.x, d.y);
-        d.edit.set_wh(50, dim.h);
+        d.edit.update_width(50);
         d.edit.set_text(d.text, {WidgetEdit::Redraw::No});
         d.edit.rdp_input_invalidate(d.clip.isempty() ? d.edit.get_rect() : d.clip);
     }
@@ -150,7 +149,7 @@ RED_AUTO_TEST_CASE(WidgetEditKbd)
     auto edit = ctx.edit();
     auto keyboard = ctx.keyboard(edit);
 
-    edit.set_wh(60, edit.get_optimal_dim().h);
+    edit.update_width(60);
     edit.init_focus();
     edit.rdp_input_invalidate(edit.get_rect());
 
@@ -227,7 +226,7 @@ RED_AUTO_TEST_CASE(WidgetEditMouse)
 
     auto edit = ctx.edit();
 
-    edit.set_wh(50, edit.get_optimal_dim().h);
+    edit.update_width(50);
     edit.init_focus();
     edit.rdp_input_invalidate(edit.get_rect());
 

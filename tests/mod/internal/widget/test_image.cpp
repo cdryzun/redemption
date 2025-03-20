@@ -42,7 +42,6 @@ struct TestWidgetimageCtx
     TestWidgetimageCtx(const char * filename, BGRColor bg_color = NamedBGRColor::BLACK)
     : wimage(drawable, filename, bg_color)
     {
-        // wimage.set_wh(wimage.get_optimal_dim());
     }
 };
 

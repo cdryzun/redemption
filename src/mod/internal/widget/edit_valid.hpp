@@ -83,8 +83,6 @@ public:
 
     ~WidgetEditValid();
 
-    Dimension get_optimal_dim() const override;
-
     uint16_t label_width(bool is_placeholder) const noexcept;
     // 0 when Type != Text
     uint16_t text_width() const noexcept;
