@@ -137,11 +137,13 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     if (this->flags & DURATION_DISPLAY) {
         this->duration_label.set_xy(left, top + y + d);
 
-        duration_edit.update_layout({
-            .x = checked_int(left + labelmaxwidth + x_padding),
-            .y = checked_int(top + y),
-            .width = checked_int((width - labelmaxwidth - x_padding) - this->duration_format.cx() - x_padding),
-        });
+        duration_edit.set_xy(
+            checked_int(left + labelmaxwidth + x_padding),
+            checked_int(top + y)
+        );
+        duration_edit.update_width(checked_int(
+            (width - labelmaxwidth - x_padding) - this->duration_format.cx() - x_padding
+        ));
 
         this->duration_format.set_xy(this->duration_edit.eright() + 10, top + y + d);
 
@@ -151,11 +153,11 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     if (this->flags & TICKET_DISPLAY) {
         this->ticket_label.set_xy(left, top + y + d);
 
-        ticket_edit.update_layout({
-            .x = checked_int(left + labelmaxwidth + x_padding),
-            .y = checked_int(top + y),
-            .width = checked_int(width - labelmaxwidth - x_padding),
-        });
+        ticket_edit.set_xy(
+            checked_int(left + labelmaxwidth + x_padding),
+            checked_int(top + y)
+        );
+        ticket_edit.update_width(checked_int(width - labelmaxwidth - x_padding));
 
         y += h_sep;
     }
@@ -163,11 +165,11 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     if (this->flags & COMMENT_DISPLAY) {
         this->comment_label.set_xy(left, top + y + d);
 
-        comment_edit.update_layout({
-            .x = checked_int(left + labelmaxwidth + x_padding),
-            .y = checked_int(top + y),
-            .width = checked_int(width - labelmaxwidth - x_padding),
-        });
+        comment_edit.set_xy(
+            checked_int(left + labelmaxwidth + x_padding),
+            checked_int(top + y)
+        );
+        comment_edit.update_width(checked_int(width - labelmaxwidth - x_padding));
 
         y += h_sep;
     }

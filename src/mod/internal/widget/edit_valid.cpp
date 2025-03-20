@@ -229,7 +229,8 @@ void WidgetEditValid::update_layout(Layout layout)
         if (!label.is_placeholder) {
             x_edit += layout.edit_offset;
         }
-        edit_or_text.edit.update_layout({x_edit, layout.y, checked_int(layout.width - w)});
+        edit_or_text.edit.set_xy(x_edit, layout.y);
+        edit_or_text.edit.update_width(checked_int(layout.width - w));
         widget_h = edit_or_text.edit.cy();
         widget_w = layout.width;
     }

@@ -64,13 +64,6 @@ public:
         CusorPosition cursor_position = CusorPosition::CursorToEnd;
     };
 
-    struct Layout
-    {
-        int16_t x;
-        int16_t y;
-        uint16_t width;
-    };
-
     using Text = static_string<max_capacity * 4>;
 
     WidgetEdit(
@@ -97,7 +90,7 @@ public:
 
     void set_text(bytes_view text, TextOptions opts);
 
-    void update_layout(Layout layout);
+    void update_width(uint16_t width);
 
     void insert_chars(array_view<uint32_t> ucs, Redraw redraw);
 

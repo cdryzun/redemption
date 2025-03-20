@@ -913,11 +913,11 @@ void WidgetSelector::move_and_resize_navigation_buttons()
         * this->font().item('0').view.boxed_width()
         + this->current_page_edit.x_padding();
     nav_offset_x -= edit_cx;
-    this->current_page_edit.update_layout({
-        .x = checked_int(nav_offset_x),
-        .y = checked_int(nav_top_y + (this->next_page.cy() - this->current_page_edit.cy()) / 2),
-        .width = checked_int(edit_cx),
-    });
+    this->current_page_edit.set_xy(
+        checked_int(nav_offset_x),
+        checked_int(nav_top_y + (this->next_page.cy() - this->current_page_edit.cy()) / 2)
+    );
+    this->current_page_edit.update_width(checked_int(edit_cx));
 
     // "<" button
     nav_offset_x -= (this->prev_page.cx() + NAV_SEPARATOR);
@@ -955,15 +955,17 @@ void WidgetSelector::rearrange_grid()
     for (unsigned i = 0; i < nb_columns; ++i) {
         int width = grid.column_width(i);
         header_labels.widths[i] = checked_int(width);
-        edit_filters[i].update_layout({
-            .x = checked_int(offset + (i ? FILTER_VERTICAL_SEPARATOR / 2 : 0)),
-            .y = edit_filters[i].y(),
-            .width = checked_int(width - (
+        edit_filters[i].set_xy(
+            checked_int(offset + (i ? FILTER_VERTICAL_SEPARATOR / 2 : 0)),
+            edit_filters[i].y()
+        );
+        edit_filters[i].update_width(checked_int(
+            width - (
                 i == 1  // is target column
                     ? FILTER_VERTICAL_SEPARATOR
                     : FILTER_VERTICAL_SEPARATOR / 2
-            ))
-        });
+            )
+        ));
 
         // insert/remove expansion button
         // protocol column is ignored

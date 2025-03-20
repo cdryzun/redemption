@@ -286,7 +286,8 @@ RED_AUTO_TEST_CASE(WidgetEditSetText)
     // right part is not redrawing
     auto update_text = [](WidgetEdit& edit, chars_view text, CusorPosition cursor_position) {
         edit.set_text(text, {WidgetEdit::Redraw::No, cursor_position});
-        edit.update_layout({edit.x(), edit.y(), 40});
+        edit.set_xy(edit.x(), edit.y());
+        edit.update_width(40);
         edit.rdp_input_invalidate(edit.get_rect());
     };
 

@@ -454,10 +454,9 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
     }
 }
 
-void WidgetEdit::update_layout(Layout layout)
+void WidgetEdit::update_width(uint16_t width)
 {
-    Widget::set_xy(layout.x, layout.y);
-    Widget::set_wh(layout.width, (h_padding + border_len) * 2 + h_text);
+    Widget::set_wh(width, (h_padding + border_len) * 2 + h_text);
 
     int shift = x_text - start_x_cursor + x_cursor;
     x_text = 0;
