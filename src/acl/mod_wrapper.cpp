@@ -12,6 +12,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/client_info.hpp"
 #include "gdi/subrect4.hpp"
+#include "gdi/draw_utils.hpp"
 #include "keyboard/keymap.hpp"
 #include "mod/null/null.hpp"
 #include "translation/trkeys.hpp"
@@ -66,9 +67,9 @@ void ModWrapper::display_osd_message(std::string_view message, gdi::OsdMsgUrgenc
             break;
         }
 
-        str_assign(this->osd_message,
-                   prefix, message, '\n',
-                   tr(trkeys::disable_osd));
+        str_assign(this->osd_message, prefix, message, '\n', tr(trkeys::disable_osd));
+        this->line_metrics.set_text(this->glyphs, this->osd_message);
+        this->osd_message_last_width = 0;
         this->draw_osd_message(true);
     }
 }
@@ -154,7 +155,9 @@ void ModWrapper::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
             }
 
             if (!msg.empty()) {
+                this->line_metrics.set_text(this->glyphs, msg);
                 this->osd_message = std::move(msg);
+                this->osd_message_last_width = 0;
                 this->color = RDPColor::from(0);
                 this->draw_osd_message(false);
                 this->target_info_is_shown = true;
@@ -217,9 +220,10 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
         dx = rect.x;
     }
 
-    this->line_metrics = gdi::MultiLineTextMetrics(this->glyphs,
-                                                   this->osd_message,
-                                                   w - padw);
+    if (this->osd_message_last_width != w) {
+        this->osd_message_last_width = w;
+        this->line_metrics.compute_lines(w - padw);
+    }
 
     unsigned line_width = this->line_metrics.max_width() + padw * 2;
     unsigned line_height = this->line_metrics.lines().size() * this->glyphs.max_height()
@@ -253,29 +257,22 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
 
     drawable.draw(RDPOpaqueRect(clip, background_color), clip, color_ctx);
 
-    auto draw_line = [&](int startx, int starty, int endx, int endy){
-        drawable.draw(
-            RDPLineTo(1, startx, starty, endx, endy, black, 0x0D, RDPPen(0, 0, black)),
-            clip, color_ctx
-        );
-    };
+    gdi_draw_border(drawable, black, clip, 1, clip, color_ctx);
 
-    draw_line(clip.x, clip.y, clip.x, clip.y + clip.cy - 1);
-    draw_line(clip.x, clip.y + clip.cy - 1, clip.x + clip.cx - 1, clip.y + clip.cy - 1);
-    draw_line(clip.x + clip.cx - 1, clip.y + clip.cy - 1, clip.x + clip.cx - 1, clip.y);
-    draw_line(clip.x + clip.cx - 1, clip.y, clip.x, clip.y);
+    const auto fc_height = glyphs.max_height();
 
-    auto draw_text = [&](int16_t y, RDPColor fgcolor, bytes_view str) {
-        gdi::server_draw_text(
+    auto draw_text = [&](int16_t y, RDPColor fgcolor, gdi::MultiLineTextMetrics::Line str) {
+        gdi::draw_text(
             drawable,
-            this->glyphs,
             clip.x + padw,
             y,
+            fc_height,
+            gdi::DrawTextPadding{},
             str,
             fgcolor,
             background_color,
-            color_ctx,
-            clip);
+            clip
+        );
     };
 
     auto lines = this->line_metrics.lines();
@@ -285,7 +282,7 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
         lines = lines.drop_back(1);
     }
 
-    for (bytes_view line : lines) {
+    for (gdi::MultiLineTextMetrics::Line line : lines) {
         draw_text(dy, this->color, line);
         dy += this->glyphs.max_height();
     }

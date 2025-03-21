@@ -1,28 +1,13 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2019
- *   Author(s): Meng Tan
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "mod/internal/transition_mod.hpp"
 #include "gdi/text_metrics.hpp"
 #include "gdi/draw_utils.hpp"
 #include "core/font.hpp"
-#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
+#include "utils/theme.hpp"
 
 TransitionMod::TransitionMod(
     chars_view message,
@@ -32,13 +17,13 @@ TransitionMod::TransitionMod(
     Theme const& theme
 )
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, nullptr)
-    , ttmessage(truncatable_bounded_array_view(message))
+    , ttmessage(font, message)
     , drawable(drawable)
-    , font(font)
     , widget_rect(widget_rect)
-    , fgcolor(theme.tooltip.fgcolor)
-    , bgcolor(theme.tooltip.bgcolor)
-    , border_color(theme.tooltip.border_color)
+    , font_height(font.max_height())
+    , fgcolor(Widget::Color(theme.tooltip.fgcolor))
+    , bgcolor(Widget::Color(theme.tooltip.bgcolor))
+    , border_color(Widget::Color(theme.tooltip.border_color))
 {
     this->set_mod_signal(BACK_EVENT_NONE);
     this->rdp_input_invalidate(widget_rect);
@@ -49,28 +34,30 @@ void TransitionMod::rdp_input_invalidate(Rect r)
     Rect const clip = r.intersect(widget_rect);
 
     if (!clip.isempty()) {
-        int padding = 20;
-        int width = gdi::TextMetrics(font, ttmessage).width + padding * 2;
-        int height = this->font.max_height() + padding * 2;
+        constexpr int padding = 20;
+        constexpr int border_len = 1;
+
+        int width = ttmessage.width() + padding * 2;
+        int height = font_height + padding * 2;
         int x = widget_rect.x + (widget_rect.cx - width) / 2;
         int y = widget_rect.y + (widget_rect.cy - height) / 2;
 
-        auto color_ctx = gdi::ColorCtx::depth24();
-        encode_color24 encode;
-
-        Rect area(x, y, width, height);
-
-        drawable.draw(
-            RDPOpaqueRect(area, encode(bgcolor)),
-            clip, gdi::ColorCtx::depth24()
+        gdi::draw_text(
+            drawable,
+            x,
+            y,
+            font_height,
+            gdi::DrawTextPadding::Padding{padding - border_len},
+            ttmessage.fcs(),
+            fgcolor,
+            bgcolor,
+            clip
         );
-        gdi::server_draw_text(
-            drawable, font,
-            x + padding, y + padding,
-            ttmessage, encode(fgcolor), encode(bgcolor),
-            color_ctx, clip
+
+        Rect area(checked_int{x}, checked_int{y}, checked_int{width}, checked_int{height});
+        gdi_draw_border(
+            drawable, border_color, area, border_len, clip, gdi::ColorCtx::depth24()
         );
-        gdi_draw_border(drawable, encode(border_color), area, 1, clip, color_ctx);
     }
 }
 

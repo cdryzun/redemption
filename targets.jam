@@ -685,6 +685,7 @@ test-run tests/acl/test_mod_wrapper :
   src/core/error.o
   src/core/font.o
   src/gdi/clip_from_cmd.o
+  src/gdi/draw_utils.o
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/text_metrics.o

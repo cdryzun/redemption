@@ -169,6 +169,7 @@ private:
     Translator translator;
 
     std::string osd_message;
+    uint16_t osd_message_last_width = 0;
 
     RDPColor color;
     RDPColor background_color;
