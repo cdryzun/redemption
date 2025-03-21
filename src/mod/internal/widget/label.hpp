@@ -48,6 +48,28 @@ public:
         );
     }
 
+    void add_text(Font const & font, chars_view text)
+    {
+        uint16_t width = 0;
+        _fc_buffer_len = checked_int(
+            _fc_buffer_len
+          + init_widget_text(
+                make_writable_array_view(_fc_buffer).drop_front(_fc_buffer_len),
+                OutParam(width),
+                font,
+                text
+            )
+            .size()
+        );
+        _width += width;
+    }
+
+    void clear_text()
+    {
+        _width = 0;
+        _fc_buffer_len = 0;
+    }
+
     uint16_t width() const noexcept
     {
         return _width;

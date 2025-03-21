@@ -105,7 +105,7 @@ private:
     Color const bg_color;
     Color const focus_color;
 
-    Font const & font;
+    uint16_t line_height;
 
     int16_t cursor_button_y = 0;
 
@@ -134,4 +134,7 @@ private:
     ButtonType selected_button = ButtonType::None;
 
     MultiLineText multiline_text;
+    FontCharView const* icon_top;
+    FontCharView const* icon_cursor;
+    FontCharView const* icon_bottom;
 };

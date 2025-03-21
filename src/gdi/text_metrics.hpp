@@ -17,14 +17,6 @@ class GraphicApi;
 namespace gdi
 {
 
-struct TextMetrics
-{
-    int width = 0;
-    int height = 0;
-
-    explicit TextMetrics(const Font & font, bytes_view utf8_text);
-};
-
 struct MultiLineTextMetrics
 {
     using Char = FontCharView const *;
@@ -86,17 +78,6 @@ private:
 
     Data d;
 };
-
-
-// TODO implementation of the server_draw_text function below is a small subset of possibilities text can be packed (detecting duplicated strings). See MS-RDPEGDI 2.2.2.2.1.1.2.13 GlyphIndex (GLYPHINDEX_ORDER)
-// TODO: is it still used ? If yes move it somewhere else. Method from internal mods ?
-void server_draw_text(
-    GraphicApi & drawable, Font const & font,
-    int16_t x, int16_t y, bytes_view utf8_text,
-    RDPColor fgcolor, RDPColor bgcolor,
-    ColorCtx color_ctx,
-    Rect clip
-);
 
 
 struct DrawTextPadding

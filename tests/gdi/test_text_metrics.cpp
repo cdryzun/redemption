@@ -6,39 +6,20 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 #include "test_only/test_framework/compare_collection.hpp"
 #include "test_only/test_framework/check_img.hpp"
+#include "test_only/core/font.hpp"
+#include "test_only/gdi/test_graphic.hpp"
 
 #include "gdi/text_metrics.hpp"
 #include "utils/sugar/to_sv.hpp"
 #include "utils/utf.hpp"
 #include "core/font.hpp"
-#include "test_only/core/font.hpp"
-#include "test_only/gdi/test_graphic.hpp"
+#include "mod/internal/widget/label.hpp"
 
 #if !REDEMPTION_UNIT_TEST_FAST_CHECK
 #include <iomanip>
 #endif
 
 #define IMG_TEST_PATH FIXTURES_PATH "/img_ref/gdi/text_metrics/"
-
-
-RED_AUTO_TEST_CASE(TextMetrics)
-{
-    {
-        gdi::TextMetrics text(global_font_deja_vu_14(), "abc"_av);
-        RED_CHECK_EQUAL(18, text.height);
-        RED_CHECK_EQUAL(25, text.width);
-    }
-    {
-        gdi::TextMetrics text(global_font_deja_vu_14(), "abcde"_av);
-        RED_CHECK_EQUAL(18, text.height);
-        RED_CHECK_EQUAL(43, text.width);
-    }
-    {
-        gdi::TextMetrics text(global_font_deja_vu_14(), "Ay"_av);
-        RED_CHECK_EQUAL(18, text.height);
-        RED_CHECK_EQUAL(19, text.width);
-    }
-}
 
 
 struct LinesForTest
@@ -317,7 +298,7 @@ RED_AUTO_TEST_CASE(TestServerDrawText)
     const uint16_t h = 30;
     TestGraphic gd(w, h);
 
-    auto text = ""
+    constexpr auto text = ""
         "Unauthorized access to this system is forbidden and will be prosecuted"
         " by law. By accessing this system, you agree that your actions may be"
         " monitored if unauthorized usage is suspected."
@@ -325,12 +306,13 @@ RED_AUTO_TEST_CASE(TestServerDrawText)
     ;
 
     using color_encoder = encode_color24;
-    gdi::server_draw_text(
-        gd, font, 0, 0, text,
+    gdi::draw_text(
+        gd, 0, 0, font.max_height(), gdi::DrawTextPadding{},
+        WidgetText<text.size()>(font, text).fcs(),
         color_encoder()(NamedBGRColor::CYAN),
         color_encoder()(NamedBGRColor::BLUE),
-        gdi::ColorCtx::from_bpp(color_encoder::bpp, nullptr),
-        Rect(0, 0, w, h));
+        Rect(0, 0, w, h)
+    );
 
     RED_CHECK_IMG(gd, IMG_TEST_PATH "server_draw_text1.png");
 }

@@ -13,16 +13,15 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 struct WidgetVerticalScrollText::D
 {
-    static constexpr auto top_button_char = "▲"_av;
-    static constexpr auto cursor_button_char = "▥"_av;
-    static constexpr auto bottom_button_char = "▼"_av;
+    static constexpr uint32_t top_button_uc = 0x25B2; // ▲
+    static constexpr uint32_t cursor_button_uc = 0x25A5; // ▥
+    static constexpr uint32_t bottom_button_uc = 0x25BC; // ▼
 
     static constexpr int16_t scroll_sep = 4;
 
     static Dimension get_optimal_button_dim(const Font& font)
     {
-        UTF8toUnicodeIterator unicode_iter(top_button_char.data());
-        auto const& glyph = font.item(*unicode_iter).view;
+        auto const& glyph = font.item(top_button_uc).view;
         return Dimension(glyph.width + 8, glyph.height + 12);
     }
 };
@@ -36,8 +35,11 @@ WidgetVerticalScrollText::WidgetVerticalScrollText(
 , fg_color(fg_color)
 , bg_color(bg_color)
 , focus_color(focus_color)
-, font(font)
-, button_dim(D::get_optimal_button_dim(this->font))
+, line_height(font.max_height())
+, button_dim(D::get_optimal_button_dim(font))
+, icon_top(&font.item(D::top_button_uc).view)
+, icon_cursor(&font.item(D::cursor_button_uc).view)
+, icon_bottom(&font.item(D::bottom_button_uc).view)
 {
     multiline_text.set_text(font, text);
 }
@@ -228,7 +230,7 @@ void WidgetVerticalScrollText::rdp_input_mouse(uint16_t device_flags, uint16_t x
                 update = new_y != this->current_y;
             }
             else if (new_y != this->current_y) {
-                update = std::abs(new_y - current_y) >= this->font.max_height();
+                update = std::abs(new_y - current_y) >= this->line_height;
             }
 
             if (update) {
@@ -313,24 +315,36 @@ void WidgetVerticalScrollText::rdp_input_invalidate(Rect clip)
             };
 
             auto draw_text_button = [&](
-                chars_view text, ButtonType button_type, int16_t y, uint16_t bh, uint16_t dy
+                FontCharView const* fc, ButtonType button_type, int16_t y, uint16_t bh, uint16_t dy
             ){
                 bool const has_focus = (this->selected_button == button_type);
                 auto const bg = has_focus ? this->focus_color : this->bg_color;
                 if (has_focus) {
                     opaque_rect(sx + 2, y + 2, bw - 4, bh - 4, bg);
                 }
-                gdi::server_draw_text(
-                    this->drawable, this->font,
-                    checked_int{sx + 2}, checked_int{y + dy + 2},
-                    text, this->fg_color, bg, gdi::ColorCtx::depth24(), rect
+
+                gdi::draw_text(
+                    drawable,
+                    sx + 2,
+                    y + dy + 2,
+                    this->line_height,
+                    gdi::DrawTextPadding{
+                        .top = 0,
+                        .right = cx(),
+                        .bottom = 0,
+                        .left = 0,
+                    },
+                    {&fc, 1},
+                    this->fg_color,
+                    bg,
+                    rect_intersect
                 );
             };
 
-            draw_text_button(D::top_button_char, ButtonType::Top, ry, bh, 0);
-            draw_text_button(D::cursor_button_char, ButtonType::Cursor, cy,
+            draw_text_button(this->icon_top, ButtonType::Top, ry, bh, 0);
+            draw_text_button(this->icon_cursor, ButtonType::Cursor, cy,
                              this->cursor_button_h, (this->cursor_button_h - bh) / 2);
-            draw_text_button(D::bottom_button_char, ButtonType::Bottom,
+            draw_text_button(this->icon_bottom, ButtonType::Bottom,
                              checked_int{ry + rh - bh}, bh, 0);
 
             // left scroll border

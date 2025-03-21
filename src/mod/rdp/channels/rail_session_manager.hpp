@@ -622,18 +622,19 @@ private:
             this->drawable->draw(order, rect, gdi::ColorCtx::depth24());
         }
 
-        auto msg = this->tr(trkeys::starting_remoteapp);
-        gdi::TextMetrics tm(this->font, msg);
-        gdi::server_draw_text(*this->drawable,
-                              this->font,
-                              this->protected_rect.x + (this->protected_rect.cx - tm.width) / 2,
-                              this->protected_rect.y + (this->protected_rect.cy - tm.height) / 2,
-                              msg,
-                              encode_color24()(this->theme.global.fgcolor),
-                              encode_color24()(this->theme.global.bgcolor),
-                              gdi::ColorCtx::depth24(),
-                              this->protected_rect
-                              );
+        WidgetText<128> msg(this->font, this->tr(trkeys::starting_remoteapp));
+        auto line_height = this->font.max_height();
+        gdi::draw_text(
+            *this->drawable,
+            this->protected_rect.x + (this->protected_rect.cx - msg.width()) / 2,
+            this->protected_rect.y + (this->protected_rect.cy - line_height) / 2,
+            line_height,
+            gdi::DrawTextPadding{},
+            msg.fcs(),
+            encode_color24()(this->theme.global.fgcolor),
+            encode_color24()(this->theme.global.bgcolor),
+            this->protected_rect
+        );
     }
 
     void waiting_screen_draw(ButtonState::State state) {
@@ -654,9 +655,6 @@ private:
             this->drawable->draw(order, rect, gdi::ColorCtx::depth24());
         }
 
-        const auto close_msg = this->tr(trkeys::closing_remoteapp);
-        const gdi::TextMetrics tm_msg(this->font, close_msg);
-
         const int xtext = 6;
         const int ytext = 2;
         const int border_width = 2;
@@ -669,24 +667,28 @@ private:
             checked_int(h_text + ytext * 2 + border_width * 2),
         };
 
+        WidgetText<128> tm_msg(this->font, this->tr(trkeys::closing_remoteapp));
+        auto line_height = this->font.max_height();
+
         const uint32_t interspace = 60;
 
-        const uint32_t height = tm_msg.height + interspace + dim_button.h;
+        const uint32_t height = line_height + interspace + dim_button.h;
 
         int ypos = this->protected_rect.y + (this->protected_rect.cy - height) / 2;
 
-        gdi::server_draw_text(*this->drawable,
-                              this->font,
-                              this->protected_rect.x + (this->protected_rect.cx - tm_msg.width) / 2,
-                              ypos,
-                              close_msg,
-                              encode_color24()(this->theme.global.fgcolor),
-                              encode_color24()(this->theme.global.bgcolor),
-                              gdi::ColorCtx::depth24(),
-                              this->protected_rect
-                              );
+        gdi::draw_text(
+            *this->drawable,
+            this->protected_rect.x + (this->protected_rect.cx - tm_msg.width()) / 2,
+            ypos,
+            line_height,
+            gdi::DrawTextPadding{},
+            tm_msg.fcs(),
+            encode_color24()(this->theme.global.fgcolor),
+            encode_color24()(this->theme.global.bgcolor),
+            this->protected_rect
+        );
 
-        ypos += (tm_msg.height + interspace);
+        ypos += (line_height + interspace);
 
         this->disconnect_now_button_rect.x  = this->protected_rect.x + (this->protected_rect.cx - dim_button.w) / 2;
         this->disconnect_now_button_rect.y  = ypos;

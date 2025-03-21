@@ -44,6 +44,7 @@
 #include "utils/sugar/create_enum_map.hpp"
 #include "utils/timebase.hpp"
 #include "utils/ascii.hpp"
+#include "core/font.hpp"
 
 
 constexpr uint32_t INTERNAL_MODULE_WINDOW_ID = 40000;
@@ -611,23 +612,27 @@ void draw_icon(
                   clip, wallix_icon_min);
 }
 
+using FontChars = array_view<FontCharView const*>;
+
 void draw_text_region(
     gdi::GraphicApi& drawable, Font const* font, Rect rect,
     RDPColor fg_color, RDPColor bg_color,
-    int16_t offset_x, int16_t offset_y, chars_view text, Rect clip)
+    int16_t offset_x, int16_t offset_y,
+    FontChars fcs,
+    Rect clip)
 {
     drawable.draw(RDPOpaqueRect(rect, bg_color), clip, gdi::ColorCtx::depth24());
     if (font) {
-        gdi::server_draw_text(
+        gdi::draw_text(
             drawable,
-            *font,
             rect.x + offset_x,
             rect.y + offset_y,
-            text,
+            font->max_height(),
+            gdi::DrawTextPadding{},
+            fcs,
             fg_color,
             bg_color,
-            gdi::ColorCtx::depth24(),
-            rect
+            clip
         );
     }
 }
@@ -659,7 +664,7 @@ constexpr RDPColor close_button_fg_colors[]{
 
 void draw_title(
     gdi::GraphicApi& drawable, Font const* font, Rect rect,
-    chars_view window_title, Rect clip)
+    FontChars window_title, Rect clip)
 {
     auto fg_color = black;
     auto bg_color = white;
@@ -672,7 +677,11 @@ void draw_button_mini(
 {
     auto fg_color = black;
     auto bg_color = normal_button_bg_colors[underlying_cast(button_style)];
-    draw_text_region(drawable, font, rect, fg_color, bg_color, 12, 2, "−"_av, clip);
+    auto* fc = font ? &font->item(0x2212 /* "−" */).view : nullptr;
+    draw_text_region(
+        drawable, font, rect, fg_color, bg_color, 12, 2,
+        {&fc, font ? 1u : 0u}, clip
+    );
 }
 
 void draw_button_maxi(
@@ -798,7 +807,11 @@ void draw_button_close(
 {
     auto bg_color = close_button_bg_colors[underlying_cast(button_style)];
     auto fg_color = close_button_fg_colors[underlying_cast(button_style)];
-    draw_text_region(drawable, font, rect, fg_color, bg_color, 13, 2, "x"_av, clip);
+    auto* fc = font ? &font->item('x').view : nullptr;
+    draw_text_region(
+        drawable, font, rect, fg_color, bg_color, 13, 2,
+        {&fc, font ? 1u : 0u}, clip
+    );
 }
 
 
@@ -856,10 +869,10 @@ ClientExecute::ClientExecute(
 , verbose(verbose)
 , wallix_icon_min(bitmap_from_file(app_path(AppPath::WallixIconMin), NamedBGRColor::WHITE))
 , auxiliary_window_id(RemoteProgramsWindowIdManager::INVALID_WINDOW_ID)
-, window_title(INTERNAL_MODULE_WINDOW_TITLE)
 , current_mouse_pointer(PredefinedPointer::Normal)
 , window_level_supported_ex(window_list_caps.WndSupportLevel & TS_WINDOW_LEVEL_SUPPORTED_EX)
 , time(time_base)
+, window_title(INTERNAL_MODULE_WINDOW_TITLE)
 {
     LOG_IF(this->verbose, LOG_INFO, "ClientExecute::ClientExecute()");
 }
@@ -954,7 +967,10 @@ void ClientExecute::input_invalidate(const Rect r)
     });
 
     draw_area(WindowArea::Title, [&](Rect area_rect){
-        draw_title(this->drawable_, this->font_, area_rect, this->window_title, r);
+        if (this->window_title_fc.fcs().empty()) {
+            this->window_title_fc.set_text(*this->font_, this->window_title);
+        }
+        draw_title(this->drawable_, this->font_, area_rect, this->window_title_fc.fcs(), r);
     });
 
     if (this->allow_resize_hosted_desktop_) {
@@ -1192,6 +1208,7 @@ void ClientExecute::reset(bool soft)
     this->work_area_count = 0;
 
     this->window_title = INTERNAL_MODULE_WINDOW_TITLE;
+    this->window_title_fc.set_text(*this->font_, this->window_title);
 
     this->channel_ = nullptr;
 }   // reset
@@ -1353,6 +1370,7 @@ void ClientExecute::set_target_info(chars_view target_name, chars_view primary_u
         this->window_title,
         target_name, ':', primary_user_id, " - "_av, INTERNAL_MODULE_WINDOW_TITLE
     );
+    this->window_title_fc.set_text(*this->font_, this->window_title);
 }
 
 void ClientExecute::update_widget()

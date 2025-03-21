@@ -518,6 +518,7 @@ test-run tests/RAIL/test_client_execute :
   src/core/font.o
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
+  src/mod/internal/widget/label.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -690,6 +691,7 @@ test-run tests/acl/test_mod_wrapper :
   src/gdi/protected_graphics.o
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
+  src/mod/internal/widget/label.o
   src/translation/gettext.o
   src/translation/translation.o
   src/utils/bitmap.o
@@ -2279,6 +2281,7 @@ test-run tests/gdi/test_text_metrics :
   src/gdi/clip_from_cmd.o
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
+  src/mod/internal/widget/label.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -2856,6 +2859,7 @@ test-run tests/mod/internal/test_test_card_mod :
   src/gdi/graphic_api.o
   src/gdi/text_metrics.o
   src/mod/internal/test_card_mod.o
+  src/mod/internal/widget/label.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
   src/utils/bitmap_from_file.o
@@ -3977,6 +3981,7 @@ test-run tests/mod/vnc/test_vnc :
   src/gdi/text_metrics.o
   src/keyboard/keymap.o
   src/keyboard/keymapsym.o
+  src/mod/internal/widget/label.o
   src/mod/vnc/dsm.o
   src/mod/vnc/encoder/copyrect.o
   src/mod/vnc/encoder/cursor.o
@@ -4070,6 +4075,7 @@ test-run tests/server/test_mstsc_client :
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/test_card_mod.o
+  src/mod/internal/widget/label.o
   src/mod/rdp/rdp_negociation_data.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -4145,6 +4151,7 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/test_card_mod.o
+  src/mod/internal/widget/label.o
   src/mod/rdp/rdp_negociation_data.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -4220,6 +4227,7 @@ test-run tests/server/test_rdesktop_client :
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/test_card_mod.o
+  src/mod/internal/widget/label.o
   src/mod/rdp/rdp_negociation_data.o
   src/translation/gettext.o
   src/translation/translation.o

@@ -21,7 +21,14 @@ static gdi::MultiLineTextMetrics::Line* multi_textmetrics_impl(
 ) noexcept
 {
     auto push_line_and_width = [&](gdi::MultiLineTextMetrics::Line line, int width) {
-        // TODO assert(gdi::TextMetrics(font, line).width == width);
+        #ifndef NDEBUG
+        int w = 0;
+        for (auto* fc : line) {
+            w += fc->boxed_width();
+        }
+        assert(w == width);
+        #endif
+
         *line_it++ = line;
         *max_width = std::max(width, *max_width);
     };
@@ -173,20 +180,6 @@ _word:
 namespace gdi
 {
 
-TextMetrics::TextMetrics(const Font & font, bytes_view utf8_text)
-: height(font.max_height())
-{
-    auto invalid_char = [&](auto){
-        FontCharView const& font_item = font.unknown_glyph();
-        width += font_item.boxed_width();
-    };
-    utf8_for_each(utf8_text,
-        [&](uint32_t uc){ width += font.item(uc).view.boxed_width(); },
-        invalid_char,
-        invalid_char
-    );
-}
-
 MultiLineTextMetrics::MultiLineTextMetrics(
     const Font& font, unsigned preferred_max_width, bytes_view utf8_text)
 {
@@ -307,96 +300,6 @@ MultiLineTextMetrics::~MultiLineTextMetrics()
 
 // BUG TODO static not const is a bad idea
 static GlyphCache mod_glyph_cache;
-
-
-// TODO implementation of the server_draw_text function below is a small subset of possibilities text can be packed (detecting duplicated strings). See MS-RDPEGDI 2.2.2.2.1.1.2.13 GlyphIndex (GLYPHINDEX_ORDER)
-// TODO: is it still used ? If yes move it somewhere else. Method from internal mods ?
-void server_draw_text(
-    GraphicApi & drawable, Font const & font,
-    int16_t x, int16_t y, bytes_view text,
-    RDPColor fgcolor, RDPColor bgcolor,
-    ColorCtx color_ctx,
-    Rect clip
-) {
-    UTF8TextReader reader(text);
-
-    int16_t endx = clip.eright();
-
-    if (reader.has_value() && x <= clip.x) {
-        do {
-            auto old_state_reader = reader;
-            const uint32_t charnum = reader.next();
-
-            Font::FontCharElement font_item = font.item(charnum);
-            // if (!font_item.is_valid) {
-            //     LOG(LOG_WARNING, "server_draw_text() - character not defined >0x%02x<", charnum);
-            // }
-
-            auto nextx = x + font_item.view.offsetx + font_item.view.incby;
-            if (nextx > clip.x) {
-                reader = old_state_reader;
-                break;
-            }
-
-            x = nextx;
-        } while (reader.has_value());
-    }
-
-    while (reader.has_value()) {
-        int total_width = 0;
-        uint8_t data[256];
-        data[1] = 0;
-        auto data_begin = std::begin(data);
-        const auto data_end = std::end(data)-2;
-
-        const int cacheId = 7;
-        while (data_begin < data_end && reader.has_value() && x+total_width <= endx) {
-            const uint32_t charnum = reader.next();
-
-            int cacheIndex = 0;
-            Font::FontCharElement font_item = font.item(charnum);
-            // if (!font_item.is_valid) {
-            //     LOG(LOG_WARNING, "server_draw_text() - character not defined >0x%02x<", charnum);
-            // }
-
-            const GlyphCache::t_glyph_cache_result cache_result =
-                mod_glyph_cache.add_glyph(font_item.view, cacheId, cacheIndex);
-            (void)cache_result; // supress warning
-
-            *data_begin++ = cacheIndex;
-            *data_begin++ += font_item.view.offsetx;
-            data_begin[1] = font_item.view.incby;
-            total_width += font_item.view.offsetx + font_item.view.incby;
-        }
-
-        Rect bk(x, y, total_width + 2, font.max_height());
-
-        RDPGlyphIndex glyphindex(
-            cacheId,            // cache_id
-            0x03,               // fl_accel
-            0x0,                // ui_charinc
-            1,                  // f_op_redundant,
-            fgcolor,            // BackColor (text color)
-            bgcolor,            // ForeColor (color of the opaque rectangle)
-            bk,                 // bk
-            bk,                 // op
-            // brush
-            RDPBrush(0, 0, 3, 0xaa,
-                byte_ptr_cast("\xaa\x55\xaa\x55\xaa\x55\xaa\x55")),
-            x,                  // glyph_x
-            y,                  // glyph_y
-            data_begin - data,  // data_len in bytes
-            data                // data
-        );
-
-        drawable.draw(glyphindex, clip, color_ctx, mod_glyph_cache);
-
-        if (x+total_width > endx) {
-            break;
-        }
-        x += total_width;
-    }
-}
 
 /// \return last pixel drawn
 int draw_text(

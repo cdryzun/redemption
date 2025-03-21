@@ -23,12 +23,14 @@
 #include "gdi/graphic_api.hpp"
 #include "gdi/text_metrics.hpp"
 #include "mod/internal/test_card_mod.hpp"
+#include "mod/internal/widget/label.hpp"
 #include "core/app_path.hpp"
 #include "core/RDP/bitmapupdate.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryMemBlt.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryLineTo.hpp"
 #include "core/RDP/rdp_pointer.hpp"
+#include "core/font.hpp"
 #include "utils/bitmap_from_file.hpp"
 #include "utils/strutils.hpp"
 
@@ -121,11 +123,20 @@ void TestCardMod::draw_event()
         RDPLineTo(1, 145, 200, 1198, 201, RDPColor{}, 13, RDPPen(0, 1, encode_color24()(NamedBGRColor::RED))),
         Rect(145, 200, 110, 1), color_ctx);
 
-    gdi::server_draw_text(gd, this->font, 30, 30, "White"_av, encode_color24()(NamedBGRColor::WHITE), encode_color24()(NamedBGRColor::BLACK), color_ctx, clip);
-    gdi::server_draw_text(gd, this->font, 30, 50, "Red  "_av, encode_color24()(NamedBGRColor::RED), encode_color24()(NamedBGRColor::BLACK), color_ctx, clip);
-    gdi::server_draw_text(gd, this->font, 30, 70, "Green"_av, encode_color24()(NamedBGRColor::GREEN), encode_color24()(NamedBGRColor::BLACK), color_ctx, clip);
-    gdi::server_draw_text(gd, this->font, 30, 90, "Blue "_av, encode_color24()(NamedBGRColor::BLUE), encode_color24()(NamedBGRColor::BLACK), color_ctx, clip);
-    gdi::server_draw_text(gd, this->font, 30, 110, "Black"_av, encode_color24()(NamedBGRColor::BLACK), encode_color24()(NamedBGRColor::WHITE), color_ctx, clip);
+    auto draw_text = [&](int x, int y, chars_view str, NamedBGRColor fg, NamedBGRColor bg){
+        gdi::draw_text(
+            gd, x, y, font.max_height(), gdi::DrawTextPadding{},
+            WidgetText<32>(this->font, str).fcs(),
+            encode_color24()(fg), encode_color24()(bg),
+            clip
+        );
+    };
+
+    draw_text(30, 30, "White"_av, NamedBGRColor::WHITE, NamedBGRColor::BLACK);
+    draw_text(30, 50, "Red  "_av, NamedBGRColor::RED, NamedBGRColor::BLACK);
+    draw_text(30, 70, "Green"_av, NamedBGRColor::GREEN, NamedBGRColor::BLACK);
+    draw_text(30, 90, "Blue "_av, NamedBGRColor::BLUE, NamedBGRColor::BLACK);
+    draw_text(30, 110, "Black"_av, NamedBGRColor::BLACK, NamedBGRColor::WHITE);
 
     Bitmap card = bitmap_from_file(app_path(AppPath::RedemptionLogo24), NamedBGRColor::BLACK);
     gd.draw(RDPMemBlt(0,

@@ -23,6 +23,7 @@
 #include "core/RDP/rdp_pointer.hpp"
 #include "core/RDP/windows_execute_shell_params.hpp"
 #include "mod/rdp/windowing_api.hpp"
+#include "mod/internal/widget/label.hpp"
 #include "utils/bitmap.hpp"
 #include "utils/rect.hpp"
 #include "utils/ref.hpp"
@@ -271,10 +272,6 @@ private:
     Bitmap wallix_icon_min;
     uint32_t auxiliary_window_id;
     Rect auxiliary_window_rect;
-    const static unsigned int max_work_area   = 32;
-                 unsigned int work_area_count = 0;
-    Rect work_areas[max_work_area];
-    std::string window_title;
     PredefinedPointer current_mouse_pointer;
     bool const window_level_supported_ex;
     bool allow_resize_hosted_desktop_    = false;
@@ -285,6 +282,13 @@ private:
     WindowArea previous_area = WindowArea::NUMBER_OF_AREAS_OR_INVALID;
     Rect previous_rect;
     Rect protocol_window_rect;
+
+    const static unsigned int max_work_area   = 32;
+                 unsigned int work_area_count = 0;
+    Rect work_areas[max_work_area];
+
+    std::string window_title;
+    WidgetText<1024> window_title_fc;
 
 private:
     void initialize_move_size(uint16_t xPos, uint16_t yPos);
