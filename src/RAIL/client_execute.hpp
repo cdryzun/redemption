@@ -94,7 +94,7 @@ public:
 
     void destroy_auxiliary_window() override;
 
-    void set_target_info(chars_view ti);
+    void set_target_info(chars_view target_name, chars_view primary_user_id);
 
     [[nodiscard]] bool is_rail_enabled() const;
 
@@ -201,7 +201,7 @@ public:
         };
 
         ActionResult next_mouse_action(
-            Rect const& window_rect,
+            Rect window_rect,
             IsMaximized is_maximized, ResizableHosted resizable_hosted,
             MonotonicTimePoint now,
             uint16_t flags, uint16_t x, uint16_t y);
@@ -228,7 +228,7 @@ public:
 
     static Rect move_resize_rect(
         WindowArea pressed_button,
-        int original_offset_x, int original_offset_y, Rect const& r) noexcept;
+        int original_offset_x, int original_offset_y, Rect r) noexcept;
 
 private:
     enum class MaximizedState : uint8_t
@@ -302,7 +302,7 @@ private:
     void process_client_activate_pdu(InStream& chunk);
     void process_client_window_move_pdu(InStream& chunk);
 
-    void on_new_or_existing_window(Rect const & window_rect);
+    void on_new_or_existing_window(Rect window_rect);
     void on_delete_window();
 };  // class ClientExecute
 

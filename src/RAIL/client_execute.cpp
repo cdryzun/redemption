@@ -83,7 +83,7 @@ struct RectComputation
     , cy(cy)
     {}
 
-    Rect compute(Rect const& w) const
+    Rect compute(Rect w) const
     {
         return Rect(
             w.x + (substract_cx_in_x ? w.cx - x : x),
@@ -223,7 +223,7 @@ namespace
         ClientExecute::WindowArea area;
     };
 
-    RectZone get_rect_area(Rect const& w, bool is_maximized, bool resizable_hosted, int16_t x, int16_t y)
+    RectZone get_rect_area(Rect w, bool is_maximized, bool resizable_hosted, int16_t x, int16_t y)
     {
         #define RETURN_IF_CONTAINS(area) do {         \
             Rect rect = render_zone(area).compute(w); \
@@ -344,7 +344,7 @@ DECLARE_ENUM_MAP(area_to_predefined_pointer, PredefinedPointer,
 
 void update_adjusted_window_rect(
     RDP::RAIL::NewOrExistingWindow& order,
-    Rect const& adjusted_window_rect)
+    Rect adjusted_window_rect)
 {
     order.ClientOffsetX(adjusted_window_rect.x + 6);
     order.ClientOffsetY(adjusted_window_rect.y + 25);
@@ -363,7 +363,7 @@ void update_adjusted_window_rect(
 RDP::RAIL::NewOrExistingWindow create_window_with_title_pdu(
     uint32_t fieldsPresentFlags,
     std::string_view window_title,
-    Rect const& adjusted_window_rect)
+    Rect adjusted_window_rect)
 {
     RDP::RAIL::NewOrExistingWindow order;
 
@@ -398,7 +398,7 @@ RDP::RAIL::NewOrExistingWindow create_window_with_title_pdu(
 
 RDP::RAIL::NewOrExistingWindow create_move_resize_window_pdu(
     bool window_level_supported_ex,
-    Rect const& adjusted_window_rect)
+    Rect adjusted_window_rect)
 {
     RDP::RAIL::NewOrExistingWindow order;
 
@@ -423,7 +423,7 @@ RDP::RAIL::NewOrExistingWindow create_move_resize_window_pdu(
 
 RDP::RAIL::NewOrExistingWindow create_resize_window_pdu(
     bool window_level_supported_ex,
-    Rect const& adjusted_window_rect)
+    Rect adjusted_window_rect)
 {
     RDP::RAIL::NewOrExistingWindow order;
 
@@ -490,7 +490,7 @@ RDP::RAIL::NewOrExistingWindow create_minimized_window_pdu(
 
 RDP::RAIL::NewOrExistingWindow create_maximized_window_pdu(
     bool window_level_supported_ex,
-    Rect const& adjusted_window_rect)
+    Rect adjusted_window_rect)
 {
     RDP::RAIL::NewOrExistingWindow order;
 
@@ -545,7 +545,7 @@ void log_new_or_existing_window(
     }
 }
 
-void refresh_window_rect(mod_api* mod, Rect const& window_rect)
+void refresh_window_rect(mod_api* mod, Rect window_rect)
 {
     if (mod) {
         mod->rdp_input_invalidate(Rect(
@@ -603,8 +603,8 @@ void send_to_channel(
 }
 
 void draw_icon(
-    gdi::GraphicApi& drawable, Rect const& rect,
-    Bitmap const& wallix_icon_min, Rect const& clip)
+    gdi::GraphicApi& drawable, Rect rect,
+    Bitmap const& wallix_icon_min, Rect clip)
 {
     drawable.draw(RDPOpaqueRect(rect, white), clip, gdi::ColorCtx::depth24());
     drawable.draw(RDPMemBlt(0, Rect(rect.x + 3, rect.y + 4, 16, 16), 0xCC, 0, 0, 0),
@@ -612,9 +612,9 @@ void draw_icon(
 }
 
 void draw_text_region(
-    gdi::GraphicApi& drawable, Font const* font, Rect const& rect,
+    gdi::GraphicApi& drawable, Font const* font, Rect rect,
     RDPColor fg_color, RDPColor bg_color,
-    int16_t offset_x, int16_t offset_y, chars_view text, Rect const& clip)
+    int16_t offset_x, int16_t offset_y, chars_view text, Rect clip)
 {
     drawable.draw(RDPOpaqueRect(rect, bg_color), clip, gdi::ColorCtx::depth24());
     if (font) {
@@ -658,8 +658,8 @@ constexpr RDPColor close_button_fg_colors[]{
 };
 
 void draw_title(
-    gdi::GraphicApi& drawable, Font const* font, Rect const& rect,
-    chars_view window_title, Rect const& clip)
+    gdi::GraphicApi& drawable, Font const* font, Rect rect,
+    chars_view window_title, Rect clip)
 {
     auto fg_color = black;
     auto bg_color = white;
@@ -667,8 +667,8 @@ void draw_title(
 }
 
 void draw_button_mini(
-    gdi::GraphicApi& drawable, Font const* font, Rect const& rect,
-    ButtonStyle button_style, Rect const& clip)
+    gdi::GraphicApi& drawable, Font const* font, Rect rect,
+    ButtonStyle button_style, Rect clip)
 {
     auto fg_color = black;
     auto bg_color = normal_button_bg_colors[underlying_cast(button_style)];
@@ -676,8 +676,8 @@ void draw_button_mini(
 }
 
 void draw_button_maxi(
-    gdi::GraphicApi& drawable, bool is_maximized, Rect const& rect_maxi,
-    ButtonStyle button_style, Rect const& clip)
+    gdi::GraphicApi& drawable, bool is_maximized, Rect rect_maxi,
+    ButtonStyle button_style, Rect clip)
 {
     auto bg_color = normal_button_bg_colors[underlying_cast(button_style)];
     auto fg_color = black;
@@ -724,7 +724,7 @@ void draw_button_maxi(
 
 void draw_button_resize_hosted_desktop(
     gdi::GraphicApi& drawable, bool enable_resizing_hosted_desktop,
-    Rect rect, ButtonStyle button_style, Rect const& clip)
+    Rect rect, ButtonStyle button_style, Rect clip)
 {
     auto bg_color = normal_button_bg_colors[underlying_cast(button_style)];
     auto fg_color = black;
@@ -793,8 +793,8 @@ void draw_button_resize_hosted_desktop(
 }
 
 void draw_button_close(
-    gdi::GraphicApi& drawable, Font const* font, Rect const& rect,
-    ButtonStyle button_style, Rect const& clip)
+    gdi::GraphicApi& drawable, Font const* font, Rect rect,
+    ButtonStyle button_style, Rect clip)
 {
     auto bg_color = close_button_bg_colors[underlying_cast(button_style)];
     auto fg_color = close_button_fg_colors[underlying_cast(button_style)];
@@ -949,32 +949,32 @@ void ClientExecute::input_invalidate(const Rect r)
         }
     };
 
-    draw_area(WindowArea::Icon, [&](Rect const& area_rect){
+    draw_area(WindowArea::Icon, [&](Rect area_rect){
         draw_icon(this->drawable_, area_rect, this->wallix_icon_min, r);
     });
 
-    draw_area(WindowArea::Title, [&](Rect const& area_rect){
+    draw_area(WindowArea::Title, [&](Rect area_rect){
         draw_title(this->drawable_, this->font_, area_rect, this->window_title, r);
     });
 
     if (this->allow_resize_hosted_desktop_) {
-        draw_area(WindowArea::Resize, [&](Rect const& area_rect){
+        draw_area(WindowArea::Resize, [&](Rect area_rect){
             draw_button_resize_hosted_desktop(
                 this->drawable_, this->enable_resizing_hosted_desktop_,
                 area_rect, ButtonStyle::Normal, r);
         });
     }
 
-    draw_area(WindowArea::Mini, [&](Rect const& area_rect){
+    draw_area(WindowArea::Mini, [&](Rect area_rect){
         draw_button_mini(this->drawable_, this->font_, area_rect, ButtonStyle::Normal, r);
     });
 
-    draw_area(WindowArea::Maxi, [&](Rect const& area_rect){
+    draw_area(WindowArea::Maxi, [&](Rect area_rect){
         bool const is_maximized = this->maximized_state == MaximizedState::FullScreen;
         draw_button_maxi(this->drawable_, is_maximized, area_rect, ButtonStyle::Normal, r);
     });
 
-    draw_area(WindowArea::Close, [&](Rect const& area_rect){
+    draw_area(WindowArea::Close, [&](Rect area_rect){
         draw_button_close(this->drawable_, this->font_, area_rect, ButtonStyle::Normal, r);
     });
 }   // input_invalidate
@@ -1249,7 +1249,7 @@ static void send_activate_window(uint32_t flag, gdi::GraphicApi & drawable_, boo
     drawable_.draw(order);
 }
 
-void ClientExecute::on_new_or_existing_window(Rect const & window_rect)
+void ClientExecute::on_new_or_existing_window(Rect window_rect)
 {
     LOG_IF(this->verbose, LOG_INFO, "ClientExecute::on_new_or_existing_window()");
     if (!this->protocol_window_rect.isempty())
@@ -1452,7 +1452,7 @@ bool ClientExecute::input_mouse(uint16_t pointerFlags, uint16_t xPos, uint16_t y
     bool const is_maximized = (this->maximized_state == MaximizedState::FullScreen);
 
     auto draw_button = [this, is_maximized](
-        WindowArea area, Rect const& rect, ButtonStyle button_style
+        WindowArea area, Rect rect, ButtonStyle button_style
     ){
         switch (area) {
             case WindowArea::Mini:
@@ -2408,7 +2408,7 @@ void ClientExecute::process_client_window_move_pdu(InStream& chunk)
 Rect ClientExecute::move_resize_rect(
     WindowArea pressed_button,
     int original_offset_x, int original_offset_y,
-    Rect const& r
+    Rect r
 ) noexcept
 {
     int offset_x = 0;
@@ -2530,7 +2530,7 @@ enum class ClientExecute::MouseAction::State : uint8_t
 inline constexpr MonotonicTimePoint::duration double_click_delay = std::chrono::milliseconds(400);
 
 ClientExecute::MouseAction::ActionResult ClientExecute::MouseAction::next_mouse_action(
-    Rect const& window_rect, IsMaximized is_maximized, ResizableHosted resizable_hosted,
+    Rect window_rect, IsMaximized is_maximized, ResizableHosted resizable_hosted,
     MonotonicTimePoint now, uint16_t flags, uint16_t x, uint16_t y)
 {
     RectZone rect_area = get_rect_area(window_rect, bool(is_maximized), bool(resizable_hosted),
