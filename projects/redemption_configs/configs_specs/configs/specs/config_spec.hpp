@@ -675,7 +675,7 @@ _.section("client", [&]
 
     _.member(MemberInfo{
         .name = "tls_signature_algorithms",
-        .value = value<std::string>(""),
+        .value = value<std::string>("RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512"),
         .spec = global_spec(no_acl),
         .desc = str_concat(tls_signature_algorithms_desc,
                            tls_signature_algorithms_server_extra_desc),

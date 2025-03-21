@@ -491,7 +491,7 @@
       "section": "client",
       "name": "tls_signature_algorithms",
       "type": "str",
-      "value": "",
+      "value": "RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512",
       "description": "Configure the supported server signature algorithms.\nEmpty to apply system-wide configuration.\nThe format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.\nalgorithm is one of RSA, RSA-PSS or ECDSA.\nhash is one of SHA224, SHA256, SHA384 or SHA512.\nsignature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.\nThis list needs at least one signature algorithm compatible with the RDP Proxy certificate.",
       "displayName": "TLS signature algorithms",
       "globalSpec": true

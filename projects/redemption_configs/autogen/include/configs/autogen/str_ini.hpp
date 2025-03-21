@@ -187,7 +187,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
 # This list needs at least one signature algorithm compatible with the RDP Proxy certificate.
 #_display_name=TLS signature algorithms
-#tls_signature_algorithms = 
+#tls_signature_algorithms = RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512
 
 # Show in the logs the common cipher list supported by client and server
 # ⚠ Only for debug purposes

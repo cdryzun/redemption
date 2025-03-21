@@ -576,12 +576,12 @@ namespace cfg
     /// This list needs at least one signature algorithm compatible with the RDP Proxy certificate. <br/>
     /// type: std::string <br/>
     /// displayName: TLS signature algorithms <br/>
-    /// default: "" <br/>
+    /// default: "RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512" <br/>
     struct client::tls_signature_algorithms {
         static constexpr unsigned acl_proxy_communication_flags = 0b00;
         using type = std::string;
         using mapped_type = std::string;
-        type value {  };
+        type value { "RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512" };
     };
     /// Show in the logs the common cipher list supported by client and server <br/>
     /// ⚠ Only for debug purposes <br/>
