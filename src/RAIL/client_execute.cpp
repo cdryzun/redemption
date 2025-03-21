@@ -1191,7 +1191,7 @@ void ClientExecute::reset(bool soft)
 
     this->work_area_count = 0;
 
-    this->set_target_info(""_av);
+    this->window_title = INTERNAL_MODULE_WINDOW_TITLE;
 
     this->channel_ = nullptr;
 }   // reset
@@ -1346,10 +1346,13 @@ void ClientExecute::destroy_auxiliary_window()
     this->auxiliary_window_id = RemoteProgramsWindowIdManager::INVALID_WINDOW_ID;
 }
 
-void ClientExecute::set_target_info(chars_view ti)
+void ClientExecute::set_target_info(chars_view target_name, chars_view primary_user_id)
 {
     LOG_IF(this->verbose, LOG_INFO, "ClientExecute::set_target_info()");
-    str_append(this->window_title, ti, (ti.empty() ? ""_av : " - "_av), INTERNAL_MODULE_WINDOW_TITLE);
+    str_append(
+        this->window_title,
+        target_name, ':', primary_user_id, " - "_av, INTERNAL_MODULE_WINDOW_TITLE
+    );
 }
 
 void ClientExecute::update_widget()

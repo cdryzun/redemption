@@ -37,12 +37,10 @@ RailModuleHostMod* create_mod_rail(
 {
     LOG(LOG_INFO, "Creation of internal module 'RailModuleHostMod'");
 
-    std::string target_info = str_concat(
+    rail_client_execute.set_target_info(
         ini.get<cfg::context::target_str>(),
-        ':',
-        ini.get<cfg::globals::primary_user_id>());
-
-    rail_client_execute.set_target_info(target_info);
+        ini.get<cfg::globals::primary_user_id>()
+    );
 
     struct RailMod final : RailModuleHostMod
     {
