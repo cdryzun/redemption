@@ -450,14 +450,6 @@ void push_alt_gr_state(
     }
 }
 
-bool is_ctrl_alt(kbdtypes::KeyModFlags mods) noexcept
-{
-    using kbdtypes::KeyMod;
-    auto ctrl_alt = mods & (KeyMod::LCtrl | KeyMod::RCtrl | KeyMod::LAlt);
-    ctrl_alt.clear(KeyMod::LAlt);
-    return ctrl_alt.as_uint();
-}
-
 KeymapSym::VncKeyState to_vnc_key_state(kbdtypes::KbdFlags flags) noexcept
 {
     return bool(flags & kbdtypes::KbdFlags::Release)
@@ -525,15 +517,6 @@ KeymapSym::Keys KeymapSym::scancode_to_keysyms(KbdFlags flags, Scancode scancode
     case underlying_cast(KeyCode::RShift): set_mod(KeyMod::RShift); break;
     case underlying_cast(KeyCode::LAlt):   set_mod(KeyMod::LAlt); break;
     case underlying_cast(KeyCode::RAlt):   set_mod(KeyMod::RAlt); break;
-
-    // ctrl+alt+fin as ctrl+alt+del
-    case underlying_cast(KeyCode::End):  {
-        const auto ksym = is_ctrl_alt(mods_)
-            ? keycode_to_sym(KeyCode::Delete, mods_)
-            : keycode_to_sym(KeyCode::End, mods_);
-        keys.push({ksym, down_flag});
-        break;
-    }
 
     default:
         if (auto ksym = keycode_to_sym(keycode, mods_)) {

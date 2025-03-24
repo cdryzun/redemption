@@ -244,11 +244,11 @@ RED_AUTO_TEST_CASE(TestKeymapSym)
     RED_CHECK(keymap.scancode(down | extended, Scancode(0x4F)) == ksyms(stDown(0xff57)));
     RED_CHECK(keymap.scancode(release | extended, Scancode(0x4F)) == ksyms(stUp(0xff57)));
 
-    // ctrl+alt+end -> ctrl+alt+del
+    // ctrl+alt+end
     RED_CHECK(keymap.scancode(down, Scancode::LCtrl) == ksyms(stDown(0xffe3)));
     RED_CHECK(keymap.scancode(down, Scancode::LAlt) == ksyms(stDown(0xffe9)));
-    RED_CHECK(keymap.scancode(down | extended, Scancode(0x4F)) == ksyms(stDown(0xffff)));
-    RED_CHECK(keymap.scancode(release | extended, Scancode(0x4F)) == ksyms(stUp(0xffff)));
+    RED_CHECK(keymap.scancode(down | extended, Scancode(0x4F)) == ksyms(stDown(0xff57)));
+    RED_CHECK(keymap.scancode(release | extended, Scancode(0x4F)) == ksyms(stUp(0xff57)));
     RED_CHECK(keymap.scancode(release, Scancode::LCtrl) == ksyms(stUp(0xffe3)));
     RED_CHECK(keymap.scancode(release, Scancode::LAlt) == ksyms(stUp(0xffe9)));
 
