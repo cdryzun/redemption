@@ -429,6 +429,7 @@ lib libredrec :
   src/capture/redis.o
   src/capture/redis_session.o
   src/capture/regions_capture.o
+  src/capture/report_bmp_cache.o
   src/capture/utils/pattern_searcher.o
   src/capture/utils/pattutils.o
   src/capture/video_capture.o
@@ -2469,6 +2470,7 @@ test-run tests/lib/test_do_recorder :
   src/capture/redis.o
   src/capture/redis_session.o
   src/capture/regions_capture.o
+  src/capture/report_bmp_cache.o
   src/capture/utils/pattern_searcher.o
   src/capture/utils/pattutils.o
   src/capture/video_capture.o
@@ -3566,7 +3568,6 @@ test-run tests/mod/internal/widget/test_widget_rect :
 :
   crypto
   png
-  app_path_test.o
   src/core/RDP/RDPDrawable.o
   src/core/error.o
   src/core/font.o
@@ -3582,7 +3583,6 @@ test-run tests/mod/internal/widget/test_widget_rect :
   src/utils/rle.o
   src/utils/stacktrace.o
   src/utils/strutils.o
-  tests/includes/test_only/core/font.o
   tests/includes/test_only/gdi/test_graphic.o
   tests/includes/test_only/test_framework/check_img.o
 :
@@ -3997,8 +3997,6 @@ test-run tests/server/test_mstsc_client :
   src/capture/utils/pattutils.o
   src/core/RDP/RDPDrawable.o
   src/core/RDP/mppc.o
-  src/core/RDP/nego.o
-  src/core/RDP/nla/kerberos.o
   src/core/RDP/rdp_pointer.o
   src/core/error.o
   src/core/font.o
@@ -4012,8 +4010,6 @@ test-run tests/server/test_mstsc_client :
   src/mod/internal/test_card_mod.o
   src/mod/internal/widget/label.o
   src/mod/rdp/rdp_negociation_data.o
-  src/translation/gettext.o
-  src/translation/translation.o
   src/transport/crypto_transport.o
   src/transport/file_transport.o
   src/transport/gzip_compression_transport.o
@@ -4037,7 +4033,6 @@ test-run tests/server/test_mstsc_client :
   src/utils/scaled_image24.o
   src/utils/stacktrace.o
   src/utils/strutils.o
-  src/utils/sugar/multisz.o
   src/utils/timestamp_tracer.o
   src/utils/uninit_buffer.o
   src/utils/utf.o
@@ -4074,8 +4069,6 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   src/capture/utils/pattutils.o
   src/core/RDP/RDPDrawable.o
   src/core/RDP/mppc.o
-  src/core/RDP/nego.o
-  src/core/RDP/nla/kerberos.o
   src/core/RDP/rdp_pointer.o
   src/core/error.o
   src/core/font.o
@@ -4089,8 +4082,6 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   src/mod/internal/test_card_mod.o
   src/mod/internal/widget/label.o
   src/mod/rdp/rdp_negociation_data.o
-  src/translation/gettext.o
-  src/translation/translation.o
   src/transport/crypto_transport.o
   src/transport/file_transport.o
   src/transport/gzip_compression_transport.o
@@ -4114,7 +4105,6 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   src/utils/scaled_image24.o
   src/utils/stacktrace.o
   src/utils/strutils.o
-  src/utils/sugar/multisz.o
   src/utils/timestamp_tracer.o
   src/utils/uninit_buffer.o
   src/utils/utf.o
@@ -4151,8 +4141,6 @@ test-run tests/server/test_rdesktop_client :
   src/capture/utils/pattutils.o
   src/core/RDP/RDPDrawable.o
   src/core/RDP/mppc.o
-  src/core/RDP/nego.o
-  src/core/RDP/nla/kerberos.o
   src/core/RDP/rdp_pointer.o
   src/core/error.o
   src/core/font.o
@@ -4166,8 +4154,6 @@ test-run tests/server/test_rdesktop_client :
   src/mod/internal/test_card_mod.o
   src/mod/internal/widget/label.o
   src/mod/rdp/rdp_negociation_data.o
-  src/translation/gettext.o
-  src/translation/translation.o
   src/transport/crypto_transport.o
   src/transport/file_transport.o
   src/transport/gzip_compression_transport.o
@@ -4191,7 +4177,6 @@ test-run tests/server/test_rdesktop_client :
   src/utils/scaled_image24.o
   src/utils/stacktrace.o
   src/utils/strutils.o
-  src/utils/sugar/multisz.o
   src/utils/timestamp_tracer.o
   src/utils/uninit_buffer.o
   src/utils/utf.o
@@ -4998,6 +4983,7 @@ obj src/capture/rdp_ppocr/get_ocr_constants_from_locale_id.o : $(REDEMPTION_SRC_
 obj src/capture/redis.o : $(REDEMPTION_SRC_PATH)/capture/redis.cpp ;
 obj src/capture/redis_session.o : $(REDEMPTION_SRC_PATH)/capture/redis_session.cpp ;
 obj src/capture/regions_capture.o : $(REDEMPTION_SRC_PATH)/capture/regions_capture.cpp : <define>ZLIB_CONST ;
+obj src/capture/report_bmp_cache.o : $(REDEMPTION_SRC_PATH)/capture/report_bmp_cache.cpp : <define>ZLIB_CONST ;
 obj src/capture/session_update_buffer.o : $(REDEMPTION_SRC_PATH)/capture/session_update_buffer.cpp ;
 obj src/capture/utils/pattern_searcher.o : $(REDEMPTION_SRC_PATH)/capture/utils/pattern_searcher.cpp : $(REDEMPTION_HYPERSCAN_FLAGS) ;
 obj src/capture/utils/pattutils.o : $(REDEMPTION_SRC_PATH)/capture/utils/pattutils.cpp ;
@@ -6106,6 +6092,7 @@ explicit
   src/capture/redis.o
   src/capture/redis_session.o
   src/capture/regions_capture.o
+  src/capture/report_bmp_cache.o
   src/capture/session_update_buffer.o
   src/capture/utils/pattern_searcher.o
   src/capture/utils/pattutils.o

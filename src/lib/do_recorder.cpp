@@ -25,6 +25,7 @@
 #include "capture/video_params.hpp"
 #include "capture/wrm_params.hpp"
 #include "capture/regions_capture.hpp"
+#include "capture/report_bmp_cache.hpp"
 
 #include "capture/capture.hpp"
 #include "capture/cryptofile.hpp"
@@ -924,6 +925,7 @@ struct RecorderParams
     SequencedVideoParams sequenced_video_params {};
     SmartVideoCropping smart_video_cropping {};
     bool full_video = false; // create full video
+    bool report_bmp_cache = false; // create report bmp cache file
 
     // ocr output options
     OcrParams ocr_params { OcrVersion::v2, ocr::locale::LocaleId::latin, {}, {}, {}, {}};
@@ -1356,6 +1358,9 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
         cli::option('i', "input-file").help("mwrm input filename")
             .parser(cli::arg_location(recorder.input_filename)).argname("<path>"),
 
+        cli::option('r', "report-bmp-cache").help("generate report bmp cache file")
+            .parser(cli::on_off_location(recorder.report_bmp_cache)),
+
         cli::option('H', "hash-path")
             .help("output hash dirname (if empty, use hash_path of ini)")
             .parser(cli::arg_location(recorder.hash_path)).argname("<directory-path>"),
@@ -1547,6 +1552,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
     Inifile ini;
     ini.set<cfg::debug::config>(false);
     configuration_load(Inifile::ConfigurationHolder{ini}.as_ref(), recorder.config_filename.c_str());
+    recorder.file_permissions = ini.get<cfg::audit::file_permissions>();
 
 
     // VideoParams
@@ -1716,7 +1722,9 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                 output.extension.empty() ? ".mwrm"_av : ""_av);
         }
         else if (output.extension.empty()){
-            recorder.output_filename += ".mwrm";
+            if(recorder.full_video) recorder.output_filename += ".mp4";
+            else if(recorder.report_bmp_cache) recorder.output_filename += ".csv";
+            else recorder.output_filename += ".mwrm";
         }
         std::cout << "Output file is \"" << recorder.output_filename << "\".\n";
     }
@@ -1724,7 +1732,6 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
     recorder.play_video_with_corrupted_bitmap
         = ini.get<cfg::audit::play_video_with_corrupted_bitmap>();
     recorder.smart_video_cropping = ini.get<cfg::audit::smart_video_cropping>();
-    recorder.file_permissions = ini.get<cfg::audit::file_permissions>();
     recorder.wrm_verbosity = safe_cast<RDPSerializerVerbose>(ini.get<cfg::debug::capture>());
 
     return ClRes::Ok;
@@ -1830,8 +1837,9 @@ int do_main(int argc, char const ** argv,
          && !bool(rp.capture_flags)
          && !rp.show_file_metadata
          && !rp.show_statistics
+         && !rp.report_bmp_cache
         ) {
-            std::cerr << "Missing target format : need --png, --ocr, --video, --full, --wrm, --meta, --statistics or --chunk" << std::endl;
+            std::cerr << "Missing target format : need --png, --ocr, --video, --report-bmp-cache, --full, --wrm, --meta, --statistics or --chunk" << std::endl;
             return 1;
         }
 
@@ -1922,6 +1930,11 @@ int do_main(int argc, char const ** argv,
             std::move(wrm_filenames),
             cctx,
             mwrm_infos.encryption_mode);
+
+        if (rp.report_bmp_cache) {
+            ReportBmpCache report_bmp_cache{in_wrm_trans};
+            return report_bmp_cache.process(rp.output_filename);
+        }
 
         res = replay(std::move(in_wrm_trans),
                      wrms,
