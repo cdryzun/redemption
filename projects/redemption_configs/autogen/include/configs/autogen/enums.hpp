@@ -224,7 +224,7 @@ inline FileSystemLogFlags operator ~ (FileSystemLogFlags x)
 inline FileSystemLogFlags & operator |= (FileSystemLogFlags & x, FileSystemLogFlags y) { return x = x | y; }
 inline FileSystemLogFlags & operator &= (FileSystemLogFlags & x, FileSystemLogFlags y) { return x = x & y; }
 
-// Specifies the maximum color resolution (color depth) for client connection session:
+// Specifies the maximum color resolution (color depth) for the client connection session:
 enum class ColorDepth : uint8_t
 {
     // 8-bit
@@ -330,13 +330,13 @@ template<> struct is_valid_enum_value<TraceType>
 
 enum class KeyboardInputMaskingLevel : uint8_t
 {
-    // keyboard input are not masked
+    // Keyboard input are not masked.
     unmasked = 0,
-    // only passwords are masked
+    // Only passwords are masked.
     password_only = 1,
-    // passwords and unidentified texts are masked
+    // Passwords and unidentified texts are masked.
     password_and_unidentified = 2,
-    // keyboard inputs are not logged
+    // Keyboard inputs are not logged.
     fully_masked = 3,
 };
 
@@ -376,7 +376,7 @@ template<> struct is_valid_enum_value<VncBogusClipboardInfiniteLoop>
     constexpr static bool is_valid(uint64_t n) { return n <= 2; }
 };
 
-// The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm):
+// The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):
 enum class ColorDepthSelectionStrategy : uint8_t
 {
     // 24-bit
@@ -390,7 +390,7 @@ template<> struct is_valid_enum_value<ColorDepthSelectionStrategy>
     constexpr static bool is_valid(uint64_t n) { return n <= 1; }
 };
 
-// The compression method of Session recording file (wrm):
+// The compression method of the session recording file (wrm):
 enum class WrmCompressionAlgorithm : uint8_t
 {
     no_compression = 0,
@@ -475,11 +475,11 @@ template<> struct is_valid_enum_value<SessionProbeOnKeepaliveTimeout>
 
 enum class SmartVideoCropping : uint8_t
 {
-    // When replaying the session video, the content of the RDP viewer matches the size of the client's desktop
+    // When replaying the session video, the content of the RDP viewer matches the size of the client's desktop.
     disable = 0,
-    // When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during session
+    // When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during the session.
     v1 = 1,
-    // When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during session
+    // When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session.
     v2 = 2,
 };
 
@@ -571,11 +571,11 @@ template<> struct is_valid_enum_value<RdpStoreFile>
 // For targets running WALLIX BestSafe only.
 enum class SessionProbeOnAccountManipulation : uint8_t
 {
-    // User action will be accepted
+    // User action will be accepted.
     allow = 0,
-    // (Same thing as 'allow')
+    // (Same thing as 'allow'.)
     notify = 1,
-    // User action will be rejected
+    // User action will be rejected.
     deny = 2,
 };
 
@@ -589,9 +589,9 @@ enum class ClientAddressSent : uint8_t
 {
     // Send 0.0.0.0
     no_address = 0,
-    // Send proxy client address or target connexion
+    // Send proxy client address or target connexion.
     proxy = 1,
-    // Send user client address of front connexion
+    // Send user client address of front connexion.
     front = 2,
 };
 
@@ -636,7 +636,7 @@ template<> struct is_valid_enum_value<ModRdpUseFailureSimulationSocketTransport>
 
 enum class LoginLanguage : uint8_t
 {
-    // The language will be deduced according to the keyboard layout announced by the client
+    // The language will be deduced according to the keyboard layout announced by the client.
     Auto = 0,
     EN = 1,
     FR = 2,

@@ -187,7 +187,7 @@
   "name": "ColorDepth",
   "category": "set",
   "nameWhenDescription": false,
-  "description": "Specifies the maximum color resolution (color depth) for client connection session:",
+  "description": "Specifies the maximum color resolution (color depth) for the client connection session:",
   "values": [
     {
       "name": "depth8",
@@ -279,19 +279,19 @@
     {
       "name": "unmasked",
       "value": 0,
-      "description": "keyboard input are not masked"
+      "description": "Keyboard input are not masked."
     }, {
       "name": "password_only",
       "value": 1,
-      "description": "only passwords are masked"
+      "description": "Only passwords are masked."
     }, {
       "name": "password_and_unidentified",
       "value": 2,
-      "description": "passwords and unidentified texts are masked"
+      "description": "Passwords and unidentified texts are masked."
     }, {
       "name": "fully_masked",
       "value": 3,
-      "description": "keyboard inputs are not logged"
+      "description": "Keyboard inputs are not logged."
     }
   ]
 }, {
@@ -337,7 +337,7 @@
   "name": "ColorDepthSelectionStrategy",
   "category": "autoincrement",
   "nameWhenDescription": false,
-  "description": "The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm):",
+  "description": "The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):",
   "values": [
     {
       "name": "depth24",
@@ -353,7 +353,7 @@
   "name": "WrmCompressionAlgorithm",
   "category": "autoincrement",
   "nameWhenDescription": false,
-  "description": "The compression method of Session recording file (wrm):",
+  "description": "The compression method of the session recording file (wrm):",
   "values": [
     {
       "name": "no_compression",
@@ -451,15 +451,15 @@
     {
       "name": "disable",
       "value": 0,
-      "description": "When replaying the session video, the content of the RDP viewer matches the size of the client's desktop"
+      "description": "When replaying the session video, the content of the RDP viewer matches the size of the client's desktop."
     }, {
       "name": "v1",
       "value": 1,
-      "description": "When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during session"
+      "description": "When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during the session."
     }, {
       "name": "v2",
       "value": 2,
-      "description": "When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during session"
+      "description": "When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session."
     }
   ]
 }, {
@@ -551,15 +551,15 @@
     {
       "name": "allow",
       "value": 0,
-      "description": "User action will be accepted"
+      "description": "User action will be accepted."
     }, {
       "name": "notify",
       "value": 1,
-      "description": "(Same thing as 'allow')"
+      "description": "(Same thing as 'allow'.)"
     }, {
       "name": "deny",
       "value": 2,
-      "description": "User action will be rejected"
+      "description": "User action will be rejected."
     }
   ]
 }, {
@@ -575,11 +575,11 @@
     }, {
       "name": "proxy",
       "value": 1,
-      "description": "Send proxy client address or target connexion"
+      "description": "Send proxy client address or target connexion."
     }, {
       "name": "front",
       "value": 2,
-      "description": "Send user client address of front connexion"
+      "description": "Send user client address of front connexion."
     }
   ]
 }, {
@@ -637,7 +637,7 @@
     {
       "name": "Auto",
       "value": 0,
-      "description": "The language will be deduced according to the keyboard layout announced by the client"
+      "description": "The language will be deduced according to the keyboard layout announced by the client."
     }, {
       "name": "EN",
       "value": 1

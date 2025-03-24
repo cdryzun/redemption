@@ -14,18 +14,18 @@ R"gen_config_ini(## Python spec file for RDP proxy.
 #_logged
 port = integer(min=0, default=3389)
 
-# Time out during RDP connection initialization.
+# Timeout during RDP connection initialization.
 # Increase the value if connection between workstations and Bastion can be slow.<br/>
 # (in seconds)
 handshake_timeout = integer(min=0, default=10)
 
 # No automatic disconnection due to inactivity, timer is set on primary authentication.
-# If value is between 1 and 30, then 30 is used.
-# If value is set to 0, then inactivity timeout value is unlimited.<br/>
+# If the value is between 1 and 30, then 30 is used.
+# If the value is set to 0, then inactivity timeout value is unlimited.<br/>
 # (in seconds)
 base_inactivity_timeout = integer(min=0, default=900)
 
-# Specifies the time to spend on the login screen of proxy RDP before closing client window (0 to desactivate).<br/>
+# Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate).<br/>
 # (in seconds)
 #_advanced
 authentication_timeout = integer(min=0, default=120)
@@ -40,7 +40,7 @@ enable_transparent_mode = boolean(default=False)
 #_display_name=Enable end time warning OSD
 enable_end_time_warning_osd = boolean(default=True)
 
-# Allow to show target device name with F12 during the session
+# Allow to show the target device name with F12 during the session.
 #_advanced
 #_display_name=Enable OSD display remote target
 enable_osd_display_remote_target = boolean(default=True)
@@ -55,7 +55,7 @@ show_target_user_in_f12_message = boolean(default=False)
 #_display_name=RDP keepalive connection interval
 rdp_keepalive_connection_interval = integer(min=0, default=0)
 
-# ⚠ Service redemption needs to be manually restarted to take changes into account<br/>
+# ⚠ Service redemption needs to be manually restarted to take changes into account.<br/>
 # Enable primary connection on IPv6.
 #_advanced
 #_display_name=Enable IPv6
@@ -63,30 +63,30 @@ enable_ipv6 = boolean(default=True)
 
 [client]
 
-# If true, ignore password provided by RDP client, user need do login manually.
+# If true, ignore the password provided by RDP client, user need do login manually.
 #_advanced
 ignore_logon_password = boolean(default=False)
 
 # Sends the client screen count to the server. Not supported for VNC targets.
-# Uncheck to disable multiple monitor.
+# Uncheck to disable multiple monitors.
 allow_using_multiple_monitors = boolean(default=True)
 
 # Sends Scale &amp; Layout configuration to the server.
-# On Windows 11, this corresponds to options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display.
+# On Windows 11, this corresponds to the options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display.
 # ⚠ Title bar detection via OCR will no longer work.
 allow_scale_factor = boolean(default=False)
 
-# Fallback to RDP Legacy Encryption if client does not support TLS.
+# Fallback to RDP Legacy Encryption if the client does not support TLS.
 # ⚠ Enabling this option is a security risk.
 #_display_name=TLS fallback legacy
 tls_fallback_legacy = boolean(default=False)
 
-# Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+# Minimal incoming TLS level: 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
 # ⚠ Lower this value only for compatibility reasons.
 #_display_name=TLS min level
 tls_min_level = integer(min=0, default=2)
 
-# Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+# Maximal incoming TLS level: 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
 # ⚠ Change this value only for compatibility reasons.
 #_display_name=TLS max level
 tls_max_level = integer(min=0, default=0)
@@ -120,12 +120,12 @@ tls_key_exchange_groups = string(default="")
 #_display_name=TLS signature algorithms
 tls_signature_algorithms = string(default="RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512")
 
-# Show in the logs the common cipher list supported by client and server
-# ⚠ Only for debug purposes
+# Show in the logs the common cipher list supported by client and server.
+# ⚠ Only for debugging purposes.
 #_advanced
 show_common_cipher_list = boolean(default=False)
 
-# Specifies the highest RDP compression support available on client connection session.
+# Specifies the highest RDP compression support available on the client connection session.
 # &nbsp; &nbsp;   0: The RDP bulk compression is disabled
 # &nbsp; &nbsp;   1: RDP 4.0 bulk compression
 # &nbsp; &nbsp;   2: RDP 5.0 bulk compression
@@ -135,7 +135,7 @@ show_common_cipher_list = boolean(default=False)
 #_display_name=RDP compression
 rdp_compression = option(0, 1, 2, 3, 4, default=4)
 
-# Specifies the maximum color resolution (color depth) for client connection session:
+# Specifies the maximum color resolution (color depth) for the client connection session:
 # &nbsp; &nbsp;   8: 8-bit
 # &nbsp; &nbsp;   15: 15-bit 555 RGB mask
 # &nbsp; &nbsp;   16: 16-bit 565 RGB mask
@@ -144,7 +144,7 @@ rdp_compression = option(0, 1, 2, 3, 4, default=4)
 #_advanced
 max_color_depth = option(8, 15, 16, 24, 32, default=24)
 
-# Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased
+# Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased.
 #_advanced
 persistent_disk_bitmap_cache = boolean(default=True)
 
@@ -169,11 +169,11 @@ bogus_ios_glyph_support_level = boolean(default=True)
 #_advanced
 transform_glyph_to_bitmap = boolean(default=False)
 
-# Enables display of message informing user that his/her session is being audited.
+# Enables the display of a message informing user that his/her session is being audited.
 #_display_name=Enable OSD 4 eyes
 enable_osd_4_eyes = boolean(default=True)
 
-# Enable RemoteFX on client connection.
+# Enable RemoteFX on the client connection.
 # Needs - "Max color depth" option set to 32 (32-bit RGB mask + alpha)
 # &nbsp; &nbsp;       - "Enable RemoteFX" option (in "rdp" section of "Connection Policy" configuration) set to on
 #_advanced
@@ -210,7 +210,7 @@ workaround_incomplete_images = boolean(default=False)
 
 [all_target_mod]
 
-# The maximum time that the proxy will wait while attempting to connect to an target.<br/>
+# The maximum time that the proxy will wait while attempting to connect to a target.<br/>
 # (in milliseconds)
 #_advanced
 connection_establishment_timeout = integer(min=1000, max=10000, default=3000)
@@ -239,12 +239,12 @@ force_performance_flags = string(default="-mouse_cursor_shadows,-theme,-menu_ani
 
 # If enabled, avoid automatically font smoothing in recorded session.
 # This allows OCR (when session probe is disabled) to better detect window titles.
-# If disabled, allows font smoothing in recorded session, but OCR will not work when Session is disabled.
-# In this case, windows titles will not be detected.
+# If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled.
+# In this case, window titles will not be detected.
 #_advanced
 auto_adjust_performance_flags = boolean(default=True)
 
-# Specifies the highest RDP compression support available on server connection.
+# Specifies the highest RDP compression support available on the server connection.
 # &nbsp; &nbsp;   0: The RDP bulk compression is disabled
 # &nbsp; &nbsp;   1: RDP 4.0 bulk compression
 # &nbsp; &nbsp;   2: RDP 5.0 bulk compression
@@ -263,11 +263,11 @@ disconnect_on_logon_user_change = boolean(default=False)
 #_advanced
 open_session_timeout = integer(min=0, default=0)
 
-# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased
+# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased.
 #_advanced
 persistent_disk_bitmap_cache = boolean(default=True)
 
-# Support of Cache Waiting List (this value is ignored if "Persistent disk bitmap cache" option is disabled).
+# Support of Cache Waiting List (this value is ignored if the "Persistent disk bitmap cache" option is disabled).
 #_advanced
 cache_waiting_list = boolean(default=True)
 
@@ -275,10 +275,10 @@ cache_waiting_list = boolean(default=True)
 #_advanced
 persist_bitmap_cache_on_disk = boolean(default=False)
 
-# Client Address to send to target (in InfoPacket)
+# Client Address to send to target (in InfoPacket).
 # &nbsp; &nbsp;   0: Send 0.0.0.0
-# &nbsp; &nbsp;   1: Send proxy client address or target connexion
-# &nbsp; &nbsp;   2: Send user client address of front connexion
+# &nbsp; &nbsp;   1: Send proxy client address or target connexion.
+# &nbsp; &nbsp;   2: Send user client address of front connexion.
 #_advanced
 client_address_sent = option(0, 1, 2, default=0)
 
@@ -288,7 +288,7 @@ auth_channel = string(max=7, default="*")
 # Authentication channel used by other scripts. No default name. Keep empty to disable virtual channel.
 checkout_channel = string(max=7, default="")
 
-# Do not transmit client machine name to RDP server.
+# Do not transmit the client machine name to RDP server.
 # If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.
 hide_client_name = boolean(default=False)
 
@@ -329,7 +329,7 @@ remoteapp_bypass_legal_notice_timeout = integer(min=0, default=20000)
 #_advanced
 log_only_relevant_clipboard_activities = boolean(default=True)
 
-# Force to split target domain and username with '@' separator.
+# Force splitting target domain and username with '@' separator.
 #_advanced
 split_domain = boolean(default=False)
 
@@ -342,7 +342,7 @@ session_shadowing_support = boolean(default=True)
 
 [session_probe]
 
-# If enabled, a string of random characters will be added to the name of the executable of Session Probe.
+# If enabled, a string of random characters will be added to the name of the Session Probe executable.
 # The result could be: SesProbe-5420.exe
 # Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example.
 #_advanced
@@ -355,7 +355,7 @@ allow_multiple_handshake = boolean(default=False)
 
 [mod_vnc]
 
-# Check this option to enable the upload clipboard (from client to server).
+# Check this option to enable the clipboard upload (from client to server).
 # This only support text data clipboard (not files).
 clipboard_up = boolean(default=False)
 
@@ -395,13 +395,13 @@ version = option(1, 2, default=2)
 # &nbsp; &nbsp;   cyrillic: Recognizes Latin and Cyrillic characters
 locale = option('latin', 'cyrillic', default="latin")
 
-# Time interval between 2 analyzes.
+# Time interval between two analyzes.
 # Too low a value will affect session reactivity.<br/>
 # (in 1/100 seconds)
 #_advanced
 interval = integer(min=0, default=100)
 
-# Checks shape and color to determine if the text is on a title bar
+# Checks shape and color to determine if the text is on a title bar.
 #_advanced
 on_title_bar_only = boolean(default=True)
 
@@ -441,19 +441,19 @@ disable_clipboard_log = integer(min=0, max=3, default=0)
 #_hex
 disable_file_system_log = integer(min=0, max=3, default=0)
 
-# Time between 2 wrm recording file.
+# Time between two wrm recording file.
 # ⚠ A value that is too small increases the disk space required for recordings.<br/>
 # (in seconds)
 #_advanced
 wrm_break_interval = integer(min=0, default=600)
 
-# The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm):
+# The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):
 # &nbsp; &nbsp;   0: 24-bit
 # &nbsp; &nbsp;   1: 16-bit
 #_advanced
 wrm_color_depth_selection_strategy = option(0, 1, default=1)
 
-# The compression method of Session recording file (wrm):
+# The compression method of the session recording file (wrm):
 # &nbsp; &nbsp;   0: no compression
 # &nbsp; &nbsp;   1: GZip: Files are better compressed, but this takes more time and CPU load
 # &nbsp; &nbsp;   2: Snappy: Faster than GZip, but files are less compressed
@@ -462,12 +462,12 @@ wrm_compression_algorithm = option(0, 1, 2, default=1)
 
 [audit]
 
-# Show keyboard input event in meta file
+# Show keyboard input events in meta file.
 # (Please see also "Keyboard input masking level" option (in "session_log" section of "Connection Policy" configuration) for RDP and "Disable keyboard log" option (in "capture" section of "Connection Policy" configuration) for VNC and RDP)
 #_advanced
 enable_keyboard_log = boolean(default=True)
 
-# The maximum time between 2 videos when none title bar is detected.<br/>
+# The maximum time between two videos when no title bar is detected.<br/>
 # (in seconds)
 #_advanced
 video_break_interval = integer(min=0, default=604800)
@@ -488,59 +488,59 @@ video_notimestamp = boolean(default=False)
 #_display_name=FFmpeg options
 ffmpeg_options = string(default="crf=35 preset=superfast")
 
-# &nbsp; &nbsp;   0: disable: When replaying the session video, the content of the RDP viewer matches the size of the client's desktop
-# &nbsp; &nbsp;   1: v1: When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during session
-# &nbsp; &nbsp;   2: v2: When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during session
+# &nbsp; &nbsp;   0: disable: When replaying the session video, the content of the RDP viewer matches the size of the client's desktop.
+# &nbsp; &nbsp;   1: v1: When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during the session.
+# &nbsp; &nbsp;   2: v2: When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session.
 smart_video_cropping = option(0, 1, 2, default=2)
 
 # Check this option will allow to play a video with corrupted Bitmap Update.
 #_advanced
 play_video_with_corrupted_bitmap = boolean(default=False)
 
-# Allow real-time view (4 eyes) without session recording enabled in the authorization
+# Allow real-time view (4 eyes) without session recording enabled in the authorization.
 allow_rt_without_recording = boolean(default=False)
 
 [icap_server_down]
 
-# IP or FQDN of ICAP server
+# IP or FQDN of ICAP server.
 host = string(default="")
 
-# Port of ICAP server
+# Port of ICAP server.
 port = integer(min=0, default=1344)
 
-# Service name on ICAP server
+# Service name on ICAP server.
 service_name = string(default="avscan")
 
-# Activate TLS on ICAP server connection
+# Activate TLS on ICAP server connection.
 tls = boolean(default=False)
 
-# Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server
+# Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.
 #_advanced
 enable_x_context = boolean(default=True)
 
-# Filename sent to ICAP as percent encoding
+# Filename sent to ICAP as percent encoding.
 #_advanced
 filename_percent_encoding = boolean(default=False)
 
 [icap_server_up]
 
-# IP or FQDN of ICAP server
+# IP or FQDN of ICAP server.
 host = string(default="")
 
-# Port of ICAP server
+# Port of ICAP server.
 port = integer(min=0, default=1344)
 
-# Service name on ICAP server
+# Service name on ICAP server.
 service_name = string(default="avscan")
 
-# Activate TLS on ICAP server connection
+# Activate TLS on ICAP server connection.
 tls = boolean(default=False)
 
-# Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server
+# Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.
 #_advanced
 enable_x_context = boolean(default=True)
 
-# Filename sent to ICAP as percent encoding
+# Filename sent to ICAP as percent encoding.
 #_advanced
 filename_percent_encoding = boolean(default=False)
 
@@ -556,11 +556,11 @@ enable_target_field = boolean(default=True)
 #_advanced
 keyboard_layout_proposals = string(default="en-US, fr-FR, de-DE")
 
-# Show close screen.
-# This displays errors related to the secondary connection then closes automatically after a timeout specified by "Close box timeout" option or on user request.
+# Display the close screen.
+# This displays errors related to the secondary connection then closes automatically after a timeout specified by the "Close box timeout" option or on user request.
 enable_close_box = boolean(default=True)
 
-# Specifies the time to spend on the close box of proxy RDP before closing client window.
+# Specifies the time to spend on the close box of the RDP proxy before closing client window.
 # ⚠ Value 0 deactivates the timer and the connection remains open until the client disconnects.<br/>
 # (in seconds)
 #_advanced
@@ -569,7 +569,7 @@ close_box_timeout = integer(min=0, default=600)
 [translation]
 
 # Language used on the login page. When the user logs in, their user preference language is used.
-# &nbsp; &nbsp;   Auto: The language will be deduced according to the keyboard layout announced by the client
+# &nbsp; &nbsp;   Auto: The language will be deduced according to the keyboard layout announced by the client.
 # &nbsp; &nbsp;   EN: 
 # &nbsp; &nbsp;   FR: 
 #_advanced
@@ -577,94 +577,94 @@ login_language = option('Auto', 'EN', 'FR', default="Auto")
 
 [theme]
 
-# Enable custom theme color configuration
+# Enable custom theme color configuration.
 enable_theme = boolean(default=False)
 
-# Logo displayed when theme is enabled
+# Logo displayed when theme is enabled.
 #_image=/var/wab/images/rdp-oem-logo.png
 logo = string(default=")gen_config_ini" << (REDEMPTION_CONFIG_THEME_LOGO) << R"gen_config_ini(")
 
-# Background color for window, label and button<br/>
+# Background color for window, label and button.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 bgcolor = string(default="#081F60")
 
-# Foreground color for window, label and button<br/>
+# Foreground color for window, label and button.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 fgcolor = string(default="#FFFFFF")
 
-# Separator line color used with some widgets<br/>
+# Separator line color used with some widgets.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 separator_color = string(default="#CFD5EB")
 
-# Background color used by buttons when they have focus<br/>
+# Background color used by buttons when they have focus.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 focus_color = string(default="#004D9C")
 
-# Text color for error messages. For example, an authentication error in the login<br/>
+# Text color for error messages. For example, an authentication error in the login.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 error_color = string(default="#FFFF00")
 
-# Background color for editing field<br/>
+# Background color for editing field.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 edit_bgcolor = string(default="#FFFFFF")
 
-# Foreground color for editing field<br/>
+# Foreground color for editing field.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 edit_fgcolor = string(default="#000000")
 
-# Outline color for editing field that has focus<br/>
+# Outline color for editing field that has focus.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 edit_focus_color = string(default="#004D9C")
 
-# Background color for tooltip<br/>
+# Background color for tooltip.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 tooltip_bgcolor = string(default="#FFFF9F")
 
-# Foreground color for tooltip<br/>
+# Foreground color for tooltip.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 tooltip_fgcolor = string(default="#000000")
 
-# Border color for tooltip<br/>
+# Border color for tooltip.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 tooltip_border_color = string(default="#000000")
 
-# Background color for even rows in the selector widget<br/>
+# Background color for even rows in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_line1_bgcolor = string(default="#E9ECF6")
 
-# Foreground color for even rows in the selector widget<br/>
+# Foreground color for even rows in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_line1_fgcolor = string(default="#000000")
 
-# Background color for odd rows in the selector widget<br/>
+# Background color for odd rows in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_line2_bgcolor = string(default="#CFD5EB")
 
-# Foreground color for odd rows in the selector widget<br/>
+# Foreground color for odd rows in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_line2_fgcolor = string(default="#000000")
 
-# Background color for the row that has focus in the selector widget<br/>
+# Background color for the row that has focus in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_focus_bgcolor = string(default="#004D9C")
 
-# Foreground color for the row that has focus in the selector widget<br/>
+# Foreground color for the row that has focus in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_focus_fgcolor = string(default="#FFFFFF")
 
-# Background color for the row that is selected in the selector widget but does not have focus<br/>
+# Background color for the row that is selected in the selector widget but does not have focus.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_selected_bgcolor = string(default="#4472C4")
 
-# Foreground color for the row that is selected in the selector widget but does not have focus<br/>
+# Foreground color for the row that is selected in the selector widget but does not have focus.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_selected_fgcolor = string(default="#FFFFFF")
 
-# Background color for name of filter fields in the selector widget<br/>
+# Background color for name of filter fields in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_label_bgcolor = string(default="#4472C4")
 
-# Foreground color for name of filter fields in the selector widget<br/>
+# Foreground color for name of filter fields in the selector widget.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 selector_label_fgcolor = string(default="#FFFFFF")
 
@@ -834,11 +834,11 @@ ocr = integer(min=0, default=0)
 #_display_name=FFmpeg
 ffmpeg = integer(min=0, default=0)
 
-# Log unknown members or sections
+# Log unknown members or sections.
 #_advanced
 config = boolean(default=True)
 
-# List of client probe IP addresses (ex: ip1,ip2,etc) to prevent some continuous logs<br/>
+# List of client probe IP addresses (e.g. ip1, ip2, etc.) to prevent some continuous logs.<br/>
 # (values are comma-separated)
 #_advanced
 probe_client_addresses = string(default="")

@@ -47,7 +47,7 @@ namespace configs
 namespace cfg
 {
 
-    /// from incoming connection to "up_and_running" state <br/>
+    /// From incoming connection to "up_and_running" state. <br/>
     /// type: std::chrono::milliseconds <br/>
     /// acl ⇐ proxy <br/>
     /// default: 0 <br/>
@@ -60,7 +60,7 @@ namespace cfg
         using mapped_type = std::chrono::milliseconds;
         type value {  };
     };
-    /// from Module rdp creation to "up_and_running" state <br/>
+    /// From Module rdp creation to "up_and_running" state. <br/>
     /// type: std::chrono::milliseconds <br/>
     /// acl ⇐ proxy <br/>
     /// default: 0 <br/>
@@ -210,7 +210,7 @@ namespace cfg
         using mapped_type = unsigned;
         type value { 3389 };
     };
-    /// Socket path or socket address of passthrough / acl <br/>
+    /// Socket path or socket address of passthrough / acl. <br/>
     /// type: std::string <br/>
     /// default: REDEMPTION_CONFIG_AUTHFILE <br/>
     struct globals::authfile {
@@ -219,7 +219,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { REDEMPTION_CONFIG_AUTHFILE };
     };
-    /// Time out during RDP connection initialization. <br/>
+    /// Timeout during RDP connection initialization. <br/>
     /// Increase the value if connection between workstations and Bastion can be slow. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 10 <br/>
@@ -230,8 +230,8 @@ namespace cfg
         type value { 10 };
     };
     /// No automatic disconnection due to inactivity, timer is set on primary authentication. <br/>
-    /// If value is between 1 and 30, then 30 is used. <br/>
-    /// If value is set to 0, then inactivity timeout value is unlimited. <br/>
+    /// If the value is between 1 and 30, then 30 is used. <br/>
+    /// If the value is set to 0, then inactivity timeout value is unlimited. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 900 <br/>
     struct globals::base_inactivity_timeout {
@@ -256,7 +256,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value {  };
     };
-    /// Internal keepalive between acl and rdp proxy <br/>
+    /// Internal keepalive between acl and rdp proxy. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 30 <br/>
     struct globals::keepalive_grace_delay {
@@ -265,7 +265,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value { 30 };
     };
-    /// Specifies the time to spend on the login screen of proxy RDP before closing client window (0 to desactivate). <br/>
+    /// Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate). <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 120 <br/>
     struct globals::authentication_timeout {
@@ -287,7 +287,7 @@ namespace cfg
         using mapped_type = TraceType;
         type value { TraceType::localfile_hashed };
     };
-    /// Specify bind address <br/>
+    /// Specify bind address. <br/>
     /// type: std::string <br/>
     /// default: "0.0.0.0" <br/>
     struct globals::listen_address {
@@ -346,7 +346,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Allow to show target device name with F12 during the session <br/>
+    /// Allow to show the target device name with F12 during the session. <br/>
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
     /// displayName: Enable OSD display remote target <br/>
@@ -415,7 +415,7 @@ namespace cfg
         using mapped_type = std::chrono::milliseconds;
         type value {  };
     };
-    /// ⚠ Service redemption needs to be manually restarted to take changes into account <br/>
+    /// ⚠ Service redemption needs to be manually restarted to take changes into account. <br/>
     ///  <br/>
     /// Enable primary connection on IPv6. <br/>
     /// type: bool <br/>
@@ -438,7 +438,7 @@ namespace cfg
         type value { 100 };
     };
 
-    /// If true, ignore password provided by RDP client, user need do login manually. <br/>
+    /// If true, ignore the password provided by RDP client, user need do login manually. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct client::ignore_logon_password {
@@ -448,7 +448,7 @@ namespace cfg
         type value { false };
     };
     /// Sends the client screen count to the server. Not supported for VNC targets. <br/>
-    /// Uncheck to disable multiple monitor. <br/>
+    /// Uncheck to disable multiple monitors. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct client::allow_using_multiple_monitors {
@@ -458,7 +458,7 @@ namespace cfg
         type value { true };
     };
     /// Sends Scale & Layout configuration to the server. <br/>
-    /// On Windows 11, this corresponds to options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display. <br/>
+    /// On Windows 11, this corresponds to the options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display. <br/>
     /// ⚠ Title bar detection via OCR will no longer work. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -478,7 +478,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable <br/>
+    /// Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable. <br/>
     /// type: RdpSecurityEncryptionLevel <br/>
     /// default: RdpSecurityEncryptionLevel::high <br/>
     struct client::encryption_level {
@@ -487,7 +487,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { RdpSecurityEncryptionLevel::high };
     };
-    /// Fallback to RDP Legacy Encryption if client does not support TLS. <br/>
+    /// Fallback to RDP Legacy Encryption if the client does not support TLS. <br/>
     /// ⚠ Enabling this option is a security risk. <br/>
     /// type: bool <br/>
     /// displayName: TLS fallback legacy <br/>
@@ -508,7 +508,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3 <br/>
+    /// Minimal incoming TLS level: 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3 <br/>
     /// ⚠ Lower this value only for compatibility reasons. <br/>
     /// type: uint32_t <br/>
     /// displayName: TLS min level <br/>
@@ -519,7 +519,7 @@ namespace cfg
         using mapped_type = uint32_t;
         type value { 2 };
     };
-    /// Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3 <br/>
+    /// Maximal incoming TLS level: 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3 <br/>
     /// ⚠ Change this value only for compatibility reasons. <br/>
     /// type: uint32_t <br/>
     /// displayName: TLS max level <br/>
@@ -583,8 +583,8 @@ namespace cfg
         using mapped_type = std::string;
         type value { "RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512" };
     };
-    /// Show in the logs the common cipher list supported by client and server <br/>
-    /// ⚠ Only for debug purposes <br/>
+    /// Show in the logs the common cipher list supported by client and server. <br/>
+    /// ⚠ Only for debugging purposes. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct client::show_common_cipher_list {
@@ -616,7 +616,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Specifies the highest RDP compression support available on client connection session. <br/>
+    /// Specifies the highest RDP compression support available on the client connection session. <br/>
     /// type: RdpCompression <br/>
     /// displayName: RDP compression <br/>
     /// default: RdpCompression::rdp6_1 <br/>
@@ -626,7 +626,7 @@ namespace cfg
         using mapped_type = RdpCompression;
         type value { RdpCompression::rdp6_1 };
     };
-    /// Specifies the maximum color resolution (color depth) for client connection session: <br/>
+    /// Specifies the maximum color resolution (color depth) for the client connection session: <br/>
     /// type: ColorDepth <br/>
     /// default: ColorDepth::depth24 <br/>
     struct client::max_color_depth {
@@ -635,7 +635,7 @@ namespace cfg
         using mapped_type = ColorDepth;
         type value { ColorDepth::depth24 };
     };
-    /// Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased <br/>
+    /// Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct client::persistent_disk_bitmap_cache {
@@ -718,7 +718,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 100, 10000>;
         type value { 1000 };
     };
-    /// Enables display of message informing user that his/her session is being audited. <br/>
+    /// Enables the display of a message informing user that his/her session is being audited. <br/>
     /// type: bool <br/>
     /// displayName: Enable OSD 4 eyes <br/>
     /// default: true <br/>
@@ -728,7 +728,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Enable RemoteFX on client connection. <br/>
+    /// Enable RemoteFX on the client connection. <br/>
     /// Needs - [client]max_color_depth set to 32 (32-bit RGB mask + alpha) <br/>
     ///       - [mod_rdp]enable_remotefx set to on <br/>
     /// type: bool <br/>
@@ -779,7 +779,7 @@ namespace cfg
         type value { false };
     };
 
-    /// The maximum time that the proxy will wait while attempting to connect to an target. <br/>
+    /// The maximum time that the proxy will wait while attempting to connect to a target. <br/>
     /// type: std::chrono::milliseconds <br/>
     /// default: 3000 <br/>
     struct all_target_mod::connection_establishment_timeout {
@@ -838,8 +838,8 @@ namespace cfg
     };
     /// If enabled, avoid automatically font smoothing in recorded session. <br/>
     /// This allows OCR (when session probe is disabled) to better detect window titles. <br/>
-    /// If disabled, allows font smoothing in recorded session, but OCR will not work when Session is disabled. <br/>
-    /// In this case, windows titles will not be detected. <br/>
+    /// If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled. <br/>
+    /// In this case, window titles will not be detected. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct mod_rdp::auto_adjust_performance_flags {
@@ -848,7 +848,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Specifies the highest RDP compression support available on server connection. <br/>
+    /// Specifies the highest RDP compression support available on the server connection. <br/>
     /// type: RdpCompression <br/>
     /// displayName: RDP compression <br/>
     /// default: RdpCompression::rdp6_1 <br/>
@@ -1082,7 +1082,7 @@ namespace cfg
         type value { "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" };
     };
     /// Show in the logs the common cipher list supported by client and server <br/>
-    /// ⚠ Only for debug purposes <br/>
+    /// ⚠ Only for debugging purposes. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:show_common_cipher_list <br/>
@@ -1096,7 +1096,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased <br/>
+    /// Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct mod_rdp::persistent_disk_bitmap_cache {
@@ -1105,7 +1105,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Support of Cache Waiting List (this value is ignored if [mod_rdp]persistent_disk_bitmap_cache is disabled). <br/>
+    /// Support of Cache Waiting List (this value is ignored if the [mod_rdp]persistent_disk_bitmap_cache is disabled). <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct mod_rdp::cache_waiting_list {
@@ -1251,7 +1251,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// Client Address to send to target (in InfoPacket) <br/>
+    /// Client Address to send to target (in InfoPacket). <br/>
     /// type: ClientAddressSent <br/>
     /// default: ClientAddressSent::no_address <br/>
     struct mod_rdp::client_address_sent {
@@ -1343,7 +1343,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// As far as possible, use client-provided initial program (Alternate Shell) <br/>
+    /// As far as possible, use client-provided initial program (Alternate Shell). <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:use_client_provided_alternate_shell <br/>
@@ -1357,7 +1357,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// As far as possible, use client-provided remote program (RemoteApp) <br/>
+    /// As far as possible, use client-provided remote program (RemoteApp). <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:use_client_provided_remoteapp <br/>
@@ -1372,7 +1372,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// As far as possible, use native RemoteApp capability <br/>
+    /// As far as possible, use native RemoteApp capability. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:use_native_remoteapp_capability <br/>
@@ -1435,7 +1435,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::fixed_string;
         type value { REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_SCRIPT };
     };
-    /// Do not transmit client machine name to RDP server. <br/>
+    /// Do not transmit the client machine name to RDP server. <br/>
     /// If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -1530,7 +1530,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Force to split target domain and username with '@' separator. <br/>
+    /// Force splitting target domain and username with '@' separator. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct mod_rdp::split_domain {
@@ -1631,7 +1631,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option) <br/>
+    /// Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option). <br/>
     /// type: RdpModeConsole <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:mode_console <br/>
@@ -2514,7 +2514,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// If enabled, a string of random characters will be added to the name of the executable of Session Probe. <br/>
+    /// If enabled, a string of random characters will be added to the name of the Session Probe executable. <br/>
     /// The result could be: SesProbe-5420.exe <br/>
     /// Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example. <br/>
     /// type: bool <br/>
@@ -2738,7 +2738,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// empty string for wait, 'Ok' or error message <br/>
+    /// empty string for wait, 'Ok' or error message. <br/>
     /// type: std::string <br/>
     /// acl ⇒ proxy <br/>
     /// default: "" <br/>
@@ -2752,7 +2752,7 @@ namespace cfg
         type value {  };
     };
 
-    /// Check this option to enable the upload clipboard (from client to server). <br/>
+    /// Check this option to enable the clipboard upload (from client to server). <br/>
     /// This only support text data clipboard (not files). <br/>
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
@@ -2848,7 +2848,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// When disabled, Ctrl + Alt becomes AltGr (Windows behavior) <br/>
+    /// When disabled, Ctrl + Alt becomes AltGr (Windows behavior). <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_vnc:server_unix_alt <br/>
@@ -2863,7 +2863,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Enable target connection on IPv6 <br/>
+    /// Enable target connection on IPv6. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_vnc:enable_ipv6 <br/>
@@ -2973,8 +2973,8 @@ namespace cfg
         using mapped_type = std::string;
         type value { "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" };
     };
-    /// Show in the logs the common cipher list supported by client and server <br/>
-    /// ⚠ Only for debug purposes <br/>
+    /// Show in the logs the common cipher list supported by client and server. <br/>
+    /// ⚠ Only for debugging purposes. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_vnc:show_common_cipher_list <br/>
@@ -3072,7 +3072,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { OcrLocale::latin };
     };
-    /// Time interval between 2 analyzes. <br/>
+    /// Time interval between two analyzes. <br/>
     /// Too low a value will affect session reactivity. <br/>
     /// type: std::chrono::duration&lt;unsigned, std::ratio&lt;1, 100>> <br/>
     /// default: 100 <br/>
@@ -3082,7 +3082,7 @@ namespace cfg
         using mapped_type = std::chrono::duration<unsigned, std::ratio<1, 100>>;
         type value { 100 };
     };
-    /// Checks shape and color to determine if the text is on a title bar <br/>
+    /// Checks shape and color to determine if the text is on a title bar. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct ocr::on_title_bar_only {
@@ -3103,7 +3103,7 @@ namespace cfg
         type value { 40 };
     };
 
-    /// basename without extension <br/>
+    /// Basename without extension. <br/>
     /// type: std::string <br/>
     /// acl ⇒ proxy <br/>
     /// default: "" <br/>
@@ -3116,7 +3116,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// subdirectory of record_path (video section) <br/>
+    /// Subdirectory of record_path (video section). <br/>
     /// type: std::string <br/>
     /// acl ⇒ proxy <br/>
     /// default: "" <br/>
@@ -3222,7 +3222,7 @@ namespace cfg
         using mapped_type = FileSystemLogFlags;
         type value { FileSystemLogFlags::none };
     };
-    /// Time between 2 wrm recording file. <br/>
+    /// Time between two wrm recording file. <br/>
     /// ⚠ A value that is too small increases the disk space required for recordings. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 600 <br/>
@@ -3232,7 +3232,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value { 600 };
     };
-    /// The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm): <br/>
+    /// The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm): <br/>
     /// type: ColorDepthSelectionStrategy <br/>
     /// default: ColorDepthSelectionStrategy::depth16 <br/>
     struct capture::wrm_color_depth_selection_strategy {
@@ -3241,7 +3241,7 @@ namespace cfg
         using mapped_type = ColorDepthSelectionStrategy;
         type value { ColorDepthSelectionStrategy::depth16 };
     };
-    /// The compression method of Session recording file (wrm): <br/>
+    /// The compression method of the session recording file (wrm): <br/>
     /// type: WrmCompressionAlgorithm <br/>
     /// default: WrmCompressionAlgorithm::gzip <br/>
     struct capture::wrm_compression_algorithm {
@@ -3250,7 +3250,7 @@ namespace cfg
         using mapped_type = WrmCompressionAlgorithm;
         type value { WrmCompressionAlgorithm::gzip };
     };
-    /// Allow to control permissions on recorded files <br/>
+    /// Allow to control permissions on recorded files. <br/>
     /// type: FilePermissions <br/>
     /// default: 0440 <br/>
     struct capture::file_permissions {
@@ -3260,7 +3260,7 @@ namespace cfg
         type value { 0440 };
     };
 
-    /// Show keyboard input event in meta file <br/>
+    /// Show keyboard input events in meta file. <br/>
     /// (Please see also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP) <br/>
     /// type: bool <br/>
     /// default: true <br/>
@@ -3270,7 +3270,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// The maximum time between 2 videos when none title bar is detected. <br/>
+    /// The maximum time between two videos when no title bar is detected. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 604800 <br/>
     struct audit::video_break_interval {
@@ -3336,7 +3336,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Allow to control permissions on video files <br/>
+    /// Allow to control permissions on video files. <br/>
     /// type: FilePermissions <br/>
     /// default: 0440 <br/>
     struct audit::file_permissions {
@@ -3357,7 +3357,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Allow real-time view (4 eyes) without session recording enabled in the authorization <br/>
+    /// Allow real-time view (4 eyes) without session recording enabled in the authorization. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct audit::allow_rt_without_recording {
@@ -3657,7 +3657,7 @@ namespace cfg
     };
 
     /// Enable storage of transferred files (via RDP Clipboard). <br/>
-    /// ⚠ Saving files can take up a lot of disk space <br/>
+    /// ⚠ Saving files can take up a lot of disk space. <br/>
     /// type: RdpStoreFile <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: file_storage:store_file <br/>
@@ -3699,7 +3699,7 @@ namespace cfg
         type value { {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, } };
     };
 
-    /// Enable websocket protocol (ws or wss with use_tls=1) <br/>
+    /// Enable websocket protocol (ws or wss with use_tls=1). <br/>
     /// type: bool <br/>
     /// displayName: Enable WebSocket <br/>
     /// default: false <br/>
@@ -3709,7 +3709,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Use TLS with websocket (wss) <br/>
+    /// Use TLS with websocket (wss). <br/>
     /// type: bool <br/>
     /// displayName: Use TLS <br/>
     /// default: true <br/>
@@ -3743,7 +3743,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// Specifies the maximum color resolution (color depth) for client connection session: <br/>
+    /// Specifies the maximum color resolution (color depth) for the client connection session: <br/>
     /// type: ColorDepth <br/>
     /// acl ⇐ proxy <br/>
     /// acl::name: bpp <br/>
@@ -4848,8 +4848,8 @@ namespace cfg
         using mapped_type = ::configs::spec_types::list<std::string>;
         type value { "en-US, fr-FR, de-DE" };
     };
-    /// Show close screen. <br/>
-    /// This displays errors related to the secondary connection then closes automatically after a timeout specified by [internal_mod]close_box_timeout or on user request. <br/>
+    /// Display the close screen. <br/>
+    /// This displays errors related to the secondary connection then closes automatically after a timeout specified by the [internal_mod]close_box_timeout or on user request. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct internal_mod::enable_close_box {
@@ -4858,7 +4858,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Specifies the time to spend on the close box of proxy RDP before closing client window. <br/>
+    /// Specifies the time to spend on the close box of the RDP proxy before closing client window. <br/>
     /// ⚠ Value 0 deactivates the timer and the connection remains open until the client disconnects. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 600 <br/>
@@ -4929,7 +4929,7 @@ namespace cfg
         type value { LoginLanguage::Auto };
     };
 
-    /// Enable custom theme color configuration <br/>
+    /// Enable custom theme color configuration. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct theme::enable_theme {
@@ -4938,7 +4938,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Logo displayed when theme is enabled <br/>
+    /// Logo displayed when theme is enabled. <br/>
     /// type: std::string <br/>
     /// default: REDEMPTION_CONFIG_THEME_LOGO <br/>
     struct theme::logo_path {
@@ -4947,7 +4947,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { REDEMPTION_CONFIG_THEME_LOGO };
     };
-    /// Background color for window, label and button <br/>
+    /// Background color for window, label and button. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x081F60 <br/>
     struct theme::bgcolor {
@@ -4956,7 +4956,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x081F60 };
     };
-    /// Foreground color for window, label and button <br/>
+    /// Foreground color for window, label and button. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFFFF <br/>
     struct theme::fgcolor {
@@ -4965,7 +4965,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xFFFFFF };
     };
-    /// Separator line color used with some widgets <br/>
+    /// Separator line color used with some widgets. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xCFD5EB <br/>
     struct theme::separator_color {
@@ -4974,7 +4974,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xCFD5EB };
     };
-    /// Background color used by buttons when they have focus <br/>
+    /// Background color used by buttons when they have focus. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x004D9C <br/>
     struct theme::focus_color {
@@ -4983,7 +4983,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x004D9C };
     };
-    /// Text color for error messages. For example, an authentication error in the login <br/>
+    /// Text color for error messages. For example, an authentication error in the login. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFF00 <br/>
     struct theme::error_color {
@@ -4992,7 +4992,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xFFFF00 };
     };
-    /// Background color for editing field <br/>
+    /// Background color for editing field. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFFFF <br/>
     struct theme::edit_bgcolor {
@@ -5001,7 +5001,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xFFFFFF };
     };
-    /// Foreground color for editing field <br/>
+    /// Foreground color for editing field. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x000000 <br/>
     struct theme::edit_fgcolor {
@@ -5010,7 +5010,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x000000 };
     };
-    /// Outline color for editing field that has focus <br/>
+    /// Outline color for editing field that has focus. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x004D9C <br/>
     struct theme::edit_focus_color {
@@ -5019,7 +5019,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x004D9C };
     };
-    /// Background color for tooltip <br/>
+    /// Background color for tooltip. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFF9F <br/>
     struct theme::tooltip_bgcolor {
@@ -5028,7 +5028,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xFFFF9F };
     };
-    /// Foreground color for tooltip <br/>
+    /// Foreground color for tooltip. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x000000 <br/>
     struct theme::tooltip_fgcolor {
@@ -5037,7 +5037,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x000000 };
     };
-    /// Border color for tooltip <br/>
+    /// Border color for tooltip. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x000000 <br/>
     struct theme::tooltip_border_color {
@@ -5046,7 +5046,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x000000 };
     };
-    /// Background color for even rows in the selector widget <br/>
+    /// Background color for even rows in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xE9ECF6 <br/>
     struct theme::selector_line1_bgcolor {
@@ -5055,7 +5055,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xE9ECF6 };
     };
-    /// Foreground color for even rows in the selector widget <br/>
+    /// Foreground color for even rows in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x000000 <br/>
     struct theme::selector_line1_fgcolor {
@@ -5064,7 +5064,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x000000 };
     };
-    /// Background color for odd rows in the selector widget <br/>
+    /// Background color for odd rows in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xCFD5EB <br/>
     struct theme::selector_line2_bgcolor {
@@ -5073,7 +5073,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xCFD5EB };
     };
-    /// Foreground color for odd rows in the selector widget <br/>
+    /// Foreground color for odd rows in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x000000 <br/>
     struct theme::selector_line2_fgcolor {
@@ -5082,7 +5082,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x000000 };
     };
-    /// Background color for the row that has focus in the selector widget <br/>
+    /// Background color for the row that has focus in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x004D9C <br/>
     struct theme::selector_focus_bgcolor {
@@ -5091,7 +5091,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x004D9C };
     };
-    /// Foreground color for the row that has focus in the selector widget <br/>
+    /// Foreground color for the row that has focus in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFFFF <br/>
     struct theme::selector_focus_fgcolor {
@@ -5100,7 +5100,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xFFFFFF };
     };
-    /// Background color for the row that is selected in the selector widget but does not have focus <br/>
+    /// Background color for the row that is selected in the selector widget but does not have focus. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x4472C4 <br/>
     struct theme::selector_selected_bgcolor {
@@ -5109,7 +5109,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x4472C4 };
     };
-    /// Foreground color for the row that is selected in the selector widget but does not have focus <br/>
+    /// Foreground color for the row that is selected in the selector widget but does not have focus. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFFFF <br/>
     struct theme::selector_selected_fgcolor {
@@ -5118,7 +5118,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0xFFFFFF };
     };
-    /// Background color for name of filter fields in the selector widget <br/>
+    /// Background color for name of filter fields in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x4472C4 <br/>
     struct theme::selector_label_bgcolor {
@@ -5127,7 +5127,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x4472C4 };
     };
-    /// Foreground color for name of filter fields in the selector widget <br/>
+    /// Foreground color for name of filter fields in the selector widget. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFFFF <br/>
     struct theme::selector_label_fgcolor {
@@ -5377,7 +5377,7 @@ namespace cfg
         using mapped_type = uint32_t;
         type value { 0 };
     };
-    /// Log unknown members or sections <br/>
+    /// Log unknown members or sections. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct debug::config {
@@ -5395,7 +5395,7 @@ namespace cfg
         using mapped_type = ModRdpUseFailureSimulationSocketTransport;
         type value { ModRdpUseFailureSimulationSocketTransport::Off };
     };
-    /// List of client probe IP addresses (ex: ip1,ip2,etc) to prevent some continuous logs <br/>
+    /// List of client probe IP addresses (e.g. ip1, ip2, etc.) to prevent some continuous logs. <br/>
     /// type: std::string <br/>
     /// default: "" <br/>
     struct debug::probe_client_addresses {

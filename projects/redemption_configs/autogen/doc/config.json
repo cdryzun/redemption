@@ -58,7 +58,7 @@
       "name": "front_connection_time",
       "type": "milliseconds",
       "value": 0,
-      "description": "from incoming connection to \"up_and_running\" state",
+      "description": "From incoming connection to \"up_and_running\" state.",
       "ProxyToAcl": true
     },
     {
@@ -66,7 +66,7 @@
       "name": "target_connection_time",
       "type": "milliseconds",
       "value": 0,
-      "description": "from Module rdp creation to \"up_and_running\" state",
+      "description": "From Module rdp creation to \"up_and_running\" state.",
       "ProxyToAcl": true
     },
     {
@@ -186,7 +186,7 @@
       "name": "authfile",
       "type": "str",
       "value": "REDEMPTION_CONFIG_AUTHFILE", "cppExpr": true,
-      "description": "Socket path or socket address of passthrough / acl",
+      "description": "Socket path or socket address of passthrough / acl.",
       "iniOnly": true
     },
     {
@@ -194,7 +194,7 @@
       "name": "handshake_timeout",
       "type": "seconds",
       "value": 10,
-      "description": "Time out during RDP connection initialization.\nIncrease the value if connection between workstations and Bastion can be slow.",
+      "description": "Timeout during RDP connection initialization.\nIncrease the value if connection between workstations and Bastion can be slow.",
       "globalSpec": true
     },
     {
@@ -202,7 +202,7 @@
       "name": "base_inactivity_timeout",
       "type": "seconds",
       "value": 900,
-      "description": "No automatic disconnection due to inactivity, timer is set on primary authentication.\nIf value is between 1 and 30, then 30 is used.\nIf value is set to 0, then inactivity timeout value is unlimited.",
+      "description": "No automatic disconnection due to inactivity, timer is set on primary authentication.\nIf the value is between 1 and 30, then 30 is used.\nIf the value is set to 0, then inactivity timeout value is unlimited.",
       "globalSpec": true
     },
     {
@@ -223,7 +223,7 @@
       "name": "keepalive_grace_delay",
       "type": "seconds",
       "value": 30,
-      "description": "Internal keepalive between acl and rdp proxy",
+      "description": "Internal keepalive between acl and rdp proxy.",
       "iniOnly": true
     },
     {
@@ -231,7 +231,7 @@
       "name": "authentication_timeout",
       "type": "seconds",
       "value": 120,
-      "description": "Specifies the time to spend on the login screen of proxy RDP before closing client window (0 to desactivate).",
+      "description": "Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate).",
       "globalSpec": true,
       "advanced": true
     },
@@ -251,7 +251,7 @@
       "name": "listen_address",
       "type": "ipaddr",
       "value": "0.0.0.0",
-      "description": "Specify bind address",
+      "description": "Specify bind address.",
       "iniOnly": true
     },
     {
@@ -305,7 +305,7 @@
       "name": "enable_osd_display_remote_target",
       "type": "bool",
       "value": true,
-      "description": "Allow to show target device name with F12 during the session",
+      "description": "Allow to show the target device name with F12 during the session.",
       "displayName": "Enable OSD display remote target",
       "globalSpec": true,
       "aclToProxy": true,
@@ -367,7 +367,7 @@
       "name": "enable_ipv6",
       "type": "bool",
       "value": true,
-      "description": "⚠ Service redemption needs to be manually restarted to take changes into account\n\nEnable primary connection on IPv6.",
+      "description": "⚠ Service redemption needs to be manually restarted to take changes into account.\n\nEnable primary connection on IPv6.",
       "displayName": "Enable IPv6",
       "globalSpec": true,
       "advanced": true
@@ -385,7 +385,7 @@
       "name": "ignore_logon_password",
       "type": "bool",
       "value": false,
-      "description": "If true, ignore password provided by RDP client, user need do login manually.",
+      "description": "If true, ignore the password provided by RDP client, user need do login manually.",
       "globalSpec": true,
       "advanced": true
     },
@@ -394,7 +394,7 @@
       "name": "allow_using_multiple_monitors",
       "type": "bool",
       "value": true,
-      "description": "Sends the client screen count to the server. Not supported for VNC targets.\nUncheck to disable multiple monitor.",
+      "description": "Sends the client screen count to the server. Not supported for VNC targets.\nUncheck to disable multiple monitors.",
       "tags": ["compatibility"],
       "globalSpec": true
     },
@@ -403,7 +403,7 @@
       "name": "allow_scale_factor",
       "type": "bool",
       "value": false,
-      "description": "Sends Scale & Layout configuration to the server.\nOn Windows 11, this corresponds to options \"Scale\", \"Display Resolution\" and \"Display Orientation\" of Settings > System > Display.\n⚠ Title bar detection via OCR will no longer work.",
+      "description": "Sends Scale & Layout configuration to the server.\nOn Windows 11, this corresponds to the options \"Scale\", \"Display Resolution\" and \"Display Orientation\" of Settings > System > Display.\n⚠ Title bar detection via OCR will no longer work.",
       "tags": ["compatibility"],
       "globalSpec": true
     },
@@ -420,7 +420,7 @@
       "name": "encryption_level",
       "type": "enumStr",
       "value": "high",
-      "description": "Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable",
+      "description": "Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable.",
       "iniOnly": true,
       "subtype": "RdpSecurityEncryptionLevel"
     },
@@ -429,7 +429,7 @@
       "name": "tls_fallback_legacy",
       "type": "bool",
       "value": false,
-      "description": "Fallback to RDP Legacy Encryption if client does not support TLS.\n⚠ Enabling this option is a security risk.",
+      "description": "Fallback to RDP Legacy Encryption if the client does not support TLS.\n⚠ Enabling this option is a security risk.",
       "displayName": "TLS fallback legacy",
       "globalSpec": true
     },
@@ -447,7 +447,7 @@
       "name": "tls_min_level",
       "type": "u32",
       "value": 2,
-      "description": "Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n⚠ Lower this value only for compatibility reasons.",
+      "description": "Minimal incoming TLS level: 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n⚠ Lower this value only for compatibility reasons.",
       "displayName": "TLS min level",
       "globalSpec": true
     },
@@ -456,7 +456,7 @@
       "name": "tls_max_level",
       "type": "u32",
       "value": 0,
-      "description": "Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n⚠ Change this value only for compatibility reasons.",
+      "description": "Maximal incoming TLS level: 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n⚠ Change this value only for compatibility reasons.",
       "displayName": "TLS max level",
       "globalSpec": true
     },
@@ -501,7 +501,7 @@
       "name": "show_common_cipher_list",
       "type": "bool",
       "value": false,
-      "description": "Show in the logs the common cipher list supported by client and server\n⚠ Only for debug purposes",
+      "description": "Show in the logs the common cipher list supported by client and server.\n⚠ Only for debugging purposes.",
       "tags": ["debug"],
       "globalSpec": true,
       "advanced": true
@@ -529,7 +529,7 @@
       "name": "rdp_compression",
       "type": "enum",
       "value": 4,
-      "description": "Specifies the highest RDP compression support available on client connection session.",
+      "description": "Specifies the highest RDP compression support available on the client connection session.",
       "tags": ["perf"],
       "displayName": "RDP compression",
       "globalSpec": true,
@@ -541,7 +541,7 @@
       "name": "max_color_depth",
       "type": "enum",
       "value": 24,
-      "description": "Specifies the maximum color resolution (color depth) for client connection session:",
+      "description": "Specifies the maximum color resolution (color depth) for the client connection session:",
       "globalSpec": true,
       "advanced": true,
       "subtype": "ColorDepth"
@@ -551,7 +551,7 @@
       "name": "persistent_disk_bitmap_cache",
       "type": "bool",
       "value": true,
-      "description": "Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased",
+      "description": "Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased.",
       "tags": ["perf"],
       "globalSpec": true,
       "advanced": true
@@ -635,7 +635,7 @@
       "name": "enable_osd_4_eyes",
       "type": "bool",
       "value": true,
-      "description": "Enables display of message informing user that his/her session is being audited.",
+      "description": "Enables the display of a message informing user that his/her session is being audited.",
       "displayName": "Enable OSD 4 eyes",
       "globalSpec": true
     },
@@ -644,7 +644,7 @@
       "name": "enable_remotefx",
       "type": "bool",
       "value": true,
-      "description": "Enable RemoteFX on client connection.\nNeeds - <code>\"Max color depth\" option</code> set to 32 (32-bit RGB mask + alpha)\n      - <code>\"Enable RemoteFX\" option (in \"rdp\" section of \"Connection Policy\" configuration)</code> set to on",
+      "description": "Enable RemoteFX on the client connection.\nNeeds - <code>\"Max color depth\" option</code> set to 32 (32-bit RGB mask + alpha)\n      - <code>\"Enable RemoteFX\" option (in \"rdp\" section of \"Connection Policy\" configuration)</code> set to on",
       "tags": ["perf","compatibility"],
       "displayName": "Enable RemoteFX",
       "globalSpec": true,
@@ -676,7 +676,7 @@
       "name": "connection_establishment_timeout",
       "type": "milliseconds",
       "value": 3000,
-      "description": "The maximum time that the proxy will wait while attempting to connect to an target.",
+      "description": "The maximum time that the proxy will wait while attempting to connect to a target.",
       "globalSpec": true,
       "advanced": true,
       "min": 1000, "max": 10000
@@ -719,7 +719,7 @@
       "name": "auto_adjust_performance_flags",
       "type": "bool",
       "value": true,
-      "description": "If enabled, avoid automatically font smoothing in recorded session.\nThis allows OCR (when session probe is disabled) to better detect window titles.\nIf disabled, allows font smoothing in recorded session, but OCR will not work when Session is disabled.\nIn this case, windows titles will not be detected.",
+      "description": "If enabled, avoid automatically font smoothing in recorded session.\nThis allows OCR (when session probe is disabled) to better detect window titles.\nIf disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled.\nIn this case, window titles will not be detected.",
       "globalSpec": true,
       "advanced": true
     },
@@ -728,7 +728,7 @@
       "name": "rdp_compression",
       "type": "enum",
       "value": 4,
-      "description": "Specifies the highest RDP compression support available on server connection.",
+      "description": "Specifies the highest RDP compression support available on the server connection.",
       "tags": ["perf"],
       "displayName": "RDP compression",
       "globalSpec": true,
@@ -933,7 +933,7 @@
       "name": "show_common_cipher_list",
       "type": "bool",
       "value": false,
-      "description": "Show in the logs the common cipher list supported by client and server\n⚠ Only for debug purposes",
+      "description": "Show in the logs the common cipher list supported by client and server\n⚠ Only for debugging purposes.",
       "tags": ["debug"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
@@ -946,7 +946,7 @@
       "name": "persistent_disk_bitmap_cache",
       "type": "bool",
       "value": true,
-      "description": "Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased",
+      "description": "Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased.",
       "tags": ["perf"],
       "globalSpec": true,
       "advanced": true
@@ -956,7 +956,7 @@
       "name": "cache_waiting_list",
       "type": "bool",
       "value": true,
-      "description": "Support of Cache Waiting List (this value is ignored if <code>\"Persistent disk bitmap cache\" option</code> is disabled).",
+      "description": "Support of Cache Waiting List (this value is ignored if the <code>\"Persistent disk bitmap cache\" option</code> is disabled).",
       "globalSpec": true,
       "advanced": true
     },
@@ -1077,7 +1077,7 @@
       "name": "client_address_sent",
       "type": "enum",
       "value": 0,
-      "description": "Client Address to send to target (in InfoPacket)",
+      "description": "Client Address to send to target (in InfoPacket).",
       "globalSpec": true,
       "advanced": true,
       "subtype": "ClientAddressSent"
@@ -1162,7 +1162,7 @@
       "name": "use_client_provided_alternate_shell",
       "type": "bool",
       "value": false,
-      "description": "As far as possible, use client-provided initial program (Alternate Shell)",
+      "description": "As far as possible, use client-provided initial program (Alternate Shell).",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "aclToProxy": true,
@@ -1173,7 +1173,7 @@
       "name": "use_client_provided_remoteapp",
       "type": "bool",
       "value": false,
-      "description": "As far as possible, use client-provided remote program (RemoteApp)",
+      "description": "As far as possible, use client-provided remote program (RemoteApp).",
       "displayName": "Use client provided RemoteApp",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
@@ -1185,7 +1185,7 @@
       "name": "use_native_remoteapp_capability",
       "type": "bool",
       "value": true,
-      "description": "As far as possible, use native RemoteApp capability",
+      "description": "As far as possible, use native RemoteApp capability.",
       "displayName": "Use native RemoteApp capability",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
@@ -1251,7 +1251,7 @@
       "name": "hide_client_name",
       "type": "bool",
       "value": false,
-      "description": "Do not transmit client machine name to RDP server.\nIf Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.",
+      "description": "Do not transmit the client machine name to RDP server.\nIf Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.",
       "globalSpec": true
     },
     {
@@ -1340,7 +1340,7 @@
       "name": "split_domain",
       "type": "bool",
       "value": false,
-      "description": "Force to split target domain and username with '@' separator.",
+      "description": "Force splitting target domain and username with '@' separator.",
       "globalSpec": true,
       "advanced": true
     },
@@ -1417,7 +1417,7 @@
       "name": "mode_console",
       "type": "enumStr",
       "value": "allow",
-      "description": "Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option)",
+      "description": "Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option).",
       "displayName": "Console mode",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
@@ -2155,7 +2155,7 @@
       "name": "customize_executable_name",
       "type": "bool",
       "value": false,
-      "description": "If enabled, a string of random characters will be added to the name of the executable of Session Probe.\nThe result could be: SesProbe-5420.exe\nSome other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example.",
+      "description": "If enabled, a string of random characters will be added to the name of the Session Probe executable.\nThe result could be: SesProbe-5420.exe\nSome other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example.",
       "globalSpec": true,
       "advanced": true
     },
@@ -2355,7 +2355,7 @@
       "name": "external_response",
       "type": "str",
       "value": "",
-      "description": "empty string for wait, 'Ok' or error message",
+      "description": "empty string for wait, 'Ok' or error message.",
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2364,7 +2364,7 @@
       "name": "clipboard_up",
       "type": "bool",
       "value": false,
-      "description": "Check this option to enable the upload clipboard (from client to server).\nThis only support text data clipboard (not files).",
+      "description": "Check this option to enable the clipboard upload (from client to server).\nThis only support text data clipboard (not files).",
       "globalSpec": true,
       "aclToProxy": true,
       "logStategy": "1"
@@ -2441,7 +2441,7 @@
       "name": "server_unix_alt",
       "type": "bool",
       "value": false,
-      "description": "When disabled, Ctrl + Alt becomes AltGr (Windows behavior)",
+      "description": "When disabled, Ctrl + Alt becomes AltGr (Windows behavior).",
       "displayName": "Server Unix alt",
       "vnc": true,
       "aclToProxy": true,
@@ -2452,7 +2452,7 @@
       "name": "enable_ipv6",
       "type": "bool",
       "value": true,
-      "description": "Enable target connection on IPv6",
+      "description": "Enable target connection on IPv6.",
       "displayName": "Enable IPv6",
       "vnc": true,
       "aclToProxy": true,
@@ -2529,7 +2529,7 @@
       "name": "show_common_cipher_list",
       "type": "bool",
       "value": false,
-      "description": "Show in the logs the common cipher list supported by client and server\n⚠ Only for debug purposes",
+      "description": "Show in the logs the common cipher list supported by client and server.\n⚠ Only for debugging purposes.",
       "tags": ["debug"],
       "vnc": true,
       "aclToProxy": true,
@@ -2606,7 +2606,7 @@
       "name": "interval",
       "type": "centiseconds",
       "value": 100,
-      "description": "Time interval between 2 analyzes.\nToo low a value will affect session reactivity.",
+      "description": "Time interval between two analyzes.\nToo low a value will affect session reactivity.",
       "globalSpec": true,
       "advanced": true
     },
@@ -2615,7 +2615,7 @@
       "name": "on_title_bar_only",
       "type": "bool",
       "value": true,
-      "description": "Checks shape and color to determine if the text is on a title bar",
+      "description": "Checks shape and color to determine if the text is on a title bar.",
       "globalSpec": true,
       "advanced": true
     },
@@ -2634,7 +2634,7 @@
       "name": "record_filebase",
       "type": "str",
       "value": "",
-      "description": "basename without extension",
+      "description": "Basename without extension.",
       "aclToProxy": true,
       "resetBackToSelector": true,
       "logStategy": "1"
@@ -2644,7 +2644,7 @@
       "name": "record_subdirectory",
       "type": "str",
       "value": "",
-      "description": "subdirectory of record_path (video section)",
+      "description": "Subdirectory of record_path (video section).",
       "aclToProxy": true,
       "resetBackToSelector": true,
       "logStategy": "1"
@@ -2742,7 +2742,7 @@
       "name": "wrm_break_interval",
       "type": "seconds",
       "value": 600,
-      "description": "Time between 2 wrm recording file.\n⚠ A value that is too small increases the disk space required for recordings.",
+      "description": "Time between two wrm recording file.\n⚠ A value that is too small increases the disk space required for recordings.",
       "globalSpec": true,
       "advanced": true
     },
@@ -2751,7 +2751,7 @@
       "name": "wrm_color_depth_selection_strategy",
       "type": "enum",
       "value": 1,
-      "description": "The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm):",
+      "description": "The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):",
       "globalSpec": true,
       "advanced": true,
       "subtype": "ColorDepthSelectionStrategy"
@@ -2761,7 +2761,7 @@
       "name": "wrm_compression_algorithm",
       "type": "enum",
       "value": 1,
-      "description": "The compression method of Session recording file (wrm):",
+      "description": "The compression method of the session recording file (wrm):",
       "globalSpec": true,
       "advanced": true,
       "subtype": "WrmCompressionAlgorithm"
@@ -2771,7 +2771,7 @@
       "name": "file_permissions",
       "type": "FilePermissions",
       "value": "440",
-      "description": "Allow to control permissions on recorded files",
+      "description": "Allow to control permissions on recorded files.",
       "iniOnly": true
     },
     {
@@ -2779,7 +2779,7 @@
       "name": "enable_keyboard_log",
       "type": "bool",
       "value": true,
-      "description": "Show keyboard input event in meta file\n(Please see also <code>\"Keyboard input masking level\" option (in \"session_log\" section of \"Connection Policy\" configuration)</code> for RDP and <code>\"Disable keyboard log\" option (in \"capture\" section of \"Connection Policy\" configuration)</code> for VNC and RDP)",
+      "description": "Show keyboard input events in meta file.\n(Please see also <code>\"Keyboard input masking level\" option (in \"session_log\" section of \"Connection Policy\" configuration)</code> for RDP and <code>\"Disable keyboard log\" option (in \"capture\" section of \"Connection Policy\" configuration)</code> for VNC and RDP)",
       "globalSpec": true,
       "advanced": true
     },
@@ -2788,7 +2788,7 @@
       "name": "video_break_interval",
       "type": "seconds",
       "value": 604800,
-      "description": "The maximum time between 2 videos when none title bar is detected.",
+      "description": "The maximum time between two videos when no title bar is detected.",
       "globalSpec": true,
       "advanced": true
     },
@@ -2852,7 +2852,7 @@
       "name": "file_permissions",
       "type": "FilePermissions",
       "value": "440",
-      "description": "Allow to control permissions on video files",
+      "description": "Allow to control permissions on video files.",
       "iniOnly": true
     },
     {
@@ -2870,7 +2870,7 @@
       "name": "allow_rt_without_recording",
       "type": "bool",
       "value": false,
-      "description": "Allow real-time view (4 eyes) without session recording enabled in the authorization",
+      "description": "Allow real-time view (4 eyes) without session recording enabled in the authorization.",
       "globalSpec": true
     },
     {
@@ -3105,7 +3105,7 @@
       "name": "store_file",
       "type": "enumStr",
       "value": "never",
-      "description": "Enable storage of transferred files (via RDP Clipboard).\n⚠ Saving files can take up a lot of disk space",
+      "description": "Enable storage of transferred files (via RDP Clipboard).\n⚠ Saving files can take up a lot of disk space.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "aclToProxy": true,
@@ -3117,7 +3117,7 @@
       "name": "host",
       "type": "str",
       "value": "",
-      "description": "IP or FQDN of ICAP server",
+      "description": "IP or FQDN of ICAP server.",
       "globalSpec": true,
       "external": true
     },
@@ -3126,7 +3126,7 @@
       "name": "port",
       "type": "uint",
       "value": 1344,
-      "description": "Port of ICAP server",
+      "description": "Port of ICAP server.",
       "globalSpec": true,
       "external": true
     },
@@ -3135,7 +3135,7 @@
       "name": "service_name",
       "type": "str",
       "value": "avscan",
-      "description": "Service name on ICAP server",
+      "description": "Service name on ICAP server.",
       "globalSpec": true,
       "external": true
     },
@@ -3144,7 +3144,7 @@
       "name": "tls",
       "type": "bool",
       "value": false,
-      "description": "Activate TLS on ICAP server connection",
+      "description": "Activate TLS on ICAP server connection.",
       "globalSpec": true,
       "external": true
     },
@@ -3153,7 +3153,7 @@
       "name": "enable_x_context",
       "type": "bool",
       "value": true,
-      "description": "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server",
+      "description": "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.",
       "globalSpec": true,
       "advanced": true,
       "external": true
@@ -3163,7 +3163,7 @@
       "name": "filename_percent_encoding",
       "type": "bool",
       "value": false,
-      "description": "Filename sent to ICAP as percent encoding",
+      "description": "Filename sent to ICAP as percent encoding.",
       "globalSpec": true,
       "advanced": true,
       "external": true
@@ -3173,7 +3173,7 @@
       "name": "host",
       "type": "str",
       "value": "",
-      "description": "IP or FQDN of ICAP server",
+      "description": "IP or FQDN of ICAP server.",
       "globalSpec": true,
       "external": true
     },
@@ -3182,7 +3182,7 @@
       "name": "port",
       "type": "uint",
       "value": 1344,
-      "description": "Port of ICAP server",
+      "description": "Port of ICAP server.",
       "globalSpec": true,
       "external": true
     },
@@ -3191,7 +3191,7 @@
       "name": "service_name",
       "type": "str",
       "value": "avscan",
-      "description": "Service name on ICAP server",
+      "description": "Service name on ICAP server.",
       "globalSpec": true,
       "external": true
     },
@@ -3200,7 +3200,7 @@
       "name": "tls",
       "type": "bool",
       "value": false,
-      "description": "Activate TLS on ICAP server connection",
+      "description": "Activate TLS on ICAP server connection.",
       "globalSpec": true,
       "external": true
     },
@@ -3209,7 +3209,7 @@
       "name": "enable_x_context",
       "type": "bool",
       "value": true,
-      "description": "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server",
+      "description": "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.",
       "globalSpec": true,
       "advanced": true,
       "external": true
@@ -3219,7 +3219,7 @@
       "name": "filename_percent_encoding",
       "type": "bool",
       "value": false,
-      "description": "Filename sent to ICAP as percent encoding",
+      "description": "Filename sent to ICAP as percent encoding.",
       "globalSpec": true,
       "advanced": true,
       "external": true
@@ -3247,7 +3247,7 @@
       "name": "enable_websocket",
       "type": "bool",
       "value": false,
-      "description": "Enable websocket protocol (ws or wss with use_tls=1)",
+      "description": "Enable websocket protocol (ws or wss with use_tls=1).",
       "displayName": "Enable WebSocket",
       "iniOnly": true
     },
@@ -3256,7 +3256,7 @@
       "name": "use_tls",
       "type": "bool",
       "value": true,
-      "description": "Use TLS with websocket (wss)",
+      "description": "Use TLS with websocket (wss).",
       "displayName": "Use TLS",
       "iniOnly": true
     },
@@ -3350,7 +3350,7 @@
       "name": "opt_bpp",
       "type": "enum",
       "value": 24,
-      "description": "Specifies the maximum color resolution (color depth) for client connection session:",
+      "description": "Specifies the maximum color resolution (color depth) for the client connection session:",
       "aclName": "bpp",
       "ProxyToAcl": true,
       "subtype": "ColorDepth"
@@ -4207,7 +4207,7 @@
       "name": "enable_close_box",
       "type": "bool",
       "value": true,
-      "description": "Show close screen.\nThis displays errors related to the secondary connection then closes automatically after a timeout specified by <code>\"Close box timeout\" option</code> or on user request.",
+      "description": "Display the close screen.\nThis displays errors related to the secondary connection then closes automatically after a timeout specified by the <code>\"Close box timeout\" option</code> or on user request.",
       "globalSpec": true
     },
     {
@@ -4215,7 +4215,7 @@
       "name": "close_box_timeout",
       "type": "seconds",
       "value": 600,
-      "description": "Specifies the time to spend on the close box of proxy RDP before closing client window.\n⚠ Value 0 deactivates the timer and the connection remains open until the client disconnects.",
+      "description": "Specifies the time to spend on the close box of the RDP proxy before closing client window.\n⚠ Value 0 deactivates the timer and the connection remains open until the client disconnects.",
       "globalSpec": true,
       "advanced": true
     },
@@ -4276,7 +4276,7 @@
       "name": "enable_theme",
       "type": "bool",
       "value": false,
-      "description": "Enable custom theme color configuration",
+      "description": "Enable custom theme color configuration.",
       "globalSpec": true
     },
     {
@@ -4284,7 +4284,7 @@
       "name": "logo_path",
       "type": "str",
       "value": "REDEMPTION_CONFIG_THEME_LOGO", "cppExpr": true,
-      "description": "Logo displayed when theme is enabled",
+      "description": "Logo displayed when theme is enabled.",
       "iniName": "logo",
       "imagePath": "/var/wab/images/rdp-oem-logo.png",
       "globalSpec": true,
@@ -4295,7 +4295,7 @@
       "name": "bgcolor",
       "type": "rgb",
       "value": "#081F60",
-      "description": "Background color for window, label and button",
+      "description": "Background color for window, label and button.",
       "globalSpec": true
     },
     {
@@ -4303,7 +4303,7 @@
       "name": "fgcolor",
       "type": "rgb",
       "value": "#FFFFFF",
-      "description": "Foreground color for window, label and button",
+      "description": "Foreground color for window, label and button.",
       "globalSpec": true
     },
     {
@@ -4311,7 +4311,7 @@
       "name": "separator_color",
       "type": "rgb",
       "value": "#CFD5EB",
-      "description": "Separator line color used with some widgets",
+      "description": "Separator line color used with some widgets.",
       "globalSpec": true
     },
     {
@@ -4319,7 +4319,7 @@
       "name": "focus_color",
       "type": "rgb",
       "value": "#004D9C",
-      "description": "Background color used by buttons when they have focus",
+      "description": "Background color used by buttons when they have focus.",
       "globalSpec": true
     },
     {
@@ -4327,7 +4327,7 @@
       "name": "error_color",
       "type": "rgb",
       "value": "#FFFF00",
-      "description": "Text color for error messages. For example, an authentication error in the login",
+      "description": "Text color for error messages. For example, an authentication error in the login.",
       "globalSpec": true
     },
     {
@@ -4335,7 +4335,7 @@
       "name": "edit_bgcolor",
       "type": "rgb",
       "value": "#FFFFFF",
-      "description": "Background color for editing field",
+      "description": "Background color for editing field.",
       "globalSpec": true
     },
     {
@@ -4343,7 +4343,7 @@
       "name": "edit_fgcolor",
       "type": "rgb",
       "value": "#000000",
-      "description": "Foreground color for editing field",
+      "description": "Foreground color for editing field.",
       "globalSpec": true
     },
     {
@@ -4351,7 +4351,7 @@
       "name": "edit_focus_color",
       "type": "rgb",
       "value": "#004D9C",
-      "description": "Outline color for editing field that has focus",
+      "description": "Outline color for editing field that has focus.",
       "globalSpec": true
     },
     {
@@ -4359,7 +4359,7 @@
       "name": "tooltip_bgcolor",
       "type": "rgb",
       "value": "#FFFF9F",
-      "description": "Background color for tooltip",
+      "description": "Background color for tooltip.",
       "globalSpec": true
     },
     {
@@ -4367,7 +4367,7 @@
       "name": "tooltip_fgcolor",
       "type": "rgb",
       "value": "#000000",
-      "description": "Foreground color for tooltip",
+      "description": "Foreground color for tooltip.",
       "globalSpec": true
     },
     {
@@ -4375,7 +4375,7 @@
       "name": "tooltip_border_color",
       "type": "rgb",
       "value": "#000000",
-      "description": "Border color for tooltip",
+      "description": "Border color for tooltip.",
       "globalSpec": true
     },
     {
@@ -4383,7 +4383,7 @@
       "name": "selector_line1_bgcolor",
       "type": "rgb",
       "value": "#E9ECF6",
-      "description": "Background color for even rows in the selector widget",
+      "description": "Background color for even rows in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4391,7 +4391,7 @@
       "name": "selector_line1_fgcolor",
       "type": "rgb",
       "value": "#000000",
-      "description": "Foreground color for even rows in the selector widget",
+      "description": "Foreground color for even rows in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4399,7 +4399,7 @@
       "name": "selector_line2_bgcolor",
       "type": "rgb",
       "value": "#CFD5EB",
-      "description": "Background color for odd rows in the selector widget",
+      "description": "Background color for odd rows in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4407,7 +4407,7 @@
       "name": "selector_line2_fgcolor",
       "type": "rgb",
       "value": "#000000",
-      "description": "Foreground color for odd rows in the selector widget",
+      "description": "Foreground color for odd rows in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4415,7 +4415,7 @@
       "name": "selector_focus_bgcolor",
       "type": "rgb",
       "value": "#004D9C",
-      "description": "Background color for the row that has focus in the selector widget",
+      "description": "Background color for the row that has focus in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4423,7 +4423,7 @@
       "name": "selector_focus_fgcolor",
       "type": "rgb",
       "value": "#FFFFFF",
-      "description": "Foreground color for the row that has focus in the selector widget",
+      "description": "Foreground color for the row that has focus in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4431,7 +4431,7 @@
       "name": "selector_selected_bgcolor",
       "type": "rgb",
       "value": "#4472C4",
-      "description": "Background color for the row that is selected in the selector widget but does not have focus",
+      "description": "Background color for the row that is selected in the selector widget but does not have focus.",
       "globalSpec": true
     },
     {
@@ -4439,7 +4439,7 @@
       "name": "selector_selected_fgcolor",
       "type": "rgb",
       "value": "#FFFFFF",
-      "description": "Foreground color for the row that is selected in the selector widget but does not have focus",
+      "description": "Foreground color for the row that is selected in the selector widget but does not have focus.",
       "globalSpec": true
     },
     {
@@ -4447,7 +4447,7 @@
       "name": "selector_label_bgcolor",
       "type": "rgb",
       "value": "#4472C4",
-      "description": "Background color for name of filter fields in the selector widget",
+      "description": "Background color for name of filter fields in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4455,7 +4455,7 @@
       "name": "selector_label_fgcolor",
       "type": "rgb",
       "value": "#FFFFFF",
-      "description": "Foreground color for name of filter fields in the selector widget",
+      "description": "Foreground color for name of filter fields in the selector widget.",
       "globalSpec": true
     },
     {
@@ -4622,7 +4622,7 @@
       "name": "config",
       "type": "bool",
       "value": true,
-      "description": "Log unknown members or sections",
+      "description": "Log unknown members or sections.",
       "globalSpec": true,
       "advanced": true
     },
@@ -4641,7 +4641,7 @@
       "name": "probe_client_addresses",
       "type": "list",
       "value": "",
-      "description": "List of client probe IP addresses (ex: ip1,ip2,etc) to prevent some continuous logs",
+      "description": "List of client probe IP addresses (e.g. ip1, ip2, etc.) to prevent some continuous logs.",
       "globalSpec": true,
       "advanced": true,
       "subtype": "string"

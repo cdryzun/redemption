@@ -113,7 +113,7 @@ tls_1_3_ciphersuites = string(default="")
 tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
 
 # Show in the logs the common cipher list supported by client and server
-# ⚠ Only for debug purposes
+# ⚠ Only for debugging purposes.
 #_advanced
 show_common_cipher_list = boolean(default=False)
 
@@ -145,14 +145,14 @@ server_redirection = boolean(default=False)
 # For example 'tsv://MS Terminal Services Plugin.1.Sessions' where 'Sessions' is the name of the targeted RD Collection which works fine.
 load_balance_info = string(default="")
 
-# As far as possible, use client-provided initial program (Alternate Shell)
+# As far as possible, use client-provided initial program (Alternate Shell).
 use_client_provided_alternate_shell = boolean(default=False)
 
-# As far as possible, use client-provided remote program (RemoteApp)
+# As far as possible, use client-provided remote program (RemoteApp).
 #_display_name=Use client provided RemoteApp
 use_client_provided_remoteapp = boolean(default=False)
 
-# As far as possible, use native RemoteApp capability
+# As far as possible, use native RemoteApp capability.
 #_display_name=Use native RemoteApp capability
 use_native_remoteapp_capability = boolean(default=True)
 
@@ -186,7 +186,7 @@ force_smartcard_authentication = boolean(default=False)
 #_display_name=Enable IPv6
 enable_ipv6 = boolean(default=True)
 
-# Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option)
+# Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option).
 # &nbsp; &nbsp;   allow: Forward Console mode request from client to the target.
 # &nbsp; &nbsp;   force: Force Console mode on target regardless of client request.
 # &nbsp; &nbsp;   forbid: Block Console mode request from client.
@@ -514,9 +514,9 @@ enable_bestsafe_interaction = boolean(default=False)
 # BestSafe interaction must be enabled. Please refer to "Enable BestSafe interaction" option.
 # This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.
 # Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.
-# &nbsp; &nbsp;   0: allow: User action will be accepted
-# &nbsp; &nbsp;   1: notify: (Same thing as 'allow')
-# &nbsp; &nbsp;   2: deny: User action will be rejected
+# &nbsp; &nbsp;   0: allow: User action will be accepted.
+# &nbsp; &nbsp;   1: notify: (Same thing as 'allow'.)
+# &nbsp; &nbsp;   2: deny: User action will be rejected.
 on_account_manipulation = option(0, 1, 2, default=0)
 
 # This parameter is used to indicate the name of an environment variable, to be set on the Windows device, and pointed to a directory (on the device) that can be used to store and start the Session Probe. The environment variable must be available in the Windows user session.
@@ -617,10 +617,10 @@ server_cert_failure_message = integer(min=0, max=1, default=1)
 
 # Classification of input data is performed using Session Probe.
 # Without Session Probe, all the texts entered are considered unidentified.
-# &nbsp; &nbsp;   0: keyboard input are not masked
-# &nbsp; &nbsp;   1: only passwords are masked
-# &nbsp; &nbsp;   2: passwords and unidentified texts are masked
-# &nbsp; &nbsp;   3: keyboard inputs are not logged
+# &nbsp; &nbsp;   0: Keyboard input are not masked.
+# &nbsp; &nbsp;   1: Only passwords are masked.
+# &nbsp; &nbsp;   2: Passwords and unidentified texts are masked.
+# &nbsp; &nbsp;   3: Keyboard inputs are not logged.
 keyboard_input_masking_level = option(0, 1, 2, 3, default=2)
 
 [capture]
@@ -672,7 +672,7 @@ max_file_size_rejected = integer(min=0, default=256)
 [file_storage]
 
 # Enable storage of transferred files (via RDP Clipboard).
-# ⚠ Saving files can take up a lot of disk space
+# ⚠ Saving files can take up a lot of disk space.
 # &nbsp; &nbsp;   never: Never store transferred files.
 # &nbsp; &nbsp;   always: Always store transferred files.
 # &nbsp; &nbsp;   on_invalid_verification: Transferred files are stored only if file verification is invalid. File verification by ICAP service must be enabled (in section file_verification).

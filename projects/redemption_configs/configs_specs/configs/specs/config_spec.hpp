@@ -268,14 +268,14 @@ _.section("globals", [&]
         .name = "front_connection_time",
         .value = value<std::chrono::milliseconds>(),
         .spec = proxy_to_acl(no_reset_back_to_selector),
-        .desc = "from incoming connection to \"up_and_running\" state",
+        .desc = "From incoming connection to \"up_and_running\" state.",
     });
 
     _.member(MemberInfo{
         .name = "target_connection_time",
         .value = value<std::chrono::milliseconds>(),
         .spec = proxy_to_acl(no_reset_back_to_selector),
-        .desc = "from Module rdp creation to \"up_and_running\" state",
+        .desc = "From Module rdp creation to \"up_and_running\" state.",
     });
 
 
@@ -366,14 +366,14 @@ _.section("globals", [&]
         .name = "authfile",
         .value = value<std::string>(CPP_EXPR(REDEMPTION_CONFIG_AUTHFILE)),
         .spec = ini_only(no_acl),
-        .desc = "Socket path or socket address of passthrough / acl",
+        .desc = "Socket path or socket address of passthrough / acl.",
     });
 
     _.member(MemberInfo{
         .name = "handshake_timeout",
         .value = value<std::chrono::seconds>(10),
         .spec = global_spec(no_acl),
-        .desc = "Time out during RDP connection initialization.\n"
+        .desc = "Timeout during RDP connection initialization.\n"
         "Increase the value if connection between workstations and Bastion can be slow.",
     });
 
@@ -383,8 +383,8 @@ _.section("globals", [&]
         .spec = global_spec(no_acl),
         .desc =
             "No automatic disconnection due to inactivity, timer is set on primary authentication.\n"
-            "If value is between 1 and 30, then 30 is used.\n"
-            "If value is set to 0, then inactivity timeout value is unlimited.",
+            "If the value is between 1 and 30, then 30 is used.\n"
+            "If the value is set to 0, then inactivity timeout value is unlimited.",
     });
 
     _.member(MemberInfo{
@@ -402,14 +402,14 @@ _.section("globals", [&]
         .name = "keepalive_grace_delay",
         .value = value<std::chrono::seconds>(30),
         .spec = ini_only(no_acl),
-        .desc = "Internal keepalive between acl and rdp proxy",
+        .desc = "Internal keepalive between acl and rdp proxy.",
     });
 
     _.member(MemberInfo{
         .name = "authentication_timeout",
         .value = value<std::chrono::seconds>(120),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Specifies the time to spend on the login screen of proxy RDP before closing client window (0 to desactivate).",
+        .desc = "Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate).",
     });
 
     _.member(MemberInfo{
@@ -422,7 +422,7 @@ _.section("globals", [&]
         .name = "listen_address",
         .value = value<types::ip_string>("0.0.0.0"),
         .spec = ini_only(no_acl),
-        .desc = "Specify bind address",
+        .desc = "Specify bind address.",
     });
 
     _.member(MemberInfo{
@@ -466,7 +466,7 @@ _.section("globals", [&]
         .name = "enable_osd_display_remote_target",
         .value = value(true),
         .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
-        .desc = "Allow to show target device name with F12 during the session",
+        .desc = "Allow to show the target device name with F12 during the session.",
     });
 
     _.member(MemberInfo{
@@ -521,7 +521,7 @@ _.section("globals", [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "⚠ Service redemption needs to be manually restarted to take changes into account\n\n"
+            "⚠ Service redemption needs to be manually restarted to take changes into account.\n\n"
             "Enable primary connection on IPv6."
     });
 
@@ -568,7 +568,7 @@ _.section("client", [&]
         .name = "ignore_logon_password",
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "If true, ignore password provided by RDP client, user need do login manually.",
+        .desc = "If true, ignore the password provided by RDP client, user need do login manually.",
     });
 
     _.member(MemberInfo{
@@ -577,7 +577,7 @@ _.section("client", [&]
         .spec = global_spec(no_acl),
         .tags = Tag::Compatibility,
         .desc = "Sends the client screen count to the server. Not supported for VNC targets.\n"
-        "Uncheck to disable multiple monitor.",
+        "Uncheck to disable multiple monitors.",
     });
 
     // TODO should be enabled by default ?
@@ -588,7 +588,7 @@ _.section("client", [&]
         .tags = Tag::Compatibility,
         .desc =
             "Sends Scale & Layout configuration to the server.\n"
-            "On Windows 11, this corresponds to options \"Scale\", \"Display Resolution\" and \"Display Orientation\" of Settings > System > Display.\n"
+            "On Windows 11, this corresponds to the options \"Scale\", \"Display Resolution\" and \"Display Orientation\" of Settings > System > Display.\n"
             "⚠ Title bar detection via OCR will no longer work.\n"
     });
 
@@ -607,14 +607,14 @@ _.section("client", [&]
         .name = "encryption_level",
         .value = enum_as_string(RdpSecurityEncryptionLevel::high),
         .spec = ini_only(no_acl),
-        .desc = "Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable"
+        .desc = "Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable."
     });
 
     _.member(MemberInfo{
         .name = "tls_fallback_legacy",
         .value = value(false),
         .spec = global_spec(no_acl),
-        .desc = "Fallback to RDP Legacy Encryption if client does not support TLS.\n"
+        .desc = "Fallback to RDP Legacy Encryption if the client does not support TLS.\n"
         "⚠ Enabling this option is a security risk.",
     });
 
@@ -629,7 +629,7 @@ _.section("client", [&]
         .name = "tls_min_level",
         .value = value<types::u32>(2),
         .spec = global_spec(no_acl),
-        .desc = "Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n"
+        .desc = "Minimal incoming TLS level: 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n"
         "⚠ Lower this value only for compatibility reasons.",
     });
 
@@ -637,7 +637,7 @@ _.section("client", [&]
         .name = "tls_max_level",
         .value = value<types::u32>(0),
         .spec = global_spec(no_acl),
-        .desc = "Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n"
+        .desc = "Maximal incoming TLS level: 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3\n"
         "⚠ Change this value only for compatibility reasons.",
     });
 
@@ -686,8 +686,8 @@ _.section("client", [&]
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Debug,
-        .desc = "Show in the logs the common cipher list supported by client and server\n"
-        "⚠ Only for debug purposes",
+        .desc = "Show in the logs the common cipher list supported by client and server.\n"
+        "⚠ Only for debugging purposes.",
     });
 
     _.member(MemberInfo{
@@ -709,7 +709,7 @@ _.section("client", [&]
         .value = from_enum(RdpCompression::rdp6_1),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
-        .desc = "Specifies the highest RDP compression support available on client connection session.",
+        .desc = "Specifies the highest RDP compression support available on the client connection session.",
         // RZH: This option can help debugging error during connection in specific cases.
     });
 
@@ -724,7 +724,7 @@ _.section("client", [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
-        .desc = "Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased",
+        .desc = "Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased.",
     });
 
     _.member(MemberInfo{
@@ -797,7 +797,7 @@ _.section("client", [&]
         .name = "enable_osd_4_eyes",
         .value = value(true),
         .spec = global_spec(no_acl),
-        .desc = "Enables display of message informing user that his/her session is being audited.",
+        .desc = "Enables the display of a message informing user that his/her session is being audited.",
         // Add warning about legal issue specific of the country in use.
     });
 
@@ -806,7 +806,7 @@ _.section("client", [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf | Tag::Compatibility,
-        .desc = "Enable RemoteFX on client connection.\n"
+        .desc = "Enable RemoteFX on the client connection.\n"
         "Needs - :REF:[client]:max_color_depth set to 32 (32-bit RGB mask + alpha)\n"
         "      - :REF:[mod_rdp]:enable_remotefx set to on",
     });
@@ -839,7 +839,7 @@ _.section("all_target_mod", [&]
         .name = "connection_establishment_timeout",
         .value = value<types::range<std::chrono::milliseconds, 1000, 10000>>(3000),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "The maximum time that the proxy will wait while attempting to connect to an target.",
+        .desc = "The maximum time that the proxy will wait while attempting to connect to a target.",
     });
 
     _.member(MemberInfo{
@@ -892,8 +892,8 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .desc =
             "If enabled, avoid automatically font smoothing in recorded session.\n"
             "This allows OCR (when session probe is disabled) to better detect window titles.\n"
-        "If disabled, allows font smoothing in recorded session, but OCR will not work when Session is disabled.\n"
-        "In this case, windows titles will not be detected.",
+        "If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled.\n"
+        "In this case, window titles will not be detected.",
     });
 
     _.member(MemberInfo{
@@ -901,7 +901,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = from_enum(RdpCompression::rdp6_1),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
-        .desc = "Specifies the highest RDP compression support available on server connection.",
+        .desc = "Specifies the highest RDP compression support available on the server connection.",
         // RZH: This option can help debugging error during connection in specific cases.
     });
 
@@ -1066,7 +1066,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .tags = Tag::Debug,
         .desc = "Show in the logs the common cipher list supported by client and server\n"
-        "⚠ Only for debug purposes",
+        "⚠ Only for debugging purposes.",
     });
 
     _.member(MemberInfo{
@@ -1074,14 +1074,14 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
-        .desc = "Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased",
+        .desc = "Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased.",
     });
 
     _.member(MemberInfo{
         .name = "cache_waiting_list",
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Support of Cache Waiting List (this value is ignored if :REF:[mod_rdp]:persistent_disk_bitmap_cache is disabled).",
+        .desc = "Support of Cache Waiting List (this value is ignored if the :REF:[mod_rdp]:persistent_disk_bitmap_cache is disabled).",
     });
 
     _.member(MemberInfo{
@@ -1179,7 +1179,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "client_address_sent",
         .value = from_enum(ClientAddressSent::no_address),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Client Address to send to target (in InfoPacket)",
+        .desc = "Client Address to send to target (in InfoPacket).",
     });
 
     _.member(MemberInfo{
@@ -1231,21 +1231,21 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "use_client_provided_alternate_shell",
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
-        .desc = "As far as possible, use client-provided initial program (Alternate Shell)",
+        .desc = "As far as possible, use client-provided initial program (Alternate Shell).",
     });
 
     _.member(MemberInfo{
         .name = "use_client_provided_remoteapp",
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
-        .desc = "As far as possible, use client-provided remote program (RemoteApp)",
+        .desc = "As far as possible, use client-provided remote program (RemoteApp).",
     });
 
     _.member(MemberInfo{
         .name = "use_native_remoteapp_capability",
         .value = value(true),
         .spec = connpolicy(rdp, loggable),
-        .desc = "As far as possible, use native RemoteApp capability",
+        .desc = "As far as possible, use native RemoteApp capability.",
     });
 
     _.member(MemberInfo{
@@ -1289,7 +1289,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = value(false),
         .spec = global_spec(no_acl),
         .desc =
-            "Do not transmit client machine name to RDP server.\n"
+            "Do not transmit the client machine name to RDP server.\n"
             "If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host."
     });
 
@@ -1363,7 +1363,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "split_domain",
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Force to split target domain and username with '@' separator.",
+        .desc = "Force splitting target domain and username with '@' separator.",
     });
 
     _.member(MemberInfo{
@@ -1433,7 +1433,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         },
         .value = enum_as_string(RdpModeConsole::allow),
         .spec = connpolicy(rdp, loggable),
-        .desc = "Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option)",
+        .desc = "Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option).",
     });
 
     _.member(MemberInfo{
@@ -2007,7 +2007,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "If enabled, a string of random characters will be added to the name of the executable of Session Probe.\n"
+            "If enabled, a string of random characters will be added to the name of the Session Probe executable.\n"
             "The result could be: SesProbe-5420.exe\n"
             "Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example."
     });
@@ -2146,7 +2146,7 @@ _.section(names{"server_cert"}, [&]
         .name = "external_response",
         .value = value<std::string>(),
         .spec = acl_to_proxy(no_reset_back_to_selector, loggable),
-        .desc = "empty string for wait, 'Ok' or error message",
+        .desc = "empty string for wait, 'Ok' or error message.",
     });
 });
 
@@ -2156,7 +2156,7 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .name = "clipboard_up",
         .value = value(false),
         .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable)),
-        .desc = "Check this option to enable the upload clipboard (from client to server).\n"
+        .desc = "Check this option to enable the clipboard upload (from client to server).\n"
         "This only support text data clipboard (not files).",
     });
 
@@ -2222,14 +2222,14 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .name = "server_unix_alt",
         .value = value(false),
         .spec = connpolicy(vnc, loggable),
-        .desc = "When disabled, Ctrl + Alt becomes AltGr (Windows behavior)",
+        .desc = "When disabled, Ctrl + Alt becomes AltGr (Windows behavior).",
     });
 
     _.member(MemberInfo{
         .name = "enable_ipv6",
         .value = value(true),
         .spec = connpolicy(vnc, loggable),
-        .desc = "Enable target connection on IPv6",
+        .desc = "Enable target connection on IPv6.",
     });
 
 
@@ -2304,8 +2304,8 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .value = value(false),
         .spec = connpolicy(vnc, loggable, spec::advanced),
         .tags = Tag::Debug,
-        .desc = "Show in the logs the common cipher list supported by client and server\n"
-        "⚠ Only for debug purposes",
+        .desc = "Show in the logs the common cipher list supported by client and server.\n"
+        "⚠ Only for debugging purposes.",
     });
 
     _.member(MemberInfo{
@@ -2499,7 +2499,7 @@ _.section("file_storage", [&]
         .spec = connpolicy(rdp, loggable),
         .desc =
             "Enable storage of transferred files (via RDP Clipboard).\n"
-            "⚠ Saving files can take up a lot of disk space"
+            "⚠ Saving files can take up a lot of disk space."
     });
 });
 
@@ -2513,42 +2513,42 @@ for (char const* section_name : {"icap_server_down", "icap_server_up"}) {
             .name = "host",
             .value = value<std::string>(),
             .spec = spec::external(),
-            .desc = "IP or FQDN of ICAP server",
+            .desc = "IP or FQDN of ICAP server.",
         });
 
         _.member(MemberInfo{
             .name = "port",
             .value = value<types::unsigned_>(1344),
             .spec = spec::external(),
-            .desc = "Port of ICAP server",
+            .desc = "Port of ICAP server.",
         });
 
         _.member(MemberInfo{
             .name = "service_name",
             .value = value<std::string>("avscan"),
             .spec = spec::external(),
-            .desc = "Service name on ICAP server",
+            .desc = "Service name on ICAP server.",
         });
 
         _.member(MemberInfo{
             .name = "tls",
             .value = value(false),
             .spec = spec::external(),
-            .desc = "Activate TLS on ICAP server connection",
+            .desc = "Activate TLS on ICAP server connection.",
         });
 
         _.member(MemberInfo{
             .name = "enable_x_context",
             .value = value(true),
             .spec = spec::external(spec::advanced),
-            .desc = "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server",
+            .desc = "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.",
         });
 
         _.member(MemberInfo{
             .name = "filename_percent_encoding",
             .value = value(false),
             .spec = spec::external(spec::advanced),
-            .desc = "Filename sent to ICAP as percent encoding",
+            .desc = "Filename sent to ICAP as percent encoding.",
         });
     });
 }
@@ -2606,7 +2606,7 @@ _.section("ocr", [&]
         .value = value<std::chrono::duration<unsigned, std::centi>>(100),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "Time interval between 2 analyzes.\n"
+            "Time interval between two analyzes.\n"
             "Too low a value will affect session reactivity."
     });
 
@@ -2614,7 +2614,7 @@ _.section("ocr", [&]
         .name = "on_title_bar_only",
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Checks shape and color to determine if the text is on a title bar",
+        .desc = "Checks shape and color to determine if the text is on a title bar.",
     });
 
     _.member(MemberInfo{
@@ -2634,14 +2634,14 @@ _.section("capture", [&]
         .name = "record_filebase",
         .value = value<std::string>(),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),
-        .desc = "basename without extension",
+        .desc = "Basename without extension.",
     });
 
     _.member(MemberInfo{
         .name = "record_subdirectory",
         .value = value<std::string>(),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),
-        .desc = "subdirectory of record_path (video section)",
+        .desc = "Subdirectory of record_path (video section).",
     });
 
     _.member(MemberInfo{
@@ -2709,7 +2709,7 @@ _.section("capture", [&]
         .value = value<std::chrono::seconds>(600),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "Time between 2 wrm recording file.\n"
+            "Time between two wrm recording file.\n"
             "⚠ A value that is too small increases the disk space required for recordings."
     });
 
@@ -2729,7 +2729,7 @@ _.section("capture", [&]
         .name = "file_permissions",
         .value = value<FilePermissions>(0440),
         .spec = ini_only(no_acl),
-        .desc = "Allow to control permissions on recorded files",
+        .desc = "Allow to control permissions on recorded files.",
     });
 });
 
@@ -2740,7 +2740,7 @@ _.section("audit", [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "Show keyboard input event in meta file\n"
+            "Show keyboard input events in meta file.\n"
             "(Please see also :REF:[session_log]:keyboard_input_masking_level for RDP and :REF:[capture]:disable_keyboard_log for VNC and RDP)"
     });
 
@@ -2748,7 +2748,7 @@ _.section("audit", [&]
         .name = "video_break_interval",
         .value = value<std::chrono::seconds>(60*60*24*7), // 1 week
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "The maximum time between 2 videos when none title bar is detected."
+        .desc = "The maximum time between two videos when no title bar is detected."
     });
 
     _.member(MemberInfo{
@@ -2802,7 +2802,7 @@ _.section("audit", [&]
         .name = "file_permissions",
         .value = value<FilePermissions>(0440),
         .spec = ini_only(no_acl),
-        .desc = "Allow to control permissions on video files",
+        .desc = "Allow to control permissions on video files.",
     });
 
     // real-time conf
@@ -2817,7 +2817,7 @@ _.section("audit", [&]
         .name = "allow_rt_without_recording",
         .value = value(false),
         .spec = global_spec(no_acl),
-        .desc = "Allow real-time view (4 eyes) without session recording enabled in the authorization",
+        .desc = "Allow real-time view (4 eyes) without session recording enabled in the authorization.",
     });
 
     _.member(MemberInfo{
@@ -2920,14 +2920,14 @@ _.section("websocket", [&]
         .name = "enable_websocket",
         .value = value(false),
         .spec = ini_only(no_acl),
-        .desc = "Enable websocket protocol (ws or wss with use_tls=1)",
+        .desc = "Enable websocket protocol (ws or wss with use_tls=1).",
     });
 
     _.member(MemberInfo{
         .name = "use_tls",
         .value = value(true),
         .spec = ini_only(no_acl),
-        .desc = "Use TLS with websocket (wss)",
+        .desc = "Use TLS with websocket (wss).",
     });
 
     _.member(MemberInfo{
@@ -3054,7 +3054,7 @@ _.section("debug", [&]
         .name = "config",
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Log unknown members or sections",
+        .desc = "Log unknown members or sections.",
     });
 
     _.member(MemberInfo{
@@ -3067,7 +3067,7 @@ _.section("debug", [&]
         .name = "probe_client_addresses",
         .value = value<types::list<std::string>>(),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "List of client probe IP addresses (ex: ip1,ip2,etc) to prevent some continuous logs",
+        .desc = "List of client probe IP addresses (e.g. ip1, ip2, etc.) to prevent some continuous logs.",
     });
 });
 
@@ -3123,8 +3123,8 @@ _.section("internal_mod", [&]
         .value = value(true),
         .spec = global_spec(no_acl),
         .desc =
-            "Show close screen.\n"
-            "This displays errors related to the secondary connection then closes automatically after a timeout specified by :REF:[internal_mod]:close_box_timeout or on user request.",
+            "Display the close screen.\n"
+            "This displays errors related to the secondary connection then closes automatically after a timeout specified by the :REF:[internal_mod]:close_box_timeout or on user request.",
     });
 
     _.member(MemberInfo{
@@ -3132,7 +3132,7 @@ _.section("internal_mod", [&]
         .value = value<std::chrono::seconds>(600),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "Specifies the time to spend on the close box of proxy RDP before closing client window.\n"
+            "Specifies the time to spend on the close box of the RDP proxy before closing client window.\n"
             "⚠ Value 0 deactivates the timer and the connection remains open until the client disconnects."
     });
 });
@@ -3716,7 +3716,7 @@ _.section("theme", [&]
         .name = "enable_theme",
         .value = value(false),
         .spec = global_spec(no_acl),
-        .desc = "Enable custom theme color configuration",
+        .desc = "Enable custom theme color configuration.",
     });
 
     _.member(MemberInfo{
@@ -3726,7 +3726,7 @@ _.section("theme", [&]
         },
         .value = value<std::string>(CPP_EXPR(REDEMPTION_CONFIG_THEME_LOGO)),
         .spec = global_spec(no_acl, spec::image("/var/wab/images/rdp-oem-logo.png")),
-        .desc = "Logo displayed when theme is enabled",
+        .desc = "Logo displayed when theme is enabled.",
     });
 
     auto rgb = [](BGRColor color) {
@@ -3737,147 +3737,147 @@ _.section("theme", [&]
         .name = "bgcolor",
         .value = rgb(Theme::Global().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for window, label and button",
+        .desc = "Background color for window, label and button.",
     });
 
     _.member(MemberInfo{
         .name = "fgcolor",
         .value = rgb(Theme::Global().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for window, label and button",
+        .desc = "Foreground color for window, label and button.",
     });
 
     _.member(MemberInfo{
         .name = "separator_color",
         .value = rgb(Theme::Global().separator_color),
         .spec = global_spec(no_acl),
-        .desc = "Separator line color used with some widgets",
+        .desc = "Separator line color used with some widgets.",
     });
 
     _.member(MemberInfo{
         .name = "focus_color",
         .value = rgb(Theme::Global().focus_color),
         .spec = global_spec(no_acl),
-        .desc = "Background color used by buttons when they have focus",
+        .desc = "Background color used by buttons when they have focus.",
     });
 
     _.member(MemberInfo{
         .name = "error_color",
         .value = rgb(Theme::Global().error_color),
         .spec = global_spec(no_acl),
-        .desc = "Text color for error messages. For example, an authentication error in the login",
+        .desc = "Text color for error messages. For example, an authentication error in the login.",
     });
 
     _.member(MemberInfo{
         .name = "edit_bgcolor",
         .value = rgb(Theme::Edit().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for editing field",
+        .desc = "Background color for editing field.",
     });
 
     _.member(MemberInfo{
         .name = "edit_fgcolor",
         .value = rgb(Theme::Edit().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for editing field",
+        .desc = "Foreground color for editing field.",
     });
 
     _.member(MemberInfo{
         .name = "edit_focus_color",
         .value = rgb(Theme::Edit().focus_color),
         .spec = global_spec(no_acl),
-        .desc = "Outline color for editing field that has focus",
+        .desc = "Outline color for editing field that has focus.",
     });
 
     _.member(MemberInfo{
         .name = "tooltip_bgcolor",
         .value = rgb(Theme::Tooltip().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for tooltip",
+        .desc = "Background color for tooltip.",
     });
 
     _.member(MemberInfo{
         .name = "tooltip_fgcolor",
         .value = rgb(Theme::Tooltip().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for tooltip",
+        .desc = "Foreground color for tooltip.",
     });
 
     _.member(MemberInfo{
         .name = "tooltip_border_color",
         .value = rgb(Theme::Tooltip().border_color),
         .spec = global_spec(no_acl),
-        .desc = "Border color for tooltip",
+        .desc = "Border color for tooltip.",
     });
 
     _.member(MemberInfo{
         .name = "selector_line1_bgcolor",
         .value = rgb(Theme::SelectorLine1().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for even rows in the selector widget",
+        .desc = "Background color for even rows in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_line1_fgcolor",
         .value = rgb(Theme::SelectorLine1().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for even rows in the selector widget",
+        .desc = "Foreground color for even rows in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_line2_bgcolor",
         .value = rgb(Theme::SelectorLine2().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for odd rows in the selector widget",
+        .desc = "Background color for odd rows in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_line2_fgcolor",
         .value = rgb(Theme::SelectorLine2().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for odd rows in the selector widget",
+        .desc = "Foreground color for odd rows in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_focus_bgcolor",
         .value = rgb(Theme::SelectorFocus().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for the row that has focus in the selector widget",
+        .desc = "Background color for the row that has focus in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_focus_fgcolor",
         .value = rgb(Theme::SelectorFocus().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for the row that has focus in the selector widget",
+        .desc = "Foreground color for the row that has focus in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_selected_bgcolor",
         .value = rgb(Theme::SelectorSelected().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for the row that is selected in the selector widget but does not have focus",
+        .desc = "Background color for the row that is selected in the selector widget but does not have focus.",
     });
 
     _.member(MemberInfo{
         .name = "selector_selected_fgcolor",
         .value = rgb(Theme::SelectorSelected().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for the row that is selected in the selector widget but does not have focus",
+        .desc = "Foreground color for the row that is selected in the selector widget but does not have focus.",
     });
 
     _.member(MemberInfo{
         .name = "selector_label_bgcolor",
         .value = rgb(Theme::SelectorLabel().bgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Background color for name of filter fields in the selector widget",
+        .desc = "Background color for name of filter fields in the selector widget.",
     });
 
     _.member(MemberInfo{
         .name = "selector_label_fgcolor",
         .value = rgb(Theme::SelectorLabel().fgcolor),
         .spec = global_spec(no_acl),
-        .desc = "Foreground color for name of filter fields in the selector widget",
+        .desc = "Foreground color for name of filter fields in the selector widget.",
     });
 });
 

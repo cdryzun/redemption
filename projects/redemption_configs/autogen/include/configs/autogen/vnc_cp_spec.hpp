@@ -90,11 +90,11 @@ support_cursor_pseudo_encoding = boolean(default=True)
 #_display_name=Server is MacOS
 server_is_macos = boolean(default=False)
 
-# When disabled, Ctrl + Alt becomes AltGr (Windows behavior)
+# When disabled, Ctrl + Alt becomes AltGr (Windows behavior).
 #_display_name=Server Unix alt
 server_unix_alt = boolean(default=False)
 
-# Enable target connection on IPv6
+# Enable target connection on IPv6.
 #_display_name=Enable IPv6
 enable_ipv6 = boolean(default=True)
 
@@ -128,8 +128,8 @@ tls_1_3_ciphersuites = string(default="")
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
 
-# Show in the logs the common cipher list supported by client and server
-# ⚠ Only for debug purposes
+# Show in the logs the common cipher list supported by client and server.
+# ⚠ Only for debugging purposes.
 #_advanced
 show_common_cipher_list = boolean(default=False)
 

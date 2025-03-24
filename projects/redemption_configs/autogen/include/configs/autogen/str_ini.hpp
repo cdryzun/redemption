@@ -14,17 +14,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #port = 3389
 
-# Socket path or socket address of passthrough / acl
+# Socket path or socket address of passthrough / acl.
 #authfile = )gen_config_ini" << (REDEMPTION_CONFIG_AUTHFILE) << R"gen_config_ini(
 
-# Time out during RDP connection initialization.
+# Timeout during RDP connection initialization.
 # Increase the value if connection between workstations and Bastion can be slow.
 # (in seconds)
 #handshake_timeout = 10
 
 # No automatic disconnection due to inactivity, timer is set on primary authentication.
-# If value is between 1 and 30, then 30 is used.
-# If value is set to 0, then inactivity timeout value is unlimited.
+# If the value is between 1 and 30, then 30 is used.
+# If the value is set to 0, then inactivity timeout value is unlimited.
 # (in seconds)
 #base_inactivity_timeout = 900
 
@@ -35,16 +35,16 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ globals:inactivity_timeout)
 #inactivity_timeout = 0
 
-# Internal keepalive between acl and rdp proxy
+# Internal keepalive between acl and rdp proxy.
 # (in seconds)
 #keepalive_grace_delay = 30
 
-# Specifies the time to spend on the login screen of proxy RDP before closing client window (0 to desactivate).
+# Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate).
 # (in seconds)
 #_advanced
 #authentication_timeout = 120
 
-# Specify bind address
+# Specify bind address.
 #listen_address = 0.0.0.0
 
 # The transparent mode allows to intercept network traffic for a target even when the user specifies the target's address directly, instead of using the proxy address.
@@ -66,7 +66,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=Enable end time warning OSD
 #enable_end_time_warning_osd = 1
 
-# Allow to show target device name with F12 during the session
+# Allow to show the target device name with F12 during the session.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable OSD display remote target
@@ -98,7 +98,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=RDP keepalive connection interval
 #rdp_keepalive_connection_interval = 0
 
-# ⚠ Service redemption needs to be manually restarted to take changes into account
+# ⚠ Service redemption needs to be manually restarted to take changes into account.
 # 
 # Enable primary connection on IPv6.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -112,18 +112,18 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [client]
 
-# If true, ignore password provided by RDP client, user need do login manually.
+# If true, ignore the password provided by RDP client, user need do login manually.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #ignore_logon_password = 0
 
 # Sends the client screen count to the server. Not supported for VNC targets.
-# Uncheck to disable multiple monitor.
+# Uncheck to disable multiple monitors.
 # (type: boolean (0/no/false or 1/yes/true))
 #allow_using_multiple_monitors = 1
 
 # Sends Scale & Layout configuration to the server.
-# On Windows 11, this corresponds to options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display.
+# On Windows 11, this corresponds to the options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display.
 # ⚠ Title bar detection via OCR will no longer work.
 # (type: boolean (0/no/false or 1/yes/true))
 #allow_scale_factor = 0
@@ -133,11 +133,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #unicode_keyboard_event_support = 1
 
-# Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable
+# Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable.
 # values: none, low, medium, high
 #encryption_level = high
 
-# Fallback to RDP Legacy Encryption if client does not support TLS.
+# Fallback to RDP Legacy Encryption if the client does not support TLS.
 # ⚠ Enabling this option is a security risk.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=TLS fallback legacy
@@ -148,13 +148,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=TLS support
 #tls_support = 1
 
-# Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+# Minimal incoming TLS level: 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
 # ⚠ Lower this value only for compatibility reasons.
 # (min = 0)
 #_display_name=TLS min level
 #tls_min_level = 2
 
-# Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
+# Maximal incoming TLS level: 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3
 # ⚠ Change this value only for compatibility reasons.
 # (min = 0)
 #_display_name=TLS max level
@@ -189,8 +189,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=TLS signature algorithms
 #tls_signature_algorithms = RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512
 
-# Show in the logs the common cipher list supported by client and server
-# ⚠ Only for debug purposes
+# Show in the logs the common cipher list supported by client and server.
+# ⚠ Only for debugging purposes.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #show_common_cipher_list = 0
@@ -200,7 +200,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=Enable NLA
 #enable_nla = 0
 
-# Specifies the highest RDP compression support available on client connection session.
+# Specifies the highest RDP compression support available on the client connection session.
 #   0: The RDP bulk compression is disabled
 #   1: RDP 4.0 bulk compression
 #   2: RDP 5.0 bulk compression
@@ -210,7 +210,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=RDP compression
 #rdp_compression = 4
 
-# Specifies the maximum color resolution (color depth) for client connection session:
+# Specifies the maximum color resolution (color depth) for the client connection session:
 #   8: 8-bit
 #   15: 15-bit 555 RGB mask
 #   16: 16-bit 565 RGB mask
@@ -219,7 +219,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #max_color_depth = 24
 
-# Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased
+# Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persistent_disk_bitmap_cache = 1
@@ -261,12 +261,12 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (in milliseconds | min = 100, max = 10000)
 #recv_timeout = 1000
 
-# Enables display of message informing user that his/her session is being audited.
+# Enables the display of a message informing user that his/her session is being audited.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable OSD 4 eyes
 #enable_osd_4_eyes = 1
 
-# Enable RemoteFX on client connection.
+# Enable RemoteFX on the client connection.
 # Needs - [client]max_color_depth set to 32 (32-bit RGB mask + alpha)
 #       - [mod_rdp]enable_remotefx set to on
 # (type: boolean (0/no/false or 1/yes/true))
@@ -306,7 +306,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [all_target_mod]
 
-# The maximum time that the proxy will wait while attempting to connect to an target.
+# The maximum time that the proxy will wait while attempting to connect to a target.
 # (in milliseconds | min = 1000, max = 10000)
 #_advanced
 #connection_establishment_timeout = 3000
@@ -345,13 +345,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # If enabled, avoid automatically font smoothing in recorded session.
 # This allows OCR (when session probe is disabled) to better detect window titles.
-# If disabled, allows font smoothing in recorded session, but OCR will not work when Session is disabled.
-# In this case, windows titles will not be detected.
+# If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled.
+# In this case, window titles will not be detected.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #auto_adjust_performance_flags = 1
 
-# Specifies the highest RDP compression support available on server connection.
+# Specifies the highest RDP compression support available on the server connection.
 #   0: The RDP bulk compression is disabled
 #   1: RDP 4.0 bulk compression
 #   2: RDP 5.0 bulk compression
@@ -469,18 +469,18 @@ R"gen_config_ini(## Config file for RDP proxy.
 #tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
 
 # Show in the logs the common cipher list supported by client and server
-# ⚠ Only for debug purposes
+# ⚠ Only for debugging purposes.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:show_common_cipher_list)
 #show_common_cipher_list = 0
 
-# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased
+# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persistent_disk_bitmap_cache = 1
 
-# Support of Cache Waiting List (this value is ignored if [mod_rdp]persistent_disk_bitmap_cache is disabled).
+# Support of Cache Waiting List (this value is ignored if the [mod_rdp]persistent_disk_bitmap_cache is disabled).
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #cache_waiting_list = 1
@@ -543,10 +543,10 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:load_balance_info)
 #load_balance_info = 
 
-# Client Address to send to target (in InfoPacket)
+# Client Address to send to target (in InfoPacket).
 #   0: Send 0.0.0.0
-#   1: Send proxy client address or target connexion
-#   2: Send user client address of front connexion
+#   1: Send proxy client address or target connexion.
+#   2: Send user client address of front connexion.
 #_advanced
 #client_address_sent = 0
 
@@ -577,18 +577,18 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ shell_working_directory)
 #shell_working_directory = 
 
-# As far as possible, use client-provided initial program (Alternate Shell)
+# As far as possible, use client-provided initial program (Alternate Shell).
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ mod_rdp:use_client_provided_alternate_shell)
 #use_client_provided_alternate_shell = 0
 
-# As far as possible, use client-provided remote program (RemoteApp)
+# As far as possible, use client-provided remote program (RemoteApp).
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Use client provided RemoteApp
 # (acl config: proxy ⇐ mod_rdp:use_client_provided_remoteapp)
 #use_client_provided_remoteapp = 0
 
-# As far as possible, use native RemoteApp capability
+# As far as possible, use native RemoteApp capability.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Use native RemoteApp capability
 # (acl config: proxy ⇐ mod_rdp:use_native_remoteapp_capability)
@@ -612,7 +612,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (maxlen = 256)
 #application_driver_ie_script = )gen_config_ini" << (REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_SCRIPT) << R"gen_config_ini(
 
-# Do not transmit client machine name to RDP server.
+# Do not transmit the client machine name to RDP server.
 # If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.
 # (type: boolean (0/no/false or 1/yes/true))
 #hide_client_name = 0
@@ -666,7 +666,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #log_only_relevant_clipboard_activities = 1
 
-# Force to split target domain and username with '@' separator.
+# Force splitting target domain and username with '@' separator.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #split_domain = 0
@@ -714,7 +714,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:enable_ipv6)
 #enable_ipv6 = 1
 
-# Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option)
+# Console mode management for targets on Windows Server 2003 (requested with /console or /admin mstsc option).
 #   allow: Forward Console mode request from client to the target.
 #   force: Force Console mode on target regardless of client request.
 #   forbid: Block Console mode request from client.
@@ -1107,9 +1107,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 # BestSafe interaction must be enabled. Please refer to [session_probe]enable_bestsafe_interaction.
 # This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.
 # Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.
-#   0: allow: User action will be accepted
-#   1: notify: (Same thing as 'allow')
-#   2: deny: User action will be rejected
+#   0: allow: User action will be accepted.
+#   1: notify: (Same thing as 'allow'.)
+#   2: deny: User action will be rejected.
 # (acl config: proxy ⇐ session_probe:on_account_manipulation)
 #on_account_manipulation = 0
 
@@ -1145,7 +1145,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:process_monitoring_rules)
 #process_monitoring_rules = 
 
-# If enabled, a string of random characters will be added to the name of the executable of Session Probe.
+# If enabled, a string of random characters will be added to the name of the Session Probe executable.
 # The result could be: SesProbe-5420.exe
 # Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -1259,7 +1259,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [mod_vnc]
 
-# Check this option to enable the upload clipboard (from client to server).
+# Check this option to enable the clipboard upload (from client to server).
 # This only support text data clipboard (not files).
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ clipboard_up)
@@ -1303,13 +1303,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:server_is_macos)
 #server_is_macos = 0
 
-# When disabled, Ctrl + Alt becomes AltGr (Windows behavior)
+# When disabled, Ctrl + Alt becomes AltGr (Windows behavior).
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Server Unix alt
 # (acl config: proxy ⇐ mod_vnc:server_unix_alt)
 #server_unix_alt = 0
 
-# Enable target connection on IPv6
+# Enable target connection on IPv6.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable IPv6
 # (acl config: proxy ⇐ mod_vnc:enable_ipv6)
@@ -1354,8 +1354,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:tls_key_exchange_groups)
 #tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
 
-# Show in the logs the common cipher list supported by client and server
-# ⚠ Only for debug purposes
+# Show in the logs the common cipher list supported by client and server.
+# ⚠ Only for debugging purposes.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ mod_vnc:show_common_cipher_list)
@@ -1398,10 +1398,10 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Classification of input data is performed using Session Probe.
 # Without Session Probe, all the texts entered are considered unidentified.
-#   0: keyboard input are not masked
-#   1: only passwords are masked
-#   2: passwords and unidentified texts are masked
-#   3: keyboard inputs are not logged
+#   0: Keyboard input are not masked.
+#   1: Only passwords are masked.
+#   2: Passwords and unidentified texts are masked.
+#   3: Keyboard inputs are not logged.
 # (acl config: proxy ⇐ session_log:keyboard_input_masking_level)
 #keyboard_input_masking_level = 2
 
@@ -1417,13 +1417,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 #   cyrillic: Recognizes Latin and Cyrillic characters
 #locale = latin
 
-# Time interval between 2 analyzes.
+# Time interval between two analyzes.
 # Too low a value will affect session reactivity.
 # (in 1/100 seconds)
 #_advanced
 #interval = 100
 
-# Checks shape and color to determine if the text is on a title bar
+# Checks shape and color to determine if the text is on a title bar.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #on_title_bar_only = 1
@@ -1488,38 +1488,38 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #disable_file_system_log = 0
 
-# Time between 2 wrm recording file.
+# Time between two wrm recording file.
 # ⚠ A value that is too small increases the disk space required for recordings.
 # (in seconds)
 #_advanced
 #wrm_break_interval = 600
 
-# The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm):
+# The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):
 #   0: 24-bit
 #   1: 16-bit
 #_advanced
 #wrm_color_depth_selection_strategy = 1
 
-# The compression method of Session recording file (wrm):
+# The compression method of the session recording file (wrm):
 #   0: no compression
 #   1: GZip: Files are better compressed, but this takes more time and CPU load
 #   2: Snappy: Faster than GZip, but files are less compressed
 #_advanced
 #wrm_compression_algorithm = 1
 
-# Allow to control permissions on recorded files
+# Allow to control permissions on recorded files.
 # (in octal or symbolic mode format (as chmod Linux command))
 #file_permissions = 440
 
 [audit]
 
-# Show keyboard input event in meta file
+# Show keyboard input events in meta file.
 # (Please see also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP)
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #enable_keyboard_log = 1
 
-# The maximum time between 2 videos when none title bar is detected.
+# The maximum time between two videos when no title bar is detected.
 # (in seconds)
 #_advanced
 #video_break_interval = 604800
@@ -1545,9 +1545,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=FFmpeg options
 #ffmpeg_options = crf=35 preset=superfast
 
-#   0: disable: When replaying the session video, the content of the RDP viewer matches the size of the client's desktop
-#   1: v1: When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during session
-#   2: v2: When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during session
+#   0: disable: When replaying the session video, the content of the RDP viewer matches the size of the client's desktop.
+#   1: v1: When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during the session.
+#   2: v2: When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session.
 #smart_video_cropping = 2
 
 # Check this option will allow to play a video with corrupted Bitmap Update.
@@ -1555,11 +1555,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #play_video_with_corrupted_bitmap = 0
 
-# Allow to control permissions on video files
+# Allow to control permissions on video files.
 # (in octal or symbolic mode format (as chmod Linux command))
 #file_permissions = 440
 
-# Allow real-time view (4 eyes) without session recording enabled in the authorization
+# Allow real-time view (4 eyes) without session recording enabled in the authorization.
 # (type: boolean (0/no/false or 1/yes/true))
 #allow_rt_without_recording = 0
 
@@ -1648,7 +1648,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 [file_storage]
 
 # Enable storage of transferred files (via RDP Clipboard).
-# ⚠ Saving files can take up a lot of disk space
+# ⚠ Saving files can take up a lot of disk space.
 #   never: Never store transferred files.
 #   always: Always store transferred files.
 #   on_invalid_verification: Transferred files are stored only if file verification is invalid. File verification by ICAP service must be enabled (in section file_verification).
@@ -1657,12 +1657,12 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [websocket]
 
-# Enable websocket protocol (ws or wss with use_tls=1)
+# Enable websocket protocol (ws or wss with use_tls=1).
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable WebSocket
 #enable_websocket = 0
 
-# Use TLS with websocket (wss)
+# Use TLS with websocket (wss).
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Use TLS
 #use_tls = 1
@@ -1683,12 +1683,12 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #keyboard_layout_proposals = en-US, fr-FR, de-DE
 
-# Show close screen.
-# This displays errors related to the secondary connection then closes automatically after a timeout specified by [internal_mod]close_box_timeout or on user request.
+# Display the close screen.
+# This displays errors related to the secondary connection then closes automatically after a timeout specified by the [internal_mod]close_box_timeout or on user request.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_close_box = 1
 
-# Specifies the time to spend on the close box of proxy RDP before closing client window.
+# Specifies the time to spend on the close box of the RDP proxy before closing client window.
 # ⚠ Value 0 deactivates the timer and the connection remains open until the client disconnects.
 # (in seconds)
 #_advanced
@@ -1712,7 +1712,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 [translation]
 
 # Language used on the login page. When the user logs in, their user preference language is used.
-#   Auto: The language will be deduced according to the keyboard layout announced by the client
+#   Auto: The language will be deduced according to the keyboard layout announced by the client.
 #   EN: 
 #   FR: 
 #_advanced
@@ -1720,94 +1720,94 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [theme]
 
-# Enable custom theme color configuration
+# Enable custom theme color configuration.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_theme = 0
 
-# Logo displayed when theme is enabled
+# Logo displayed when theme is enabled.
 #logo = )gen_config_ini" << (REDEMPTION_CONFIG_THEME_LOGO) << R"gen_config_ini(
 
-# Background color for window, label and button
+# Background color for window, label and button.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #bgcolor = #081F60
 
-# Foreground color for window, label and button
+# Foreground color for window, label and button.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #fgcolor = #FFFFFF
 
-# Separator line color used with some widgets
+# Separator line color used with some widgets.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #separator_color = #CFD5EB
 
-# Background color used by buttons when they have focus
+# Background color used by buttons when they have focus.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #focus_color = #004D9C
 
-# Text color for error messages. For example, an authentication error in the login
+# Text color for error messages. For example, an authentication error in the login.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #error_color = #FFFF00
 
-# Background color for editing field
+# Background color for editing field.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #edit_bgcolor = #FFFFFF
 
-# Foreground color for editing field
+# Foreground color for editing field.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #edit_fgcolor = #000000
 
-# Outline color for editing field that has focus
+# Outline color for editing field that has focus.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #edit_focus_color = #004D9C
 
-# Background color for tooltip
+# Background color for tooltip.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #tooltip_bgcolor = #FFFF9F
 
-# Foreground color for tooltip
+# Foreground color for tooltip.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #tooltip_fgcolor = #000000
 
-# Border color for tooltip
+# Border color for tooltip.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #tooltip_border_color = #000000
 
-# Background color for even rows in the selector widget
+# Background color for even rows in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_line1_bgcolor = #E9ECF6
 
-# Foreground color for even rows in the selector widget
+# Foreground color for even rows in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_line1_fgcolor = #000000
 
-# Background color for odd rows in the selector widget
+# Background color for odd rows in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_line2_bgcolor = #CFD5EB
 
-# Foreground color for odd rows in the selector widget
+# Foreground color for odd rows in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_line2_fgcolor = #000000
 
-# Background color for the row that has focus in the selector widget
+# Background color for the row that has focus in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_focus_bgcolor = #004D9C
 
-# Foreground color for the row that has focus in the selector widget
+# Foreground color for the row that has focus in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_focus_fgcolor = #FFFFFF
 
-# Background color for the row that is selected in the selector widget but does not have focus
+# Background color for the row that is selected in the selector widget but does not have focus.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_selected_bgcolor = #4472C4
 
-# Foreground color for the row that is selected in the selector widget but does not have focus
+# Foreground color for the row that is selected in the selector widget but does not have focus.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_selected_fgcolor = #FFFFFF
 
-# Background color for name of filter fields in the selector widget
+# Background color for name of filter fields in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_label_bgcolor = #4472C4
 
-# Foreground color for name of filter fields in the selector widget
+# Foreground color for name of filter fields in the selector widget.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #selector_label_fgcolor = #FFFFFF
 
@@ -1985,7 +1985,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=FFmpeg
 #ffmpeg = 0
 
-# Log unknown members or sections
+# Log unknown members or sections.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #config = 1
@@ -1996,7 +1996,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=Mod RDP use failure simulation socket transport
 #mod_rdp_use_failure_simulation_socket_transport = 0
 
-# List of client probe IP addresses (ex: ip1,ip2,etc) to prevent some continuous logs
+# List of client probe IP addresses (e.g. ip1, ip2, etc.) to prevent some continuous logs.
 # (values are comma-separated)
 #_advanced
 #probe_client_addresses = 

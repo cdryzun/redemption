@@ -95,7 +95,7 @@ inline void config_type_definition(type_enumerations & e)
       .value("meta", "(redirected) file system log in recorded meta")
     ;
 
-    e.enumeration_set("ColorDepth", withoutNameWhenDescription, "Specifies the maximum color resolution (color depth) for client connection session:")
+    e.enumeration_set("ColorDepth", withoutNameWhenDescription, "Specifies the maximum color resolution (color depth) for the client connection session:")
       .value("depth8", 8, "8-bit")
       .value("depth15", 15, "15-bit 555 RGB mask")
       .value("depth16", 16, "16-bit 565 RGB mask")
@@ -122,10 +122,10 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("KeyboardInputMaskingLevel", withoutNameWhenDescription)
-      .value("unmasked", "keyboard input are not masked")
-      .value("password_only", "only passwords are masked")
-      .value("password_and_unidentified", "passwords and unidentified texts are masked")
-      .value("fully_masked", "keyboard inputs are not logged")
+      .value("unmasked", "Keyboard input are not masked.")
+      .value("password_only", "Only passwords are masked.")
+      .value("password_and_unidentified", "Passwords and unidentified texts are masked.")
+      .value("fully_masked", "Keyboard inputs are not logged.")
     ;
 
     e.enumeration_list("SessionProbeOnLaunchFailure", withNameWhenDescription, "Behavior on failure to launch Session Probe.")
@@ -140,12 +140,12 @@ inline void config_type_definition(type_enumerations & e)
       .value("continued", "No special processing is done, the proxy always responds immediately.")
     ;
 
-    e.enumeration_list("ColorDepthSelectionStrategy", withoutNameWhenDescription, "The method by which the proxy RDP establishes criteria on which to chosse a color depth for Session recording file (wrm):")
+    e.enumeration_list("ColorDepthSelectionStrategy", withoutNameWhenDescription, "The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):")
       .value("depth24", "24-bit")
       .value("depth16", "16-bit")
     ;
 
-    e.enumeration_list("WrmCompressionAlgorithm", withoutNameWhenDescription, "The compression method of Session recording file (wrm):")
+    e.enumeration_list("WrmCompressionAlgorithm", withoutNameWhenDescription, "The compression method of the session recording file (wrm):")
       .value("no_compression")
       .value("gzip", "GZip: Files are better compressed, but this takes more time and CPU load")
       .value("snappy", "Snappy: Faster than GZip, but files are less compressed")
@@ -176,9 +176,9 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("SmartVideoCropping", withNameWhenDescription)
-      .value("disable", "When replaying the session video, the content of the RDP viewer matches the size of the client's desktop")
-      .value("v1", "When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during session")
-      .value("v2", "When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during session")
+      .value("disable", "When replaying the session video, the content of the RDP viewer matches the size of the client's desktop.")
+      .value("v1", "When replaying the session video, the content of the RDP viewer is restricted to the greatest area covered by the application during the session.")
+      .value("v2", "When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session.")
     ;
 
     e.enumeration_list("RdpModeConsole", withoutNameWhenDescription)
@@ -207,15 +207,15 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("SessionProbeOnAccountManipulation", withNameWhenDescription, "For targets running WALLIX BestSafe only.")
-      .value("allow",  "User action will be accepted")
-      .value("notify", "(Same thing as 'allow')")
-      .value("deny",   "User action will be rejected")
+      .value("allow",  "User action will be accepted.")
+      .value("notify", "(Same thing as 'allow'.)")
+      .value("deny",   "User action will be rejected.")
     ;
 
     e.enumeration_list("ClientAddressSent", withoutNameWhenDescription, "Client Address to send to target(in InfoPacket)")
       .value("no_address", "Send 0.0.0.0")
-      .value("proxy", "Send proxy client address or target connexion")
-      .value("front", "Send user client address of front connexion")
+      .value("proxy", "Send proxy client address or target connexion.")
+      .value("front", "Send user client address of front connexion.")
     ;
 
     e.enumeration_list("SessionProbeLogLevel", withNameWhenDescription)
@@ -235,7 +235,7 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("LoginLanguage", withNameWhenDescription)
-      .value("Auto", "The language will be deduced according to the keyboard layout announced by the client")
+      .value("Auto", "The language will be deduced according to the keyboard layout announced by the client.")
       .value("EN")
       .value("FR")
     ;
