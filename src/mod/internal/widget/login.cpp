@@ -111,7 +111,9 @@ WidgetLogin::WidgetLogin(
 
     this->add_widget(this->version_label);
 
-    this->add_widget(this->error_message_label);
+    if (!this->error_message_label.is_empty()) {
+        this->add_widget(this->error_message_label);
+    }
 
     if (!login_message.empty()) {
         this->add_widget(this->message_label);
@@ -137,8 +139,6 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         uint16_t((width >= 420) ? 400 : width - 20),
         this->login_edit.cy()
     };
-
-    this->error_message_label.set_wh(edit_dim.w, this->error_message_label.cy());
 
     const int labels_w = std::max({
         login_edit.label_width(label_as_placeholder),
@@ -246,7 +246,13 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         y += extra_space_between_label_h + edit.cy() + space_h;
     };
 
-    this->error_message_label.set_xy(left + cbloc_x + labels_w, y);
+    if (!this->error_message_label.is_empty()) {
+        this->error_message_label.set_xy(
+            checked_int{left + cbloc_x + (label_as_placeholder ? 0 : labels_w)},
+            checked_int{y}
+        );
+    }
+
     y += edit_dim.h + space_h;
     if (this->show_target) {
         set_edit_layout(this->target_edit);
