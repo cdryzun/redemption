@@ -131,6 +131,11 @@ public:
         draw_cursor(clip, colors.cursor);
     }
 
+    void hidden_current_cursor(Rect clip)
+    {
+        draw_cursor(clip, colors.bg);
+    }
+
 private:
     using FontCharPtr = FontCharView const *;
 

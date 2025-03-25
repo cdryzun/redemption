@@ -117,6 +117,7 @@ public:
 
 private:
     void draw_placeholder(Rect clip);
+    void draw_button_zone(Rect clip);
 
     bool is_password_widget() const noexcept;
     bool is_text_widget() const noexcept;

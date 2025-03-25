@@ -301,6 +301,7 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
                 clip.cx = edit_or_text.text.offset_x;
                 draw_text(x(), label.text.fcs(), 1);
             }
+
             return ;
         }
 
@@ -338,94 +339,99 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
             );
         }
 
-        auto draw_border3 = [&](RDPColor color, int shring) {
-            int16_t xb = checked_int(edit_or_text.edit.eright() - shring);
-            int16_t yb = checked_int(y() + shring);
-            uint16_t wb = checked_int(eright() - xb - shring);
-            uint16_t hb = checked_int(cy() - shring * 2);
+        draw_button_zone(clip);
+    }
+}
 
-            // top
-            draw_rect(drawable, clip, color, xb, yb, wb, border_len);
-            // bottom
-            draw_rect(drawable, clip, color, xb, checked_int(yb + hb - border_len), wb, border_len);
-            // right
-            draw_rect(drawable, clip, color, checked_int(xb + wb - border_len), yb + border_len, border_len, hb - border_len * 2);
+void WidgetEditValid::draw_button_zone(Rect clip)
+{
+    auto draw_border3 = [&](RDPColor color, int shring) {
+        int16_t xb = checked_int(edit_or_text.edit.eright() - shring);
+        int16_t yb = checked_int(y() + shring);
+        uint16_t wb = checked_int(eright() - xb - shring);
+        uint16_t hb = checked_int(cy() - shring * 2);
+
+        // top
+        draw_rect(drawable, clip, color, xb, yb, wb, border_len);
+        // bottom
+        draw_rect(drawable, clip, color, xb, checked_int(yb + hb - border_len), wb, border_len);
+        // right
+        draw_rect(drawable, clip, color, checked_int(xb + wb - border_len), yb + border_len, border_len, hb - border_len * 2);
+    };
+
+    RDPColor border_color;
+
+    if (this->has_focus) {
+        int const y_button = y() + border_len * 2;
+        int const cy_button = cy() - border_len * 4;
+
+        auto draw_button = [this, y_button, cy_button, clip](
+            int x_button, bool is_pressed, FontCharView const* fc,
+            RDPColor fg, RDPColor bg, int pad, int adjust_border
+        ) {
+            uint16_t h_text = edit_or_text.edit.get_font().max_height();
+            int top_pad = (cy_button - h_text) / 2 + is_pressed;
+            int bottom_pad = cy_button - h_text - top_pad;
+            return gdi::draw_text(
+                drawable,
+                checked_int(x_button),
+                y_button,
+                h_text,
+                gdi::DrawTextPadding{
+                    .top = checked_int(top_pad),
+                    .right = checked_int(pad - is_pressed),
+                    .bottom = checked_int(bottom_pad),
+                    .left = checked_int(pad + is_pressed - adjust_border),
+                },
+                array_view{&fc, 1},
+                fg, bg, clip
+            );
         };
 
-        RDPColor border_color;
-
-        if (this->has_focus) {
-            int const y_button = y() + border_len * 2;
-            int const cy_button = cy() - border_len * 4;
-
-            auto draw_button = [this, y_button, cy_button, clip](
-                int x_button, bool is_pressed, FontCharView const* fc,
-                RDPColor fg, RDPColor bg, int pad, int adjust_border
-            ) {
-                uint16_t h_text = edit_or_text.edit.get_font().max_height();
-                int top_pad = (cy_button - h_text) / 2 + is_pressed;
-                int bottom_pad = cy_button - h_text - top_pad;
-                return gdi::draw_text(
-                    drawable,
-                    checked_int(x_button),
-                    y_button,
-                    h_text,
-                    gdi::DrawTextPadding{
-                        .top = checked_int(top_pad),
-                        .right = checked_int(pad - is_pressed),
-                        .bottom = checked_int(bottom_pad),
-                        .left = checked_int(pad + is_pressed - adjust_border),
-                    },
-                    array_view{&fc, 1},
-                    fg, bg, clip
-                );
-            };
-
-            int x_button = edit_or_text.edit.eright();
-            int adjust_border = border_len;
-            if (auto * fc = buttons.visibility_visible) {
-                draw_button(
-                    x_button - border_len,
-                    toggle_password_pressed.is_pressed(),
-                    edit_or_text.edit.password_is_visible()
-                        ? buttons.visibility_visible
-                        : buttons.visibility_hidden,
-                    password_toggle_color,
-                    edit_or_text.edit.get_colors().bg,
-                    w_button_toggle_padding, adjust_border
-                );
-                x_button += button_toggle_width(*fc) - border_len;
-                adjust_border = 0;
-            }
+        int x_button = edit_or_text.edit.eright();
+        int adjust_border = border_len;
+        if (auto * fc = buttons.visibility_visible) {
             draw_button(
-                x_button,
-                valid_pressed.is_pressed(),
-                buttons.valid_text,
+                x_button - border_len,
+                toggle_password_pressed.is_pressed(),
+                edit_or_text.edit.password_is_visible()
+                    ? buttons.visibility_visible
+                    : buttons.visibility_hidden,
+                password_toggle_color,
                 edit_or_text.edit.get_colors().bg,
-                edit_or_text.edit.get_colors().focus_border,
-                w_button_valid_padding, adjust_border
+                w_button_toggle_padding, adjust_border
             );
-
-            draw_border3(edit_or_text.edit.get_colors().bg, border_len);
-
-            border_color = edit_or_text.edit.get_colors().focus_border;
+            x_button += button_toggle_width(*fc) - border_len;
+            adjust_border = 0;
         }
-        else {
-            draw_rect(
-                drawable,
-                rect,
-                edit_or_text.edit.get_colors().bg,
-                checked_int(edit_or_text.edit.eright() - border_len),
-                checked_int(y() + border_len),
-                checked_int(eright() - edit_or_text.edit.eright()),
-                checked_int(cy() - border_len * 2)
-            );
+        draw_button(
+            x_button,
+            valid_pressed.is_pressed(),
+            buttons.valid_text,
+            edit_or_text.edit.get_colors().bg,
+            edit_or_text.edit.get_colors().focus_border,
+            w_button_valid_padding, adjust_border
+        );
 
-            border_color = edit_or_text.edit.get_colors().border;
-        }
+        draw_border3(edit_or_text.edit.get_colors().bg, border_len);
 
-        draw_border3(border_color, 0);
+        border_color = edit_or_text.edit.get_colors().focus_border;
     }
+    else {
+        draw_rect(
+            drawable,
+            clip,
+            edit_or_text.edit.get_colors().bg,
+            checked_int(edit_or_text.edit.eright() - border_len),
+            checked_int(y() + border_len),
+            checked_int(eright() - edit_or_text.edit.eright()),
+            checked_int(cy() - border_len * 2)
+        );
+
+        border_color = edit_or_text.edit.get_colors().border;
+    }
+
+    draw_border3(border_color, 0);
 }
 
 void WidgetEditValid::focus(int reason)
@@ -433,8 +439,10 @@ void WidgetEditValid::focus(int reason)
     if (!is_text_widget() && !has_focus){
         has_focus = true;
         edit_or_text.edit.focus(reason);
-        // TODO
-        rdp_input_invalidate(get_rect());
+        if (label.is_placeholder && !this->edit_or_text.edit.has_text()) {
+            edit_or_text.edit.draw_current_cursor(get_rect());
+        }
+        draw_button_zone(get_rect());
     }
 }
 
@@ -445,8 +453,10 @@ void WidgetEditValid::blur()
         toggle_password_pressed.pressed(false);
         valid_pressed.pressed(false);
         edit_or_text.edit.blur();
-        // TODO
-        rdp_input_invalidate(get_rect());
+        if (label.is_placeholder && !this->edit_or_text.edit.has_text()) {
+            edit_or_text.edit.hidden_current_cursor(get_rect());
+        }
+        draw_button_zone(get_rect());
     }
 }
 
@@ -563,7 +573,10 @@ void WidgetEditValid::draw_placeholder(Rect clip)
         edit_or_text.edit.get_colors().bg,
         edit_rect.intersect(clip)
     );
-    edit_or_text.edit.draw_current_cursor(clip);
+
+    if (this->has_focus) {
+        edit_or_text.edit.draw_current_cursor(clip);
+    }
 }
 
 WidgetEditValid::Colors WidgetEditValid::Colors::from_theme(const Theme& theme) noexcept
