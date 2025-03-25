@@ -106,9 +106,8 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     auto edit = ctx.edit();
     edit.init_focus();
 
+    edit.set_xy(10, 10);
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(false) + 19),
         .label_as_placeholder = false,
@@ -126,8 +125,6 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     gdi_clear_screen(ctx.drawable, {ctx.drawable.width(), ctx.drawable.height()});
     edit.set_text("Yliajli"_av, {});
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(false) + 28),
         .label_as_placeholder = false,
@@ -169,12 +166,11 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
     edit.init_focus();
 
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
     });
+    edit.set_xy(10, 10);
 
     edit.rdp_input_invalidate(edit.get_rect());
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_1.png");
@@ -187,8 +183,6 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
 
     edit.set_text("Ylajali"_av, {});
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
@@ -230,12 +224,11 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
     edit.init_focus();
 
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
     });
+    edit.set_xy(10, 10);
 
     edit.rdp_input_invalidate(edit.get_rect());
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_1.png");
@@ -248,8 +241,6 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
 
     edit.set_text("Ylajaiiiii"_av, {});
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,
@@ -304,12 +295,11 @@ RED_AUTO_TEST_CASE(TraceWidgetEditTextWithLabel)
     edit.init_focus();
 
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(false) + 20),
         .label_as_placeholder = false,
     });
+    edit.set_xy(10, 10);
 
     edit.rdp_input_invalidate(edit.get_rect());
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_1.png");
@@ -322,8 +312,6 @@ RED_AUTO_TEST_CASE(TraceWidgetEditTextWithLabel)
 
     edit.set_text("Ylajaiiiii"_av, {});
     edit.update_layout(WidgetEditValid::Layout{
-        .x = 10,
-        .y = 10,
         .width = 120,
         .edit_offset = checked_int(edit.label_width(true) + 29),
         .label_as_placeholder = true,

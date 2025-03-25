@@ -193,14 +193,12 @@ void WidgetInteractiveTarget::move_size_widget(int16_t left, int16_t top, uint16
     y = this->separator.ebottom() + y_sep;
 
     auto update_edit_layout = [&](WidgetEditValid & w){
+        w.set_xy(checked_int(x_cbloc), checked_int(y));
         w.update_layout({
-            .x = checked_int(x_cbloc),
-            .y = checked_int(y),
             .width = cbloc_w,
             .edit_offset = offset_edit,
             .label_as_placeholder = false,
         });
-
         return w.ebottom() + y_sep;
     };
 

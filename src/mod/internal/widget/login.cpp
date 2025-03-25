@@ -236,9 +236,11 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
     int y = start_y + top;
 
     auto set_edit_layout = [&](WidgetEditValid& edit) {
+        edit.set_xy(
+            checked_int(left + cbloc_x),
+            checked_int(y)
+        );
         edit.update_layout({
-            .x = checked_int(left + cbloc_x),
-            .y = checked_int(y),
             .width = checked_int(cbloc_w),
             .edit_offset = checked_int(labels_w),
             .label_as_placeholder = label_as_placeholder,

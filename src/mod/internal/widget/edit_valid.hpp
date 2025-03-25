@@ -69,8 +69,6 @@ public:
 
     struct Layout
     {
-        int16_t x;
-        int16_t y;
         uint16_t width;
         uint16_t edit_offset;
         bool label_as_placeholder;
@@ -89,9 +87,9 @@ public:
 
     void set_text(bytes_view text, TextOptions opts);
 
-    void update_layout(Layout data);
-
     [[nodiscard]] WidgetEdit::Text get_text() const;
+
+    void update_layout(Layout data);
 
     void set_xy(int16_t x, int16_t y) override;
 
@@ -127,7 +125,7 @@ private:
         Color bg_color;
         Color fg_color;
         Color placeholder_color;
-        bool is_placeholder;
+        bool has_placeholder;
         WidgetText<128> text;
     };
 

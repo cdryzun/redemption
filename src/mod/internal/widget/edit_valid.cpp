@@ -124,7 +124,7 @@ WidgetEditValid::WidgetEditValid(
         .bg_color = colors.bg,
         .fg_color = colors.fg,
         .placeholder_color = colors.placeholder,
-        .is_placeholder = false,
+        .has_placeholder = false,
         .text = {font, opts.label},
     }
     , edit_or_text(opts.type == Type::Text
@@ -170,9 +170,9 @@ void WidgetEditValid::init_focus()
     }
 }
 
-uint16_t WidgetEditValid::label_width(bool is_placeholder) const noexcept
+uint16_t WidgetEditValid::label_width(bool has_placeholder) const noexcept
 {
-    return label.text.width() + border_len * 2 + is_placeholder * x_placeholder;
+    return label.text.width() + border_len * 2 + has_placeholder * x_placeholder;
 }
 
 uint16_t WidgetEditValid::text_width() const noexcept
@@ -190,56 +190,54 @@ void WidgetEditValid::set_text(bytes_view text, TextOptions opts)
     }
 }
 
+WidgetEdit::Text WidgetEditValid::get_text() const
+{
+    if (!is_text_widget()) {
+        return edit_or_text.edit.get_text();
+    }
+    else {
+        return edit_or_text.text.text_buffer;
+    }
+
+}
+
 void WidgetEditValid::update_layout(Layout layout)
 {
-    label.is_placeholder = layout.label_as_placeholder;
+    label.has_placeholder = layout.label_as_placeholder;
 
     uint16_t widget_h;
     uint16_t widget_w;
 
     if (is_text_widget()) {
-        edit_or_text.text.offset_x = label.is_placeholder ? 0 : layout.edit_offset;
+        edit_or_text.text.offset_x = label.has_placeholder ? 0 : layout.edit_offset;
         widget_h = edit_or_text.text.height();
         widget_w = edit_or_text.text.offset_x + edit_or_text.text.width() + border_len * 2;
     }
     else {
         int w = button_valid_width(*buttons.valid_text) + border_len * 2;
-        if (!label.is_placeholder) {
+        if (!label.has_placeholder) {
             w += layout.edit_offset;
         }
         if (auto * fc = buttons.visibility_visible) {
             w += button_toggle_width(*fc);
         }
 
-        int16_t x_edit = layout.x;
-        if (!label.is_placeholder) {
-            x_edit += layout.edit_offset;
-        }
-        edit_or_text.edit.set_xy(x_edit, layout.y);
+        auto edit_offset = label.has_placeholder ? uint16_t{} : layout.edit_offset;
+        edit_or_text.edit.set_xy(checked_int{x() + edit_offset}, y());
         edit_or_text.edit.update_width(checked_int(layout.width - w));
         widget_h = edit_or_text.edit.cy();
         widget_w = layout.width;
     }
 
-    Widget::set_xy(layout.x, layout.y);
     Widget::set_wh(widget_w, widget_h);
-}
-
-WidgetEdit::Text WidgetEditValid::get_text() const
-{
-    if (!is_text_widget()) {
-        return edit_or_text.edit.get_text();
-    }
-
-    return edit_or_text.text.text_buffer;
 }
 
 void WidgetEditValid::set_xy(int16_t x, int16_t y)
 {
-    Widget::set_xy(x, y);
+    int dx = x - this->x();
+    int dy = y - this->y();
 
-    int dx = this->x() - x;
-    int dy = this->y() - y;
+    Widget::set_xy(x, y);
 
     if (!is_text_widget()) {
         edit_or_text.edit.set_xy(
@@ -297,7 +295,7 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
             };
 
             draw_text(x() + edit_or_text.text.offset_x, edit_or_text.text.fcs(), 0);
-            if (!label.is_placeholder) {
+            if (!label.has_placeholder) {
                 clip.cx = edit_or_text.text.offset_x;
                 draw_text(x(), label.text.fcs(), 1);
             }
@@ -312,7 +310,7 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
         edit_or_text.edit.rdp_input_invalidate(rect);
 
         // placeholder
-        if (label.is_placeholder) {
+        if (label.has_placeholder) {
             if (!this->edit_or_text.edit.has_text()) {
                 draw_placeholder(clip);
             }
@@ -439,7 +437,7 @@ void WidgetEditValid::focus(int reason)
     if (!is_text_widget() && !has_focus){
         has_focus = true;
         edit_or_text.edit.focus(reason);
-        if (label.is_placeholder && !this->edit_or_text.edit.has_text()) {
+        if (label.has_placeholder && !this->edit_or_text.edit.has_text()) {
             edit_or_text.edit.draw_current_cursor(get_rect());
         }
         draw_button_zone(get_rect());
@@ -453,7 +451,7 @@ void WidgetEditValid::blur()
         toggle_password_pressed.pressed(false);
         valid_pressed.pressed(false);
         edit_or_text.edit.blur();
-        if (label.is_placeholder && !this->edit_or_text.edit.has_text()) {
+        if (label.has_placeholder && !this->edit_or_text.edit.has_text()) {
             edit_or_text.edit.hidden_current_cursor(get_rect());
         }
         draw_button_zone(get_rect());
@@ -529,7 +527,7 @@ void WidgetEditValid::rdp_input_scancode(
         bool has_char1 = !edit_or_text.edit.has_text();
         edit_or_text.edit.rdp_input_scancode(flags, scancode, event_time, keymap);
 
-        if (label.is_placeholder) {
+        if (label.has_placeholder) {
             bool has_char2 = !edit_or_text.edit.has_text();
             if (has_char1 != has_char2) {
                 auto rect = edit_or_text.edit.get_rect();
