@@ -37,7 +37,7 @@ InteractiveTargetMod::InteractiveTargetMod(
     , ask_login(vars.is_asked<cfg::globals::target_user>())
     , ask_password((this->ask_login || vars.is_asked<cfg::context::target_password>()))
     , language_button(vars.get<cfg::internal_mod::keyboard_layout_proposals>(), this->challenge,
-        drawable, front, font, theme)
+        drawable, front, font, LanguageButton::Colors::from_theme(theme))
     , challenge(
         drawable, copy_paste, widget_rect.x, widget_rect.y, widget_rect.cx, widget_rect.cy,
         {

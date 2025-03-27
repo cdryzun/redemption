@@ -31,7 +31,6 @@ class Theme;
 class WidgetDelegatedCopy final : public WidgetButtonEvent
 {
 public:
-    // TODO WidgetButton::Colors
     struct Colors
     {
         Color fg;

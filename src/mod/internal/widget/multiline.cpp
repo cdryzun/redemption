@@ -117,7 +117,6 @@ WidgetMultiLine::WidgetMultiLine(
     set_text(font, max_width, text);
 }
 
-// TODO remove ?
 void WidgetMultiLine::set_text(Font const & font, unsigned max_width, chars_view text)
 {
     multi_line.set_text(font, max_width, text);

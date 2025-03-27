@@ -27,7 +27,7 @@
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "gdi/draw_utils.hpp"
 #include "gdi/text_metrics.hpp"
-#include "utils/theme.hpp" // TODO
+#include "utils/theme.hpp"
 
 namespace
 {
@@ -151,7 +151,6 @@ WidgetEditValid::WidgetEditValid(
     }
 }
 
-// TODO remove that when EditOrText is trivial
 WidgetEditValid::~WidgetEditValid()
 {
     if (is_text_widget()) {
@@ -458,7 +457,7 @@ void WidgetEditValid::blur()
     }
 }
 
-// TODO for edit pointer cursor
+// TODO for edit pointer cursor only
 Widget * WidgetEditValid::widget_at_pos(int16_t x, int16_t y)
 {
     if (!is_text_widget() && edit_or_text.edit.get_rect().contains_pt(x, y)) {

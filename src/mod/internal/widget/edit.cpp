@@ -28,7 +28,7 @@
 #include "mod/internal/copy_paste.hpp"
 #include "utils/colors.hpp"
 #include "utils/sugar/cast.hpp"
-#include "utils/theme.hpp" // TODO
+#include "utils/theme.hpp"
 
 namespace
 {
@@ -51,11 +51,6 @@ void draw_rect(gdi::GraphicApi& drawable, Rect rect, Widget::Color color)
     if (!rect.isempty()) {
         drawable.draw(RDPOpaqueRect(rect, color), rect, gdi::ColorCtx::depth24());
     }
-}
-
-void draw_rect(gdi::GraphicApi& drawable, Rect rect, Widget::Color color, Rect clip)
-{
-    draw_rect(drawable, clip.intersect(rect), color);
 }
 
 template<class F>
@@ -839,8 +834,6 @@ void WidgetEdit::remove_left(FontCharPtr const* old_position, int shift, Redraw 
     auto old_x_text = x_text;
     auto partial_update = move_cursor_to_left(shift);
 
-    // TODO redraw left when x_text updated
-
     if (redraw == Redraw::Yes) {
         maybe_redraw_left_empty_padding(old_x_text);
         redraw_removed_right_text(partial_update, shift);
@@ -850,8 +843,6 @@ void WidgetEdit::remove_left(FontCharPtr const* old_position, int shift, Redraw 
 void WidgetEdit::remove_right(FontCharPtr const* old_position, int shift, Redraw redraw)
 {
     buffer().remove_left(old_position);
-
-    // TODO redraw left when x_text updated
 
     if (redraw == Redraw::Yes) {
         redraw_removed_right_text(true, shift);
@@ -875,7 +866,7 @@ void WidgetEdit::draw_border(Rect clip, Color color)
 
 void WidgetEdit::draw_cursor(Rect clip, Color color)
 {
-    draw_rect(drawable, cursor_rect(x_cursor), color, clip);
+    draw_rect(drawable, cursor_rect(x_cursor).intersect(clip), color);
 }
 
 void WidgetEdit::draw_inner(Rect clip)
@@ -935,7 +926,7 @@ int WidgetEdit::redraw_text(RedrawInfo redraw_info)
         colors.bg,
         clip
     );
-    draw_cursor(clip, colors.cursor); // TODO
+    draw_cursor(clip, colors.cursor);
 
     return last_x;
 }

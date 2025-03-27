@@ -39,7 +39,7 @@ SelectorMod::SelectorMod(
     , number_page(0)
     , language_button(
         ini.get<cfg::internal_mod::keyboard_layout_proposals>(),
-        this->selector, drawable, front, font, theme)
+        this->selector, drawable, front, font, LanguageButton::Colors::from_theme(theme))
     , selector(
         drawable, font, copy_paste, theme, this->screen, tr,
         &this->language_button, widget_rect,

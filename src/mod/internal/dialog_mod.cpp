@@ -93,7 +93,7 @@ DialogWithChallengeMod::DialogWithChallengeMod(
     : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, &copy_paste)
     , language_button(
         vars.get<cfg::internal_mod::keyboard_layout_proposals>(), this->dialog_widget,
-        drawable, front, font, theme)
+        drawable, front, font, LanguageButton::Colors::from_theme(theme))
     , dialog_widget(
         drawable, widget_rect,
         WidgetDialogWithChallenge::Events{

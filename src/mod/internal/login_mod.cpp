@@ -68,7 +68,7 @@ LoginMod::LoginMod(
     , events_guard(events)
     , language_button(
         vars.get<cfg::internal_mod::keyboard_layout_proposals>(),
-        this->login, drawable, front, font, theme)
+        this->login, drawable, front, font, LanguageButton::Colors::from_theme(theme))
     , login([&]{
         chars_view target;
         chars_view login;

@@ -25,7 +25,6 @@ public:
 
     void reset() noexcept;
 
-    // TODO rename to optimal_dimension ?
     Dimension dimension() const noexcept;
 
     struct Data
@@ -89,7 +88,6 @@ public:
     WidgetMultiLine(gdi::GraphicApi & drawable, Colors colors);
 
     void set_text(Font const & font, unsigned max_width, chars_view text);
-    // TODO update_dimension(unsigned max_width)
 
     void rdp_input_invalidate(Rect clip) override;
 

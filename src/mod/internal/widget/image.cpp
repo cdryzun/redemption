@@ -33,7 +33,7 @@ void WidgetImage::rdp_input_invalidate(Rect clip)
         bitmap_data.height          = bitmap.cy();
         bitmap_data.bits_per_pixel  = safe_int(bitmap.bpp());
         bitmap_data.flags           = 0;
-        bitmap_data.bitmap_length   = bitmap.bmp_size();  // TODO overflow, but not used in Front...
+        bitmap_data.bitmap_length   = bitmap.bmp_size();  // TODO BUG overflow, but not used in Front...
 
         drawable.draw(bitmap_data, bitmap);
     };

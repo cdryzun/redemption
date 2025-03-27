@@ -74,20 +74,27 @@ namespace
     }
 } // namespace
 
+
+LanguageButton::Colors LanguageButton::Colors::from_theme(const Theme& theme) noexcept
+{
+    return {
+        .fg = theme.global.fgcolor,
+        .bg = theme.global.bgcolor,
+        .focus_bg = theme.global.focus_color,
+    };
+}
+
+
 LanguageButton::LanguageButton(
     zstring_view enable_locales,
     Widget & parent_redraw,
     gdi::GraphicApi & drawable,
     FrontAPI & front,
     Font const & font,
-    Theme const & theme
+    Colors colors
 )
-: WidgetButtonEvent(drawable, [this]{ next_layout(); })
-, colors{
-    .fg = theme.global.fgcolor,
-    .bg = theme.global.bgcolor,
-    .focus_bg = theme.global.focus_color,
-}
+: WidgetButtonEvent(drawable, [this]{ next_layout(); }, WidgetButtonEvent::RedrawOnSubmit::Yes)
+, colors{colors}
 , font(font)
 , front(front)
 , parent_redraw(parent_redraw)

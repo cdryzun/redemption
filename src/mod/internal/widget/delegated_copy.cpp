@@ -46,7 +46,7 @@ WidgetDelegatedCopy::WidgetDelegatedCopy(
     gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
     Colors colors, Font const & font
 )
-    : WidgetButtonEvent(drawable, onsubmit)
+    : WidgetButtonEvent(drawable, onsubmit, WidgetButtonEvent::RedrawOnSubmit::Yes)
     , colors(colors)
 {
     auto const& glyph = font.item('E').view;

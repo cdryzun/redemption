@@ -112,7 +112,7 @@ WidgetButton::Colors WidgetButton::Colors::no_border_from_theme(const Theme& the
 WidgetButton::WidgetButton(
     gdi::GraphicApi & drawable, Font const & font,
     chars_view text, Colors colors, WidgetEventNotifier onsubmit)
-: WidgetButtonEvent(drawable, onsubmit)
+: WidgetButtonEvent(drawable, onsubmit, RedrawOnSubmit::Yes)
 , colors(colors)
 , button_text(font, text)
 {

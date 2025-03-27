@@ -17,14 +17,22 @@ class Theme;
 class LanguageButton : public WidgetButtonEvent
 {
 public:
+    struct Colors
+    {
+        Color fg;
+        Color bg;
+        Color focus_bg;
+
+        static Colors from_theme(Theme const& theme) noexcept;
+    };
+
     LanguageButton(
         zstring_view enable_locales,
         Widget & parent,
         gdi::GraphicApi & drawable,
         FrontAPI & front,
         Font const & font,
-        // TODO use Colors ?
-        Theme const & theme
+        Colors colors
     );
 
     void next_layout();
@@ -32,13 +40,6 @@ public:
     void rdp_input_invalidate(Rect clip) override;
 
 private:
-    struct Colors
-    {
-        Color fg;
-        Color bg;
-        Color focus_bg;
-    };
-
     unsigned selected_language = 0;
     Colors colors;
     Font const & font;

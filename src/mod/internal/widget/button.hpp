@@ -38,8 +38,7 @@ public:
 
     WidgetButtonEvent(
         gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
-        // TODO remove default value
-        RedrawOnSubmit redraw_on_submit = RedrawOnSubmit::Yes
+        RedrawOnSubmit redraw_on_submit
     );
 
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) final;
