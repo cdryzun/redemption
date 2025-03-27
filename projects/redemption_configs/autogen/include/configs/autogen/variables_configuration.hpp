@@ -5019,6 +5019,33 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x004D9C };
     };
+    /// Cursor color for editing field. <br/>
+    /// type: ::configs::spec_types::rgb <br/>
+    /// default: 0x888888 <br/>
+    struct theme::edit_cursor_color {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = ::configs::spec_types::rgb;
+        using mapped_type = ::configs::spec_types::rgb;
+        type value { 0x888888 };
+    };
+    /// Placeholder text color for editing field with a little resolution. <br/>
+    /// type: ::configs::spec_types::rgb <br/>
+    /// default: 0xA0A0A0 <br/>
+    struct theme::edit_placeholder_color {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = ::configs::spec_types::rgb;
+        using mapped_type = ::configs::spec_types::rgb;
+        type value { 0xA0A0A0 };
+    };
+    /// Foreground color for toggle button of password field. <br/>
+    /// type: ::configs::spec_types::rgb <br/>
+    /// default: 0xA0A0A0 <br/>
+    struct theme::password_toggle_color {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = ::configs::spec_types::rgb;
+        using mapped_type = ::configs::spec_types::rgb;
+        type value { 0xA0A0A0 };
+    };
     /// Background color for tooltip. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0xFFFF9F <br/>
@@ -5871,6 +5898,9 @@ struct theme
 , cfg::theme::edit_bgcolor
 , cfg::theme::edit_fgcolor
 , cfg::theme::edit_focus_color
+, cfg::theme::edit_cursor_color
+, cfg::theme::edit_placeholder_color
+, cfg::theme::password_toggle_color
 , cfg::theme::tooltip_bgcolor
 , cfg::theme::tooltip_fgcolor
 , cfg::theme::tooltip_border_color

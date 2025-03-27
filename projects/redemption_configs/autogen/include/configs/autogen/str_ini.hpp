@@ -1759,6 +1759,18 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #edit_focus_color = #004D9C
 
+# Cursor color for editing field.
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
+#edit_cursor_color = #888888
+
+# Placeholder text color for editing field with a little resolution.
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
+#edit_placeholder_color = #A0A0A0
+
+# Foreground color for toggle button of password field.
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
+#password_toggle_color = #A0A0A0
+
 # Background color for tooltip.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
 #tooltip_bgcolor = #FFFF9F

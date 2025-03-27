@@ -582,13 +582,13 @@ WidgetEditValid::Colors WidgetEditValid::Colors::from_theme(const Theme& theme) 
     return {
         .fg = theme.global.fgcolor,
         .bg = theme.global.bgcolor,
-        // .placeholder = // TODO
+        .placeholder = theme.edit.placeholder_color,
         .edit_fg = theme.edit.fgcolor,
         .edit_bg = theme.edit.bgcolor,
-        .border = theme.global.bgcolor, // TODO
+        .border = theme.global.bgcolor,
         .focus_border = theme.edit.focus_color,
-        // .cursor = // TODO
-        // .password_toggle = // TODO
+        .cursor = theme.edit.cursor_color,
+        .password_toggle = theme.edit.password_toggle_color,
     };
 }
 

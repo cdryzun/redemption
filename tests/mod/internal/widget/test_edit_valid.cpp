@@ -47,6 +47,7 @@ struct TestWidgetEditValid
         .border = NamedBGRColor::BLUE,
         .focus_border = NamedBGRColor::BROWN,
         .cursor = NamedBGRColor::GREY,
+        .password_toggle = NamedBGRColor::MEDIUM_GREY,
     };
     CopyPaste copy_paste {false};
     Font const& font = global_font_deja_vu_14();

@@ -39,16 +39,15 @@ public:
 
     struct Colors
     {
-        // TODO remove default constructor of Color
         Color fg;
         Color bg;
-        Color placeholder = NamedBGRColor::MEDIUM_GREY; // TODO remove default
+        Color placeholder;
         Color edit_fg;
         Color edit_bg;
-        Color border = edit_bg; // TODO remove default
+        Color border;
         Color focus_border;
-        Color cursor = Widget::Color(0x888888); // TODO remove default
-        Color password_toggle = NamedBGRColor::MEDIUM_GREY; // TODO remove default
+        Color cursor;
+        Color password_toggle;
 
         static Colors from_theme(Theme const& theme) noexcept;
     };

@@ -39,12 +39,11 @@ public:
 
     struct Colors
     {
-        // TODO remove default constructor of Color
         Color fg;
         Color bg;
-        Color border = bg; // TODO remove default
+        Color border;
         Color focus_border;
-        Color cursor = Widget::Color(0x888888); // TODO remove default
+        Color cursor;
 
         static Colors from_theme(Theme const& theme) noexcept;
     };

@@ -613,6 +613,18 @@ edit_fgcolor = string(default="#000000")
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 edit_focus_color = string(default="#004D9C")
 
+# Cursor color for editing field.<br/>
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
+edit_cursor_color = string(default="#888888")
+
+# Placeholder text color for editing field with a little resolution.<br/>
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
+edit_placeholder_color = string(default="#A0A0A0")
+
+# Foreground color for toggle button of password field.<br/>
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
+password_toggle_color = string(default="#A0A0A0")
+
 # Background color for tooltip.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 tooltip_bgcolor = string(default="#FFFF9F")

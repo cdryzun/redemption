@@ -44,6 +44,9 @@ void load_theme(Theme& theme, Inifile& ini) noexcept
     theme.edit.bgcolor = to_bgr(cfg::theme::edit_bgcolor());
     theme.edit.fgcolor = to_bgr(cfg::theme::edit_fgcolor());
     theme.edit.focus_color = to_bgr(cfg::theme::edit_focus_color());
+    theme.edit.placeholder_color = to_bgr(cfg::theme::edit_placeholder_color());
+    theme.edit.cursor_color = to_bgr(cfg::theme::edit_cursor_color());
+    theme.edit.password_toggle_color = to_bgr(cfg::theme::password_toggle_color());
 
     theme.tooltip.bgcolor = to_bgr(cfg::theme::tooltip_bgcolor());
     theme.tooltip.fgcolor = to_bgr(cfg::theme::tooltip_fgcolor());

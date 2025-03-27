@@ -3746,6 +3746,7 @@ _.section("theme", [&]
         .desc = "Foreground color for window, label and button.",
     });
 
+    // TODO remove that
     _.member(MemberInfo{
         .name = "separator_color",
         .value = rgb(Theme::Global().separator_color),
@@ -3786,6 +3787,27 @@ _.section("theme", [&]
         .value = rgb(Theme::Edit().focus_color),
         .spec = global_spec(no_acl),
         .desc = "Outline color for editing field that has focus.",
+    });
+
+    _.member(MemberInfo{
+        .name = "edit_cursor_color",
+        .value = rgb(Theme::Edit().cursor_color),
+        .spec = global_spec(no_acl),
+        .desc = "Cursor color for editing field.",
+    });
+
+    _.member(MemberInfo{
+        .name = "edit_placeholder_color",
+        .value = rgb(Theme::Edit().placeholder_color),
+        .spec = global_spec(no_acl),
+        .desc = "Placeholder text color for editing field with a little resolution.",
+    });
+
+    _.member(MemberInfo{
+        .name = "password_toggle_color",
+        .value = rgb(Theme::Edit().password_toggle_color),
+        .spec = global_spec(no_acl),
+        .desc = "Foreground color for toggle button of password field.",
     });
 
     _.member(MemberInfo{

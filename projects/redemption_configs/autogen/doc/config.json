@@ -4356,6 +4356,30 @@
     },
     {
       "section": "theme",
+      "name": "edit_cursor_color",
+      "type": "rgb",
+      "value": "#888888",
+      "description": "Cursor color for editing field.",
+      "globalSpec": true
+    },
+    {
+      "section": "theme",
+      "name": "edit_placeholder_color",
+      "type": "rgb",
+      "value": "#A0A0A0",
+      "description": "Placeholder text color for editing field with a little resolution.",
+      "globalSpec": true
+    },
+    {
+      "section": "theme",
+      "name": "password_toggle_color",
+      "type": "rgb",
+      "value": "#A0A0A0",
+      "description": "Foreground color for toggle button of password field.",
+      "globalSpec": true
+    },
+    {
+      "section": "theme",
       "name": "tooltip_bgcolor",
       "type": "rgb",
       "value": "#FFFF9F",

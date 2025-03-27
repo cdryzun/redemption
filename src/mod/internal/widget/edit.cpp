@@ -1094,9 +1094,9 @@ WidgetEdit::Colors WidgetEdit::Colors::from_theme(const Theme& theme) noexcept
     return {
         .fg = theme.edit.fgcolor,
         .bg = theme.edit.bgcolor,
-        // .border = , // TODO
+        .border = theme.edit.bgcolor,
         .focus_border = theme.edit.focus_color,
-        // .cursor = , // TODO
+        .cursor = theme.edit.cursor_color,
     };
 }
 

@@ -2417,6 +2417,30 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "edit_cursor_color"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::theme::edit_cursor_color&>(this->variables).value,
+                ::configs::spec_type<::configs::spec_types::rgb>{},
+                value
+            );
+        }
+        else if (key == "edit_placeholder_color"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::theme::edit_placeholder_color&>(this->variables).value,
+                ::configs::spec_type<::configs::spec_types::rgb>{},
+                value
+            );
+        }
+        else if (key == "password_toggle_color"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::theme::password_toggle_color&>(this->variables).value,
+                ::configs::spec_type<::configs::spec_types::rgb>{},
+                value
+            );
+        }
         else if (key == "tooltip_bgcolor"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
