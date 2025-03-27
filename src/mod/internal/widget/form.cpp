@@ -294,3 +294,12 @@ void WidgetForm::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
         WidgetComposite::rdp_input_scancode(flags, scancode, event_time, keymap);
     }
 }
+
+WidgetForm::EditTexts WidgetForm::get_edit_texts() const noexcept
+{
+    return {
+        .comment = comment_edit.get_text(),
+        .ticket = ticket_edit.get_text(),
+        .duration = duration_edit.get_text(),
+    };
+}

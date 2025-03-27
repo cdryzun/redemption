@@ -66,9 +66,10 @@ WaitMod::WaitMod(
 void WaitMod::confirm()
 {
     this->vars.set_acl<cfg::context::waitinforeturn>("confirm");
-    this->vars.set_acl<cfg::context::comment>(to_sv(this->wait_widget.form.comment_edit.get_text()));
-    this->vars.set_acl<cfg::context::ticket>(to_sv(this->wait_widget.form.ticket_edit.get_text()));
-    this->vars.set_acl<cfg::context::duration>(to_sv(this->wait_widget.form.duration_edit.get_text()));
+    auto edits = this->wait_widget.get_edit_texts();
+    this->vars.set_acl<cfg::context::comment>(to_sv(edits.comment));
+    this->vars.set_acl<cfg::context::ticket>(to_sv(edits.ticket));
+    this->vars.set_acl<cfg::context::duration>(to_sv(edits.duration));
     this->set_mod_signal(BACK_EVENT_NEXT);
 }
 

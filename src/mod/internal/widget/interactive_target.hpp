@@ -60,6 +60,10 @@ public:
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
 
+    WidgetEdit::Text get_edit_device() const noexcept { return device_edit.get_text(); }
+    WidgetEdit::Text get_edit_login() const noexcept { return login_edit.get_text(); }
+    WidgetEdit::Text get_edit_password() const noexcept { return password_edit.get_text(); }
+
 private:
     WidgetEventNotifier oncancel;
     WidgetEventNotifier onctrl_shift;
@@ -69,12 +73,10 @@ private:
 
     WidgetLabel        device_info;
 
-public:
     WidgetEditValid    device_edit;
     WidgetEditValid    login_edit;
     WidgetEditValid    password_edit;
 
-private:
     Widget * extra_button;
 
     Color fgcolor;

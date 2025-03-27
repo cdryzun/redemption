@@ -52,6 +52,13 @@ public:
         WidgetEventNotifier cancel;
     };
 
+    struct EditTexts
+    {
+        WidgetEdit::Text comment;
+        WidgetEdit::Text ticket;
+        WidgetEdit::Text duration;
+    };
+
     WidgetForm(gdi::GraphicApi & drawable, CopyPaste & copy_paste,
                int16_t left, int16_t top, int16_t width, int16_t height,
                Events events,
@@ -71,6 +78,8 @@ public:
 
     void check_confirmation();
 
+    EditTexts get_edit_texts() const noexcept;
+
 private:
     Events events;
 
@@ -82,18 +91,12 @@ private:
 
     WidgetLabel  warning_msg;
     WidgetLabel  duration_label;
-public:
     WidgetEdit   duration_edit;
-private:
     WidgetLabel  duration_format;
     WidgetLabel  ticket_label;
-public:
     WidgetEdit   ticket_edit;
-private:
     WidgetLabel  comment_label;
-public:
     WidgetEdit   comment_edit;
-private:
     WidgetLabel  notes;
     WidgetButton confirm;
 };

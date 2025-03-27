@@ -63,13 +63,13 @@ InteractiveTargetMod::InteractiveTargetMod(
 void InteractiveTargetMod::accepted()
 {
     if (this->ask_device) {
-        this->vars.set_acl<cfg::context::target_host>(to_sv(this->challenge.device_edit.get_text()));
+        this->vars.set_acl<cfg::context::target_host>(to_sv(this->challenge.get_edit_device()));
     }
     if (this->ask_login) {
-        this->vars.set_acl<cfg::globals::target_user>(to_sv(this->challenge.login_edit.get_text()));
+        this->vars.set_acl<cfg::globals::target_user>(to_sv(this->challenge.get_edit_login()));
     }
     if (this->ask_password) {
-        this->vars.set_acl<cfg::context::target_password>(to_sv(this->challenge.password_edit.get_text()));
+        this->vars.set_acl<cfg::context::target_password>(to_sv(this->challenge.get_edit_password()));
     }
     this->vars.set_acl<cfg::context::display_message>(true);
     this->set_mod_signal(BACK_EVENT_NEXT);

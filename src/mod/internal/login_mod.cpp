@@ -85,21 +85,20 @@ LoginMod::LoginMod(
             widget_rect.x, widget_rect.y, widget_rect.cx, widget_rect.cy,
             {
                 .onsubmit = [this]{
-                    auto login = this->login.login_edit.get_text();
-                    auto target = this->login.target_edit.get_text();
-                    if (target.empty()) {
-                        this->vars.set_acl<cfg::globals::auth_user>(to_sv(login));
+                    auto edits = this->login.get_edit_texts();
+                    if (edits.target.empty()) {
+                        this->vars.set_acl<cfg::globals::auth_user>(to_sv(edits.login));
                     }
                     else {
                         this->vars.update_acl<cfg::globals::auth_user>([&](std::string& auth_user) {
-                            update_target_login(auth_user, login, to_sv(target));
+                            update_target_login(auth_user, edits.login, to_sv(edits.target));
                         });
                     }
                     this->vars.ask<cfg::context::selector>();
                     this->vars.ask<cfg::globals::target_user>();
                     this->vars.ask<cfg::globals::target_device>();
                     this->vars.ask<cfg::context::target_protocol>();
-                    this->vars.set_acl<cfg::context::password>(to_sv(this->login.password_edit.get_text()));
+                    this->vars.set_acl<cfg::context::password>(to_sv(edits.password));
                     this->set_mod_signal(BACK_EVENT_NEXT);
                 },
                 .oncancel = [this]{ this->set_mod_signal(BACK_EVENT_STOP); },

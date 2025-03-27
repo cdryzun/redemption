@@ -42,6 +42,8 @@ public:
         WidgetEventNotifier onctrl_shift;
     };
 
+    using EditTexts = WidgetForm::EditTexts;
+
     WidgetWait(
         gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
         Events events, chars_view caption, chars_view text,
@@ -54,6 +56,11 @@ public:
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
 
+    EditTexts get_edit_texts() const noexcept
+    {
+        return form.get_edit_texts();
+    }
+
 private:
     WidgetEventNotifier onaccept;
     WidgetEventNotifier onrefused;
@@ -62,10 +69,8 @@ private:
     WidgetGroupBox groupbox;
     WidgetMultiLine dialog;
 
-public:
     WidgetForm form;
 
-private:
     WidgetButton goselector;
 
     WidgetButton   exit;

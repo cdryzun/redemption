@@ -286,8 +286,9 @@ RED_AUTO_TEST_CASE(EventWidgetOkCancel)
 
     ctx.flat_dialog.rdp_input_invalidate(ctx.flat_dialog.get_rect());
 
-    int x = ctx.flat_dialog.ok.x() + ctx.flat_dialog.ok.cx() / 2 ;
-    int y = ctx.flat_dialog.ok.y() + ctx.flat_dialog.ok.cy() / 2 ;
+    // ok button
+    int x = 349;
+    int y = 358;
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
@@ -300,9 +301,9 @@ RED_AUTO_TEST_CASE(EventWidgetOkCancel)
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "dialog_10.png");
 
-
-    x = ctx.flat_dialog.cancel->x() + ctx.flat_dialog.cancel->cx() / 2 ;
-    y = ctx.flat_dialog.cancel->y() + ctx.flat_dialog.cancel->cy() / 2 ;
+    // cancel button
+    x = 393;
+    y = 358;
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
@@ -363,8 +364,6 @@ RED_AUTO_TEST_CASE(EventWidgetChallenge)
         ""_av,
         WidgetDialogWithChallenge::ChallengeOpt::Echo);
 
-    ctx.flat_dialog.challenge->set_text("challenge_test"_av, {WidgetEdit::Redraw::No});
-
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
 
@@ -408,8 +407,9 @@ RED_AUTO_TEST_CASE(EventWidgetDialogWithCopyableLinkOkLink)
 
     ctx.flat_dialog.rdp_input_invalidate(ctx.flat_dialog.get_rect());
 
-    int x = ctx.flat_dialog.ok.x() + ctx.flat_dialog.ok.cx() / 2 ;
-    int y = ctx.flat_dialog.ok.y() + ctx.flat_dialog.ok.cy() / 2 ;
+    // ok button
+    int x = 421;
+    int y = 413;
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
@@ -453,8 +453,9 @@ RED_AUTO_TEST_CASE(EventWidgetDialogWithCopyableLinkOkLink)
     ctx.copy_paste.paste(pasted);
     RED_CHECK(pasted.str == ""_av);
 
-    x = ctx.flat_dialog.link->copy.x() + ctx.flat_dialog.link->copy.cx() / 2 ;
-    y = ctx.flat_dialog.link->copy.y() + ctx.flat_dialog.link->copy.cy() / 2 ;
+    // copy button
+    x = 386;
+    y = 347;
     ctx.flat_dialog.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, x, y);
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);

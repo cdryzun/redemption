@@ -42,6 +42,13 @@ public:
         WidgetEventNotifier onctrl_shift;
     };
 
+    struct EditTexts
+    {
+        WidgetEdit::Text login;
+        WidgetEdit::Text target;
+        WidgetEdit::Text password;
+    };
+
     WidgetLogin(
         gdi::GraphicApi & drawable, CopyPaste & copy_paste,
         WidgetTooltipShower & tooltip_shower,
@@ -63,23 +70,23 @@ public:
 
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
+    EditTexts get_edit_texts() const noexcept;
+
 private:
+
+public:
     WidgetEventNotifier oncancel;
     WidgetEventNotifier onctrl_shift;
     WidgetTooltipShower & tooltip_shower;
 
     WidgetLabel        error_message_label;
-public:
     WidgetEditValid    login_edit;
     WidgetEditValid    password_edit;
     WidgetEditValid    target_edit;
-private:
     WidgetVerticalScrollText message_label;
     WidgetImage        img;
     WidgetLabel        version_label;
-public:
     WidgetHelpIcon     helpicon;
-private:
     Widget *       extra_button;
 
     Translator tr;

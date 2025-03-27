@@ -296,7 +296,7 @@ WidgetDialogWithChallenge::WidgetDialogWithChallenge(
     Font const & font, Theme const & theme, CopyPaste & copy_paste,
     ChallengeOpt challenge_opt)
 : WidgetDialogBase::WidgetChallenge{
-    .edit = WidgetPassword{
+    .challenge_edit = WidgetPassword{
         drawable, font, copy_paste,
         WidgetEdit::Colors::from_theme(theme), events.onsubmit
     },
@@ -308,9 +308,9 @@ WidgetDialogWithChallenge::WidgetDialogWithChallenge(
     nullptr,
     [&]{
         if (ChallengeOpt::Echo == challenge_opt) {
-            edit.toggle_password_visibility(WidgetEdit::Redraw::No);
+            challenge_edit.toggle_password_visibility(WidgetEdit::Redraw::No);
         }
-        return &edit;
+        return &challenge_edit;
     }(),
     nullptr
 )

@@ -350,3 +350,12 @@ void WidgetLogin::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 
     WidgetComposite::rdp_input_mouse(device_flags, x, y);
 }
+
+WidgetLogin::EditTexts WidgetLogin::get_edit_texts() const noexcept
+{
+    return {
+        .login = login_edit.get_text(),
+        .target = target_edit.get_text(),
+        .password = password_edit.get_text(),
+    };
+}

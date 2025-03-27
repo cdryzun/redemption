@@ -50,7 +50,7 @@ public:
 
     struct WidgetChallenge
     {
-        WidgetPassword edit;
+        WidgetPassword challenge_edit;
     };
 
     struct Events
@@ -84,17 +84,13 @@ private:
     WidgetRect         separator;
     WidgetVerticalScrollText dialog;
 
-// TODO private
-public:
     WidgetLink* link;
     WidgetEdit* challenge;
 
     WidgetButton   ok;
 
-public:
     std::unique_ptr<WidgetButton> cancel;
 
-private:
     WidgetImage         img;
     Widget *            extra_button;
     WidgetEventNotifier oncancel;
@@ -132,6 +128,11 @@ public:
         chars_view ok_text,
         Font const & font, Theme const & theme, CopyPaste & copy_paste,
         ChallengeOpt challenge);
+
+    WidgetEdit::Text get_chalenge() const noexcept
+    {
+        return this->challenge_edit.get_text();
+    }
 };
 
 

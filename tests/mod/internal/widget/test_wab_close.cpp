@@ -132,12 +132,9 @@ RED_AUTO_TEST_CASE(TraceWidgetWabCloseExit)
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "wab_close_8.png");
 
-    ctx.flat_wab_close.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN,
-                                       ctx.flat_wab_close.cancel.x() + 2,
-                                       ctx.flat_wab_close.cancel.y() + 2);
-    ctx.flat_wab_close.rdp_input_mouse(MOUSE_FLAG_BUTTON1,
-                                       ctx.flat_wab_close.cancel.x() + 2,
-                                       ctx.flat_wab_close.cancel.y() + 2);
+    // click on cancel
+    ctx.flat_wab_close.rdp_input_mouse(MOUSE_FLAG_BUTTON1|MOUSE_FLAG_DOWN, 373, 402);
+    ctx.flat_wab_close.rdp_input_mouse(MOUSE_FLAG_BUTTON1, 373, 402);
 
     RED_CHECK(notifier.get_and_reset() == 1);
 

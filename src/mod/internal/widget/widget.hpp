@@ -110,6 +110,7 @@ protected:
 private:
     Rect rect;
 
+    // TODO private
 public:
     Focusable focusable;
     PointerType pointer_flag;

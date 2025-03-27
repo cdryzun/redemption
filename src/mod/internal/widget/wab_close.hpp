@@ -83,10 +83,8 @@ private:
     WidgetLabel        timeleft_label;
     WidgetLabel        timeleft_value;
 
-public:
     WidgetButton cancel;
 
-private:
     WidgetImage img;
 
     long prev_time;

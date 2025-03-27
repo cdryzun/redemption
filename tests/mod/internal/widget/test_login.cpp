@@ -87,7 +87,9 @@ RED_AUTO_TEST_CASE(TraceWidgetLogin3)
 {
     TestWidgetLoginCtx ctx("test3"_av, nullptr, nullptr, nullptr, LOGON_MESSAGE);
 
-    ctx.flat_login.set_widget_focus(ctx.flat_login.password_edit, Widget::focus_reason_tabkey);
+    ctx.flat_login.next_focus();
+    ctx.flat_login.next_focus();
+    ctx.flat_login.next_focus();  // password
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
@@ -117,10 +119,7 @@ RED_AUTO_TEST_CASE(TraceWidgetLoginHelp)
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "login_help_1.png");
 
-    ctx.flat_login.rdp_input_mouse(
-        MOUSE_FLAG_MOVE,
-        ctx.flat_login.helpicon.x() + ctx.flat_login.helpicon.cx() / 2,
-        ctx.flat_login.helpicon.y() + ctx.flat_login.helpicon.cy() / 2);
+    ctx.flat_login.rdp_input_mouse(MOUSE_FLAG_MOVE, 728, 557);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "login_help_2.png");
 }
