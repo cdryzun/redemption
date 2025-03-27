@@ -6,7 +6,7 @@ set -ex
 
 check_gen_po()
 {
-    bjam toolset=clang toolset=gcc -j4 update-po
+    bjam update-po
     if grep -E '^([-+]#: |@@|[-+]"|diff |index |[-]{3} |[+]{3})' -qv < <(
         git diff --unified=0 ./tools/i18n/po/*/
     ); then
