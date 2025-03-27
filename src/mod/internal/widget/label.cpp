@@ -18,7 +18,7 @@ array_view<FontCharView const *> init_widget_text(
     chars_view text
 )
 {
-    int w = 1;
+    int w = 0;
     auto out = std::begin(fcs);
     auto end_out = std::end(fcs);
     utf8_for_each(
@@ -33,7 +33,7 @@ array_view<FontCharView const *> init_widget_text(
         [&]{ return out < end_out; }
     );
 
-    width.out_value = checked_int(w);
+    width.out_value = checked_int(w ? w + 1 : w);
     return fcs.before(out);
 }
 
