@@ -52,13 +52,13 @@ now = datetime.now(tz=ZoneInfo(time.tzname[0]))
 output_parts = [
 fr'''# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the redemption package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: redemption\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: {now.strftime('%Y-%m-%d %H:%M%:z')}\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
