@@ -8,6 +8,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "mod/internal/widget/composite.hpp"
 #include "mod/internal/widget/label.hpp"
 #include "mod/internal/widget/edit.hpp"
+#include "mod/internal/widget/help_icon.hpp"
 #include "mod/internal/widget/number_edit.hpp"
 #include "mod/internal/widget/button.hpp"
 #include "translation/translation.hpp"
@@ -136,20 +137,6 @@ private:
 
     private:
         WidgetSelector & selector;
-    };
-
-    struct WidgetHelpIcon : Widget
-    {
-        WidgetHelpIcon(gdi::GraphicApi & drawable, Font const & font, Theme const & theme);
-
-        void rdp_input_invalidate(Rect clip) override;
-
-        struct D;
-        friend struct D;
-
-    private:
-        FontCharView const * fc;
-        FgBgColors colors;
     };
 
     struct WidgetGrid final : Widget

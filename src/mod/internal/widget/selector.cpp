@@ -66,60 +66,6 @@ int expansion_button_width(Font const& font)
 } // anonymous namespace
 
 
-struct WidgetSelector::WidgetHelpIcon::D
-{
-    static const int border_len = 1;
-    static const int pad_x = 2;
-
-    static int right_pad(const FontCharView * fc)
-    {
-        return pad_x + border_len + fc->offsetx + fc->incby - fc->width;
-    }
-};
-
-
-WidgetSelector::WidgetHelpIcon::WidgetHelpIcon(
-    gdi::GraphicApi & drawable, const Font& font, const Theme& theme
-)
-    : Widget(drawable, Focusable::No)
-    , fc(&font.item('?').view)
-    , colors{
-        .fg = theme.global.fgcolor,
-        .bg = theme.selector_label.bgcolor,
-    }
-{
-    set_wh(
-        checked_int(fc->boxed_width() + D::border_len + D::pad_x + D::right_pad(fc)),
-        checked_int(font.max_height() + D::border_len * 2)
-    );
-}
-
-void WidgetSelector::WidgetHelpIcon::rdp_input_invalidate(Rect clip)
-{
-    gdi::draw_text(
-        drawable,
-        x(),
-        y(),
-        cy() - D::border_len * 2,
-        gdi::DrawTextPadding{
-          .top = D::border_len,
-          .right = checked_int(D::right_pad(fc)),
-          .bottom = D::border_len,
-          .left = D::border_len + D::pad_x,
-        },
-        {&fc, 1},
-        colors.fg,
-        colors.bg,
-        get_rect().intersect(clip)
-    );
-
-    gdi_draw_border(
-        drawable, colors.fg, get_rect(), D::border_len,
-        clip, gdi::ColorCtx::depth24()
-    );
-}
-
-
 WidgetSelector::WidgetGrid::WidgetGrid(
     gdi::GraphicApi & drawable, const Theme& theme,
     TooltipShower tooltip_shower,
@@ -726,12 +672,15 @@ WidgetSelector::WidgetSelector(
 , extra_button(extra_button)
 , less_than_800(rect.cx < 800)
 , tooltip_shower_parent(tooltip_shower)
-, target_helpicon(drawable, font, theme)
+, target_helpicon(drawable, font, WidgetHelpIcon::Style::ThinText, {
+    .fg = theme.global.fgcolor,
+    .bg = theme.selector_label.bgcolor,
+})
 , oncancel(events.oncancel)
 , onctrl_shift(events.onctrl_shift)
 , device_label(drawable, font, texts.device_name, WidgetLabel::Colors::from_theme(theme))
 , header_labels(drawable, font, texts.headers, {
-    .fg = theme.selector_label.fgcolor,
+    .fg = theme.global.fgcolor,
     .bg = theme.selector_label.bgcolor,
 })
 , column_expansion_buttons{
@@ -847,10 +796,13 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
     this->header_labels.set_xy(grid_x, labels_y);
 
     // help icon
-    this->target_helpicon.set_xy(0, labels_y - WidgetHelpIcon::D::border_len);
+    uint16_t h_text = font().max_height();
+    this->target_helpicon.set_xy(
+        0,
+        checked_int{labels_y + (h_text - this->target_helpicon.cy()) / 2}
+    );
 
     // filters
-    uint16_t h_text = font().max_height();
     int16_t filters_y = checked_int(labels_y + h_text + FILTER_HORIZONTAL_SEPARATOR);
     for (auto & edit : this->edit_filters) {
         edit.set_xy(0, filters_y);

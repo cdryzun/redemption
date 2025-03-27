@@ -23,6 +23,7 @@
 #include "mod/internal/widget/composite.hpp"
 #include "mod/internal/widget/label.hpp"
 #include "mod/internal/widget/edit_valid.hpp"
+#include "mod/internal/widget/help_icon.hpp"
 #include "mod/internal/widget/image.hpp"
 #include "mod/internal/widget/button.hpp"
 #include "mod/internal/widget/vertical_scroll_text.hpp"
@@ -77,7 +78,7 @@ private:
     WidgetImage        img;
     WidgetLabel        version_label;
 public:
-    WidgetButton   helpicon;
+    WidgetHelpIcon     helpicon;
 private:
     Widget *       extra_button;
 

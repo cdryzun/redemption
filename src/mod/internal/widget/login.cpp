@@ -88,9 +88,10 @@ WidgetLogin::WidgetLogin(
           app_path(AppPath::LoginWabBlue),
           theme.global.bgcolor)
     , version_label(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
-    // TODO button without notifier
-    , helpicon(drawable, font, "?"_av, WidgetButton::Colors::from_theme(theme),
-               WidgetEventNotifier())
+    , helpicon(drawable, font, WidgetHelpIcon::Style::Button, {
+        .fg = theme.global.fgcolor,
+        .bg = theme.global.bgcolor,
+    })
     , extra_button(extra_button)
     , tr(tr)
     , show_target(enable_target_field)

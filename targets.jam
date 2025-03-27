@@ -89,6 +89,7 @@ exe rdpproxy :
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/form.o
   src/mod/internal/widget/group_box.o
+  src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/interactive_target.o
   src/mod/internal/widget/label.o
@@ -2734,6 +2735,7 @@ test-run tests/mod/internal/test_login_mod :
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
+  src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/language_button.o
@@ -3283,6 +3285,7 @@ test-run tests/mod/internal/widget/test_login :
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
+  src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/login.o
@@ -3496,6 +3499,7 @@ test-run tests/mod/internal/widget/test_selector :
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
+  src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/number_edit.o
   src/mod/internal/widget/selector.o
@@ -5138,6 +5142,7 @@ obj src/mod/internal/widget/edit.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/
 obj src/mod/internal/widget/edit_valid.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/edit_valid.cpp ;
 obj src/mod/internal/widget/form.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/form.cpp ;
 obj src/mod/internal/widget/group_box.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/group_box.cpp ;
+obj src/mod/internal/widget/help_icon.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/help_icon.cpp ;
 obj src/mod/internal/widget/image.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/image.cpp ;
 obj src/mod/internal/widget/interactive_target.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/interactive_target.cpp ;
 obj src/mod/internal/widget/label.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/label.cpp ;
@@ -6251,6 +6256,7 @@ explicit
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/form.o
   src/mod/internal/widget/group_box.o
+  src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/interactive_target.o
   src/mod/internal/widget/label.o
