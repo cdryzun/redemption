@@ -50,7 +50,8 @@ void WidgetScreen::WidgetTooltip::clear_text() noexcept
 
 void WidgetScreen::WidgetTooltip::set_text(Font const & font, unsigned max_width, chars_view text)
 {
-    desc.set_text(font, max_width, text);
+    desc.set_text(font, text);
+    desc.update_dimension(max_width);
     Dimension dim = desc.dimension();
 
     set_wh(dim.w + 2 * D::w_border,

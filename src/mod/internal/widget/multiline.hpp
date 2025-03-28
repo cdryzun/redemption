@@ -16,10 +16,7 @@ class MultiLineText
 public:
     MultiLineText() = default;
 
-    MultiLineText(Font const & font, unsigned preferred_max_width, chars_view text);
-
     void set_text(Font const & font, chars_view text);
-    void set_text(Font const & font, unsigned preferred_max_width, chars_view text);
 
     void update_dimension(unsigned preferred_max_width) noexcept;
 
