@@ -7,7 +7,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "core/font.hpp"
 #include "gdi/draw_utils.hpp"
 #include "gdi/graphic_api.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "keyboard/keymap.hpp"
 #include "mod/internal/widget/selector.hpp"
 #include "translation/translation.hpp"

@@ -23,7 +23,7 @@
 #include "mod/internal/copy_paste.hpp"
 #include "keyboard/keymap.hpp"
 #include "gdi/graphic_api.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "utils/utf.hpp"
 
 WidgetPasswordFont::WidgetPasswordFont(Font const& font)

@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "test_only/core/font.hpp"
 #include "test_only/gdi/test_graphic.hpp"
 
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "utils/sugar/to_sv.hpp"
 #include "utils/utf.hpp"
 #include "core/font.hpp"
@@ -19,7 +19,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include <iomanip>
 #endif
 
-#define IMG_TEST_PATH FIXTURES_PATH "/img_ref/gdi/text_metrics/"
+#define IMG_TEST_PATH FIXTURES_PATH "/img_ref/gdi/text/"
 
 
 struct LinesForTest

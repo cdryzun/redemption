@@ -32,7 +32,7 @@
 #include "core/RDP/remote_programs.hpp"
 #include "core/stream_throw_helpers.hpp"
 #include "gdi/graphic_api.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "mod/mod_api.hpp"
 #include "utils/bitmap_from_file.hpp"
 #include "utils/stream.hpp"

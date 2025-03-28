@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #include "mod/internal/widget/widget.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 
 class Theme;
 

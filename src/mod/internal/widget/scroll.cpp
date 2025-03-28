@@ -22,7 +22,7 @@
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
 #include "gdi/graphic_api.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "gdi/draw_utils.hpp"
 #include "mod/internal/widget/scroll.hpp"
 #include "mod/internal/widget/button.hpp"

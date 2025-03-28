@@ -10,7 +10,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "core/font.hpp"
 #include "keyboard/keylayouts.hpp"
 #include "gdi/graphic_api.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "gdi/draw_utils.hpp"
 #include "utils/log.hpp"
 #include "utils/theme.hpp"

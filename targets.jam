@@ -64,7 +64,7 @@ exe rdpproxy :
   src/gdi/protected_graphics.o
   src/gdi/rect_tracker.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/keyboard/keymapsym.o
@@ -235,7 +235,7 @@ exe headlessclient :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/headlessclient/headless_cli_options.o
   src/headlessclient/headless_command.o
   src/headlessclient/headless_command_reader.o
@@ -516,7 +516,7 @@ test-run tests/RAIL/test_client_execute :
   src/core/error.o
   src/core/font.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/mod/internal/widget/label.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
@@ -631,7 +631,7 @@ test-run tests/acl/test_license_api :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
@@ -688,7 +688,7 @@ test-run tests/acl/test_mod_wrapper :
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
   src/translation/gettext.o
@@ -1068,7 +1068,7 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
@@ -1141,7 +1141,7 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
@@ -1214,7 +1214,7 @@ test-run tests/client_mods/test_rdp_client_wab :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
@@ -2183,7 +2183,7 @@ test-run tests/front/test_front :
   src/gdi/protected_graphics.o
   src/gdi/rect_tracker.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
@@ -2268,8 +2268,8 @@ test-run tests/gdi/test_protected_graphics :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/gdi/test_text_metrics :
-  $(REDEMPTION_TEST_PATH)/gdi/test_text_metrics.cpp
+test-run tests/gdi/test_text :
+  $(REDEMPTION_TEST_PATH)/gdi/test_text.cpp
 :
   crypto
   png
@@ -2279,7 +2279,7 @@ test-run tests/gdi/test_text_metrics :
   src/core/font.o
   src/gdi/clip_from_cmd.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/mod/internal/widget/label.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
@@ -2534,7 +2534,7 @@ test-run tests/mod/internal/test_close_mod :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/close_mod.o
@@ -2583,7 +2583,7 @@ test-run tests/mod/internal/test_copy_paste :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/edit.o
@@ -2619,7 +2619,7 @@ test-run tests/mod/internal/test_dialog_mod :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -2671,7 +2671,7 @@ test-run tests/mod/internal/test_interactive_target_mod :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -2721,7 +2721,7 @@ test-run tests/mod/internal/test_login_mod :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -2773,7 +2773,7 @@ test-run tests/mod/internal/test_rail_module_host_mod :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/rail_mod_base.o
@@ -2854,7 +2854,7 @@ test-run tests/mod/internal/test_test_card_mod :
   src/core/font.o
   src/gdi/clip_from_cmd.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/mod/internal/test_card_mod.o
   src/mod/internal/widget/label.o
   src/utils/bitmap.o
@@ -2885,7 +2885,7 @@ test-run tests/mod/internal/widget/test_button :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/button.o
@@ -2947,7 +2947,7 @@ test-run tests/mod/internal/widget/test_delegated_copy :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
@@ -2982,7 +2982,7 @@ test-run tests/mod/internal/widget/test_dialog :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3026,7 +3026,7 @@ test-run tests/mod/internal/widget/test_edit :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3062,7 +3062,7 @@ test-run tests/mod/internal/widget/test_edit_valid :
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3099,7 +3099,7 @@ test-run tests/mod/internal/widget/test_form :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
@@ -3164,7 +3164,7 @@ test-run tests/mod/internal/widget/test_interactive_target :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
@@ -3202,7 +3202,7 @@ test-run tests/mod/internal/widget/test_label :
   src/core/font.o
   src/gdi/clip_from_cmd.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/label.o
@@ -3235,7 +3235,7 @@ test-run tests/mod/internal/widget/test_login :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3280,7 +3280,7 @@ test-run tests/mod/internal/widget/test_multiline :
   src/core/font.o
   src/gdi/clip_from_cmd.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/mod/internal/widget/multiline.o
   src/utils/bitmap.o
   src/utils/bitmap_data_allocator.o
@@ -3310,7 +3310,7 @@ test-run tests/mod/internal/widget/test_number_edit :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3344,7 +3344,7 @@ test-run tests/mod/internal/widget/test_password :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3381,7 +3381,7 @@ test-run tests/mod/internal/widget/test_screen :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/button.o
@@ -3416,7 +3416,7 @@ test-run tests/mod/internal/widget/test_scroll :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/label.o
@@ -3449,7 +3449,7 @@ test-run tests/mod/internal/widget/test_selector :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
@@ -3490,7 +3490,7 @@ test-run tests/mod/internal/widget/test_vertical_scroll_text :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/vertical_scroll_text.o
@@ -3522,7 +3522,7 @@ test-run tests/mod/internal/widget/test_wab_close :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/widget/button.o
   src/mod/internal/widget/composite.o
@@ -3561,7 +3561,7 @@ test-run tests/mod/internal/widget/test_wait :
   src/gdi/clip_from_cmd.o
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/mod/internal/copy_paste.o
   src/mod/internal/widget/button.o
@@ -3667,7 +3667,7 @@ test-run tests/mod/rdp/channels/test_rail_session_manager :
   src/gdi/draw_utils.o
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/mod/internal/widget/label.o
   src/translation/gettext.o
   src/translation/translation.o
@@ -3776,7 +3776,7 @@ test-run tests/mod/rdp/test_rdp :
   src/gdi/graphic_api.o
   src/gdi/protected_graphics.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/widget/label.o
@@ -3937,7 +3937,7 @@ test-run tests/mod/vnc/test_vnc :
   src/core/log_certificate_status.o
   src/gdi/graphic_api.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keymap.o
   src/keyboard/keymapsym.o
   src/mod/internal/widget/label.o
@@ -4030,7 +4030,7 @@ test-run tests/server/test_mstsc_client :
   src/gdi/graphic_api.o
   src/gdi/rect_tracker.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/test_card_mod.o
@@ -4106,7 +4106,7 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   src/gdi/graphic_api.o
   src/gdi/rect_tracker.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/test_card_mod.o
@@ -4182,7 +4182,7 @@ test-run tests/server/test_rdesktop_client :
   src/gdi/graphic_api.o
   src/gdi/rect_tracker.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/keyboard/keylayouts.o
   src/keyboard/keymap.o
   src/mod/internal/test_card_mod.o
@@ -5052,7 +5052,7 @@ obj src/gdi/graphic_api.o : $(REDEMPTION_SRC_PATH)/gdi/graphic_api.cpp ;
 obj src/gdi/protected_graphics.o : $(REDEMPTION_SRC_PATH)/gdi/protected_graphics.cpp ;
 obj src/gdi/rect_tracker.o : $(REDEMPTION_SRC_PATH)/gdi/rect_tracker.cpp ;
 obj src/gdi/screen_functions.o : $(REDEMPTION_SRC_PATH)/gdi/screen_functions.cpp ;
-obj src/gdi/text_metrics.o : $(REDEMPTION_SRC_PATH)/gdi/text_metrics.cpp ;
+obj src/gdi/text.o : $(REDEMPTION_SRC_PATH)/gdi/text.cpp ;
 obj src/headlessclient/headless_cli_options.o : $(REDEMPTION_SRC_PATH)/headlessclient/headless_cli_options.cpp ;
 obj src/headlessclient/headless_command.o : $(REDEMPTION_SRC_PATH)/headlessclient/headless_command.cpp ;
 obj src/headlessclient/headless_command_generator.o : $(REDEMPTION_SRC_PATH)/headlessclient/headless_command_generator.cpp ;
@@ -5330,7 +5330,7 @@ alias test_session_events : tests/core/test_session_events ;
 alias test_front : tests/front/test_front ;
 alias test_graphic_cmd_color : tests/gdi/test_graphic_cmd_color ;
 alias test_protected_graphics : tests/gdi/test_protected_graphics ;
-alias test_text_metrics : tests/gdi/test_text_metrics ;
+alias test_text : tests/gdi/test_text ;
 alias test_headless_command : tests/headlessclient/test_headless_command ;
 alias test_headless_command_generator : tests/headlessclient/test_headless_command_generator ;
 alias test_headless_command_reader : tests/headlessclient/test_headless_command_reader ;
@@ -5690,7 +5690,7 @@ alias tests/front.norec :
 alias tests/gdi.norec :
   tests/gdi/test_graphic_cmd_color
   tests/gdi/test_protected_graphics
-  tests/gdi/test_text_metrics
+  tests/gdi/test_text
 ;
 alias tests/headlessclient.norec :
   tests/headlessclient/test_headless_command
@@ -6163,7 +6163,7 @@ explicit
   src/gdi/protected_graphics.o
   src/gdi/rect_tracker.o
   src/gdi/screen_functions.o
-  src/gdi/text_metrics.o
+  src/gdi/text.o
   src/headlessclient/headless_cli_options.o
   src/headlessclient/headless_command.o
   src/headlessclient/headless_command_generator.o
@@ -6443,7 +6443,7 @@ explicit
   test_front
   test_graphic_cmd_color
   test_protected_graphics
-  test_text_metrics
+  test_text
   test_headless_command
   test_headless_command_generator
   test_headless_command_reader

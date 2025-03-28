@@ -21,7 +21,7 @@
 */
 
 #include "gdi/graphic_api.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "mod/internal/test_card_mod.hpp"
 #include "mod/internal/widget/label.hpp"
 #include "core/app_path.hpp"

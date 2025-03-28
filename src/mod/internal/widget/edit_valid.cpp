@@ -26,7 +26,7 @@
 #include "mod/internal/widget/button.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "gdi/draw_utils.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "utils/theme.hpp"
 
 namespace

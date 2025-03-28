@@ -10,7 +10,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "core/callback.hpp"
 #include "gdi/osd_api.hpp"
 #include "gdi/protected_graphics.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "utils/ref.hpp"
 #include "utils/timebase.hpp"
 #include "utils/sugar/not_null_ptr.hpp"

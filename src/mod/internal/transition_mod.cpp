@@ -4,7 +4,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "mod/internal/transition_mod.hpp"
-#include "gdi/text_metrics.hpp"
+#include "gdi/text.hpp"
 #include "gdi/draw_utils.hpp"
 #include "core/font.hpp"
 #include "utils/theme.hpp"
