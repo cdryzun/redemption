@@ -161,6 +161,14 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
     int extra_space_between_label_h = original_extra_space_between_label_h;
     int start_y = 0;
 
+    auto set_message_dim = [this, cbloc_w](int max_message_h){
+        this->message_label.update_dimension({
+            .width = checked_int{cbloc_w - MULTILINE_X_PADDING * 2},
+            .height = {{.min = 0, .max = checked_int{max_message_h}}},
+            .prefer_optimal_dimension = {{.horizontal = false, .vertical = true}},
+        });
+    };
+
     int img_cy = this->img.cy();
     for (;;) {
         const int full_borders_h = (nb_label + 3) * original_space_h
@@ -172,11 +180,7 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
             const int bloc_h = labels_h + full_borders_h + img_cy;
             const int max_message_h = height - bloc_h;
 
-            this->message_label.update_dimension({
-                .width = {{.min = 0, .max = checked_int{cbloc_w - MULTILINE_X_PADDING * 2}}},
-                .height = {{.min = 0, .max = checked_int{max_message_h}}},
-                .prefer_optimal_dimension = {{.horizontal = false, .vertical = true}},
-            });
+            set_message_dim(max_message_h);
             const auto message_h = this->message_label.cy();
 
             int msg_y = original_space_h;
@@ -216,7 +220,7 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         // no space between widget
         else if (labels_h + min_message_h + img_cy <= height) {
             start_y = height - (labels_h + img_cy);
-            this->message_label.set_wh(cbloc_w - MULTILINE_X_PADDING * 2, start_y);
+            set_message_dim(start_y);
             this->message_label.set_xy(left + cbloc_x + MULTILINE_X_PADDING, top);
             break;
         }
@@ -228,7 +232,7 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         }
         else {
             start_y = edit_dim.h * 3;
-            this->message_label.set_wh(cbloc_w - MULTILINE_X_PADDING * 2, start_y);
+            set_message_dim(start_y);
             this->message_label.set_xy(left + cbloc_x + MULTILINE_X_PADDING, top);
             break;
         }

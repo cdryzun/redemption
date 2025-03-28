@@ -3,6 +3,7 @@ SPDX-FileCopyrightText: 2025 Wallix Proxies Team
 SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/font.hpp"
 #include "mod/internal/widget/label.hpp"
 #include "gdi/text_metrics.hpp"
@@ -59,6 +60,26 @@ void WidgetLabel::set_text(Font const & font, chars_view text)
 {
     text_label.set_text(font, text);
     set_wh(text_label.width(), font.max_height());
+}
+
+void WidgetLabel::set_text_and_redraw(const Font& font, chars_view text, Rect clip)
+{
+    auto old_width = cx();
+    text_label.set_text(font, text);
+    set_wh(text_label.width(), font.max_height());
+
+    rdp_input_invalidate(clip);
+
+    // refresh background when label width decrease
+    if (old_width > cx()) {
+        auto rect = get_rect();
+        rect.x += cx();
+        rect.cx = old_width - cx();
+        rect = rect.intersect(clip);
+        if (!rect.isempty()) {
+            drawable.draw(RDPOpaqueRect(rect, colors.bg), rect, gdi::ColorCtx::depth24());
+        }
+    }
 }
 
 void WidgetLabel::rdp_input_invalidate(Rect clip)

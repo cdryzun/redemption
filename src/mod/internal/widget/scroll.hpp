@@ -58,7 +58,7 @@ public:
 
     void rdp_input_invalidate(Rect clip) override;
 
-    void set_wh(uint16_t w, uint16_t h) override;
+    void set_size(uint16_t width_or_height);
 
     using Widget::set_wh;
 

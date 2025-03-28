@@ -141,7 +141,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         total_width = std::max<int>(this->link->show.cx(), total_width);
     }
 
-    this->separator.set_wh(total_width, 2);
+    this->separator.set_width(checked_int{total_width});
     this->separator.set_xy(left + (width - total_width) / 2, y + 3);
 
     y            += 10;
@@ -153,7 +153,7 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
     total_height += this->dialog.cy() + 10;
 
     if (this->challenge) {
-        this->challenge->set_wh(total_width - MULTILINE_X_PADDING * 2, this->challenge->cy());
+        this->challenge->update_width(checked_int{total_width - MULTILINE_X_PADDING * 2});
         this->challenge->set_xy(this->separator.x() + MULTILINE_X_PADDING, y);
 
         y            += this->challenge->cy() + 10;
@@ -185,7 +185,6 @@ void WidgetDialogBase::move_size_widget(int16_t left, int16_t top, uint16_t widt
         y            += dy + 10;
         total_height += dy + 10;
 
-        this->link->copied_msg.set_wh(msg_dim);
         this->link->copied_msg.set_xy(left + (width - msg_dim.w) / 2, y + button_dy);
 
         y            += msg_dim.h + 10;

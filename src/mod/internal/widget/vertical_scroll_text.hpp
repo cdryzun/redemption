@@ -6,6 +6,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #include "mod/internal/widget/multiline.hpp"
+#include "utils/sugar/numerics/safe_conversions.hpp"
 
 
 class Font;
@@ -33,6 +34,11 @@ public:
         // update_dimension({{.min=5, .max=5, ...}});
         struct Length : Range
         {
+            template<class T>
+            constexpr Length(checked_int<T> n) noexcept
+                : Length(static_cast<uint16_t>(n))
+            {}
+
             constexpr Length(uint16_t n) noexcept : Range{n, n} {}
             constexpr Length(Range rng) noexcept : Range{rng} {}
         };

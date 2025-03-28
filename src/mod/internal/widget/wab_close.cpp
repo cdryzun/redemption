@@ -163,7 +163,11 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     const bool is_short_screen = (width < 600);
 
-    this->separator.set_wh(is_short_screen ? width : std::max(600, width / 3 * 2), 2);
+    this->separator.set_width(
+        is_short_screen
+        ? width
+        : checked_cast<uint16_t>(std::max(600, width / 3 * 2))
+    );
     this->separator.set_xy(left + (this->cx() - this->separator.cx()) / 2, top + y + 3);
     y += 30;
 
@@ -268,11 +272,7 @@ std::chrono::seconds WidgetWabClose::refresh_timeleft(std::chrono::seconds remai
             ? TrFmt(tr, trkeys::close_box_second_timer, duration)
             : TrFmt(tr, trkeys::close_box_minute_timer, duration);
 
-        auto old_width = this->timeleft_value.cx();
-        this->timeleft_value.set_text(font, text);
-        this->timeleft_value.set_wh(std::max(timeleft_value.cx(), old_width), timeleft_value.cy());
-        this->rdp_input_invalidate(this->timeleft_value.get_rect());
-
+        this->timeleft_value.set_text_and_redraw(font, text, get_rect());
         this->prev_time = tl;
     }
 

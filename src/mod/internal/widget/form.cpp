@@ -79,7 +79,7 @@ WidgetForm::WidgetForm(
                    check_confirmation_event(*this))
     , notes(drawable, font, tr(trkeys::note_required), WidgetLabel::Colors::from_theme(theme))
     , confirm(drawable, font, tr(trkeys::confirm), WidgetButton::Colors::from_theme(theme),
-              [this]{ return this->check_confirmation(); })
+              check_confirmation_event(*this))
 {
     this->set_bg_color(theme.global.bgcolor);
 
@@ -128,7 +128,6 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     constexpr uint8_t x_padding = 20;
     constexpr uint8_t h_sep = 32;
 
-    this->warning_msg.set_wh(width - labelmaxwidth - x_padding, this->warning_msg.cy());
     this->warning_msg.set_xy(left + labelmaxwidth + x_padding, top);
 
     int y = 20;
@@ -175,7 +174,6 @@ void WidgetForm::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     }
 
     if (this->flags & (COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY)) {
-        this->notes.set_wh(width - labelmaxwidth - x_padding, this->notes.cy());
         this->notes.set_xy(left + labelmaxwidth + x_padding, top + y);
     }
 
@@ -228,8 +226,16 @@ namespace
 
 void WidgetForm::check_confirmation()
 {
-    auto set_warning_buffer = [this](auto k, TrKey field, auto... args) {
-        this->warning_msg.set_text(font, Translator::FmtMsg<256>(tr, k, tr(field).c_str(), args...));
+    auto set_warning_buffer = [this](
+        WidgetEdit& focused_edit,
+        auto k, TrKey field, auto... args
+    ) {
+        this->warning_msg.set_text_and_redraw(
+            font,
+            Translator::FmtMsg<256>(tr, k, tr(field).c_str(), args...),
+            get_rect()
+        );
+        this->set_widget_focus(focused_edit, focus_reason_mousebutton1);
     };
 
     auto has_flags = [this](unsigned m){
@@ -239,9 +245,7 @@ void WidgetForm::check_confirmation()
     if (has_flags(DURATION_DISPLAY | DURATION_MANDATORY)
      && !this->duration_edit.has_text()
     ) {
-        set_warning_buffer(trkeys::fmt_field_required, trkeys::duration);
-        this->set_widget_focus(this->duration_edit, focus_reason_mousebutton1);
-        this->rdp_input_invalidate(this->get_rect());
+        set_warning_buffer(this->duration_edit, trkeys::fmt_field_required, trkeys::duration);
         return;
     }
 
@@ -252,14 +256,16 @@ void WidgetForm::check_confirmation()
         // res is duration in minutes.
         if (res <= 0min || res > this->duration_max) {
             if (res <= 0min) {
-                set_warning_buffer(trkeys::fmt_invalid_format, trkeys::duration);
+                set_warning_buffer(
+                    this->duration_edit, trkeys::fmt_invalid_format, trkeys::duration
+                );
             }
             else {
-                set_warning_buffer(trkeys::fmt_toohigh_duration, trkeys::duration,
-                    int(this->duration_max.count()));
+                set_warning_buffer(
+                    this->duration_edit, trkeys::fmt_toohigh_duration, trkeys::duration,
+                    int(this->duration_max.count())
+                );
             }
-            this->set_widget_focus(this->duration_edit, focus_reason_mousebutton1);
-            this->rdp_input_invalidate(this->get_rect());
             return;
         }
     }
@@ -267,18 +273,14 @@ void WidgetForm::check_confirmation()
     if (has_flags(TICKET_DISPLAY | TICKET_MANDATORY)
      && !this->ticket_edit.has_text()
     ) {
-        set_warning_buffer(trkeys::fmt_field_required, trkeys::ticket);
-        this->set_widget_focus(this->ticket_edit, focus_reason_mousebutton1);
-        this->rdp_input_invalidate(this->get_rect());
+        set_warning_buffer(this->ticket_edit, trkeys::fmt_field_required, trkeys::ticket);
         return;
     }
 
     if (has_flags(COMMENT_DISPLAY | COMMENT_MANDATORY)
      && !this->comment_edit.has_text()
     ) {
-        set_warning_buffer(trkeys::fmt_field_required, trkeys::comment);
-        this->set_widget_focus(this->comment_edit, focus_reason_mousebutton1);
-        this->rdp_input_invalidate(this->get_rect());
+        set_warning_buffer(this->comment_edit, trkeys::fmt_field_required, trkeys::comment);
         return;
     }
 

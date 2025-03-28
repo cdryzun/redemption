@@ -107,6 +107,10 @@ public:
 
     void set_text(Font const & font, chars_view text);
 
+    // Like set_text(), but followed by rdp_input_invalidate().
+    // Draw a background right rect when the label width decrease.
+    void set_text_and_redraw(Font const & font, chars_view text, Rect clip);
+
     void rdp_input_invalidate(Rect clip) override;
 
 public:

@@ -30,6 +30,11 @@ WidgetRect::WidgetRect(gdi::GraphicApi & drawable, Color color)
 {
 }
 
+void WidgetRect::set_width(uint16_t width)
+{
+    set_wh(width, 2);
+}
+
 void WidgetRect::rdp_input_invalidate(Rect clip)
 {
     Rect rect_intersect = clip.intersect(this->get_rect());

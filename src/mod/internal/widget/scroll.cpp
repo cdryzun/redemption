@@ -93,7 +93,9 @@ WidgetScrollBar::WidgetScrollBar(
 , top_left_fc(font.item(horizontal ? D::scroll_left_text : D::scroll_up_text).view)
 , bottom_right_fc(font.item(horizontal ? D::scroll_right_text : D::scroll_down_text).view)
 , h_text(font.max_height())
-, icon_width{std::max(top_left_fc.width, bottom_right_fc.width)}
+, icon_width{checked_int{
+    std::max(top_left_fc.width + !horizontal, bottom_right_fc.width + !horizontal)
+}}
 , icon_height{std::max(top_left_fc.height, bottom_right_fc.height)}
 {
     Widget::set_wh({
@@ -152,7 +154,7 @@ void WidgetScrollBar::rdp_input_invalidate(Rect clip)
 
             gdi::draw_text(
                 drawable,
-                clip.x - fc->offsetx,
+                clip.x - fc->offsetx - !horizontal,
                 clip.y - fc->offsety,
                 h_text,
                 gdi::DrawTextPadding{
@@ -190,9 +192,12 @@ void WidgetScrollBar::rdp_input_invalidate(Rect clip)
     }
 }
 
-void WidgetScrollBar::set_wh(uint16_t w, uint16_t h)
+void WidgetScrollBar::set_size(uint16_t width_or_height)
 {
-    Widget::set_wh(w, h);
+    Widget::set_wh(
+        horizontal ? width_or_height : cx(),
+        horizontal ? cy() : width_or_height
+    );
     this->compute_step_value();
 }
 

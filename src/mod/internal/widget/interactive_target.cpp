@@ -189,7 +189,7 @@ void WidgetInteractiveTarget::move_size_widget(int16_t left, int16_t top, uint16
     y = this->caption_label.ebottom() + y_sep;
 
     this->separator.set_xy(x_cbloc, y);
-    this->separator.set_wh(cbloc_w, 2);
+    this->separator.set_width(cbloc_w);
     y = this->separator.ebottom() + y_sep;
 
     auto update_edit_layout = [&](WidgetEditValid & w){

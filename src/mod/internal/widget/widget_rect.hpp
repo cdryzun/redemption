@@ -35,5 +35,7 @@ class WidgetRect : public Widget
 public:
     WidgetRect(gdi::GraphicApi & drawable, Color color);
 
+    void set_width(uint16_t width);
+
     void rdp_input_invalidate(Rect clip) override;
 };

@@ -57,10 +57,10 @@ writable_array_view<T> allocate_view(std::pmr::monotonic_buffer_resource & mbr, 
     return writable_array_view{p, n};
 }
 
-int expansion_button_width(Font const& font)
+uint16_t expansion_button_width(Font const& font)
 {
     int h = font.max_height();
-    return (h + 1) / 2 - 1;
+    return checked_int{(h + 1) / 2 - 1};
 }
 
 } // anonymous namespace
@@ -612,7 +612,8 @@ void WidgetSelector::WidgetHeaders::rdp_input_invalidate(Rect clip)
 
 
 WidgetSelector::WidgetExpansionButton::WidgetExpansionButton(
-    gdi::GraphicApi& drawable, Theme const& theme, WidgetEventNotifier onsubmit
+    gdi::GraphicApi& drawable, Theme const& theme,
+    uint16_t width_height, WidgetEventNotifier onsubmit
 )
     : WidgetButtonEvent(drawable, onsubmit, WidgetButtonEvent::RedrawOnSubmit::No)
     , colors{
@@ -621,6 +622,7 @@ WidgetSelector::WidgetExpansionButton::WidgetExpansionButton(
         .border = theme.global.fgcolor,
     }
 {
+    set_wh(width_height, width_height);
 }
 
 void WidgetSelector::WidgetExpansionButton::rdp_input_invalidate(Rect clip)
@@ -683,10 +685,13 @@ WidgetSelector::WidgetSelector(
     .fg = theme.global.fgcolor,
     .bg = theme.selector_label.bgcolor,
 })
-, column_expansion_buttons{
-    WidgetExpansionButton{drawable, theme, [this]{ D::expansion_event(*this, 0); } },
-    WidgetExpansionButton{drawable, theme, [this]{ D::expansion_event(*this, 1); } },
-}
+, column_expansion_buttons{[&]{
+    auto hw = expansion_button_width(font);
+    return decltype(column_expansion_buttons){
+        WidgetExpansionButton{drawable, theme, hw, [this]{ D::expansion_event(*this, 0); } },
+        WidgetExpansionButton{drawable, theme, hw, [this]{ D::expansion_event(*this, 1); } },
+    };
+}()}
 , edit_filters{
     WidgetEdit{drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme), events.onfilter},
     WidgetEdit{drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme), events.onfilter},
@@ -736,11 +741,6 @@ WidgetSelector::WidgetSelector(
 
     for (auto & w : edit_filters) {
         this->add_widget(w);
-    }
-
-    uint16_t const expansion_width = checked_int(expansion_button_width(font));
-    for (auto & w : column_expansion_buttons) {
-        w.set_wh(expansion_width, expansion_width);
     }
 
     this->add_widget(this->apply);

@@ -52,12 +52,13 @@ struct TestScrollCtx
     )
     {
         scroll.set_max_value(50);
-        Dimension dim = (scroll_direction == WidgetScrollBar::ScrollDirection::Horizontal)
+        bool is_horizontal = (scroll_direction == WidgetScrollBar::ScrollDirection::Horizontal);
+        Dimension dim = is_horizontal
             ? Dimension{200, this->scroll.cy()}
             : Dimension{this->scroll.cx(), 200}
             ;
         this->drawable.resize(align4(dim.w), dim.h);
-        this->scroll.set_wh(this->drawable.width(), this->drawable.height());
+        this->scroll.set_size(is_horizontal ? this->drawable.width() : this->drawable.height());
         this->scroll.rdp_input_invalidate(this->scroll.get_rect());
     }
 

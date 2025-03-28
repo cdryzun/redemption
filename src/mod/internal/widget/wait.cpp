@@ -80,14 +80,6 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     this->set_xy(left, top);
     this->set_wh(width, height);
 
-    this->groupbox.set_xy(left, top);
-    this->groupbox.set_wh(width, height);
-
-    if (this->hasform) {
-        this->form.set_wh(width - 80, 156);
-        this->form.set_xy(left, top);
-    }
-
     int y = 20;
 
     this->dialog.set_text(this->font, width - 80, this->message_dialog);
@@ -96,7 +88,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     y = this->dialog.y() + this->dialog.cy() + 20;
 
     if (this->hasform) {
-        this->form.move_size_widget(left + 40, y, this->form.cx(), this->form.cy());
+        this->form.move_size_widget(left + 40, y, width - 80, 156);
 
         y = this->form.ebottom() + 10;
     }
@@ -109,7 +101,8 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
 
     y += this->exit.cy() + 20;
 
-    this->groupbox.set_wh(this->groupbox.cx(), y - top);
+    this->groupbox.set_xy(left, top);
+    this->groupbox.set_wh(width, y - top);
     this->groupbox.move_xy(0, (height - (y - top)) / 2);
 
     if (this->extra_button) {

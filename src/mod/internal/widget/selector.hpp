@@ -260,7 +260,8 @@ private:
         };
 
         WidgetExpansionButton(
-            gdi::GraphicApi & drawable, Theme const & theme, WidgetEventNotifier onsubmit
+            gdi::GraphicApi & drawable, Theme const & theme,
+            uint16_t width_height, WidgetEventNotifier onsubmit
         );
 
         void rdp_input_invalidate(Rect clip) override;
