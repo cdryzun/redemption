@@ -22,7 +22,12 @@ struct TestWidgetMultiLineCtx
     WidgetMultiLine make_multi_line()
     {
         return WidgetMultiLine(
-            drawable, global_font_deja_vu_14(), 4096, text,
+            drawable,
+            {
+                .font = global_font_deja_vu_14(),
+                .text = text,
+                .max_width = 4096,
+            },
             {
                 .fg = NamedBGRColor::BLUE,
                 .bg = NamedBGRColor::CYAN,

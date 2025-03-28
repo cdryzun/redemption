@@ -27,8 +27,6 @@
 #include "mod/internal/widget/form.hpp"
 #include "mod/internal/widget/button.hpp"
 
-#include <string>
-
 
 class WidgetWait : public WidgetComposite
 {
@@ -71,15 +69,12 @@ private:
     WidgetEventNotifier onctrl_shift;
 
     Widget * extra_button;
-    Font const & font;
 
     Color border_color;
     uint16_t group_height = 0;
 
     bool hasform;
     bool hide_back_to_selector;
-
-    std::string message_dialog;
 
     WidgetLabel caption;
     WidgetMultiLine dialog;

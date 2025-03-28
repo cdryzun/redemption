@@ -50,13 +50,11 @@ WidgetWait::WidgetWait(
     , onrefused(events.onrefused)
     , onctrl_shift(events.onctrl_shift)
     , extra_button(extra_button)
-    , font(font)
     , border_color(theme.global.fgcolor)
     , hasform(showform)
     , hide_back_to_selector(flags & D::HIDE_BACK_TO_SELECTOR)
-    , message_dialog(av_auto_cast{text})
     , caption(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
-    , dialog(drawable, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
+    , dialog(drawable, {font, text}, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
     , form(drawable, copy_paste, {events.onconfirm, events.onrefused},
            font, theme, tr, flags & ~D::HIDE_BACK_TO_SELECTOR, duration_max)
     , goselector(drawable, font, tr(trkeys::back_selector),
@@ -93,7 +91,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
 
     this->caption.set_xy(left + D::text_indentation, top);
 
-    this->dialog.set_text(this->font, width - 80, this->message_dialog);
+    this->dialog.update_dimension(checked_int{width - 80});
     this->dialog.set_xy(left + 40, top + y + 10);
 
     y = this->dialog.y() + this->dialog.cy() + 20;

@@ -29,7 +29,6 @@
 #include "mod/internal/widget/button.hpp"
 #include "translation/translation.hpp"
 
-#include <string>
 #include <memory>
 #include <chrono>
 
@@ -46,7 +45,7 @@ public:
 
     WidgetWabClose(gdi::GraphicApi & drawable,
                    int16_t left, int16_t top, int16_t width, int16_t height,
-                   Events events, std::string diagnostic_text,
+                   Events events, chars_view diagnostic_text,
                    chars_view username, chars_view target,
                    bool showtimer, Font const & font, Theme const & theme,
                    Translator tr, bool back_to_selector = false); /*NOLINT*/
@@ -97,6 +96,4 @@ private:
 
     BackToSelectorCtx back_to_selector_ctx;
     std::unique_ptr<WidgetButton> back;
-
-    std::string diagnostic_text;
 };

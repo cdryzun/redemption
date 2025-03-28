@@ -29,7 +29,7 @@
 static WidgetWabClose build_close_widget(
     gdi::GraphicApi & drawable,
     Rect const widget_rect,
-    std::string&& message,
+    chars_view message,
     CloseModVariables vars,
     Font const& font, Theme const& theme,
     Translator tr, bool back_selector,
@@ -64,7 +64,7 @@ static WidgetWabClose build_close_widget(
 
     return WidgetWabClose(
         drawable, widget_rect.x, widget_rect.y, widget_rect.cx, widget_rect.cy, events,
-        std::move(message),
+        message,
         is_asked ? chars_view() : vars.get<cfg::globals::auth_user>(),
         is_asked ? chars_view() : str_target_builder(vars).text,
         true,
@@ -73,7 +73,7 @@ static WidgetWabClose build_close_widget(
 }
 
 CloseMod::CloseMod(
-    std::string&& message,
+    chars_view message,
     CloseModVariables vars,
     EventContainer& events,
     gdi::GraphicApi & gd,
@@ -82,7 +82,7 @@ CloseMod::CloseMod(
     Font const& font, Theme const& theme, Translator tr, bool back_selector)
     : RailInternalModBase(gd, width, height, rail_client_execute, font, theme, nullptr)
     , close_widget(build_close_widget(
-        gd, widget_rect, std::move(message), vars, font, theme, tr, back_selector,
+        gd, widget_rect, message, vars, font, theme, tr, back_selector,
         {
             .oncancel = [this]{
                 LOG(LOG_INFO, "CloseMod::notify Click on Close Button");

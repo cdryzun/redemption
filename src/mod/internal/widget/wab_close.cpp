@@ -31,7 +31,7 @@
 WidgetWabClose::WidgetWabClose(
     gdi::GraphicApi & drawable,
     int16_t left, int16_t top, int16_t width, int16_t height,
-    Events events, std::string diagnostic_text,
+    Events events, chars_view diagnostic_text,
     chars_view username, chars_view target,
     bool showtimer, Font const & font, Theme const & theme,
     Translator tr, bool back_to_selector)
@@ -48,7 +48,9 @@ WidgetWabClose::WidgetWabClose(
 , target_value(drawable, font, target, WidgetLabel::Colors::from_theme(theme))
 , diagnostic_label(drawable, font, tr(trkeys::wab_close_diagnostic),
                    WidgetLabel::Colors::from_theme(theme))
-, diagnostic_value(drawable, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
+, diagnostic_value(drawable, {font, diagnostic_text},
+                   {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor}
+)
 , timeleft_label(drawable, font, tr(trkeys::wab_close_timeleft),
                 WidgetLabel::Colors::from_theme(theme))
 , timeleft_value(drawable, font, ""_av, WidgetLabel::Colors::from_theme(theme))
@@ -67,7 +69,6 @@ WidgetWabClose::WidgetWabClose(
     .colors = WidgetButton::Colors::from_theme(theme),
 }
 , back(back_to_selector ? make_back_to_selector() : std::unique_ptr<WidgetButton>())
-, diagnostic_text(std::move(diagnostic_text))
 {
     this->set_bg_color(theme.global.bgcolor);
     this->add_widget(this->img);
@@ -212,10 +213,8 @@ void WidgetWabClose::move_size_widget(int16_t left, int16_t top, uint16_t width,
     const bool short_diag = this->diagnostic_label.cx() > this->cx() - (x + 10)
                          || width < 400;
 
-    this->diagnostic_value.set_text(
-        this->font,
-        short_diag ? this->cx() : this->separator.cx() - x,
-        this->diagnostic_text
+    this->diagnostic_value.update_dimension(
+        short_diag ? this->cx() : this->separator.cx() - x
     );
 
     if (short_diag) {

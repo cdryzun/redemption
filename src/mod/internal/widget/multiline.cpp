@@ -25,9 +25,8 @@ void MultiLineText::set_text(Font const & font, chars_view text)
 void MultiLineText::set_text(
     Font const & font, unsigned preferred_max_width, chars_view text)
 {
-    m_lines.set_text(font, text);
+    set_text(font, text);
     m_lines.compute_lines(preferred_max_width);
-    m_cy_line = font.max_height();
 }
 
 void MultiLineText::update_dimension(unsigned preferred_max_width) noexcept
@@ -109,17 +108,27 @@ WidgetMultiLine::WidgetMultiLine(gdi::GraphicApi & drawable, Colors colors)
 {}
 
 WidgetMultiLine::WidgetMultiLine(
-    gdi::GraphicApi & drawable, Font const & font,
-    unsigned max_width, chars_view text, Colors colors
+    gdi::GraphicApi & drawable, TextData text_data, Colors colors
 )
     : WidgetMultiLine(drawable, colors)
 {
-    set_text(font, max_width, text);
+    if (text_data.max_width) {
+        set_text(text_data.font, text_data.max_width, text_data.text);
+    }
+    else {
+        multi_line.set_text(text_data.font, text_data.text);
+    }
 }
 
 void WidgetMultiLine::set_text(Font const & font, unsigned max_width, chars_view text)
 {
     multi_line.set_text(font, max_width, text);
+    set_wh(multi_line.dimension());
+}
+
+void WidgetMultiLine::update_dimension(unsigned max_width)
+{
+    multi_line.update_dimension(max_width);
     set_wh(multi_line.dimension());
 }
 

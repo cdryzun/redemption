@@ -82,12 +82,21 @@ public:
         static Colors from_theme(Theme const& theme) noexcept;
     };
 
-    WidgetMultiLine(gdi::GraphicApi & drawable, Font const & font,
-                    unsigned max_width, chars_view text, Colors colors);
+    struct TextData
+    {
+        Font const & font;
+        chars_view text;
+        // 0 means do not compute size
+        unsigned max_width = 0;
+    };
+
+    WidgetMultiLine(gdi::GraphicApi & drawable, TextData text_data, Colors colors);
 
     WidgetMultiLine(gdi::GraphicApi & drawable, Colors colors);
 
     void set_text(Font const & font, unsigned max_width, chars_view text);
+
+    void update_dimension(unsigned max_width);
 
     void rdp_input_invalidate(Rect clip) override;
 

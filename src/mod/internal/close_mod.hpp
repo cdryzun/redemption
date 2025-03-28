@@ -43,7 +43,7 @@ class CloseMod : public RailInternalModBase
 {
 public:
     CloseMod(
-        std::string&& message,
+        chars_view message,
         CloseModVariables vars,
         EventContainer& events,
         gdi::GraphicApi & gd,
