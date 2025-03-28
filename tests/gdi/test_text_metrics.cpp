@@ -24,7 +24,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 struct LinesForTest
 {
-    array_view<gdi::MultiLineTextMetrics::Line> fc_lines;
+    array_view<gdi::MultiLineText::Line> fc_lines;
     array_view<std::string_view> str_lines;
     Font const& font;
 
@@ -124,14 +124,14 @@ RED_TEST_DISPATCH_COMPARISON_EQ((), (LinesForTest), (LinesForTest), ::test_comp_
 #endif
 
 #define TEST_LINES(font, s, preferred_max_width, real_max_width, ...) do { \
-    gdi::MultiLineTextMetrics metrics(font, preferred_max_width, s ""_av); \
+    gdi::MultiLineText metrics(font, preferred_max_width, s ""_av); \
     std::string_view expected_[] __VA_ARGS__;                              \
     LinesForTest expected{{}, make_array_view(expected_), font};           \
     LinesForTest lines = {metrics.lines(), {}, font};                      \
     RED_CHECK(lines == expected);                                          \
     RED_CHECK(metrics.max_width() == real_max_width);                      \
     RED_TEST_CONTEXT("rewrap") {                                           \
-        metrics.compute_lines(metrics.max_width());                        \
+        metrics.update_dimension(metrics.max_width());                     \
         RED_CHECK(lines == expected);                                      \
         RED_CHECK(metrics.max_width() == real_max_width);                  \
     }                                                                      \
@@ -144,15 +144,15 @@ RED_TEST_DISPATCH_COMPARISON_EQ((), (LinesForTest), (LinesForTest), ::test_comp_
 } while (0)
 
 
-RED_AUTO_TEST_CASE(MultiLineTextMetrics)
+RED_AUTO_TEST_CASE(MultiLineText)
 {
     auto& font14 = global_font_deja_vu_14();
 
-    RED_TEST(gdi::MultiLineTextMetrics(font14, 0, ""_av).lines().size() == 0);
+    RED_TEST(gdi::MultiLineText(font14, 0, ""_av).lines().size() == 0);
 
     // empty size
     {
-        gdi::MultiLineTextMetrics metrics(font14, 0, "ab"_av);
+        gdi::MultiLineText metrics(font14, 0, "ab"_av);
         RED_CHECK(metrics.max_width() == 0);
         RED_CHECK(metrics.lines().size() == 0);
     }

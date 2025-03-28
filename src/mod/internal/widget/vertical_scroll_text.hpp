@@ -5,8 +5,9 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include "mod/internal/widget/multiline.hpp"
 #include "utils/sugar/numerics/safe_conversions.hpp"
+#include "mod/internal/widget/widget.hpp"
+#include "gdi/text_metrics.hpp"
 
 
 class Font;
@@ -139,7 +140,7 @@ private:
 
     ButtonType selected_button = ButtonType::None;
 
-    MultiLineText multiline_text;
+    gdi::MultiLineText multiline_text;
     FontCharView const* icon_top;
     FontCharView const* icon_cursor;
     FontCharView const* icon_bottom;

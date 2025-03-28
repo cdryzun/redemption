@@ -12,15 +12,15 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/utf.hpp"
 
 // new line is a nullptr Char*
-static gdi::MultiLineTextMetrics::Line* multi_textmetrics_impl(
-    array_view<gdi::MultiLineTextMetrics::Char> fcs,
+static gdi::MultiLineText::Line* multi_textmetrics_impl(
+    array_view<gdi::MultiLineText::Char> fcs,
     FontCharView const* fc_space,
     int const preferred_max_width,
-    gdi::MultiLineTextMetrics::Line* line_it,
+    gdi::MultiLineText::Line* line_it,
     int* max_width
 ) noexcept
 {
-    auto push_line_and_width = [&](gdi::MultiLineTextMetrics::Line line, int width) {
+    auto push_line_and_width = [&](gdi::MultiLineText::Line line, int width) {
         #ifndef NDEBUG
         int w = 0;
         for (auto* fc : line) {
@@ -180,14 +180,7 @@ _word:
 namespace gdi
 {
 
-MultiLineTextMetrics::MultiLineTextMetrics(
-    const Font& font, unsigned preferred_max_width, bytes_view utf8_text)
-{
-    set_text(font, utf8_text);
-    compute_lines(preferred_max_width);
-}
-
-void MultiLineTextMetrics::set_text(Font const& font, bytes_view utf8_text)
+void MultiLineText::set_text(Font const& font, chars_view utf8_text)
 {
     clear_text();
 
@@ -222,6 +215,8 @@ void MultiLineTextMetrics::set_text(Font const& font, bytes_view utf8_text)
      * Text to FontChar
      */
 
+    d.line_height = font.max_height();
+
     auto* chars_buf = static_cast<Char*>(d.data);
     auto ch_it = chars_buf;
 
@@ -245,7 +240,7 @@ void MultiLineTextMetrics::set_text(Font const& font, bytes_view utf8_text)
     d.nb_chars = checked_int{ch_it - chars_buf};
 }
 
-void MultiLineTextMetrics::compute_lines(unsigned preferred_max_width) noexcept
+void MultiLineText::update_dimension(unsigned preferred_max_width) noexcept
 {
     if (!d.nb_chars) {
         return;
@@ -279,21 +274,74 @@ void MultiLineTextMetrics::compute_lines(unsigned preferred_max_width) noexcept
     d.nb_line = checked_int(end - line_it);
 }
 
-void MultiLineTextMetrics::clear_text() noexcept
+Dimension MultiLineText::dimension() const noexcept
+{
+    auto n = d.nb_line;
+    auto sep = n ? n * line_sep() : 0;
+    return Dimension{
+        checked_int{max_width()},
+        checked_int{d.line_height * n + sep},
+    };
+}
+
+void MultiLineText::clear_text() noexcept
 {
     d.nb_line = 0;
     d.nb_chars = 0;
     d.max_width = 0;
+    d.line_height = 0;
 }
 
-array_view<MultiLineTextMetrics::Line> MultiLineTextMetrics::lines() const noexcept
+array_view<MultiLineText::Line> MultiLineText::lines() const noexcept
 {
     auto* ch_it = static_cast<Char*>(d.data);
     auto* line_it = reinterpret_cast<Line*>(ch_it + d.nb_chars);  /* NOLINT */
     return {line_it, d.nb_line};
 }
 
-MultiLineTextMetrics::~MultiLineTextMetrics()
+void MultiLineText::draw(gdi::GraphicApi& drawable, DrawingData data)
+{
+    auto dim = dimension();
+    auto rect = Rect(data.x, data.y, dim.w, dim.h);
+    Rect rect_intersect = data.clip.intersect(rect);
+
+    if (!rect_intersect.isempty()) {
+        if (data.draw_bg_rect) {
+            drawable.draw(
+                RDPOpaqueRect(rect_intersect, data.bgcolor),
+                rect, gdi::ColorCtx::depth24()
+            );
+        }
+
+        auto h_line = checked_cast<uint16_t>(d.line_height + line_sep());
+
+        auto start = checked_cast<std::size_t>((rect_intersect.y - rect.y) / h_line);
+        auto stop = checked_cast<std::size_t>(
+            (rect_intersect.ebottom() - rect.y + h_line - 1) / h_line
+        );
+
+        rect.cy = h_line;
+        rect.y += h_line * start;
+
+        for (auto const& line : lines().first(stop).drop_front(start)) {
+            gdi::draw_text(
+                drawable,
+                rect.x,
+                rect.y,
+                d.line_height,
+                gdi::DrawTextPadding{},
+                line,
+                data.fgcolor,
+                data.bgcolor,
+                rect_intersect.intersect(rect)
+            );
+
+            rect.y += h_line;
+        }
+    }
+}
+
+MultiLineText::~MultiLineText()
 {
     free(d.data);
 }

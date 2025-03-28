@@ -68,7 +68,7 @@ void ModWrapper::display_osd_message(std::string_view message, gdi::OsdMsgUrgenc
         }
 
         str_assign(this->osd_message, prefix, message, '\n', tr(trkeys::disable_osd));
-        this->line_metrics.set_text(this->glyphs, this->osd_message);
+        this->osd_multi_line.set_text(this->glyphs, this->osd_message);
         this->osd_message_last_width = 0;
         this->draw_osd_message(true);
     }
@@ -155,7 +155,7 @@ void ModWrapper::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
             }
 
             if (!msg.empty()) {
-                this->line_metrics.set_text(this->glyphs, msg);
+                this->osd_multi_line.set_text(this->glyphs, msg);
                 this->osd_message = std::move(msg);
                 this->osd_message_last_width = 0;
                 this->color = RDPColor::from(0);
@@ -222,11 +222,11 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
 
     if (this->osd_message_last_width != w) {
         this->osd_message_last_width = w;
-        this->line_metrics.compute_lines(w - padw);
+        this->osd_multi_line.update_dimension(w - padw);
     }
 
-    unsigned line_width = this->line_metrics.max_width() + padw * 2;
-    unsigned line_height = this->line_metrics.lines().size() * this->glyphs.max_height()
+    unsigned line_width = this->osd_multi_line.max_width() + padw * 2;
+    unsigned line_height = this->osd_multi_line.lines().size() * this->glyphs.max_height()
                          + padh * 2
                          + (this->is_disable_by_input ? 4 : 0)
                          ;
@@ -261,7 +261,7 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
 
     const auto fc_height = glyphs.max_height();
 
-    auto draw_text = [&](int16_t y, RDPColor fgcolor, gdi::MultiLineTextMetrics::Line str) {
+    auto draw_text = [&](int16_t y, RDPColor fgcolor, gdi::MultiLineText::Line str) {
         gdi::draw_text(
             drawable,
             clip.x + padw,
@@ -275,20 +275,20 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
         );
     };
 
-    auto lines = this->line_metrics.lines();
+    auto lines = this->osd_multi_line.lines();
     int16_t dy = padh;
 
     if (this->is_disable_by_input) {
         lines = lines.drop_back(1);
     }
 
-    for (gdi::MultiLineTextMetrics::Line line : lines) {
+    for (gdi::MultiLineText::Line line : lines) {
         draw_text(dy, this->color, line);
         dy += this->glyphs.max_height();
     }
 
     if (this->is_disable_by_input) {
-        draw_text(dy + 4, black, this->line_metrics.lines().back());
+        draw_text(dy + 4, black, this->osd_multi_line.lines().back());
     }
 }
 

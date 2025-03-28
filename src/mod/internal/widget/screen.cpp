@@ -45,7 +45,7 @@ bool WidgetScreen::WidgetTooltip::has_text() const noexcept
 
 void WidgetScreen::WidgetTooltip::clear_text() noexcept
 {
-    desc.reset();
+    desc.clear_text();
 }
 
 void WidgetScreen::WidgetTooltip::set_text(Font const & font, unsigned max_width, chars_view text)

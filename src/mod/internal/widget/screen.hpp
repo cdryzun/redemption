@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #include "mod/internal/widget/composite.hpp"
-#include "mod/internal/widget/multiline.hpp"
+#include "gdi/text_metrics.hpp"
 
 
 class WidgetTooltip;
@@ -64,7 +64,7 @@ private:
         friend D;
 
         Colors colors;
-        MultiLineText desc;
+        gdi::MultiLineText desc;
     };
 
     Rect tooltip_mouse_area;

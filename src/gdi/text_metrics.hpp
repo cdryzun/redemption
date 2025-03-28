@@ -5,7 +5,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-#include "utils/sugar/bytes_view.hpp"
+#include "utils/sugar/array_view.hpp"
 #include "gdi/graphic_api.hpp" // ColorCtx
 
 
@@ -17,40 +17,43 @@ class GraphicApi;
 namespace gdi
 {
 
-struct MultiLineTextMetrics
+class MultiLineText
 {
+public:
     using Char = FontCharView const *;
     using Line = array_view<Char>;
 
-    explicit MultiLineTextMetrics() noexcept = default;
-    explicit MultiLineTextMetrics(
-        const Font& font, unsigned preferred_max_width, bytes_view utf8_text
-    );
+    explicit MultiLineText() noexcept = default;
 
-    MultiLineTextMetrics(MultiLineTextMetrics const&) = delete;
-    MultiLineTextMetrics operator=(MultiLineTextMetrics const&) = delete;
+    explicit MultiLineText(Font const & font, unsigned preferred_max_width, chars_view text)
+    {
+        set_text(font, text);
+        update_dimension(preferred_max_width);
+    }
 
-    // MultiLineTextMetrics(MultiLineTextMetrics&& other) noexcept
+    ~MultiLineText();
+
+    MultiLineText(MultiLineText const&) = delete;
+    MultiLineText operator=(MultiLineText const&) = delete;
+
+    // MultiLineText(MultiLineText&& other) noexcept
     //     : d(other.d)
     // {
     //     other.d = Data();
     // }
 
-    // MultiLineTextMetrics& operator=(MultiLineTextMetrics&& other) noexcept
+    // MultiLineText& operator=(MultiLineText&& other) noexcept
     // {
-    //     MultiLineTextMetrics g(std::move(*this));
+    //     MultiLineText g(std::move(*this));
     //     std::swap(d, other.d);
     //     return *this;
     // }
 
-    ~MultiLineTextMetrics();
+    void set_text(Font const & font, chars_view text);
 
-    /// Set a new text with a number of lines at 0.
-    /// \post lines().size() == 0
-    /// \post max_width() == 0
-    void set_text(Font const& font, bytes_view utf8_text);
+    void update_dimension(unsigned preferred_max_width) noexcept;
 
-    void compute_lines(unsigned preferred_max_width) noexcept;
+    Dimension dimension() const noexcept;
 
     /// Equivalent of a call to \c set_text() with an empty text.
     void clear_text() noexcept;
@@ -67,13 +70,44 @@ struct MultiLineTextMetrics
         return d.max_width;
     }
 
+    /// line size separator for \c draw()
+    static uint16_t line_sep() noexcept
+    {
+        return 1;
+    }
+
+    struct WithLineSep { bool with_line_sep; };
+
+    uint16_t line_height(WithLineSep with_sep) noexcept
+    {
+        auto h = d.line_height;
+        if (with_sep.with_line_sep) {
+            h += line_sep();
+        }
+        return h;
+    }
+
+    struct DrawingData
+    {
+        int16_t x;
+        int16_t y;
+        Rect clip;
+        RDPColor fgcolor;
+        RDPColor bgcolor;
+        bool draw_bg_rect;
+    };
+
+    void draw(gdi::GraphicApi & drawable, DrawingData data);
+
 private:
-    struct Data {
+    struct Data
+    {
         void* data = nullptr;
         unsigned char_capacity = 0;
         unsigned nb_chars = 0;
         unsigned nb_line = 0;
         uint16_t max_width = 0;
+        uint16_t line_height = 0;
     };
 
     Data d;

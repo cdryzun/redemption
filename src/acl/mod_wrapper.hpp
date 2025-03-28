@@ -180,5 +180,5 @@ private:
     MonotonicTimePoint end_time_session {};
     TimeBase const& time_base;
 
-    gdi::MultiLineTextMetrics line_metrics;
+    gdi::MultiLineText osd_multi_line;
 };
