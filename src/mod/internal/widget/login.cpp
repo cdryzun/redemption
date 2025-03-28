@@ -146,7 +146,9 @@ void WidgetLogin::move_size_widget(int16_t left, int16_t top, uint16_t width, ui
         show_target ? target_edit.label_width(label_as_placeholder) : uint16_t()
     }) + (label_as_placeholder ? 0 : 8);
 
-    const int cbloc_w = labels_w + edit_dim.w;
+    const int cbloc_w = label_as_placeholder
+        ? std::max(labels_w, edit_dim.w + 0)
+        : labels_w + edit_dim.w;
     const int cbloc_x = (width - cbloc_w) / 2;
 
     const int original_space_h = 10;

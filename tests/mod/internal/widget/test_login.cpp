@@ -42,7 +42,7 @@ struct TestWidgetLoginCtx
 {
     TestGraphic drawable{800, 600};
     CopyPaste copy_paste{false};
-    WidgetScreen parent{drawable, 800, 600, global_font_deja_vu_14(), Theme{}};
+    WidgetScreen parent;
     NotifyTrace onsubmit;
     NotifyTrace oncancel;
     WidgetLogin flat_login;
@@ -54,8 +54,12 @@ struct TestWidgetLoginCtx
         chars_view target,
         chars_view login_message = LOGON_MESSAGE,
         Theme theme = Theme(),
-        bool enable_target_field = false)
-    : flat_login(
+        bool enable_target_field = false,
+        uint16_t w = 800,
+        uint16_t h = 600)
+    : drawable{w, h}
+    , parent{drawable, w, h, global_font_deja_vu_14(), Theme{}}
+    , flat_login(
         drawable, copy_paste, parent, 0, 0, parent.cx(), parent.cy(),
         {onsubmit, oncancel, WidgetEventNotifier()},
         caption, login, password, target,
@@ -172,4 +176,16 @@ RED_AUTO_TEST_CASE(TraceWidgetLogin_target_field)
     ctx.flat_login.rdp_input_invalidate(ctx.flat_login.get_rect());
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "login_7.png");
+}
+
+RED_AUTO_TEST_CASE(TraceWidgetLogin_little_width)
+{
+    TestWidgetLoginCtx ctx(
+        "caption"_av, "login"_av, "password"_av, "target"_av,
+        LOGON_MESSAGE, Theme{}, true, 300, 300
+    );
+
+    ctx.flat_login.rdp_input_invalidate(ctx.flat_login.get_rect());
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "login_8.png");
 }
