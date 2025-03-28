@@ -19,6 +19,7 @@
  *              Meng Tan, Jennifer Inthavong
  */
 
+#include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "mod/internal/widget/wait.hpp"
 #include "keyboard/keymap.hpp"
 
@@ -26,7 +27,16 @@
 #include "translation/trkeys.hpp"
 #include "utils/theme.hpp"
 
-constexpr unsigned HIDE_BACK_TO_SELECTOR = 0x10000;
+
+struct WidgetWait::D
+{
+    static constexpr unsigned HIDE_BACK_TO_SELECTOR = 0x10000;
+
+    // Group box
+    static constexpr uint16_t border           = 6;
+    static constexpr uint16_t text_margin      = 6;
+    static constexpr uint16_t text_indentation = border + text_margin + 4;
+};
 
 WidgetWait::WidgetWait(
     gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
@@ -39,34 +49,33 @@ WidgetWait::WidgetWait(
     , onaccept(events.onaccept)
     , onrefused(events.onrefused)
     , onctrl_shift(events.onctrl_shift)
-    , groupbox(drawable, caption,
-               theme.global.fgcolor, theme.global.bgcolor, font)
+    , extra_button(extra_button)
+    , font(font)
+    , border_color(theme.global.fgcolor)
+    , hasform(showform)
+    , hide_back_to_selector(flags & D::HIDE_BACK_TO_SELECTOR)
+    , message_dialog(av_auto_cast{text})
+    , caption(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     , dialog(drawable, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
     , form(drawable, copy_paste, {events.onconfirm, events.onrefused},
-           font, theme, tr, flags & ~HIDE_BACK_TO_SELECTOR, duration_max)
+           font, theme, tr, flags & ~D::HIDE_BACK_TO_SELECTOR, duration_max)
     , goselector(drawable, font, tr(trkeys::back_selector),
                  WidgetButton::Colors::from_theme(theme), events.onaccept)
     , exit(drawable, font, tr(trkeys::exit), WidgetButton::Colors::from_theme(theme),
            events.onrefused)
-    , extra_button(extra_button)
-    , font(font)
-    , hasform(showform)
-    , hide_back_to_selector(flags & HIDE_BACK_TO_SELECTOR)
-    , message_dialog(av_auto_cast{text})
 {
     this->set_bg_color(theme.global.bgcolor);
-    this->groupbox.add_widget(this->dialog);
+    this->add_widget(this->caption);
+    this->add_widget(this->dialog);
 
     if (showform) {
-        this->groupbox.add_widget(this->form, HasFocus::Yes);
+        this->add_widget(this->form, HasFocus::Yes);
     }
 
     if (!this->hide_back_to_selector) {
-        this->groupbox.add_widget(this->goselector, showform ? HasFocus::No : HasFocus::Yes);
+        this->add_widget(this->goselector, showform ? HasFocus::No : HasFocus::Yes);
     }
-    this->groupbox.add_widget(this->exit);
-
-    this->add_widget(this->groupbox);
+    this->add_widget(this->exit);
 
     if (extra_button) {
         this->add_widget(*extra_button);
@@ -81,6 +90,8 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     this->set_wh(width, height);
 
     int y = 20;
+
+    this->caption.set_xy(left + D::text_indentation, top);
 
     this->dialog.set_text(this->font, width - 80, this->message_dialog);
     this->dialog.set_xy(left + 40, top + y + 10);
@@ -99,14 +110,65 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
         this->goselector.set_xy(this->exit.x() - (this->goselector.cx() + 10), y);
     }
 
-    y += this->exit.cy() + 20;
-
-    this->groupbox.set_xy(left, top);
-    this->groupbox.set_wh(width, y - top);
-    this->groupbox.move_xy(0, (height - (y - top)) / 2);
-
     if (this->extra_button) {
         this->extra_button->set_xy(left + 60, top + height - 60);
+    }
+
+    /*
+     * center vertically
+     */
+
+    y += this->exit.cy() + 20;
+    this->group_height = checked_int{y};
+
+    this->move_xy(0, checked_int{(height - (y - top)) / 2});
+    this->set_xy(left, top);
+}
+
+void WidgetWait::rdp_input_invalidate(Rect clip)
+{
+    Rect rect_intersect = clip.intersect(this->get_rect());
+
+    if (!rect_intersect.isempty()) {
+        this->draw_inner_free(rect_intersect, this->get_bg_color());
+
+        auto draw_rect = [&](int x, int y, int w, int h){
+            auto rect = Rect(
+                checked_int{x},
+                checked_int{y},
+                checked_int{w},
+                checked_int{h}
+            );
+            this->drawable.draw(
+                RDPOpaqueRect(rect, this->border_color),
+                rect_intersect, gdi::ColorCtx::depth24()
+            );
+        };
+
+        auto wlabel = D::text_margin * 2 + caption.cx();
+        auto y = this->caption.y() + this->caption.cy() / 2;
+        auto gcy = this->group_height - this->caption.cy() / 2 - D::border;
+        auto gcx = this->cx() - D::border * 2 + 1;
+        auto px = this->x() + D::border - 1;
+
+        // Top line (left to text)
+        draw_rect(px, y, D::text_indentation - D::text_margin - D::border + 2, 1);
+        // Top line (right to text)
+        auto right_cx = gcx + 1 - wlabel - 4;
+        if (right_cx > 0) {
+            draw_rect(px + wlabel + 3, y, right_cx, 1);
+        }
+
+        // Bottom line
+        draw_rect(px, y + gcy, gcx + 1, 1);
+
+        // Left border
+        draw_rect(px, y + 1, 1, gcy - 1);
+
+        // Right Border
+        draw_rect(px + gcx, y, 1, gcy);
+
+        this->invalidate_children(rect_intersect);
     }
 }
 

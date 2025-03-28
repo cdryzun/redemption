@@ -24,7 +24,6 @@
 #include "utils/colors.hpp"
 #include "mod/internal/widget/composite.hpp"
 #include "mod/internal/widget/multiline.hpp"
-#include "mod/internal/widget/group_box.hpp"
 #include "mod/internal/widget/form.hpp"
 #include "mod/internal/widget/button.hpp"
 
@@ -56,29 +55,38 @@ public:
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;
 
+    void rdp_input_invalidate(Rect clip) override;
+
     EditTexts get_edit_texts() const noexcept
     {
         return form.get_edit_texts();
     }
 
 private:
+    struct D;
+    friend D;
+
     WidgetEventNotifier onaccept;
     WidgetEventNotifier onrefused;
     WidgetEventNotifier onctrl_shift;
 
-    WidgetGroupBox groupbox;
+    Widget * extra_button;
+    Font const & font;
+
+    Color border_color;
+    uint16_t group_height = 0;
+
+    bool hasform;
+    bool hide_back_to_selector;
+
+    std::string message_dialog;
+
+    WidgetLabel caption;
     WidgetMultiLine dialog;
 
     WidgetForm form;
 
     WidgetButton goselector;
 
-    WidgetButton   exit;
-    Widget *       extra_button;
-    Font const & font;
-
-    bool hasform;
-    bool hide_back_to_selector;
-
-    std::string message_dialog;
+    WidgetButton exit;
 };

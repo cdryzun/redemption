@@ -88,7 +88,6 @@ exe rdpproxy :
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/form.o
-  src/mod/internal/widget/group_box.o
   src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/interactive_target.o
@@ -3133,40 +3132,6 @@ test-run tests/mod/internal/widget/test_form :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
-test-run tests/mod/internal/widget/test_group_box :
-  $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_group_box.cpp
-:
-  crypto
-  png
-  app_path_test.o
-  src/core/RDP/RDPDrawable.o
-  src/core/error.o
-  src/core/font.o
-  src/gdi/clip_from_cmd.o
-  src/gdi/draw_utils.o
-  src/gdi/graphic_api.o
-  src/gdi/text_metrics.o
-  src/keyboard/keymap.o
-  src/mod/internal/widget/button.o
-  src/mod/internal/widget/composite.o
-  src/mod/internal/widget/group_box.o
-  src/mod/internal/widget/label.o
-  src/utils/bitmap.o
-  src/utils/bitmap_data_allocator.o
-  src/utils/bitmap_from_file.o
-  src/utils/drawable.o
-  src/utils/hexdump.o
-  src/utils/png.o
-  src/utils/rle.o
-  src/utils/stacktrace.o
-  src/utils/strutils.o
-  src/utils/utf.o
-  tests/includes/test_only/core/font.o
-  tests/includes/test_only/gdi/test_graphic.o
-  tests/includes/test_only/test_framework/check_img.o
-:
-  $(BOOST_STACKTRACE_LINKFLAGS)
-;
 test-run tests/mod/internal/widget/test_image :
   $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_image.cpp
 :
@@ -3612,7 +3577,6 @@ test-run tests/mod/internal/widget/test_wait :
   src/mod/internal/widget/composite.o
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/form.o
-  src/mod/internal/widget/group_box.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/wait.o
@@ -5141,7 +5105,6 @@ obj src/mod/internal/widget/dialog.o : $(REDEMPTION_SRC_PATH)/mod/internal/widge
 obj src/mod/internal/widget/edit.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/edit.cpp ;
 obj src/mod/internal/widget/edit_valid.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/edit_valid.cpp ;
 obj src/mod/internal/widget/form.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/form.cpp ;
-obj src/mod/internal/widget/group_box.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/group_box.cpp ;
 obj src/mod/internal/widget/help_icon.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/help_icon.cpp ;
 obj src/mod/internal/widget/image.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/image.cpp ;
 obj src/mod/internal/widget/interactive_target.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/interactive_target.cpp ;
@@ -5404,7 +5367,6 @@ alias test_dialog : tests/mod/internal/widget/test_dialog ;
 alias test_edit : tests/mod/internal/widget/test_edit ;
 alias test_edit_valid : tests/mod/internal/widget/test_edit_valid ;
 alias test_form : tests/mod/internal/widget/test_form ;
-alias test_group_box : tests/mod/internal/widget/test_group_box ;
 alias test_image : tests/mod/internal/widget/test_image ;
 alias test_interactive_target : tests/mod/internal/widget/test_interactive_target ;
 alias test_label : tests/mod/internal/widget/test_label ;
@@ -5775,7 +5737,6 @@ alias tests/mod/internal/widget.norec :
   tests/mod/internal/widget/test_edit
   tests/mod/internal/widget/test_edit_valid
   tests/mod/internal/widget/test_form
-  tests/mod/internal/widget/test_group_box
   tests/mod/internal/widget/test_image
   tests/mod/internal/widget/test_interactive_target
   tests/mod/internal/widget/test_label
@@ -6255,7 +6216,6 @@ explicit
   src/mod/internal/widget/edit.o
   src/mod/internal/widget/edit_valid.o
   src/mod/internal/widget/form.o
-  src/mod/internal/widget/group_box.o
   src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/image.o
   src/mod/internal/widget/interactive_target.o
@@ -6520,7 +6480,6 @@ explicit
   test_edit
   test_edit_valid
   test_form
-  test_group_box
   test_image
   test_interactive_target
   test_label
