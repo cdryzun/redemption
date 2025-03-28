@@ -43,7 +43,7 @@ WidgetLogin::WidgetLogin(
     bool enable_target_field,
     Font const & font, Translator tr, Theme const & theme
 )
-    : WidgetComposite(drawable, Focusable::Yes)
+    : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , oncancel(events.oncancel)
     , onctrl_shift(events.onctrl_shift)
     , tooltip_shower(tooltip_shower)
@@ -96,7 +96,6 @@ WidgetLogin::WidgetLogin(
     , tr(tr)
     , show_target(enable_target_field)
 {
-    this->set_bg_color(theme.global.bgcolor);
     this->helpicon.set_unfocusable();
 
     this->add_widget(this->img);

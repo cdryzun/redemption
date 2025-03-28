@@ -38,7 +38,7 @@ WidgetDialogBase::WidgetDialogBase(
     WidgetEdit* challenge_,
     WidgetLink* link
 )
-    : WidgetComposite(drawable, Focusable::Yes)
+    : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , onctrl_shift(events.onctrl_shift)
     , title(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     , separator(drawable, theme.global.separator_color)
@@ -55,9 +55,7 @@ WidgetDialogBase::WidgetDialogBase(
     , extra_button(extra_button)
     , oncancel(events.oncancel)
 {
-    this->set_bg_color(theme.global.bgcolor);
     this->add_widget(this->img);
-
     this->add_widget(this->title);
     this->add_widget(this->separator);
     this->add_widget(this->dialog);

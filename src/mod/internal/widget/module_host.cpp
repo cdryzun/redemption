@@ -285,7 +285,7 @@ WidgetModuleHost::WidgetModuleHost(
     Ref<mod_api> managed_mod, Font const & font,
     const GCC::UserData::CSMonitor& cs_monitor,
     Rect const widget_rect, uint16_t front_width, uint16_t front_height)
-: WidgetComposite(drawable, Focusable::Yes)
+: WidgetComposite(drawable, Focusable::Yes, NamedBGRColor::BLACK)
 , managed_mod(&managed_mod.get())
 , drawable(drawable)
 , screen(screen)

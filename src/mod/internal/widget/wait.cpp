@@ -45,7 +45,7 @@ WidgetWait::WidgetWait(
     Font const & font, Theme const & theme, Translator tr,
     bool showform, unsigned flags, std::chrono::minutes duration_max
 )
-    : WidgetComposite(drawable, Focusable::Yes)
+    : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , onaccept(events.onaccept)
     , onrefused(events.onrefused)
     , onctrl_shift(events.onctrl_shift)
@@ -62,7 +62,6 @@ WidgetWait::WidgetWait(
     , exit(drawable, font, tr(trkeys::exit), WidgetButton::Colors::from_theme(theme),
            events.onrefused)
 {
-    this->set_bg_color(theme.global.bgcolor);
     this->add_widget(this->caption);
     this->add_widget(this->dialog);
 

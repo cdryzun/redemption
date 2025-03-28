@@ -33,7 +33,7 @@ RED_AUTO_TEST_CASE(TraceWidgetComposite)
 {
     TestGraphic drawable(800, 600);
 
-    WidgetComposite wcomposite(drawable, Widget::Focusable::No);
+    WidgetComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
     wcomposite.set_wh(drawable.width(),
                       drawable.height());
     wcomposite.set_xy(0, 0);

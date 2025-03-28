@@ -158,7 +158,7 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonAndComposite)
 
     WidgetEventNotifier notifier2;
 
-    WidgetComposite wcomposite(drawable, Widget::Focusable::No);
+    WidgetComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
     wcomposite.set_wh(300, 200);
     wcomposite.set_xy(0, 0);
 

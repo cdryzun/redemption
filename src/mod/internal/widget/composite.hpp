@@ -57,7 +57,7 @@ private:
 
 class WidgetComposite : public Widget
 {
-    Widget * pressed;
+    Widget * pressed = nullptr;
 
     Color bg_color;
 
@@ -67,7 +67,7 @@ class WidgetComposite : public Widget
     CompositeArray widgets;
 
 public:
-    Widget * current_focus;
+    Widget * current_focus = nullptr;
 
 public:
     enum class HasFocus : bool
@@ -76,7 +76,7 @@ public:
         Yes,
     };
 
-    WidgetComposite(gdi::GraphicApi & drawable, Focusable focusable);
+    WidgetComposite(gdi::GraphicApi & drawable, Focusable focusable, Color bg_color);
 
     ~WidgetComposite() override;
 
@@ -118,11 +118,6 @@ protected:
     void draw_inner_free(Rect clip, Color bg_color);
 
     void move_children_xy(int16_t x, int16_t y);
-
-    void set_bg_color(Color color)
-    {
-        this->bg_color = color;
-    }
 
     Widget * get_next_focus(Widget * w);
     Widget * get_previous_focus(Widget * w);

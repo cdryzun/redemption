@@ -35,7 +35,7 @@ WidgetWabClose::WidgetWabClose(
     chars_view username, chars_view target,
     bool showtimer, Font const & font, Theme const & theme,
     Translator tr, bool back_to_selector)
-: WidgetComposite(drawable, Focusable::Yes)
+: WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
 , oncancel(events.oncancel)
 , connection_closed_label(drawable, font, tr(trkeys::connection_closed),
                           WidgetLabel::Colors::from_theme(theme))
@@ -70,7 +70,6 @@ WidgetWabClose::WidgetWabClose(
 }
 , back(back_to_selector ? make_back_to_selector() : std::unique_ptr<WidgetButton>())
 {
-    this->set_bg_color(theme.global.bgcolor);
     this->add_widget(this->img);
 
     this->add_widget(this->connection_closed_label);

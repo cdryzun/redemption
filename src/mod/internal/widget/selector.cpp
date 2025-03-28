@@ -670,7 +670,7 @@ WidgetSelector::WidgetSelector(
     Translator tr, Widget * extra_button, Rect rect,
     Texts texts, Events events
 )
-: WidgetComposite(drawable, Focusable::Yes)
+: WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
 , extra_button(extra_button)
 , less_than_800(rect.cx < 800)
 , tooltip_shower_parent(tooltip_shower)
@@ -735,7 +735,6 @@ WidgetSelector::WidgetSelector(
           events.onconnect)
 , tr(tr)
 {
-    this->set_bg_color(theme.global.bgcolor);
     this->add_widget(this->device_label);
     this->add_widget(this->header_labels);
 

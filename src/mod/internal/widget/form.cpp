@@ -53,7 +53,7 @@ WidgetForm::WidgetForm(
     Font const & font, Theme const & theme, Translator tr,
     unsigned flags, std::chrono::minutes duration_max
 )
-    : WidgetComposite(drawable, Focusable::Yes)
+    : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , events(events)
     , font(font)
     , tr(tr)
@@ -81,8 +81,6 @@ WidgetForm::WidgetForm(
     , confirm(drawable, font, tr(trkeys::confirm), WidgetButton::Colors::from_theme(theme),
               check_confirmation_event(*this))
 {
-    this->set_bg_color(theme.global.bgcolor);
-
     this->add_widget(this->warning_msg);
 
     if (this->flags & DURATION_DISPLAY) {

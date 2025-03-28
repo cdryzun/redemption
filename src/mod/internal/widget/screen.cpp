@@ -90,7 +90,7 @@ WidgetScreen::WidgetScreen(
     gdi::GraphicApi & drawable, uint16_t width, uint16_t height,
     Font const & font, Theme const& theme
 )
-    : WidgetComposite(drawable, Focusable::Yes)
+    : WidgetComposite(drawable, Focusable::Yes, NamedBGRColor::BLACK)
     , current_over(nullptr)
     , font(font)
     , tooltip(drawable, WidgetTooltip::Colors::from_theme(theme))

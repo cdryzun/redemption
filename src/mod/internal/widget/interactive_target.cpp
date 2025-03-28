@@ -45,7 +45,7 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     Font const & font,
     Widget * extra_button
 )
-    : WidgetComposite(drawable, Focusable::Yes)
+    : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , oncancel(events.oncancel)
     , onctrl_shift(events.onctrl_shift)
     , caption_label(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
@@ -104,8 +104,6 @@ WidgetInteractiveTarget::WidgetInteractiveTarget(
     , ask_login(ask_login)
     , ask_password(ask_login || ask_password)
 {
-    this->set_bg_color(theme.global.bgcolor);
-
     HasFocus device_has_focus = HasFocus::No;
     HasFocus login_has_focus = HasFocus::No;
     HasFocus password_has_focus = HasFocus::No;
