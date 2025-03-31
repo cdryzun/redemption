@@ -92,7 +92,7 @@ template<class...> struct LazyInifile { using type = Inifile; };
 template<class... Cfg>
 class variables
 {
-    LazyInifile<Cfg...>::type & ini;
+    typename LazyInifile<Cfg...>::type & ini;
 
     struct Pack : Cfg... {};
 
