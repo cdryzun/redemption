@@ -246,11 +246,18 @@ void Graphics::draw(const RDPScrBlt & cmd, Rect clip)
     const auto deltax = cmd.srcx - cmd.rect.x;
     const auto deltay = cmd.srcy - cmd.rect.y;
 
+    const auto sx = drect.x + deltax;
+    const auto sy = drect.y + deltay;
+
+    if (sx > width || sy > height) [[unlikely]] {
+        return;
+    }
+
     emval_call(this->callbacks, jsnames::draw_scr_blt,
-        drect.x + deltax,
-        drect.y + deltay,
-        drect.cx,
-        drect.cy,
+        sx,
+        sy,
+        std::min(drect.cx + 0, width - sx),
+        std::min(drect.cy + 0, height - sy),
         drect.x,
         drect.y,
         cmd.rop
