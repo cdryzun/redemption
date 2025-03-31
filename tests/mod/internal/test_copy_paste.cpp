@@ -76,17 +76,21 @@ struct CopyPasteFront : FakeFront
             case RDPECLIP::CB_FORMAT_DATA_REQUEST:
             {
                 RDPECLIP::FormatDataRequestPDU().recv(stream);
-                constexpr std::size_t buf_sz = 65535;
-                uint8_t buf[buf_sz];
-                size_t unicode_data_length = ::UTF8toUTF16(this->str, buf, buf_sz);
-                buf[unicode_data_length    ] = 0;
-                buf[unicode_data_length + 1] = 0;
-
-                RDPECLIP::CliprdrHeader header(RDPECLIP::CB_FORMAT_DATA_RESPONSE, RDPECLIP::CB_RESPONSE_OK, unicode_data_length);
-                RDPECLIP::FormatDataResponsePDU format_data_response_pdu;
                 StaticOutStream<256> out_s;
-                header.emit(out_s);
-                format_data_response_pdu.emit(out_s, buf, unicode_data_length);
+
+                OutStream out_header = out_s.stream_at(0);
+
+                RDPECLIP::CliprdrHeader().emit(out_s); // skip header
+
+                uint32_t data_len = UTF8toUTF16(this->str, out_s.get_tail());
+                out_s.out_skip_bytes(data_len);
+                out_s.out_clear_bytes(2);  // null-terminated char (UTF-16)
+
+                RDPECLIP::CliprdrHeader(
+                    RDPECLIP::CB_FORMAT_DATA_RESPONSE, RDPECLIP::CB_RESPONSE_OK,
+                    data_len + 2
+                ).emit(out_header);
+
                 InStream in_s(out_s.get_produced_bytes());
                 this->copy_paste.send_to_mod_channel(in_s, CHANNELS::CHANNEL_FLAG_FIRST | CHANNELS::CHANNEL_FLAG_LAST);
             }

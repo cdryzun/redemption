@@ -248,7 +248,12 @@ void CopyPaste::send_to_mod_channel(InStream & chunk, uint32_t flags)
                 if (flags & CHANNELS::CHANNEL_FLAG_LAST) {
                     ::check_throw(stream, header.dataLen(), "CopyPaste::send_to_mod_channel truncated CB_FORMAT_DATA_RESPONSE", ERR_RDP_PROTOCOL);
 
-                    this->clipboard_str_.utf16_push_back(stream.get_current(), header.dataLen() / 2);
+                    auto n = header.dataLen() / 2;
+                    // remove null-terminal char
+                    if (n > 0) {
+                        --n;
+                    }
+                    this->clipboard_str_.utf16_push_back(stream.get_current(), n);
 
                     if (this->pasted_widget_) {
                         this->pasted_widget_->clipboard_insert_utf8(this->clipboard_str_.zstring());
