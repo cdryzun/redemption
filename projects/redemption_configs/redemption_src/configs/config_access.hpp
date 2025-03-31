@@ -24,10 +24,6 @@
 #include "configs/autogen/variables_configuration_fwd.hpp"
 #include "utils/sugar/cast.hpp"
 
-#ifdef __EMSCRIPTEN__
-#   include "configs/config.hpp"
-#endif
-
 class Inifile;
 
 
@@ -90,13 +86,13 @@ namespace detail
     };
 } // namespace detail
 
-// fix for gcc-7
-template<class...> using LazyInifile = Inifile;
+// lazy instanciation for clang-19 on the incomplete Inifile type
+template<class...> struct LazyInifile { using type = Inifile; };
 
 template<class... Cfg>
 class variables
 {
-    LazyInifile<Cfg...> & ini;
+    LazyInifile<Cfg...>::type & ini;
 
     struct Pack : Cfg... {};
 
