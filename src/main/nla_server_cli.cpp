@@ -154,6 +154,7 @@ public:
                 .cipher_list = {},
                 .tls_1_3_ciphersuites = {},
                 .key_exchange_groups = {},
+                .signature_algorithms = {},
                 .show_common_cipher_list = true,
             });
             if (r != Transport::TlsResult::Ok) {

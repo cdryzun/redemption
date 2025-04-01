@@ -91,6 +91,7 @@ void ProxyRecorder::front_step1(Transport & frontConn)
             .cipher_list = {},
             .tls_1_3_ciphersuites = {},
             .key_exchange_groups = {},
+            .signature_algorithms = {},
             .show_common_cipher_list = true,
         });
     }

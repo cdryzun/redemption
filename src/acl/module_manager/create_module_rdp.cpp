@@ -490,6 +490,7 @@ ModPack create_mod_rdp(
         .cipher_list = ini.get<cfg::mod_rdp::cipher_string>(),
         .tls_1_3_ciphersuites = ini.get<cfg::mod_rdp::tls_1_3_ciphersuites>(),
         .key_exchange_groups = ini.get<cfg::mod_rdp::tls_key_exchange_groups>(),
+        .signature_algorithms = {}, // TODO should be configurable
         .enable_legacy_server_connect = ini.get<cfg::mod_rdp::tls_enable_legacy_server>(),
         .show_common_cipher_list = ini.get<cfg::mod_rdp::show_common_cipher_list>(),
     };
