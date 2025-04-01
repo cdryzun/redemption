@@ -136,7 +136,11 @@ inline char const* apply_tls_config(
 
     // when not defined, use system default
     if (not tls_config.signature_algorithms.empty()) {
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        // SSL_CTX_set1_sigalgs_list is a macro casting to char*
+        REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wcast-qual")
         CHECK_CALL(SSL_CTX_set1_sigalgs_list, ctx, tls_config.signature_algorithms.c_str());
+        REDEMPTION_DIAGNOSTIC_POP()
     }
 
 #undef CHECK_CALL
