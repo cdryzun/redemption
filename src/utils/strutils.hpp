@@ -44,12 +44,16 @@ void str_assign(std::string& str, Strings const&... strs);
 
 inline char const* strchr(chars_view str, char pattern) noexcept
 {
-    return static_cast<char const*>(std::memchr(str.data(), pattern, str.size()));
+    // cast to u8 to prevent overflow when char -> int in memchr
+    auto c = static_cast<uint8_t>(pattern);
+    return static_cast<char const*>(std::memchr(str.data(), c, str.size()));
 }
 
 inline char* strchr(writable_chars_view str, char pattern) noexcept
 {
-    return static_cast<char*>(std::memchr(str.data(), pattern, str.size()));
+    // cast to u8 to prevent overflow when char -> int in memchr
+    auto c = static_cast<uint8_t>(pattern);
+    return static_cast<char*>(std::memchr(str.data(), c, str.size()));
 }
 
 namespace utils
