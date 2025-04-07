@@ -38,7 +38,7 @@ struct TestWidgetWaitCtx
     CopyPaste copy_paste{false};
     WidgetWait flat_dialog;
 
-    TestWidgetWaitCtx(bool showform = false, unsigned flags = WidgetForm::NONE)
+    TestWidgetWaitCtx(bool showform = false, unsigned flags = WidgetWait::NONE)
     : flat_dialog(
         drawable, copy_paste, {0, 0, 800, 600},
         {WidgetEventNotifier(), WidgetEventNotifier(), WidgetEventNotifier(), WidgetEventNotifier()},
@@ -66,9 +66,9 @@ RED_AUTO_TEST_CASE(TraceWidgetWait)
 RED_AUTO_TEST_CASE(TraceWidgetWaitWithForm)
 {
     TestWidgetWaitCtx ctx(true,
-        WidgetForm::COMMENT_DISPLAY | WidgetForm::COMMENT_MANDATORY |
-        WidgetForm::TICKET_DISPLAY | WidgetForm::TICKET_MANDATORY |
-        WidgetForm::DURATION_DISPLAY);
+        WidgetWait::COMMENT_DISPLAY | WidgetWait::COMMENT_MANDATORY |
+        WidgetWait::TICKET_DISPLAY | WidgetWait::TICKET_MANDATORY |
+        WidgetWait::DURATION_DISPLAY);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "wait_2.png");
 }

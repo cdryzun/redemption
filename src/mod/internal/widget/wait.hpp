@@ -1,36 +1,34 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2013
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan, Jennifer Inthavong
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #pragma once
 
-#include "utils/colors.hpp"
 #include "mod/internal/widget/composite.hpp"
 #include "mod/internal/widget/multiline.hpp"
-#include "mod/internal/widget/form.hpp"
 #include "mod/internal/widget/button.hpp"
+#include "mod/internal/widget/edit.hpp"
+#include "translation/translation.hpp"
 
 
 class WidgetWait : public WidgetComposite
 {
 public:
+    // TODO enum class
+    enum {
+        NONE               = 0x00,
+        COMMENT_DISPLAY    = 0x01,
+        COMMENT_MANDATORY  = 0x02,
+        TICKET_DISPLAY     = 0x04,
+        TICKET_MANDATORY   = 0x08,
+        DURATION_DISPLAY   = 0x10,
+        DURATION_MANDATORY = 0x20,
+
+        NOTE_DISPLAY = COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY,
+    };
+
     struct Events
     {
         WidgetEventNotifier onaccept;
@@ -39,15 +37,22 @@ public:
         WidgetEventNotifier onctrl_shift;
     };
 
-    using EditTexts = WidgetForm::EditTexts;
 
+    struct EditTexts
+    {
+        WidgetEdit::Text comment;
+        WidgetEdit::Text ticket;
+        WidgetEdit::Text duration;
+    };
+
+    // TODO merge showform and flags
     WidgetWait(
         gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
         Events events, chars_view caption, chars_view text,
         Widget * extra_button,
         Font const & font, Theme const & theme, Translator tr,
-        bool showform = false, unsigned flags = WidgetForm::NONE,
-        std::chrono::minutes duration_max = std::chrono::minutes::zero()); /*NOLINT*/
+        bool showform = false, unsigned flags = NONE, /*TODO default*/
+        std::chrono::minutes duration_max = std::chrono::minutes::zero()); /*TODO default*/
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height);
 
@@ -55,16 +60,30 @@ public:
 
     void rdp_input_invalidate(Rect clip) override;
 
-    EditTexts get_edit_texts() const noexcept
-    {
-        return form.get_edit_texts();
-    }
+    EditTexts get_edit_texts() const noexcept;
 
 private:
+    void check_form_confirmation();
+
     struct D;
     friend D;
 
+    struct Form
+    {
+        WidgetLabel  warning_msg;
+        WidgetLabel  duration_label;
+        WidgetEdit   duration_edit;
+        WidgetLabel  duration_format;
+        WidgetLabel  ticket_label;
+        WidgetEdit   ticket_edit;
+        WidgetLabel  comment_label;
+        WidgetEdit   comment_edit;
+        WidgetLabel  notes;
+        WidgetButton confirm;
+    };
+
     WidgetEventNotifier onaccept;
+    WidgetEventNotifier onconfirm;
     WidgetEventNotifier onrefused;
     WidgetEventNotifier onctrl_shift;
 
@@ -76,10 +95,16 @@ private:
     bool hasform;
     bool hide_back_to_selector;
 
+    Font const& font;
+    Translator tr;
+
+    unsigned flags;
+    std::chrono::minutes duration_max;
+
     WidgetLabel caption;
     WidgetMultiLine dialog;
 
-    WidgetForm form;
+    Form form;
 
     WidgetButton goselector;
 

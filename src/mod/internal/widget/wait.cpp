@@ -1,30 +1,14 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2013
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan, Jennifer Inthavong
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "mod/internal/widget/wait.hpp"
 #include "keyboard/keymap.hpp"
-
-#include "translation/translation.hpp"
 #include "translation/trkeys.hpp"
+#include "utils/sugar/chars_to_int.hpp"
 #include "utils/theme.hpp"
 
 
@@ -36,6 +20,11 @@ struct WidgetWait::D
     static constexpr uint16_t border           = 6;
     static constexpr uint16_t text_margin      = 6;
     static constexpr uint16_t text_indentation = border + text_margin + 4;
+
+    static WidgetEventNotifier check_form_confirmation_event(WidgetWait & w)
+    {
+        return [&w]{ w.check_form_confirmation(); };
+    }
 };
 
 WidgetWait::WidgetWait(
@@ -47,16 +36,83 @@ WidgetWait::WidgetWait(
 )
     : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , onaccept(events.onaccept)
+    , onconfirm(events.onconfirm)
     , onrefused(events.onrefused)
     , onctrl_shift(events.onctrl_shift)
     , extra_button(extra_button)
     , border_color(theme.global.fgcolor)
     , hasform(showform)
     , hide_back_to_selector(flags & D::HIDE_BACK_TO_SELECTOR)
+    , font(font)
+    , tr(tr)
+    , flags(flags)
+    , duration_max(duration_max == duration_max.zero()
+        ? std::chrono::minutes(60000)
+        : duration_max)
     , caption(drawable, font, caption, WidgetLabel::Colors::from_theme(theme))
     , dialog(drawable, {font, text}, {.fg = theme.global.fgcolor, .bg = theme.global.bgcolor})
-    , form(drawable, copy_paste, {events.onconfirm, events.onrefused},
-           font, theme, tr, flags & ~D::HIDE_BACK_TO_SELECTOR, duration_max)
+    , form{
+        .warning_msg{
+            drawable, font,
+            ""_av,
+            WidgetLabel::Colors::from_theme(theme)
+        },
+        .duration_label{
+            drawable, font,
+            (showform && (flags & DURATION_DISPLAY))
+                ? tr((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration)
+                : ""_zv,
+            WidgetLabel::Colors::from_theme(theme)
+        },
+        .duration_edit{
+            drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+            D::check_form_confirmation_event(*this)
+        },
+        .duration_format{
+            drawable, font,
+            (showform && (flags & DURATION_DISPLAY))
+                ? tr(trkeys::note_duration_format)
+                : ""_zv,
+            WidgetLabel::Colors::from_theme(theme)
+        },
+        .ticket_label{
+            drawable, font,
+            (showform && (flags & TICKET_DISPLAY))
+                ? tr((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket)
+                : ""_zv,
+            WidgetLabel::Colors::from_theme(theme)
+        },
+        .ticket_edit{
+            drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+            D::check_form_confirmation_event(*this)
+        },
+        .comment_label{
+            drawable, font,
+            (showform && (flags & COMMENT_DISPLAY))
+                ? tr((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment)
+                : ""_zv,
+            WidgetLabel::Colors::from_theme(theme)
+        },
+        .comment_edit{
+            drawable, font, copy_paste, WidgetEdit::Colors::from_theme(theme),
+            D::check_form_confirmation_event(*this)
+        },
+        .notes{
+            drawable, font,
+            (showform && (flags & NOTE_DISPLAY))
+                ? tr(trkeys::note_required)
+                : ""_zv,
+            WidgetLabel::Colors::from_theme(theme)
+        },
+        .confirm{
+            drawable, font,
+            showform
+              ? tr(trkeys::confirm)
+              : ""_zv,
+            WidgetButton::Colors::from_theme(theme),
+            D::check_form_confirmation_event(*this)
+        },
+    }
     , goselector(drawable, font, tr(trkeys::back_selector),
                  WidgetButton::Colors::from_theme(theme), events.onaccept)
     , exit(drawable, font, tr(trkeys::exit), WidgetButton::Colors::from_theme(theme),
@@ -66,7 +122,27 @@ WidgetWait::WidgetWait(
     this->add_widget(this->dialog);
 
     if (showform) {
-        this->add_widget(this->form, HasFocus::Yes);
+        this->add_widget(this->form.warning_msg);
+
+        if (this->flags & DURATION_DISPLAY) {
+            this->add_widget(this->form.duration_label);
+            this->add_widget(this->form.duration_edit);
+            this->add_widget(this->form.duration_format);
+        }
+        if (this->flags & TICKET_DISPLAY) {
+            this->add_widget(this->form.ticket_label);
+            this->add_widget(this->form.ticket_edit);
+        }
+        if (this->flags & COMMENT_DISPLAY) {
+            this->add_widget(this->form.comment_label);
+            this->add_widget(this->form.comment_edit);
+        }
+
+        if (this->flags & (COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY)) {
+            this->add_widget(this->form.notes);
+        }
+
+        this->add_widget(this->form.confirm);
     }
 
     if (!this->hide_back_to_selector) {
@@ -86,29 +162,95 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
     this->set_xy(left, top);
     this->set_wh(width, height);
 
+    constexpr uint8_t x_padding = 40;
+
     int y = 20;
 
     this->caption.set_xy(left + D::text_indentation, top);
 
-    this->dialog.update_dimension(checked_int{width - 80});
-    this->dialog.set_xy(left + 40, top + y + 10);
+    this->dialog.update_dimension(checked_int{width - x_padding * 2});
+    this->dialog.set_xy(checked_int{left + x_padding}, checked_int{top + y + 10});
 
     y = this->dialog.y() + this->dialog.cy() + 20;
 
     if (this->hasform) {
-        this->form.move_size_widget(left + 40, y, width - 80, 156);
+        int16_t label_x_offset = checked_int{left + x_padding};
+        int16_t edit_x_offset = checked_int{
+            std::max({
+                this->form.duration_label.cx(),
+                this->form.ticket_label.cx(),
+                this->form.comment_label.cx()
+            })
+            + label_x_offset + 20
+        };
+        uint16_t edit_witdh = checked_int{width - edit_x_offset - label_x_offset};
 
-        y = this->form.ebottom() + 10;
+        int h_sep = form.duration_edit.cy() + 8;
+
+        form.warning_msg.set_xy(label_x_offset, top);
+
+        int d = (form.duration_edit.cy() - form.warning_msg.cy()) / 2;
+
+        if (this->flags & DURATION_DISPLAY) {
+            form.duration_label.set_xy(label_x_offset, checked_int{top + y + d});
+
+            form.duration_edit.set_xy(edit_x_offset, checked_int(top + y));
+            form.duration_edit.update_width(checked_int(
+                edit_witdh - form.duration_format.cx() - 10
+            ));
+
+            form.duration_format.set_xy(
+                checked_int{form.duration_edit.eright() + 10},
+                checked_int{top + y + d}
+            );
+
+            y += h_sep;
+        }
+
+        if (this->flags & TICKET_DISPLAY) {
+            form.ticket_label.set_xy(label_x_offset, checked_int{top + y + d});
+
+            form.ticket_edit.set_xy(edit_x_offset, checked_int(top + y));
+            form.ticket_edit.update_width(edit_witdh);
+
+            y += h_sep;
+        }
+
+        if (this->flags & COMMENT_DISPLAY) {
+            form.comment_label.set_xy(label_x_offset, checked_int{top + y + d});
+
+            form.comment_edit.set_xy(edit_x_offset, checked_int(top + y));
+            form.comment_edit.update_width(edit_witdh);
+
+            y += h_sep;
+        }
+
+        if (this->flags & NOTE_DISPLAY) {
+            form.notes.set_xy(edit_x_offset, checked_int{top + y});
+        }
+
+        form.confirm.set_xy(
+            checked_int{left + width - form.confirm.cx() - x_padding},
+            checked_int{top + y + 10}
+        );
+
+        y = form.confirm.ebottom() + 20;
     }
 
-    this->exit.set_xy(left + width - 40 - this->exit.cx(), y);
+    this->exit.set_xy(
+        checked_int{left + width - x_padding - this->exit.cx()},
+        checked_int{y}
+    );
 
     if (!this->hide_back_to_selector) {
-        this->goselector.set_xy(this->exit.x() - (this->goselector.cx() + 10), y);
+        this->goselector.set_xy(
+            checked_int{this->exit.x() - (this->goselector.cx() + 10)},
+            checked_int{y}
+        );
     }
 
     if (this->extra_button) {
-        this->extra_button->set_xy(left + 60, top + height - 60);
+        this->extra_button->set_xy(checked_int{left + 60}, checked_int{top + height - 60});
     }
 
     /*
@@ -198,4 +340,120 @@ void WidgetWait::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
             break;
     }
     REDEMPTION_DIAGNOSTIC_POP()
+}
+
+namespace
+{
+    char const* consume_spaces(char const* s) noexcept
+    {
+        while (*s ==  ' ') {
+            ++s;
+        }
+        return s;
+    }
+
+    // parse " *\d+h *\d+m| *\d+[hm]" or returns 0
+    std::chrono::minutes check_duration(const char * duration)
+    {
+        auto chars_res = decimal_chars_to_int<unsigned>(consume_spaces(duration));
+        if (chars_res.ec == std::errc()) {
+            unsigned long minutes = 0;
+
+            if (*chars_res.ptr == 'h') {
+                minutes = chars_res.val * 60;
+                duration = consume_spaces(chars_res.ptr + 1);
+
+                if (*duration) {
+                    chars_res = decimal_chars_to_int<unsigned>(duration);
+                    if (chars_res.ec != std::errc()) {
+                        return std::chrono::minutes(0);
+                    }
+                    duration = chars_res.ptr + 1;
+                }
+            }
+
+            if (*chars_res.ptr == 'm') {
+                minutes += chars_res.val;
+                duration = chars_res.ptr + 1;
+            }
+
+            if (*duration == '\0') {
+                return std::chrono::minutes(minutes);
+            }
+        }
+
+        return std::chrono::minutes(0);
+    }
+} // anonymous namespace
+
+void WidgetWait::check_form_confirmation()
+{
+    auto set_warning_buffer = [this](
+        WidgetEdit& focused_edit,
+        auto k, TrKey field, auto... args
+    ) {
+        this->form.warning_msg.set_text_and_redraw(
+            font,
+            Translator::FmtMsg<256>(tr, k, tr(field).c_str(), args...),
+            get_rect()
+        );
+        this->set_widget_focus(focused_edit, focus_reason_mousebutton1);
+    };
+
+    auto has_flags = [this](unsigned m){
+        return (this->flags & m) == m;
+    };
+
+    if (has_flags(DURATION_DISPLAY | DURATION_MANDATORY)
+     && !form.duration_edit.has_text()
+    ) {
+        set_warning_buffer(form.duration_edit, trkeys::fmt_field_required, trkeys::duration);
+        return;
+    }
+
+    if (has_flags(DURATION_DISPLAY)
+     && form.duration_edit.has_text()
+    ) {
+        std::chrono::minutes res = check_duration(form.duration_edit.get_text().c_str());
+        // res is duration in minutes.
+        if (res <= res.zero() || res > this->duration_max) {
+            if (res <= res.zero()) {
+                set_warning_buffer(
+                    form.duration_edit, trkeys::fmt_invalid_format, trkeys::duration
+                );
+            }
+            else {
+                set_warning_buffer(
+                    form.duration_edit, trkeys::fmt_toohigh_duration, trkeys::duration,
+                    int(this->duration_max.count())
+                );
+            }
+            return;
+        }
+    }
+
+    if (has_flags(TICKET_DISPLAY | TICKET_MANDATORY)
+     && !form.ticket_edit.has_text()
+    ) {
+        set_warning_buffer(form.ticket_edit, trkeys::fmt_field_required, trkeys::ticket);
+        return;
+    }
+
+    if (has_flags(COMMENT_DISPLAY | COMMENT_MANDATORY)
+     && !form.comment_edit.has_text()
+    ) {
+        set_warning_buffer(form.comment_edit, trkeys::fmt_field_required, trkeys::comment);
+        return;
+    }
+
+    onconfirm();
+}
+
+WidgetWait::EditTexts WidgetWait::get_edit_texts() const noexcept
+{
+    return {
+        .comment = form.comment_edit.get_text(),
+        .ticket = form.ticket_edit.get_text(),
+        .duration = form.duration_edit.get_text(),
+    };
 }
