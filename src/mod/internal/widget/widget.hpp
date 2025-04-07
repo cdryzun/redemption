@@ -208,7 +208,7 @@ public:
         this->rect.y = y;
     }
 
-    virtual void set_wh(uint16_t w, uint16_t h)
+    void set_wh(uint16_t w, uint16_t h)
     {
         this->rect.cx = w;
         this->rect.cy = h;
