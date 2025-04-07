@@ -149,7 +149,6 @@ RED_AUTO_TEST_CASE(TestIniAssign)
     ini.set_acl<cfg::context::selector_proto_filter>(s);
     ini.set<cfg::context::session_id>(cs);
     ini.set<cfg::context::session_id>(s);
-    ini.set<cfg::context::showform>(true);
     ini.set_acl<cfg::context::target_host>(cs);
     ini.set_acl<cfg::context::target_host>(s);
     ini.set_acl<cfg::context::target_password>(cs);

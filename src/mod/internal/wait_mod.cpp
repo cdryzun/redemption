@@ -34,10 +34,13 @@ WaitMod::WaitMod(
     FrontAPI & front, uint16_t width, uint16_t height,
     Rect const widget_rect, chars_view caption, chars_view message,
     ClientExecute & rail_client_execute, Font const& font, Theme const& theme,
-    CopyPaste& copy_paste, Translator tr, bool showform, uint32_t flag
+    CopyPaste& copy_paste, Translator tr, uint32_t flag
 )
-    : RailInternalModBase(drawable, width, height, rail_client_execute, font, theme, showform ? &copy_paste : nullptr)
-    , language_button(vars.get<cfg::internal_mod::keyboard_layout_proposals>(), this->wait_widget,
+    : RailInternalModBase(
+        drawable, width, height, rail_client_execute, font, theme,
+        (flag & WidgetWait::SHOW_FORM) ? &copy_paste : nullptr)
+    , language_button(
+        vars.get<cfg::internal_mod::keyboard_layout_proposals>(), this->wait_widget,
         drawable, front, font, LanguageButton::Colors::from_theme(theme))
     , wait_widget(drawable, copy_paste, widget_rect,
         {
@@ -47,7 +50,7 @@ WaitMod::WaitMod(
             .onctrl_shift = [this]{ this->language_button.next_layout(); },
         },
         caption, message, &this->language_button,
-        font, theme, tr, showform, flag, vars.get<cfg::context::duration_max>())
+        font, theme, tr, flag, vars.get<cfg::context::duration_max>())
     , vars(vars)
     , events_guard(events)
 {

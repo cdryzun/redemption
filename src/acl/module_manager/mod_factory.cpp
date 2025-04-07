@@ -452,7 +452,6 @@ void ModFactory::create_display_link_mod()
 void ModFactory::create_wait_info_mod()
 {
     LOG(LOG_INFO, "ModuleManager::Creation of internal module 'Wait Info Message'");
-    bool showform = this->ini.get<cfg::context::showform>();
     uint flag = this->ini.get<cfg::context::formflag>();
     auto new_mod = new WaitMod(
         this->ini,
@@ -469,7 +468,6 @@ void ModFactory::create_wait_info_mod()
         this->theme,
         Impl::copy_paste(*this),
         this->get_translator(),
-        showform,
         flag
     );
     Impl::set_mod(*this, ModuleName::waitinfo, mod_pack_from_widget(new_mod), false);

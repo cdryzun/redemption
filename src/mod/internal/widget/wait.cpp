@@ -14,8 +14,6 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 struct WidgetWait::D
 {
-    static constexpr unsigned HIDE_BACK_TO_SELECTOR = 0x10000;
-
     // Group box
     static constexpr uint16_t border           = 6;
     static constexpr uint16_t text_margin      = 6;
@@ -32,7 +30,7 @@ WidgetWait::WidgetWait(
     Events events, chars_view caption, chars_view text,
     Widget * extra_button,
     Font const & font, Theme const & theme, Translator tr,
-    bool showform, unsigned flags, std::chrono::minutes duration_max
+    unsigned flags, std::chrono::minutes duration_max
 )
     : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
     , onaccept(events.onaccept)
@@ -41,11 +39,9 @@ WidgetWait::WidgetWait(
     , onctrl_shift(events.onctrl_shift)
     , extra_button(extra_button)
     , border_color(theme.global.fgcolor)
-    , hasform(showform)
-    , hide_back_to_selector(flags & D::HIDE_BACK_TO_SELECTOR)
     , font(font)
     , tr(tr)
-    , flags(flags)
+    , widget_flags(flags)
     , duration_max(duration_max == duration_max.zero()
         ? std::chrono::minutes(60000)
         : duration_max)
@@ -59,7 +55,7 @@ WidgetWait::WidgetWait(
         },
         .duration_label{
             drawable, font,
-            (showform && (flags & DURATION_DISPLAY))
+            (flags & DURATION_DISPLAY)
                 ? tr((flags & DURATION_MANDATORY) ? trkeys::duration_r : trkeys::duration)
                 : ""_zv,
             WidgetLabel::Colors::from_theme(theme)
@@ -70,14 +66,14 @@ WidgetWait::WidgetWait(
         },
         .duration_format{
             drawable, font,
-            (showform && (flags & DURATION_DISPLAY))
+            (flags & DURATION_DISPLAY)
                 ? tr(trkeys::note_duration_format)
                 : ""_zv,
             WidgetLabel::Colors::from_theme(theme)
         },
         .ticket_label{
             drawable, font,
-            (showform && (flags & TICKET_DISPLAY))
+            (flags & TICKET_DISPLAY)
                 ? tr((flags & TICKET_MANDATORY) ? trkeys::ticket_r : trkeys::ticket)
                 : ""_zv,
             WidgetLabel::Colors::from_theme(theme)
@@ -88,7 +84,7 @@ WidgetWait::WidgetWait(
         },
         .comment_label{
             drawable, font,
-            (showform && (flags & COMMENT_DISPLAY))
+            (flags & COMMENT_DISPLAY)
                 ? tr((flags & COMMENT_MANDATORY) ? trkeys::comment_r : trkeys::comment)
                 : ""_zv,
             WidgetLabel::Colors::from_theme(theme)
@@ -99,16 +95,16 @@ WidgetWait::WidgetWait(
         },
         .notes{
             drawable, font,
-            (showform && (flags & NOTE_DISPLAY))
+            (flags & NOTE_DISPLAY)
                 ? tr(trkeys::note_required)
                 : ""_zv,
             WidgetLabel::Colors::from_theme(theme)
         },
         .confirm{
             drawable, font,
-            showform
-              ? tr(trkeys::confirm)
-              : ""_zv,
+            (flags & SHOW_FORM)
+                ? tr(trkeys::confirm)
+                : ""_zv,
             WidgetButton::Colors::from_theme(theme),
             D::check_form_confirmation_event(*this)
         },
@@ -121,32 +117,32 @@ WidgetWait::WidgetWait(
     this->add_widget(this->caption);
     this->add_widget(this->dialog);
 
-    if (showform) {
+    if (flags & SHOW_FORM) {
         this->add_widget(this->form.warning_msg);
 
-        if (this->flags & DURATION_DISPLAY) {
+        if (flags & DURATION_DISPLAY) {
             this->add_widget(this->form.duration_label);
             this->add_widget(this->form.duration_edit);
             this->add_widget(this->form.duration_format);
         }
-        if (this->flags & TICKET_DISPLAY) {
+        if (flags & TICKET_DISPLAY) {
             this->add_widget(this->form.ticket_label);
             this->add_widget(this->form.ticket_edit);
         }
-        if (this->flags & COMMENT_DISPLAY) {
+        if (flags & COMMENT_DISPLAY) {
             this->add_widget(this->form.comment_label);
             this->add_widget(this->form.comment_edit);
         }
 
-        if (this->flags & (COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY)) {
+        if (flags & (COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY)) {
             this->add_widget(this->form.notes);
         }
 
         this->add_widget(this->form.confirm);
     }
 
-    if (!this->hide_back_to_selector) {
-        this->add_widget(this->goselector, showform ? HasFocus::No : HasFocus::Yes);
+    if (!(flags & HIDE_BACK_TO_SELECTOR)) {
+        this->add_widget(this->goselector, (flags & SHOW_FORM) ? HasFocus::No : HasFocus::Yes);
     }
     this->add_widget(this->exit);
 
@@ -173,7 +169,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
 
     y = this->dialog.y() + this->dialog.cy() + 20;
 
-    if (this->hasform) {
+    if (widget_flags & SHOW_FORM) {
         int16_t label_x_offset = checked_int{left + x_padding};
         int16_t edit_x_offset = checked_int{
             std::max({
@@ -191,7 +187,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
 
         int d = (form.duration_edit.cy() - form.warning_msg.cy()) / 2;
 
-        if (this->flags & DURATION_DISPLAY) {
+        if (widget_flags & DURATION_DISPLAY) {
             form.duration_label.set_xy(label_x_offset, checked_int{top + y + d});
 
             form.duration_edit.set_xy(edit_x_offset, checked_int(top + y));
@@ -207,7 +203,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
             y += h_sep;
         }
 
-        if (this->flags & TICKET_DISPLAY) {
+        if (widget_flags & TICKET_DISPLAY) {
             form.ticket_label.set_xy(label_x_offset, checked_int{top + y + d});
 
             form.ticket_edit.set_xy(edit_x_offset, checked_int(top + y));
@@ -216,7 +212,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
             y += h_sep;
         }
 
-        if (this->flags & COMMENT_DISPLAY) {
+        if (widget_flags & COMMENT_DISPLAY) {
             form.comment_label.set_xy(label_x_offset, checked_int{top + y + d});
 
             form.comment_edit.set_xy(edit_x_offset, checked_int(top + y));
@@ -225,7 +221,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
             y += h_sep;
         }
 
-        if (this->flags & NOTE_DISPLAY) {
+        if (widget_flags & NOTE_DISPLAY) {
             form.notes.set_xy(edit_x_offset, checked_int{top + y});
         }
 
@@ -242,7 +238,7 @@ void WidgetWait::move_size_widget(int16_t left, int16_t top, uint16_t width, uin
         checked_int{y}
     );
 
-    if (!this->hide_back_to_selector) {
+    if (!(widget_flags & HIDE_BACK_TO_SELECTOR)) {
         this->goselector.set_xy(
             checked_int{this->exit.x() - (this->goselector.cx() + 10)},
             checked_int{y}
@@ -317,7 +313,7 @@ void WidgetWait::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
     switch (keymap.last_kevent()) {
         case Keymap::KEvent::Esc:
-            if (this->hide_back_to_selector) {
+            if (widget_flags & HIDE_BACK_TO_SELECTOR) {
                 this->onrefused();
             }
             else {
@@ -401,7 +397,7 @@ void WidgetWait::check_form_confirmation()
     };
 
     auto has_flags = [this](unsigned m){
-        return (this->flags & m) == m;
+        return (widget_flags & m) == m;
     };
 
     if (has_flags(DURATION_DISPLAY | DURATION_MANDATORY)

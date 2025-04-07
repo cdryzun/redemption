@@ -3383,12 +3383,6 @@ _.section("context", [&]
     });
 
     _.member(MemberInfo{
-        .name = "showform",
-        .value = value(false),
-        .spec = acl_to_proxy(reset_back_to_selector, loggable),
-    });
-
-    _.member(MemberInfo{
         .name = "formflag",
         .value = value<types::unsigned_>(0),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),

@@ -38,7 +38,7 @@ struct TestWidgetWaitCtx
     CopyPaste copy_paste{false};
     WidgetWait flat_dialog;
 
-    TestWidgetWaitCtx(bool showform = false, unsigned flags = WidgetWait::NONE)
+    TestWidgetWaitCtx(unsigned flags = WidgetWait::NONE)
     : flat_dialog(
         drawable, copy_paste, {0, 0, 800, 600},
         {WidgetEventNotifier(), WidgetEventNotifier(), WidgetEventNotifier(), WidgetEventNotifier()},
@@ -51,7 +51,9 @@ struct TestWidgetWaitCtx
             colors.global.bgcolor = NamedBGRColor::BG_BLUE;
             colors.global.fgcolor = NamedBGRColor::WHITE;
             return colors;
-        }(), MsgTranslationCatalog::default_catalog(), showform, flags)
+        }(), MsgTranslationCatalog::default_catalog(), flags,
+        std::chrono::minutes::zero()
+    )
     {
         flat_dialog.rdp_input_invalidate(flat_dialog.get_rect());
     }
@@ -65,7 +67,7 @@ RED_AUTO_TEST_CASE(TraceWidgetWait)
 
 RED_AUTO_TEST_CASE(TraceWidgetWaitWithForm)
 {
-    TestWidgetWaitCtx ctx(true,
+    TestWidgetWaitCtx ctx(
         WidgetWait::COMMENT_DISPLAY | WidgetWait::COMMENT_MANDATORY |
         WidgetWait::TICKET_DISPLAY | WidgetWait::TICKET_MANDATORY |
         WidgetWait::DURATION_DISPLAY);

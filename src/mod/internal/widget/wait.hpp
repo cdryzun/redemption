@@ -16,7 +16,6 @@ SPDX-License-Identifier: GPL-2.0-or-later
 class WidgetWait : public WidgetComposite
 {
 public:
-    // TODO enum class
     enum {
         NONE               = 0x00,
         COMMENT_DISPLAY    = 0x01,
@@ -26,6 +25,9 @@ public:
         DURATION_DISPLAY   = 0x10,
         DURATION_MANDATORY = 0x20,
 
+        HIDE_BACK_TO_SELECTOR = 0x10000,
+
+        SHOW_FORM = COMMENT_DISPLAY | TICKET_DISPLAY | DURATION_DISPLAY,
         NOTE_DISPLAY = COMMENT_MANDATORY | TICKET_MANDATORY | DURATION_MANDATORY,
     };
 
@@ -45,14 +47,12 @@ public:
         WidgetEdit::Text duration;
     };
 
-    // TODO merge showform and flags
     WidgetWait(
         gdi::GraphicApi & drawable, CopyPaste & copy_paste, Rect const widget_rect,
         Events events, chars_view caption, chars_view text,
         Widget * extra_button,
         Font const & font, Theme const & theme, Translator tr,
-        bool showform = false, unsigned flags = NONE, /*TODO default*/
-        std::chrono::minutes duration_max = std::chrono::minutes::zero()); /*TODO default*/
+        unsigned flags, std::chrono::minutes duration_max);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height);
 
@@ -92,13 +92,10 @@ private:
     Color border_color;
     uint16_t group_height = 0;
 
-    bool hasform;
-    bool hide_back_to_selector;
-
     Font const& font;
     Translator tr;
 
-    unsigned flags;
+    unsigned widget_flags;
     std::chrono::minutes duration_max;
 
     WidgetLabel caption;

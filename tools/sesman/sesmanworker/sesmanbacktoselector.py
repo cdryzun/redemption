@@ -30,7 +30,6 @@ back_to_selector_default_sent = {
     'session_id': "",
     'shell_arguments': "",
     'shell_working_directory': "",
-    'showform': False,
     'target_application': "",
     'target_application_account': "",
     'target_application_password': "",

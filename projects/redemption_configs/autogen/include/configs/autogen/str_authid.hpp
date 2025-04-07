@@ -213,7 +213,6 @@ namespace configs
         "duration"_zv,
         "duration_max"_zv,
         "waitinforeturn"_zv,
-        "showform"_zv,
         "formflag"_zv,
         "module"_zv,
         "try_alternate_target"_zv,

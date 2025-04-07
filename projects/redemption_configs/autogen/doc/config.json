@@ -3698,16 +3698,6 @@
     },
     {
       "section": "context",
-      "name": "showform",
-      "type": "bool",
-      "value": false,
-      "description": "",
-      "aclToProxy": true,
-      "resetBackToSelector": true,
-      "logStategy": "1"
-    },
-    {
-      "section": "context",
       "name": "formflag",
       "type": "uint",
       "value": 0,

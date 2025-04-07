@@ -382,7 +382,6 @@ namespace cfg
         struct duration;
         struct duration_max;
         struct waitinforeturn;
-        struct showform;
         struct formflag;
         struct module;
         struct try_alternate_target;

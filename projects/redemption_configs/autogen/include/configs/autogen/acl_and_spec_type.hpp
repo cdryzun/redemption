@@ -333,7 +333,6 @@ template<> struct acl_and_spec_type<cfg::context::comment> { using type = std::s
 template<> struct acl_and_spec_type<cfg::context::duration> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::duration_max> { using type = std::chrono::minutes; };
 template<> struct acl_and_spec_type<cfg::context::waitinforeturn> { using type = std::string; };
-template<> struct acl_and_spec_type<cfg::context::showform> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::context::formflag> { using type = unsigned; };
 template<> struct acl_and_spec_type<cfg::context::module> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::try_alternate_target> { using type = bool; };

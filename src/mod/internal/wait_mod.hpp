@@ -49,8 +49,7 @@ public:
         FrontAPI & front,
         uint16_t width, uint16_t height, Rect const widget_rect, chars_view caption,
         chars_view message, ClientExecute & rail_client_execute, Font const& font,
-        Theme const& theme, CopyPaste& copy_paste, Translator tr,
-        bool showform = false, uint32_t flag = 0);
+        Theme const& theme, CopyPaste& copy_paste, Translator tr, uint32_t flag);
 
     void move_size_widget(int16_t left, int16_t top, uint16_t width, uint16_t height) override
     {

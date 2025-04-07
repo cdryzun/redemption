@@ -1497,8 +1497,6 @@ class Sesman():
     @staticmethod
     def _get_rf_flags(request_fields: Dict[str, Any]) -> int:
         flag = 0
-        if not request_fields:
-            return flag
         for key, value in request_fields.items():
             bitset = Sesman.MAP_FIELD_FLAG.get(key)
             if bitset is not None:
@@ -1515,31 +1513,31 @@ class Sesman():
         target = infos.get('target')
         if target:
             show_message = f"{TR(Sesmsg.SELECTED_TARGET)}: {target}\n{show_message}"
-        tosend = {
+
+        flag = 0
+        duration_max = 0
+
+        # showform
+        if status == APPROVAL_NONE:
+            duration_max = infos.get("duration_max") or 0
+            if (request_fields := infos.get('request_fields')):
+                flag = self._get_rf_flags(request_fields)
+                # duration_max is in minutes
+                duration_max = self._get_rf_duration_max(request_fields) // 60
+            elif (ticketfields := infos.get("ticket_fields")):
+                flag = self._get_tf_flags(ticketfields)
+
+        if self.hide_approval_back_selector:
+            flag |= 0x10000
+
+        self.send_data({
             'module': 'waitinfo',
             'message': show_message,
             'display_message': MAGICASK,
-            'waitinforeturn': MAGICASK
-        }
-        flag = 0
-        duration_max = infos.get("duration_max") or 0
-        ticketfields = infos.get("ticket_fields")
-        if ticketfields:
-            flag = self._get_tf_flags(ticketfields)
-        request_fields = infos.get('request_fields')
-        if request_fields:
-            flag = self._get_rf_flags(request_fields)
-            # duration_max is in minutes
-            duration_max = self._get_rf_duration_max(request_fields) // 60
-        if self.hide_approval_back_selector:
-            flag |= 0x10000
-        if status == APPROVAL_NONE:
-            tosend["showform"] = True
-            tosend["duration_max"] = duration_max
-        else:
-            tosend["showform"] = False
-        tosend["formflag"] = flag
-        self.send_data(tosend)
+            'waitinforeturn': MAGICASK,
+            'formflag': flag,
+            'duration_max': duration_max,
+        })
 
     @staticmethod
     def _format_internalmod_vscrolltxt(message: str) -> str:
