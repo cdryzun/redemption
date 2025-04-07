@@ -246,22 +246,6 @@ void WidgetEditValid::set_xy(int16_t x, int16_t y)
     }
 }
 
-void WidgetEditValid::set_wh(uint16_t w, uint16_t h)
-{
-    Widget::set_wh(w, h);
-
-    if (!is_text_widget()) {
-        if (auto * fc = buttons.valid_text) {
-            w -= button_valid_width(*fc);
-        }
-        if (auto * fc = buttons.visibility_visible) {
-            w -= button_toggle_width(*fc);
-        }
-
-        edit_or_text.edit.set_wh(w, h);
-    }
-}
-
 void WidgetEditValid::rdp_input_invalidate(Rect clip)
 {
     Rect rect = clip.intersect(this->get_rect());

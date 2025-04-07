@@ -92,10 +92,6 @@ public:
 
     void set_xy(int16_t x, int16_t y) override;
 
-    void set_wh(uint16_t w, uint16_t h) override;
-
-    using Widget::set_wh;
-
     void rdp_input_invalidate(Rect clip) override;
 
     void focus(int reason) override;
