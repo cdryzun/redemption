@@ -119,8 +119,7 @@ void RailModuleHostMod::move_size_widget(int16_t left, int16_t top, uint16_t wid
 {
     Dimension dim = this->get_dim();
 
-    this->module_host.set_xy(left, top);
-    this->module_host.set_wh(width, height);
+    this->module_host.update_area_and_draw(left, top, width, height);
 
     if (dim.w && dim.h && ((dim.w != width) || (dim.h != height)) &&
         this->rail_client_execute.is_resizing_hosted_desktop_enabled()

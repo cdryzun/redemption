@@ -87,9 +87,7 @@ public:
         return *this->managed_mod;
     }
 
-    void set_xy(int16_t x, int16_t y) override;
-
-    void set_wh(uint16_t w, uint16_t h) override;
+    void update_area_and_draw(int16_t x, int16_t y, uint16_t w, uint16_t h);
 
     using WidgetComposite::set_wh;
 

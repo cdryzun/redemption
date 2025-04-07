@@ -456,74 +456,29 @@ void WidgetModuleHost::screen_copy(Rect old_rect, Rect new_rect)
     }
 }
 
-void WidgetModuleHost::set_xy(int16_t x, int16_t y)
+void WidgetModuleHost::update_area_and_draw(int16_t x, int16_t y, uint16_t w, uint16_t h)
 {
     Rect old_rect = this->get_rect();
 
+    bool wh_updated = (old_rect.cx != w || old_rect.cy != h);
+    bool xy_updated = (old_rect.x != x || old_rect.y != y);
+
+    if (!wh_updated && !xy_updated) {
+        return ;
+    }
+
     WidgetComposite::set_xy(x, y);
-
-    this->update_rects(this->managed_mod->get_dim());
-
-    if (!old_rect.isempty()) {
-        Rect new_rect = this->get_rect();
-
-        this->screen_copy(old_rect, new_rect);
-    }
-    else {
-        this->rdp_input_invalidate(this->get_rect());
-    }
-}
-
-void WidgetModuleHost::set_wh(uint16_t w, uint16_t h)
-{
-    Rect old_mod_visible_rect = this->mod_visible_rect;
-    Rect old_rect             = this->get_rect();
-
-    if (this->hscroll_added) {
-        old_rect.cy -= this->hscroll.cy();
-    }
-    if (this->vscroll_added) {
-        old_rect.cx -= this->vscroll.cx();
-    }
-
     WidgetComposite::set_wh(w, h);
 
     this->update_rects(this->managed_mod->get_dim());
 
-    Rect new_mod_visible_rect = this->mod_visible_rect;
     Rect new_rect = this->get_rect();
 
-    Rect intersect_mod_visible_rect = new_mod_visible_rect.intersect(old_mod_visible_rect);
-
-    old_rect.x  += intersect_mod_visible_rect.x - old_mod_visible_rect.x;
-    old_rect.y  += intersect_mod_visible_rect.y - old_mod_visible_rect.y;
-    old_rect.cx  = intersect_mod_visible_rect.cx;
-    old_rect.cy  = intersect_mod_visible_rect.cy;
-
-    new_rect.x  += intersect_mod_visible_rect.x - new_mod_visible_rect.x;
-    new_rect.y  += intersect_mod_visible_rect.y - new_mod_visible_rect.y;
-    new_rect.cx  = intersect_mod_visible_rect.cx;
-    new_rect.cy  = intersect_mod_visible_rect.cy;
-
-    SubRegion region;
-
-    region.add_rect(this->get_rect());
-
-    if (!old_rect.isempty()) {
+    if (!wh_updated && !old_rect.isempty()) {
         this->screen_copy(old_rect, new_rect);
-
-        region.subtract_rect(new_rect);
     }
-
-    for (const Rect & rect : region.rects) {
-        this->rdp_input_invalidate(rect);
-    }
-
-    if (this->hscroll_added) {
-        this->hscroll.rdp_input_invalidate(this->hscroll.get_rect());
-    }
-    if (this->vscroll_added) {
-        this->vscroll.rdp_input_invalidate(this->vscroll.get_rect());
+    else {
+        this->rdp_input_invalidate(new_rect);
     }
 }
 
