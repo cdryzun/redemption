@@ -1556,7 +1556,7 @@ public:
                 if (this->device_io_target_info_inventory.end() != target_iter) {
                     rdpdr::RDPDR_DTYP const device_type =
                         this->device_redirection_manager.get_device_type(
-                            this->server_device_io_request.DeviceId());
+                            this->client_device_io_response.DeviceId());
                     if (rdpdr::RDPDR_DTYP_FILESYSTEM == device_type
                      && target_iter->for_reading != target_iter->for_writing
                      && target_iter->sequential_access_offset
