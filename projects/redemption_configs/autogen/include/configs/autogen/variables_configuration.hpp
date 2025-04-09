@@ -2021,6 +2021,7 @@ namespace cfg
     };
     /// This parameter allows you to enable the Windows-side logging of Session Probe. <br/>
     /// The generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team. <br/>
+    /// This log does not help diagnose a launch problem. For this, you should instead use the debugging settings in the Configuration options. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:enable_log <br/>
@@ -2483,6 +2484,8 @@ namespace cfg
     /// (Ex. IPv6 addresses: $deny:2001:0db8:85a3:0000:0000:8a2e:0370:7334:3389,$allow:[20D1:0:3238:DFE1:63::FEFB]:21) <br/>
     /// (Ex. hostname can be used to resolve to both IPv4 and IPv6 addresses: $allow:host.domain.net:3389) <br/>
     /// (Ex. for backwards compatibility only: 10.1.0.0/16:22) <br/>
+    /// A global rule that matches all IP addresses/Ports such as "0.0.0.0/0:*" is highly unrecommended. <br/>
+    /// Session Probe must be enabled to use this feature. <br/>
     /// BestSafe can be used to perform detection of outgoing connections created in the session. Please refer to [session_probe]enable_bestsafe_interaction. <br/>
     /// type: std::string <br/>
     /// connpolicy -> proxy <br/>

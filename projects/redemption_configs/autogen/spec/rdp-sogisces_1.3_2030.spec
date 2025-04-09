@@ -328,6 +328,7 @@ enable_autodeployed_appdriver_affinity = boolean(default=True)
 
 # This parameter allows you to enable the Windows-side logging of Session Probe.
 # The generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team.
+# This log does not help diagnose a launch problem. For this, you should instead use the debugging settings in the Configuration options.
 #_advanced
 enable_log = boolean(default=False)
 
@@ -536,6 +537,8 @@ public_session = boolean(default=False)
 # (Ex. IPv6 addresses: $deny:2001:0db8:85a3:0000:0000:8a2e:0370:7334:3389,$allow:[20D1:0:3238:DFE1:63::FEFB]:21)
 # (Ex. hostname can be used to resolve to both IPv4 and IPv6 addresses: $allow:host.domain.net:3389)
 # (Ex. for backwards compatibility only: 10.1.0.0/16:22)
+# A global rule that matches all IP addresses/Ports such as "0.0.0.0/0:*" is highly unrecommended.
+# Session Probe must be enabled to use this feature.
 # BestSafe can be used to perform detection of outgoing connections created in the session. Please refer to "Enable BestSafe interaction" option.
 outbound_connection_monitoring_rules = string(default="")
 
