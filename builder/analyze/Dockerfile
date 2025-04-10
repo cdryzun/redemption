@@ -14,3 +14,4 @@ ADD py_requirement.txt py_requirement.txt
 RUN /pyenv/bin/pip install -r py_requirement.txt
 RUN chmod -R o+x /pyenv
 ENV PATH="${PATH}:/pyenv/bin"
+ENV PATH="${PATH}:/usr/lib/llvm-19/bin"

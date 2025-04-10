@@ -1,5 +1,5 @@
-clang
-clang-tidy
+clang-19
+clang-tidy-19
 emscripten
 gawk
 gettext
