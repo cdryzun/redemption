@@ -4531,7 +4531,7 @@
       "name": "front",
       "type": "u32",
       "value": 0,
-      "description": "- basic_trace     = 0x00000001\n- basic_trace2    = 0x00000002\n- basic_trace3    = 0x00000004\n- basic_trace4    = 0x00000008\n- basic_trace5    = 0x00000020\n- graphic         = 0x00000040\n- channel         = 0x00000080\n- cache_from_disk = 0x00000400\n- bmp_info        = 0x00000800\n- global_channel  = 0x00002000\n- sec_decrypted   = 0x00004000\n- keymap          = 0x00008000\n\n(Serializer)\n- pointer             = 0x00040000\n- primary_orders      = 0x00200000\n- secondary_orders    = 0x00400000\n- bitmap_update       = 0x00800000\n- surface_commands    = 0x01000000\n- bmp_cache           = 0x02000000\n- internal_buffer     = 0x04000000\n- sec_decrypted       = 0x10000000",
+      "description": "- basic_trace     = 0x00000001\n- basic_trace2    = 0x00000002\n- basic_trace3    = 0x00000004\n- basic_trace4    = 0x00000008\n- basic_trace5    = 0x00000020\n- graphic         = 0x00000040\n- channel         = 0x00000080\n- cache_from_disk = 0x00000400\n- bmp_info        = 0x00000800\n- global_channel  = 0x00002000\n- sec_decrypted   = 0x00004000\n- keymap          = 0x00008000\n- nla             = 0x00010000\n- nla_dump        = 0x00020000\n\n(Serializer)\n- pointer             = 0x00040000\n- primary_orders      = 0x00200000\n- secondary_orders    = 0x00400000\n- bitmap_update       = 0x00800000\n- surface_commands    = 0x01000000\n- bmp_cache           = 0x02000000\n- internal_buffer     = 0x04000000\n- sec_decrypted       = 0x10000000",
       "globalSpec": true,
       "hex": true,
       "advanced": true

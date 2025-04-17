@@ -85,6 +85,7 @@
 #include "core/RDP/lic.hpp"
 #include "core/RDP/mcs.hpp"
 #include "core/RDP/mppc.hpp"
+#include "core/RDP/nla/nla_server_krb5.hpp"
 #include "core/RDP/remote_programs.hpp"
 #include "core/RDP/sec.hpp"
 #include "core/RDP/slowpath.hpp"
@@ -123,9 +124,6 @@
 #include "utils/strutils.hpp"
 #include "utils/parse_primary_drawing_orders.hpp"
 #include "core/stream_throw_helpers.hpp"
-
-#include "proxy_recorder/nego_server.hpp"
-
 
 enum { MAX_DATA_BLOCK_SIZE = 1024 * 30 };
 
@@ -238,6 +236,9 @@ public:
         global_channel  = 0x0000'2000,
         sec_decrypted   = 0x0000'4000,
         keymap          = 0x0000'8000,
+
+        nla             = 0x0001'0000,
+        nla_dump        = 0x0002'0000,
 
         keymap_and_basic_trace3 = keymap | basic_trace3,
 
@@ -719,7 +720,7 @@ private:
     bool tls_client_active = true;
     int clientRequestedProtocols = X224::PROTOCOL_RDP;
 
-    std::unique_ptr<NegoServer> nego_server;
+    std::unique_ptr<Krb5Server> nego_server;
 
     std::unique_ptr<rdp_mppc_enc> mppc_enc;
 
@@ -1668,9 +1669,8 @@ public:
                 throw Error(ERR_TRANSPORT_TLS_SERVER);
             case Transport::TlsResult::Ok:
                 if (enable_nla && this->clientRequestedProtocols & X224::PROTOCOL_HYBRID) {
-                    this->nego_server = std::make_unique<NegoServer>(
-                        this->trans.get_public_key(), this->events_guard.get_time_base(),
-                        bool(this->verbose & Verbose::basic_trace));
+                    this->nego_server = std::make_unique<Krb5Server>(
+                        this->trans.get_public_key(), bool(verbose & Verbose::nla), bool(verbose & Verbose::nla_dump));
                 }
                 return true;
             case Transport::TlsResult::Want:
@@ -2926,26 +2926,49 @@ public:
         LOG(LOG_INFO, "starting NLA NegoServer");
         LOG(LOG_INFO, "NegoServer recv_data authenticate_next");
 
-        std::vector<uint8_t> result = this->nego_server->credssp.authenticate_next(data);
+        // std::vector<uint8_t> result = this->nego_server->credssp.authenticate_next(data);
 
-        if (this->nego_server->credssp.ntlm_state == NTLM_STATE_WAIT_PASSWORD) {
-            LOG(LOG_INFO, "NTLM NegoServer Authentication Failed");
-            throw Error(ERR_NLA_AUTHENTICATION_FAILED);
-        }
+        // if (this->nego_server->credssp.ntlm_state == NTLM_STATE_WAIT_PASSWORD) {
+        //     LOG(LOG_INFO, "NTLM NegoServer Authentication Failed");
+        //     throw Error(ERR_NLA_AUTHENTICATION_FAILED);
+        // }
+
+        // if (not result.empty()) {
+        //     trans.send(result);
+        // }
+
+        // switch (this->nego_server->credssp.state) {
+        // case credssp::State::Err: {
+        //     LOG(LOG_INFO, "NLA NegoServer Authentication Failed");
+        //     throw Error(ERR_NLA_AUTHENTICATION_FAILED);
+        // }
+        // case credssp::State::Cont: {
+        //     LOG(LOG_INFO, "NLA NegoServer Running");
+        // }
+        // break;
+        // case credssp::State::Finish:
+        //     LOG(LOG_INFO, "NLA NegoServer Done");
+        //     this->state = BASIC_SETTINGS_EXCHANGE;
+        //     this->current_tpdu_type = TpduBuffer::PDU;
+        //     break;
+        // }
+        std::vector<uint8_t> result;
+        credssp::State const ret = this->nego_server->authenticate(data, result);
 
         if (not result.empty()) {
             trans.send(result);
         }
 
-        switch (this->nego_server->credssp.state) {
-        case credssp::State::Err: {
+        switch (ret) {
+        case credssp::State::Err:
             LOG(LOG_INFO, "NLA NegoServer Authentication Failed");
             throw Error(ERR_NLA_AUTHENTICATION_FAILED);
-        }
-        case credssp::State::Cont: {
+            break;
+
+        case credssp::State::Cont:
             LOG(LOG_INFO, "NLA NegoServer Running");
-        }
-        break;
+            break;
+
         case credssp::State::Finish:
             LOG(LOG_INFO, "NLA NegoServer Done");
             this->state = BASIC_SETTINGS_EXCHANGE;
@@ -2954,31 +2977,31 @@ public:
         }
     }
 
-    void front_nla_got_password(Transport & trans)
-    {
-        LOG(LOG_INFO, "starting NLA NegoServer");
-        LOG(LOG_INFO, "NegoServer recv_data authenticate_next");
-        std::vector<uint8_t> result = this->nego_server->credssp.authenticate_next({});
-        if (not result.empty()){
-            trans.send(result);
-        }
+    // void front_nla_got_password(Transport & trans)
+    // {
+    //     LOG(LOG_INFO, "starting NLA NegoServer");
+    //     LOG(LOG_INFO, "NegoServer recv_data authenticate_next");
+    //     std::vector<uint8_t> result = this->nego_server->credssp.authenticate_next({});
+    //     if (not result.empty()){
+    //         trans.send(result);
+    //     }
 
-        switch (this->nego_server->credssp.state) {
-        case credssp::State::Err: {
-            LOG(LOG_INFO, "NLA NegoServer Authentication Failed");
-            throw Error(ERR_NLA_AUTHENTICATION_FAILED);
-        }
-        case credssp::State::Cont: {
-            LOG(LOG_INFO, "NLA NegoServer Running");
-        }
-        break;
-        case credssp::State::Finish:
-            LOG(LOG_INFO, "NLA NegoServer Done");
-            this->state = BASIC_SETTINGS_EXCHANGE;
-            this->current_tpdu_type = TpduBuffer::PDU;
-            break;
-        }
-    }
+    //     switch (this->nego_server->credssp.state) {
+    //     case credssp::State::Err: {
+    //         LOG(LOG_INFO, "NLA NegoServer Authentication Failed");
+    //         throw Error(ERR_NLA_AUTHENTICATION_FAILED);
+    //     }
+    //     case credssp::State::Cont: {
+    //         LOG(LOG_INFO, "NLA NegoServer Running");
+    //     }
+    //     break;
+    //     case credssp::State::Finish:
+    //         LOG(LOG_INFO, "NLA NegoServer Done");
+    //         this->state = BASIC_SETTINGS_EXCHANGE;
+    //         this->current_tpdu_type = TpduBuffer::PDU;
+    //         break;
+    //     }
+    // }
 
     TpduBuffer::TpduType current_tpdu_type = TpduBuffer::PDU;
 
@@ -3020,12 +3043,13 @@ public:
                 return;
             }
             case PRIMARY_AUTH_NLA:
-                if (this->nego_server->credssp.ntlm_state != NTLM_STATE_WAIT_PASSWORD){
-                    this->front_nla(this->trans, tpdu);
-                }
-                else {
-                    this->front_nla_got_password(this->trans);
-                }
+                // if (this->nego_server->credssp.ntlm_state != NTLM_STATE_WAIT_PASSWORD){
+                //     this->front_nla(this->trans, tpdu);
+                // }
+                // else {
+                //     this->front_nla_got_password(this->trans);
+                // }
+                this->front_nla(this->trans, tpdu);
             break;
             case BASIC_SETTINGS_EXCHANGE:
                 this->basic_settings_exchange(tpdu);

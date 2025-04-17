@@ -727,7 +727,9 @@ session = integer(min=0, default=0)
 # - bmp_info        = 0x00000800
 # - global_channel  = 0x00002000
 # - sec_decrypted   = 0x00004000
-# - keymap          = 0x00008000<br/>
+# - keymap          = 0x00008000
+# - nla             = 0x00010000
+# - nla_dump        = 0x00020000<br/>
 # (Serializer)
 # - pointer             = 0x00040000
 # - primary_orders      = 0x00200000

@@ -5233,6 +5233,8 @@ namespace cfg
     /// - global_channel  = 0x00002000 <br/>
     /// - sec_decrypted   = 0x00004000 <br/>
     /// - keymap          = 0x00008000 <br/>
+    /// - nla             = 0x00010000 <br/>
+    /// - nla_dump        = 0x00020000 <br/>
     ///  <br/>
     /// (Serializer) <br/>
     /// - pointer             = 0x00040000 <br/>

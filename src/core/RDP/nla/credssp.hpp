@@ -97,10 +97,22 @@ namespace BER {
         }
     }
 
+    inline void backward_push_appl_tag_field_header(std::vector<uint8_t> & v, uint32_t payload_size, uint8_t tag)
+    {
+       backward_push_ber_len(v, payload_size);
+       v.push_back(CLASS_APPL|PC_CONSTRUCT|tag);
+    }
+
     inline void backward_push_tagged_field_header(std::vector<uint8_t> & v, uint32_t payload_size, uint8_t tag)
     {
        backward_push_ber_len(v, payload_size);
        v.push_back(CLASS_CTXT|PC_CONSTRUCT|tag);
+    }
+
+    inline void backward_push_object_identifier_header(std::vector<uint8_t> & v, uint32_t payload_size)
+    {
+       backward_push_ber_len(v, payload_size);
+       v.push_back(CLASS_UNIV|PC_PRIMITIVE|TAG_OBJECT_IDENTIFIER);
     }
 
     inline void backward_push_octet_string_header(std::vector<uint8_t> & v, uint32_t payload_size)
@@ -113,6 +125,14 @@ namespace BER {
     {
         backward_push_ber_len(v, payload_size);
         v.push_back(CLASS_UNIV|PC_CONSTRUCT|TAG_SEQUENCE);
+    }
+
+    // for values < 0x80
+    inline void backward_push_small_enumerated(std::vector<uint8_t> & v, uint8_t value)
+    {
+        v.push_back(value);
+        v.push_back(1); // length
+        v.push_back(CLASS_UNIV|PC_PRIMITIVE|TAG_ENUMERATED);
     }
 
     // for values < 0x80
@@ -191,6 +211,23 @@ namespace BER {
     }
 
 
+    inline std::vector<uint8_t> mkApplicationFieldHeader(uint32_t payload_size, uint8_t tag)
+    {
+        std::vector<uint8_t> head;
+        backward_push_appl_tag_field_header(head, payload_size, tag);
+        std::reverse(head.begin(), head.end());
+        return head;
+    }
+
+    inline std::vector<uint8_t> mkObjectIdentifierHeader(uint32_t payload_size)
+    {
+        std::vector<uint8_t> head;
+        backward_push_object_identifier_header(head, payload_size);
+        std::reverse(head.begin(), head.end());
+        return head;
+    }
+
+
     inline std::vector<uint8_t> mkOctetStringHeader(uint32_t payload_size)
     {
         std::vector<uint8_t> head;
@@ -215,6 +252,15 @@ namespace BER {
             return mkMandatoryOctetStringFieldHeader(payload_size, tag);
         }
         return {};
+    }
+
+    inline std::vector<uint8_t> mkSmallEnumeratedField(uint32_t value, uint8_t tag)
+    {
+        std::vector<uint8_t> field;
+        backward_push_small_enumerated(field, value);
+        backward_push_tagged_field_header(field, field.size(), tag);
+        std::reverse(field.begin(), field.end());
+        return field;
     }
 
     inline std::vector<uint8_t> mkSmallInteger(uint32_t value)
@@ -257,6 +303,14 @@ namespace BER {
         backward_push_sequence_tag_field_header(head, payload_size);
         std::reverse(head.begin(), head.end());
         return head;
+    }
+
+    inline bool check_ber_appl_tag(bytes_view s, uint8_t tag)
+    {
+        if (s.empty()) {
+            return false;
+        }
+        return s[0] == (CLASS_APPL|PC_CONSTRUCT|tag);
     }
 
     inline bool check_ber_ctxt_tag(bytes_view s, uint8_t tag)
@@ -327,6 +381,43 @@ namespace BER {
     inline std::pair<size_t, bytes_view> pop_tag_length(bytes_view s, uint8_t tag, const char * message, error_type eid)
     {
         return pop_length(pop_check_tag(s, tag, message, eid), message, eid);
+    }
+
+    inline std::pair<int, bytes_view> pop_enumerated(bytes_view s, const char * message, error_type eid)
+    {
+        auto [byte, queue] = pop_tag_length(s, CLASS_UNIV | PC_PRIMITIVE | TAG_ENUMERATED, message, eid);
+
+        if ((byte < 1) || (byte > 4)){
+            LOG(LOG_ERR, "%s: Ber unexpected enumerated length %zu", message, byte);
+            throw Error(eid);
+        }
+        // Now bytes contains length of enumerated value
+        if (queue.size() < byte) {
+            LOG(LOG_ERR, "%s: Ber enumerated data truncated %zu", message, byte);
+            throw Error(eid);
+        }
+        InStream in_s(queue);
+        switch (byte) {
+        default:
+            break;
+        case 3:
+            return {in_s.in_uint24_be(), queue.drop_front(3)};
+        case 2:
+            return {in_s.in_uint16_be(), queue.drop_front(2)};
+        case 1:
+            return {in_s.in_uint8(), queue.drop_front(1)};
+        }
+        return {in_s.in_uint32_be(), queue.drop_front(4)};
+    }
+
+    inline std::pair<int, bytes_view> pop_enumerated_field(bytes_view s, uint8_t tag, const char * message, error_type eid)
+    {
+        auto [length, queue] = pop_tag_length(s, CLASS_CTXT|PC_CONSTRUCT|tag, "TS Request", ERR_CREDSSP_TS_REQUEST);
+        if (queue.size() < length) {
+            LOG(LOG_ERR, "%s: Ber tagged enumerated field truncated", message);
+            throw Error(eid);
+        }
+        return pop_enumerated(queue, message, eid);
     }
 
     inline std::pair<int, bytes_view> pop_integer(bytes_view s, const char * message, error_type eid)
@@ -948,7 +1039,9 @@ inline TSPasswordCreds recvTSPasswordCreds(bytes_view data, bool verbose)
     stream.in_skip_bytes(stream.in_remain()-queue3.size());
 
     self.domainName.resize(length3);
-    stream.in_copy_bytes(self.domainName.data(), self.domainName.size());
+    if (self.domainName.size()) {
+        stream.in_copy_bytes(self.domainName.data(), self.domainName.size());
+    }
 
     /* [1] userName (OCTET STRING) */
     auto [length4, queue4] = BER::pop_tag_length(stream.remaining_bytes(), BER::CLASS_CTXT|BER::PC_CONSTRUCT|1, "TSPasswordCreds::userName", ERR_CREDSSP_TS_REQUEST);

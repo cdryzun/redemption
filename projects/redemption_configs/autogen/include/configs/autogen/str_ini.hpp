@@ -1878,6 +1878,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # - global_channel  = 0x00002000
 # - sec_decrypted   = 0x00004000
 # - keymap          = 0x00008000
+# - nla             = 0x00010000
+# - nla_dump        = 0x00020000
 # 
 # (Serializer)
 # - pointer             = 0x00040000

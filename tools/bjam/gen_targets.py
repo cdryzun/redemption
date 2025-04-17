@@ -113,7 +113,7 @@ sys_lib_assoc = dict((
     ('png.h', Dep(
         linkflags=['<library>png'])),
     ('krb5.h', Dep(
-        linkflags=['<library>krb5'])),
+        linkflags=['<library>krb5', '<library>k5crypto'])),
     ('gssapi/gssapi.h', Dep(
         linkflags=['<library>gssapi_krb5'])),
     ('snappy-c.h', Dep(

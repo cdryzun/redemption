@@ -10,6 +10,7 @@ exe rdpproxy :
   crypto
   gssapi_krb5
   hyperscan
+  k5crypto
   krb5
   openssl
   png
@@ -203,6 +204,7 @@ exe headlessclient :
   src/main/headlessclient.o
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   png
@@ -322,6 +324,7 @@ exe nla_server :
   src/main/nla_server_cli.o
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   app_path_exe.o
@@ -368,6 +371,7 @@ exe proxy_recorder :
   src/main/proxy_recorder_cli.o
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   app_path_exe.o
@@ -602,6 +606,7 @@ test-run tests/acl/test_license_api :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   png
@@ -1039,6 +1044,7 @@ test-run tests/client_mods/test_rdp_client_large_pointer :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   png
@@ -1112,6 +1118,7 @@ test-run tests/client_mods/test_rdp_client_tls_w2008 :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   png
@@ -1185,6 +1192,7 @@ test-run tests/client_mods/test_rdp_client_wab :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   png
@@ -1598,6 +1606,7 @@ test-run tests/core/RDP/nla/kerberos/test_kerberos :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   src/core/RDP/nla/kerberos.o
   src/core/error.o
@@ -1612,6 +1621,7 @@ test-run tests/core/RDP/nla/kerberos/test_nla_client_kerberos :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   src/core/RDP/nla/kerberos.o
   src/core/error.o
@@ -1918,6 +1928,7 @@ test-run tests/core/RDP/test_nego :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   app_path_test.o
   src/core/RDP/mppc.o
@@ -2141,6 +2152,7 @@ test-run tests/front/test_front :
   crypto
   gssapi_krb5
   hyperscan
+  k5crypto
   krb5
   openssl
   png
@@ -3708,6 +3720,7 @@ test-run tests/mod/rdp/test_rdp :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   png
@@ -3783,6 +3796,7 @@ test-run tests/mod/rdp/test_rdp_negociation_data :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   openssl
   app_path_test.o
@@ -3933,6 +3947,7 @@ test-run tests/proxy_recorder/test_proxy_recorder :
 :
   crypto
   gssapi_krb5
+  k5crypto
   krb5
   app_path_test.o
   src/core/RDP/mppc.o
@@ -3961,6 +3976,7 @@ test-run tests/server/test_mstsc_client :
   crypto
   gssapi_krb5
   hyperscan
+  k5crypto
   krb5
   openssl
   png
@@ -4037,6 +4053,7 @@ test-run tests/server/test_mstsc_client_rdp50bulk :
   crypto
   gssapi_krb5
   hyperscan
+  k5crypto
   krb5
   openssl
   png
@@ -4113,6 +4130,7 @@ test-run tests/server/test_rdesktop_client :
   crypto
   gssapi_krb5
   hyperscan
+  k5crypto
   krb5
   openssl
   png
