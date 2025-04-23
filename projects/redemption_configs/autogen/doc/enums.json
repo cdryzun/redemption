@@ -187,7 +187,7 @@
   "name": "ColorDepth",
   "category": "set",
   "nameWhenDescription": false,
-  "description": "Specifies the maximum color resolution (color depth) for the client connection session:",
+  "description": "Specifies the maximum color depth for the client connection session:",
   "values": [
     {
       "name": "depth8",
@@ -235,15 +235,15 @@
     {
       "name": "fails_if_no_match_or_missing",
       "value": 0,
-      "description": "fails if certificates doesn't match or miss."
+      "description": "fails if certificates do not match or are missing."
     }, {
       "name": "fails_if_no_match_and_succeed_if_no_know",
       "value": 1,
-      "description": "fails if certificate doesn't match, succeed if no known certificate."
+      "description": "fails if certificate does not match, succeeds if no known certificate."
     }, {
       "name": "succeed_if_exists_and_fails_if_missing",
       "value": 2,
-      "description": "succeed if certificates exists (not checked), fails if missing."
+      "description": "succeeds if certificates exist (not checked), fails if missing."
     }, {
       "name": "always_succeed",
       "value": 3,
@@ -279,7 +279,7 @@
     {
       "name": "unmasked",
       "value": 0,
-      "description": "Keyboard input are not masked."
+      "description": "Keyboard inputs are not masked."
     }, {
       "name": "password_only",
       "value": 1,
@@ -326,7 +326,7 @@
     }, {
       "name": "duplicated",
       "value": 1,
-      "description": "When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the server when the client clipboard is blocked, and vice versa."
+      "description": "When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa."
     }, {
       "name": "continued",
       "value": 2,
@@ -337,7 +337,7 @@
   "name": "ColorDepthSelectionStrategy",
   "category": "autoincrement",
   "nameWhenDescription": false,
-  "description": "The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):",
+  "description": "Color depth for the Session Recording file (.wrm):",
   "values": [
     {
       "name": "depth24",
@@ -353,7 +353,7 @@
   "name": "WrmCompressionAlgorithm",
   "category": "autoincrement",
   "nameWhenDescription": false,
-  "description": "The compression method of the session recording file (wrm):",
+  "description": "Compression method of the Session Recording file (.wrm):",
   "values": [
     {
       "name": "no_compression",
@@ -361,11 +361,11 @@
     }, {
       "name": "gzip",
       "value": 1,
-      "description": "GZip: Files are better compressed, but this takes more time and CPU load"
+      "description": "GZip: Files are better compressed, but this takes more time and CPU load."
     }, {
       "name": "snappy",
       "value": 2,
-      "description": "Snappy: Faster than GZip, but files are less compressed"
+      "description": "Snappy: Faster than GZip, but files are less compressed."
     }
   ]
 }, {
@@ -637,7 +637,7 @@
     {
       "name": "Auto",
       "value": 0,
-      "description": "The language will be deduced according to the keyboard layout announced by the client."
+      "description": "The language is determined based on the keyboard layout specified by the client."
     }, {
       "name": "EN",
       "value": 1
@@ -699,11 +699,11 @@
     {
       "name": "Restart",
       "value": 0,
-      "description": "Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'."
+      "description": "Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'."
     }, {
       "name": "Stop",
       "value": 1,
-      "description": "Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section."
+      "description": "Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section."
     }
   ]
 }, {

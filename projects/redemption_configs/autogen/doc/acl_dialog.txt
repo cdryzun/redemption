@@ -19,8 +19,8 @@ cfg::globals::target_application_account ⇐ target_application_account   [std::
 cfg::globals::target_application_password ⇐ target_application_password   [std::string]
 cfg::globals::inactivity_timeout ⇐ globals:inactivity_timeout   [std::chrono::seconds]
     No automatic disconnection due to inactivity, timer is set on target session.
-    If value is between 1 and 30, then 30 is used.
-    If value is set to 0, then value set in [globals]base_inactivity_timeout is used.
+    If the value is between 1 and 30, then 30 is used.
+    If the value is set to 0, then the value set in [globals]base_inactivity_timeout is used.
 cfg::globals::trace_type ⇐ trace_type   [TraceType]
     Session record options.
       0: No encryption (faster).
@@ -29,7 +29,7 @@ cfg::globals::trace_type ⇐ trace_type   [TraceType]
     When session records are encrypted, they can be read only by the WALLIX Bastion where they have been generated.
 cfg::globals::is_rec ⇐ is_rec   [bool]
 cfg::globals::enable_osd_display_remote_target ⇐ enable_osd_display_remote_target   [bool]
-    Allow to show the target device name with F12 during the session.
+    Allows showing the target device name with F12 during the session.
 
 cfg::client::disable_tsk_switch_shortcuts ⇐ disable_tsk_switch_shortcuts   [bool]
     If enabled, ignore Ctrl+Alt+Del, Ctrl+Shift+Esc and Windows+Tab keyboard sequences.
@@ -40,7 +40,7 @@ cfg::all_target_mod::tcp_user_timeout ⇐ all_target_mod:tcp_user_timeout   [std
 
 
 cfg::mod_rdp::disabled_orders ⇐ mod_rdp:disabled_orders   [std::string]
-    This option should only be used if the server or client is showing graphical issues.
+    This option should only be used if the target server or client is showing graphical issues.
     In general, disabling RDP orders has a negative impact on performance.
     
     Drawing orders that can be disabled:
@@ -59,7 +59,7 @@ cfg::mod_rdp::disabled_orders ⇐ mod_rdp:disabled_orders   [std::string]
       27: GlyphIndex
     values are comma-separated
 cfg::mod_rdp::enable_nla ⇐ mod_rdp:enable_nla   [bool]
-    Enable NLA authentication in secondary target.
+    Enable NLA authentication in secondary targets.
 cfg::mod_rdp::enable_kerberos ⇐ mod_rdp:enable_kerberos   [bool]
     When [mod_rdp]enable_nla is selected:
     Enabling this option instructs the Bastion to use Kerberos as its initial method.
@@ -81,7 +81,7 @@ cfg::mod_rdp::cipher_string ⇐ mod_rdp:cipher_string   [std::string]
     Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
     The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 cfg::mod_rdp::tls_enable_legacy_server ⇐ mod_rdp:tls_enable_legacy_server   [bool]
-    Allow TLS legacy insecure renegotiation to unpatched servers.
+    Allow TLS legacy insecure renegotiation to unpatched target servers.
     For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in [mod_rdp]cipher_string.
 cfg::mod_rdp::tls_1_3_ciphersuites ⇐ mod_rdp:tls_1_3_ciphersuites   [std::string]
     Configure the available TLSv1.3 ciphersuites.
@@ -92,24 +92,24 @@ cfg::mod_rdp::tls_key_exchange_groups ⇐ mod_rdp:tls_key_exchange_groups   [std
     Empty to apply system-wide configuration.
     The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 cfg::mod_rdp::show_common_cipher_list ⇐ mod_rdp:show_common_cipher_list   [bool]
-    Show in the logs the common cipher list supported by client and server
+    Show in the logs the common cipher list supported by client and target server
     ⚠ Only for debugging purposes.
 cfg::mod_rdp::allowed_channels ⇐ mod_rdp:allowed_channels   [std::string]
     List of (comma-separated) enabled (static) virtual channel. If character '*' is used as a name then enables everything.
-    An explicit name will have higher priority than '*' in [mod_rdp]denied_channels.
+    Explicit names have higher priority than '*' in [mod_rdp]denied_channels.
     values are comma-separated
 cfg::mod_rdp::denied_channels ⇐ mod_rdp:denied_channels   [std::string]
     List of (comma-separated) disabled (static) virtual channel. If character '*' is used as a name then disables everything.
-    An explicit name will have higher priority than '*' in [mod_rdp]allowed_channels.
+    Explicit names have higher priority than '*' in [mod_rdp]allowed_channels.
     values are comma-separated
 cfg::mod_rdp::allowed_dynamic_channels ⇐ mod_rdp:allowed_dynamic_channels   [std::string]
     List of (comma-separated) enabled dynamic virtual channel. If character '*' is used as a name then enables everything.
-    An explicit name will have higher priority than '*' in [mod_rdp]denied_dynamic_channels.
+    Explicit names have higher priority than '*' in [mod_rdp]denied_dynamic_channels.
 cfg::mod_rdp::denied_dynamic_channels ⇐ mod_rdp:denied_dynamic_channels   [std::string]
     List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.
-    An explicit name will have higher priority than '*' in [mod_rdp]allowed_dynamic_channels.
+    Explicit names have higher priority than '*' in [mod_rdp]allowed_dynamic_channels.
 cfg::mod_rdp::disable_coreinput_dynamic_channel ⇐ mod_rdp:disable_coreinput_dynamic_channel   [bool]
-    If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.
+    If this option is unchecked, keyboard/mouse inputs are transmitted over the dynamic virtual channel.
     This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.
 cfg::mod_rdp::force_screen_resolution ⇐ mod_rdp:force_screen_resolution   [ScreenResolution]
     Force the screen resolution of a RDP target.
@@ -122,7 +122,7 @@ cfg::mod_rdp::load_balance_info ⇐ mod_rdp:load_balance_info   [std::string]
     For example 'tsv://MS Terminal Services Plugin.1.Sessions' where 'Sessions' is the name of the targeted RD Collection which works fine.
 cfg::mod_rdp::proxy_managed_drives ⇐ mod_rdp:proxy_managed_drives   [std::string]
     Shared directory between proxy and secondary target.
-    Requires rdpdr support.
+    Requires RDPDR support.
     values are comma-separated
 cfg::mod_rdp::ignore_auth_channel ⇐ mod_rdp:ignore_auth_channel   [bool]
 cfg::mod_rdp::alternate_shell ⇐ alternate_shell   [std::string]
@@ -143,12 +143,12 @@ cfg::mod_rdp::wabam_uses_translated_remoteapp ⇐ mod_rdp:wabam_uses_translated_
 cfg::mod_rdp::enable_remotefx ⇐ mod_rdp:enable_remotefx   [bool]
     Enables support of the RemoteFX codec on target connection.
 cfg::mod_rdp::enable_restricted_admin_mode ⇐ mod_rdp:enable_restricted_admin_mode   [bool]
-    Connect to the server in Restricted Admin mode.
-    This mode must be supported by the server (available from Windows Server 2012 R2), otherwise, connection will fail.
+    Connect to the target server in Restricted Admin mode.
+    This mode must be supported by the target server (available from Windows Server 2012 R2), otherwise, connection will fail.
     NLA must be enabled.
 cfg::mod_rdp::force_smartcard_authentication ⇐ mod_rdp:force_smartcard_authentication   [bool]
     NLA will be disabled.
-    Target must be set for interactive login, otherwise server connection may not be guaranteed.
+    Target must be set for interactive login, otherwise the  connection may not be guaranteed.
     Smartcard device must be available on client desktop.
     Smartcard redirection (Proxy option RDP_SMARTCARD) must be enabled on service.
 cfg::mod_rdp::enable_ipv6 ⇐ mod_rdp:enable_ipv6   [bool]
@@ -160,7 +160,7 @@ cfg::mod_rdp::mode_console ⇐ mod_rdp:mode_console   [RdpModeConsole ⇐ std::s
       forbid: Block Console mode request from client.
 cfg::mod_rdp::auto_reconnection_on_losing_target_link ⇐ mod_rdp:auto_reconnection_on_losing_target_link   [bool]
     Allows the proxy to automatically reconnect to secondary target when a network error occurs.
-    The server must support reconnection cookie.
+    The target server must support reconnection cookie.
 cfg::mod_rdp::allow_session_reconnection_by_shortcut ⇐ mod_rdp:allow_session_reconnection_by_shortcut   [bool]
     If the feature is enabled, the end user can trigger a session disconnection/reconnection with the shortcut Ctrl+F12.
     This feature should not be used together with the [session_probe]end_disconnected_session.
@@ -169,7 +169,7 @@ cfg::mod_rdp::session_reconnection_delay ⇐ mod_rdp:session_reconnection_delay 
     The delay between a session disconnection and the automatic reconnection that follows.
     in milliseconds
 cfg::mod_rdp::forward_client_build_number ⇐ mod_rdp:forward_client_build_number   [bool]
-    Forward the build number advertised by the client to the server. If forwarding is disabled a default (static) build number will be sent to the server.
+    Forward the build number advertised by the client to the target server. If forwarding is disabled a default (static) build number will be sent to the target server.
 cfg::mod_rdp::bogus_monitor_layout_treatment ⇐ mod_rdp:bogus_monitor_layout_treatment   [bool]
     To resolve the session freeze issue with Windows 7/Windows Server 2008 target.
 cfg::mod_rdp::effective_krb_armoring_user ⇐ effective_krb_armoring_user   [std::string]
@@ -315,9 +315,9 @@ cfg::session_probe::cpu_usage_alarm_threshold ⇐ session_probe:cpu_usage_alarm_
     As a percentage, the effective alarm threshold is calculated in relation to the reference consumption determined at the start of the program execution. The alarm is deactivated if this value of parameter is less than 200 (200% of reference consumption).
     When CPU consumption exceeds the allowed limit, debugging information can be collected (if the Windows-side logging is enabled), then Session Probe will sabotage. Additional behavior is defined by [session_probe]cpu_usage_alarm_action.
 cfg::session_probe::cpu_usage_alarm_action ⇐ session_probe:cpu_usage_alarm_action   [SessionProbeCPUUsageAlarmAction]
-    Additional behavior when CPU consumption exceeds what is allowed. Please refer to the [session_probe]cpu_usage_alarm_threshold.
-      0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
-      1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section.
+    Additional behavior when CPU consumption exceeds what is allowed. Refer to the [session_probe]cpu_usage_alarm_threshold.
+      0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
+      1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
 cfg::session_probe::end_of_session_check_delay_time ⇐ session_probe:end_of_session_check_delay_time   [std::chrono::milliseconds]
     For application session only.
     The delay between the launch of the application and the start of End of session check.
@@ -335,13 +335,13 @@ cfg::session_probe::childless_window_as_unidentified_input_field ⇐ session_pro
     This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
     Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
     One of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash.
-    Please refer to the [session_log]keyboard_input_masking_level.
+    Refer to the [session_log]keyboard_input_masking_level.
 cfg::session_probe::windows_of_these_applications_as_unidentified_input_field ⇐ session_probe:windows_of_these_applications_as_unidentified_input_field   [std::string]
     Comma-separated process names. (Ex.: chrome.exe,ngf.exe)
     This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
     Unfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
     This parameter is used to provide the list of processes whose windows are considered as input fields of unknown type.
-    Please refer to the [session_log]keyboard_input_masking_level.
+    Refer to the [session_log]keyboard_input_masking_level.
 cfg::session_probe::update_disabled_features ⇐ session_probe:update_disabled_features   [bool]
     This parameter is used when resuming a session hosting a existing Session Probe.
     If enabled, the Session Probe will activate or deactivate features according to the value of [session_probe]disabled_features received when resuming its host session. Otherwise, the Session Probe will keep the same set of features that were used during the previous connection.
@@ -349,8 +349,8 @@ cfg::session_probe::update_disabled_features ⇐ session_probe:update_disabled_f
 cfg::session_probe::disabled_features ⇐ session_probe:disabled_features   [SessionProbeDisabledFeature]
     This parameter was created to work around some compatibility issues and to limit the CPU load that the Session Probe process causes.
     If 'Java Acccess Bridge' feature is disabled, data entered in the password field of Java applications may be visible in the metadata.
-    For more information please refer to [session_log]keyboard_input_masking_level.
-    For more information please also refer to [session_probe]childless_window_as_unidentified_input_field and [session_probe]windows_of_these_applications_as_unidentified_input_field.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.
+    For more information, refer to [session_log]keyboard_input_masking_level.
+    For more information, also refer to [session_probe]childless_window_as_unidentified_input_field and [session_probe]windows_of_these_applications_as_unidentified_input_field.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.
       0x000: none
       0x001: disable Java Access Bridge. General user activity monitoring in the Java applications (including detection of password fields).
       0x002: disable MS Active Accessbility. General user activity monitoring (including detection of password fields). (legacy API)
@@ -366,10 +366,10 @@ cfg::session_probe::enable_bestsafe_interaction ⇐ session_probe:enable_bestsaf
     This parameter has no effect on the device without BestSafe.
     Is enabled, Session Probe relies on BestSafe to perform the detection of application launches and the detection of outgoing connections.
     BestSafe has more efficient mechanisms in these tasks than Session Probe.
-    For more information please refer to [session_probe]outbound_connection_monitoring_rules and [session_probe]process_monitoring_rules.
+    For more information, refer to [session_probe]outbound_connection_monitoring_rules and [session_probe]process_monitoring_rules.
 cfg::session_probe::on_account_manipulation ⇐ session_probe:on_account_manipulation   [SessionProbeOnAccountManipulation]
     This parameter has no effect on the device without BestSafe.
-    BestSafe interaction must be enabled. Please refer to [session_probe]enable_bestsafe_interaction.
+    BestSafe interaction must be enabled. Refer to [session_probe]enable_bestsafe_interaction.
     This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.
     Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.
       0: allow: User action will be accepted.
@@ -392,12 +392,12 @@ cfg::session_probe::outbound_connection_monitoring_rules ⇐ session_probe:outbo
     (Ex. for backwards compatibility only: 10.1.0.0/16:22)
     A global rule that matches all IP addresses/Ports such as "0.0.0.0/0:*" is highly unrecommended.
     Session Probe must be enabled to use this feature.
-    BestSafe can be used to perform detection of outgoing connections created in the session. Please refer to [session_probe]enable_bestsafe_interaction.
+    BestSafe can be used to perform detection of outgoing connections created in the session. Refer to [session_probe]enable_bestsafe_interaction.
 cfg::session_probe::process_monitoring_rules ⇐ session_probe:process_monitoring_rules   [std::string]
     This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session.
     (Ex.: $deny:taskmgr.exe)
     @ = All child processes of (Bastion) application (Ex.: $deny:@)
-    BestSafe can be used to perform detection of process launched in the session. Please refer to [session_probe]enable_bestsafe_interaction.
+    BestSafe can be used to perform detection of process launched in the session. Refer to [session_probe]enable_bestsafe_interaction.
 cfg::session_probe::process_command_line_retrieve_method ⇐ session_probe:process_command_line_retrieve_method   [SessionProbeProcessCommandLineRetrieveMethod]
       0: windows management instrumentation: Get command-line of processes via Windows Management Instrumentation. (Legacy method)
       1: windows internals: Calling internal system APIs to get the process command line. (More efficient but less stable)
@@ -415,34 +415,34 @@ cfg::session_probe::monitor_own_resources_consumption ⇐ session_probe:monitor_
     This feature increases CPU consumption.
 
 cfg::server_cert::server_cert_store ⇐ server_cert:server_cert_store   [bool]
-    Keep known server certificates on Bastion
+    Keep known target server certificates on Bastion
 cfg::server_cert::server_cert_check ⇐ server_cert:server_cert_check   [ServerCertCheck]
     Behavior of certificates check.
-      0: fails if certificates doesn't match or miss.
-      1: fails if certificate doesn't match, succeed if no known certificate.
-      2: succeed if certificates exists (not checked), fails if missing.
+      0: fails if certificates do not match or are missing.
+      1: fails if certificate does not match, succeeds if no known certificate.
+      2: succeeds if certificates exist (not checked), fails if missing.
       3: always succeed.
     System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
 cfg::server_cert::server_access_allowed_message ⇐ server_cert:server_access_allowed_message   [ServerCertNotification]
-    Warn if check allow connexion to server.
+    Warn if check allow connexion to target server.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
     Note: values can be added (enable all: 0x1 = 0x1)
 cfg::server_cert::server_cert_create_message ⇐ server_cert:server_cert_create_message   [ServerCertNotification]
-    Warn that new server certificate file was created.
+    Warn that new target server certificate file was created.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
     Note: values can be added (enable all: 0x1 = 0x1)
 cfg::server_cert::server_cert_success_message ⇐ server_cert:server_cert_success_message   [ServerCertNotification]
-    Warn that server certificate file was successfully checked.
+    Warn that target server certificate file was successfully checked.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
     Note: values can be added (enable all: 0x1 = 0x1)
 cfg::server_cert::server_cert_failure_message ⇐ server_cert:server_cert_failure_message   [ServerCertNotification]
-    Warn that server certificate file checking failed.
+    Warn that target server certificate file checking failed.
       0x0: nobody
       0x1: SIEM: message sent to SIEM
     
@@ -453,19 +453,19 @@ cfg::server_cert::external_response ⇐ external_response   [std::string]
     empty string for wait, 'Ok' or error message.
 
 cfg::mod_vnc::clipboard_up ⇐ clipboard_up   [bool]
-    Check this option to enable the clipboard upload (from client to server).
-    This only support text data clipboard (not files).
+    Check this option to enable the clipboard upload (from client to target server).
+    This only supports text data clipboard (not files).
 cfg::mod_vnc::clipboard_down ⇐ clipboard_down   [bool]
-    Check this option to enable the clipboard download (from server to client).
-    This only support text data clipboard (not files).
+    Check this option to enable the clipboard download (from target server to client).
+    This only supports text data clipboard (not files).
 cfg::mod_vnc::support_cursor_pseudo_encoding ⇐ mod_vnc:support_cursor_pseudo_encoding   [bool]
 cfg::mod_vnc::server_clipboard_encoding_type ⇐ vnc_server_clipboard_encoding_type   [ClipboardEncodingType ⇐ std::string]
-    VNC server clipboard text data encoding type.
+    VNC target server clipboard text data encoding type.
 cfg::mod_vnc::bogus_clipboard_infinite_loop ⇐ vnc_bogus_clipboard_infinite_loop   [VncBogusClipboardInfiniteLoop]
-    The RDP clipboard is based on a token that indicates who owns data between server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+    The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
     This option indicates the strategy to adopt in such situations.
       0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
-      1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the server when the client clipboard is blocked, and vice versa.
+      1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
       2: continued: No special processing is done, the proxy always responds immediately.
 cfg::mod_vnc::server_is_macos ⇐ mod_vnc:server_is_macos   [bool]
 cfg::mod_vnc::server_unix_alt ⇐ mod_vnc:server_unix_alt   [bool]
@@ -481,7 +481,7 @@ cfg::mod_vnc::cipher_string ⇐ mod_vnc:cipher_string   [std::string]
     Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
     The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 cfg::mod_vnc::tls_enable_legacy_server ⇐ mod_vnc:tls_enable_legacy_server   [bool]
-    Allow TLS legacy insecure renegotiation to unpatched servers.
+    Allow TLS legacy insecure renegotiation to unpatched target servers.
 cfg::mod_vnc::tls_1_3_ciphersuites ⇐ mod_vnc:tls_1_3_ciphersuites   [std::string]
     Configure the available TLSv1.3 ciphersuites.
     Empty to apply system-wide configuration.
@@ -491,10 +491,10 @@ cfg::mod_vnc::tls_key_exchange_groups ⇐ mod_vnc:tls_key_exchange_groups   [std
     Empty to apply system-wide configuration.
     The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 cfg::mod_vnc::show_common_cipher_list ⇐ mod_vnc:show_common_cipher_list   [bool]
-    Show in the logs the common cipher list supported by client and server.
+    Show in the logs the common cipher list supported by client and target server.
     ⚠ Only for debugging purposes.
 cfg::mod_vnc::force_authentication_method ⇐ mod_vnc:force_authentication_method   [std::string]
-    When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made.
+    When specified, force the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
       - noauth
       - vncauth
       - mslogon
@@ -514,7 +514,7 @@ cfg::session_log::enable_session_log_file ⇐ session_log:enable_session_log_fil
 cfg::session_log::keyboard_input_masking_level ⇐ session_log:keyboard_input_masking_level   [KeyboardInputMaskingLevel]
     Classification of input data is performed using Session Probe.
     Without Session Probe, all the texts entered are considered unidentified.
-      0: Keyboard input are not masked.
+      0: Keyboard inputs are not masked.
       1: Only passwords are masked.
       2: Passwords and unidentified texts are masked.
       3: Keyboard inputs are not logged.
@@ -530,7 +530,7 @@ cfg::capture::record_tmp_path ⇐ record_tmp_path   [::configs::spec_types::dire
 cfg::capture::record_path ⇐ record_path   [::configs::spec_types::directory_path]
 cfg::capture::disable_keyboard_log ⇐ capture:disable_keyboard_log   [KeyboardLogFlags]
     Disable keyboard log:
-    (Please see also [session_log]keyboard_input_masking_level)
+    (See also [session_log]keyboard_input_masking_level)
       0x0: none
       0x1: disable keyboard log in session log
       0x2: disable keyboard log in recorded sessions
@@ -552,17 +552,17 @@ cfg::file_verification::enable_up ⇐ file_verification:enable_up   [bool]
 cfg::file_verification::enable_down ⇐ file_verification:enable_down   [bool]
     Enable use of ICAP service for file verification on download.
 cfg::file_verification::clipboard_text_up ⇐ file_verification:clipboard_text_up   [bool]
-    Verify text data via clipboard from client to server.
-    File verification on upload must be enabled via option Enable up.
+    Verify text data via clipboard from the client to the target server.
+    File verification on upload must be enabled via the Enable up option.
 cfg::file_verification::clipboard_text_down ⇐ file_verification:clipboard_text_down   [bool]
-    Verify text data via clipboard from server to client
-    File verification on download must be enabled via option Enable down.
+    Verify text data via clipboard from the target server to the client
+    File verification on download must be enabled via the Enable down option.
 cfg::file_verification::block_invalid_file_up ⇐ file_verification:block_invalid_file_up   [bool]
-    Block file transfer from client to server on invalid file verification.
-    File verification on upload must be enabled via option Enable up.
+    Block file transfer from the client to the target server on invalid file verification.
+    File verification on upload must be enabled via the Enable up option.
 cfg::file_verification::block_invalid_file_down ⇐ file_verification:block_invalid_file_down   [bool]
-    Block file transfer from server to client on invalid file verification.
-    File verification on download must be enabled via option Enable down.
+    Block file transfer from the target server to the client on invalid file verification.
+    File verification on download must be enabled via the Enable down option.
 cfg::file_verification::log_if_accepted ⇐ file_verification:log_if_accepted   [bool]
     Log the files and clipboard texts that are verified and accepted. By default, only those rejected are logged.
 cfg::file_verification::max_file_size_rejected ⇐ file_verification:max_file_size_rejected   [uint32_t]
@@ -590,7 +590,7 @@ cfg::crypto::sign_key ⇐ sign_key   [std::array<unsigned char, 32>]
 cfg::context::psid ⇒ psid   [std::string]
     Proxy session log id
 cfg::context::opt_bpp ⇒ bpp   [ColorDepth]
-    Specifies the maximum color resolution (color depth) for the client connection session:
+    Specifies the maximum color depth for the client connection session:
       8: 8-bit
       15: 15-bit 555 RGB mask
       16: 16-bit 565 RGB mask

@@ -7,18 +7,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Port of RDP Proxy service.
 # 
-# Service will be automatically restarted and active sessions will be disconnected.
-# The port set in this field must not be already used, otherwise the service will not run.
-# Changing the port number will prevent WALLIX Access Manager from working properly.
+# Changing the port number will restart the service and disconnect active sessions. It will also block WALLIX Access Manager connections unless its RDP port is configured.
+# Choose a port that is not already in use. Otherwise, the service will not run.
 # (min = 0)
 #_advanced
 #port = 3389
 
-# Socket path or socket address of passthrough / acl.
+# Socket path or socket address of passthrough / ACL.
 #authfile = )gen_config_ini" << (REDEMPTION_CONFIG_AUTHFILE) << R"gen_config_ini(
 
 # Timeout during RDP connection initialization.
-# Increase the value if connection between workstations and Bastion can be slow.
+# Increase this value if the connection between workstations and Bastion is slow.
 # (in seconds)
 #handshake_timeout = 10
 
@@ -29,17 +28,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 #base_inactivity_timeout = 900
 
 # No automatic disconnection due to inactivity, timer is set on target session.
-# If value is between 1 and 30, then 30 is used.
-# If value is set to 0, then value set in [globals]base_inactivity_timeout is used.
+# If the value is between 1 and 30, then 30 is used.
+# If the value is set to 0, then the value set in [globals]base_inactivity_timeout is used.
 # (in seconds)
 # (acl config: proxy ⇐ globals:inactivity_timeout)
 #inactivity_timeout = 0
 
-# Internal keepalive between acl and rdp proxy.
+# Internal keepalive between ACL and RDP proxy.
 # (in seconds)
 #keepalive_grace_delay = 30
 
-# Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate).
+# Specifies how long the RDP proxy login screen should be displayed before the client window closes (use 0 to deactivate).
 # (in seconds)
 #_advanced
 #authentication_timeout = 120
@@ -47,7 +46,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # Specify bind address.
 #listen_address = 0.0.0.0
 
-# The transparent mode allows to intercept network traffic for a target even when the user specifies the target's address directly, instead of using the proxy address.
+# Transparent mode allows network traffic interception for a target, even when users directly specify a target's address instead of a proxy address.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_transparent_mode = 0
 
@@ -59,21 +58,21 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_bitmap_update = 1
 
-# Displays a reminder box at the top of the session when a session is limited in time (timeframe or approval).
-# The reminder is displayed successively 30min, 10min, 5min and 1min before the session is closed.
+# Displays a reminder box at the top of the session when a session has a time limit (timeframe or approval).
+# Reminders appear at 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable end time warning OSD
 #enable_end_time_warning_osd = 1
 
-# Allow to show the target device name with F12 during the session.
+# Allows showing the target device name with F12 during the session.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable OSD display remote target
 # (acl config: proxy ⇐ enable_osd_display_remote_target)
 #enable_osd_display_remote_target = 1
 
-# Show in session the target username when F12 is pressed.
+# Displays the target username in the session when F12 is pressed.
 # This option needs [globals]enable_osd_display_remote_target.
 # (type: boolean (0/no/false or 1/yes/true))
 #show_target_user_in_f12_message = 0
@@ -81,8 +80,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_wab_integration = )gen_config_ini" << (REDEMPTION_CONFIG_ENABLE_WAB_INTEGRATION) << R"gen_config_ini(
 
-# Enable support for pointers of size 96x96.
-# ⚠ If this option is disabled and the application doesn't support smaller pointers, the pointer may not change and remain on the last active pointer. For example, the resize window pointer would remain visible rather than change to a 'normal' pointer.
+# Enable support for 96x96 size pointers.
+# ⚠ If this option is disabled and the application does not support smaller pointers, the pointer may remain stuck on the last active pointer. For example, the resize window pointer would remain visible rather than change to a 'normal' pointer.
 # (type: boolean (0/no/false or 1/yes/true))
 #large_pointer_support = 1
 
@@ -92,13 +91,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #experimental_enable_serializer_data_block_size_limit = 0
 
-# Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client.
+# Prevent Remote Desktop session timeouts due to idle TCP sessions by periodically sending keepalive packets to the client.
 # Set to 0 to disable this feature.
 # (in milliseconds)
 #_display_name=RDP keepalive connection interval
 #rdp_keepalive_connection_interval = 0
 
-# ⚠ Service redemption needs to be manually restarted to take changes into account.
+# ⚠ Manually restart service redemption to take changes into account.
 # 
 # Enable primary connection on IPv6.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -112,17 +111,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [client]
 
-# If true, ignore the password provided by RDP client, user need do login manually.
+# If true, ignore the password provided by the RDP client. The user needs to manually log in.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #ignore_logon_password = 0
 
-# Sends the client screen count to the server. Not supported for VNC targets.
+# Sends the client screen count to the target server. Not supported for VNC targets.
 # Uncheck to disable multiple monitors.
 # (type: boolean (0/no/false or 1/yes/true))
 #allow_using_multiple_monitors = 1
 
-# Sends Scale & Layout configuration to the server.
+# Sends Scale & Layout configuration to the target server.
 # On Windows 11, this corresponds to the options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display.
 # ⚠ Title bar detection via OCR will no longer work.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -133,7 +132,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #unicode_keyboard_event_support = 1
 
-# Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable.
+# Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disabled.
 # values: none, low, medium, high
 #encryption_level = high
 
@@ -189,7 +188,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=TLS signature algorithms
 #tls_signature_algorithms = RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512
 
-# Show in the logs the common cipher list supported by client and server.
+# Show the common cipher list supported by client and target server in the logs.
 # ⚠ Only for debugging purposes.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
@@ -210,7 +209,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=RDP compression
 #rdp_compression = 4
 
-# Specifies the maximum color resolution (color depth) for the client connection session:
+# Specifies the maximum color depth for the client connection session:
 #   8: 8-bit
 #   15: 15-bit 555 RGB mask
 #   16: 16-bit 565 RGB mask
@@ -219,7 +218,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #max_color_depth = 24
 
-# Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased.
+# Persistent Disk Bitmap Cache on the primary connection side. If the RDP client supports it, this setting increases the size of image caches.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persistent_disk_bitmap_cache = 1
@@ -228,13 +227,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #cache_waiting_list = 0
 
-# If enabled, the contents of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if [client]persistent_disk_bitmap_cache is disabled).
+# If enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if [client]persistent_disk_bitmap_cache is disabled).
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persist_bitmap_cache_on_disk = 0
 
 # Enable Bitmap Compression when supported by the RDP client.
-# Disable this option will increase network bandwith usage.
+# Disabling this option increases the network bandwith usage.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #bitmap_compression = 1
@@ -243,17 +242,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #fast_path = 1
 
-# Allows the client to request the server to stop graphical updates. This can occur when the RDP client window is minimized to reduce bandwidth.
+# Allows the client to request the target server to stop graphical updates. For example, when the RDP client window is minimized to reduce bandwidth.
 # ⚠ If changes occur on the target, they will not be visible in the recordings either.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_suppress_output = 1
 
-# Same effect as [client]transform_glyph_to_bitmap, but only for RDP client on iOS platform.
+# Same effect as [client]transform_glyph_to_bitmap, but only for RDP clients on an iOS platform.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Bogus iOS glyph support level
 #bogus_ios_glyph_support_level = 1
 
-# Some RDP clients advertise glyph support, but this does not work properly with the RDP proxy. This option replaces glyph orders with bitmap orders.
+# This option converts glyphs to bitmaps to resolve issues with certain RDP clients.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #transform_glyph_to_bitmap = 0
@@ -261,7 +260,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (in milliseconds | min = 100, max = 10000)
 #recv_timeout = 1000
 
-# Enables the display of a message informing user that his/her session is being audited.
+# Informs users with a message when their session is audited.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable OSD 4 eyes
 #enable_osd_4_eyes = 1
@@ -274,7 +273,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=Enable RemoteFX
 #enable_remotefx = 1
 
-# This option should only be used if the server or client is showing graphical issues.
+# This option should only be used if the target server or client is showing graphical issues.
 # In general, disabling RDP orders has a negative impact on performance.
 # 
 # Drawing orders that can be disabled:
@@ -295,18 +294,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #disabled_orders = 25
 
-# Workaround for a bug encountered with the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2.
-# Randomly, some areas of the screen may not refresh.
-# This is due to a bug in the RDP client. If a single BitmapUpdate message contains multiple images, only the first one is correctly displayed by the client. Enabling this option will prevent this situation.
-# Enabling this option will cause a slight increase in the amount of data sent to the client. It has no other effect, even for clients not affected by the bug.
-# The option will be automatically disabled if the connection comes from an Access Manager.
+# This option fixes a bug in the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2.
+# Occasionally, some screen areas may not refresh due to a bug where only the first image in a BitmapUpdate message with multiple images is displayed correctly.
+# Enabling this option prevents this issue, but will slightly increase the data sent to the client.
+# The option is automatically disabled if the connection is from an Access Manager.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #workaround_incomplete_images = 0
 
 [all_target_mod]
 
-# The maximum time that the proxy will wait while attempting to connect to a target.
+# The maximum wait time for the proxy to connect to a target.
 # (in milliseconds | min = 1000, max = 10000)
 #_advanced
 #connection_establishment_timeout = 3000
@@ -343,15 +341,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #force_performance_flags = -mouse_cursor_shadows,-theme,-menu_animations
 
-# If enabled, avoid automatically font smoothing in recorded session.
+# If enabled, the font smoothing desktop feature is automatically disabled in recorded session.
 # This allows OCR (when session probe is disabled) to better detect window titles.
-# If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled.
-# In this case, window titles will not be detected.
+# If disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #auto_adjust_performance_flags = 1
 
-# Specifies the highest RDP compression support available on the server connection.
+# Specifies the highest RDP compression support available on the target server connection.
 #   0: The RDP bulk compression is disabled
 #   1: RDP 4.0 bulk compression
 #   2: RDP 5.0 bulk compression
@@ -365,13 +362,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #disconnect_on_logon_user_change = 0
 
-# The maximum time that the proxy will wait while attempting to logon to an RDP session.
+# The maximum wait time for the proxy to log on to an RDP session.
 # Value 0 is equivalent to 15 seconds.
 # (in seconds)
 #_advanced
 #open_session_timeout = 0
 
-# This option should only be used if the server or client is showing graphical issues.
+# This option should only be used if the target server or client is showing graphical issues.
 # In general, disabling RDP orders has a negative impact on performance.
 # 
 # Drawing orders that can be disabled:
@@ -393,7 +390,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:disabled_orders)
 #disabled_orders = 27
 
-# Enable NLA authentication in secondary target.
+# Enable NLA authentication in secondary targets.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable NLA
 # (acl config: proxy ⇐ mod_rdp:enable_nla)
@@ -446,7 +443,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:cipher_string)
 #cipher_string = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256
 
-# Allow TLS legacy insecure renegotiation to unpatched servers.
+# Allow TLS legacy insecure renegotiation to unpatched target servers.
 # For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in [mod_rdp]cipher_string.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
@@ -468,14 +465,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:tls_key_exchange_groups)
 #tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
 
-# Show in the logs the common cipher list supported by client and server
+# Show in the logs the common cipher list supported by client and target server
 # ⚠ Only for debugging purposes.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:show_common_cipher_list)
 #show_common_cipher_list = 0
 
-# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased.
+# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP target server, the size of image caches will be increased.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persistent_disk_bitmap_cache = 1
@@ -491,30 +488,30 @@ R"gen_config_ini(## Config file for RDP proxy.
 #persist_bitmap_cache_on_disk = 0
 
 # List of (comma-separated) enabled (static) virtual channel. If character '*' is used as a name then enables everything.
-# An explicit name will have higher priority than '*' in [mod_rdp]denied_channels.
+# Explicit names have higher priority than '*' in [mod_rdp]denied_channels.
 # (values are comma-separated)
 # (acl config: proxy ⇐ mod_rdp:allowed_channels)
 #allowed_channels = *
 
 # List of (comma-separated) disabled (static) virtual channel. If character '*' is used as a name then disables everything.
-# An explicit name will have higher priority than '*' in [mod_rdp]allowed_channels.
+# Explicit names have higher priority than '*' in [mod_rdp]allowed_channels.
 # (values are comma-separated)
 # (acl config: proxy ⇐ mod_rdp:denied_channels)
 #denied_channels = 
 
 # List of (comma-separated) enabled dynamic virtual channel. If character '*' is used as a name then enables everything.
-# An explicit name will have higher priority than '*' in [mod_rdp]denied_dynamic_channels.
+# Explicit names have higher priority than '*' in [mod_rdp]denied_dynamic_channels.
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:allowed_dynamic_channels)
 #allowed_dynamic_channels = *
 
 # List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.
-# An explicit name will have higher priority than '*' in [mod_rdp]allowed_dynamic_channels.
+# Explicit names have higher priority than '*' in [mod_rdp]allowed_dynamic_channels.
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:denied_dynamic_channels)
 #denied_dynamic_channels = 
 
-# If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.
+# If this option is unchecked, keyboard/mouse inputs are transmitted over the dynamic virtual channel.
 # This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
@@ -528,7 +525,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #force_screen_resolution = 
 
 # Enables support of Client/Server Fast-Path Input/Update PDUs.
-# Fast-Path is required for Windows Server 2012 (or more recent)!
+# Fast-Path is required for Windows Server 2012 (or more recent).
 # (type: boolean (0/no/false or 1/yes/true))
 #fast_path = 1
 
@@ -551,7 +548,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #client_address_sent = 0
 
 # Shared directory between proxy and secondary target.
-# Requires rdpdr support.
+# Requires RDPDR support.
 # (values are comma-separated)
 # (acl config: proxy ⇐ mod_rdp:proxy_managed_drives)
 #proxy_managed_drives = 
@@ -612,7 +609,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (maxlen = 256)
 #application_driver_ie_script = )gen_config_ini" << (REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_SCRIPT) << R"gen_config_ini(
 
-# Do not transmit the client machine name to RDP server.
+# Do not transmit the client machine name to the RDP server.
 # If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.
 # (type: boolean (0/no/false or 1/yes/true))
 #hide_client_name = 0
@@ -647,7 +644,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:enable_rdpdr_data_analysis)
 #enable_rdpdr_data_analysis = 1
 
-# Delay before automatically bypass Windows's Legal Notice screen in RemoteApp mode.
+# Delay before automatically bypassing Windows's Legal Notice screen in RemoteApp mode.
 # Set to 0 to disable this feature.
 # (in milliseconds)
 #_advanced
@@ -693,15 +690,15 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:enable_remotefx)
 #enable_remotefx = 0
 
-# Connect to the server in Restricted Admin mode.
-# This mode must be supported by the server (available from Windows Server 2012 R2), otherwise, connection will fail.
+# Connect to the target server in Restricted Admin mode.
+# This mode must be supported by the target server (available from Windows Server 2012 R2), otherwise, connection will fail.
 # NLA must be enabled.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ mod_rdp:enable_restricted_admin_mode)
 #enable_restricted_admin_mode = 0
 
 # NLA will be disabled.
-# Target must be set for interactive login, otherwise server connection may not be guaranteed.
+# Target must be set for interactive login, otherwise the  connection may not be guaranteed.
 # Smartcard device must be available on client desktop.
 # Smartcard redirection (Proxy option RDP_SMARTCARD) must be enabled on service.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -723,7 +720,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #mode_console = allow
 
 # Allows the proxy to automatically reconnect to secondary target when a network error occurs.
-# The server must support reconnection cookie.
+# The target server must support reconnection cookie.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:auto_reconnection_on_losing_target_link)
@@ -745,7 +742,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:session_reconnection_delay)
 #session_reconnection_delay = 0
 
-# Forward the build number advertised by the client to the server. If forwarding is disabled a default (static) build number will be sent to the server.
+# Forward the build number advertised by the client to the target server. If forwarding is disabled a default (static) build number will be sent to the target server.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:forward_client_build_number)
@@ -1020,9 +1017,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:cpu_usage_alarm_threshold)
 #cpu_usage_alarm_threshold = 0
 
-# Additional behavior when CPU consumption exceeds what is allowed. Please refer to the [session_probe]cpu_usage_alarm_threshold.
-#   0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
-#   1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section.
+# Additional behavior when CPU consumption exceeds what is allowed. Refer to the [session_probe]cpu_usage_alarm_threshold.
+#   0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
+#   1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
 #_advanced
 #_display_name=CPU usage alarm action
 # (acl config: proxy ⇐ session_probe:cpu_usage_alarm_action)
@@ -1054,7 +1051,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
 # Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
 # One of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash.
-# Please refer to the [session_log]keyboard_input_masking_level.
+# Refer to the [session_log]keyboard_input_masking_level.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ session_probe:childless_window_as_unidentified_input_field)
@@ -1064,7 +1061,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
 # Unfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
 # This parameter is used to provide the list of processes whose windows are considered as input fields of unknown type.
-# Please refer to the [session_log]keyboard_input_masking_level.
+# Refer to the [session_log]keyboard_input_masking_level.
 # (acl config: proxy ⇐ session_probe:windows_of_these_applications_as_unidentified_input_field)
 #windows_of_these_applications_as_unidentified_input_field = 
 
@@ -1078,8 +1075,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # This parameter was created to work around some compatibility issues and to limit the CPU load that the Session Probe process causes.
 # If 'Java Acccess Bridge' feature is disabled, data entered in the password field of Java applications may be visible in the metadata.
-# For more information please refer to [session_log]keyboard_input_masking_level.
-# For more information please also refer to [session_probe]childless_window_as_unidentified_input_field and [session_probe]windows_of_these_applications_as_unidentified_input_field.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.
+# For more information, refer to [session_log]keyboard_input_masking_level.
+# For more information, also refer to [session_probe]childless_window_as_unidentified_input_field and [session_probe]windows_of_these_applications_as_unidentified_input_field.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.
 #   0x000: none
 #   0x001: disable Java Access Bridge. General user activity monitoring in the Java applications (including detection of password fields).
 #   0x002: disable MS Active Accessbility. General user activity monitoring (including detection of password fields). (legacy API)
@@ -1098,14 +1095,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 # This parameter has no effect on the device without BestSafe.
 # Is enabled, Session Probe relies on BestSafe to perform the detection of application launches and the detection of outgoing connections.
 # BestSafe has more efficient mechanisms in these tasks than Session Probe.
-# For more information please refer to [session_probe]outbound_connection_monitoring_rules and [session_probe]process_monitoring_rules.
+# For more information, refer to [session_probe]outbound_connection_monitoring_rules and [session_probe]process_monitoring_rules.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable BestSafe interaction
 # (acl config: proxy ⇐ session_probe:enable_bestsafe_interaction)
 #enable_bestsafe_interaction = 0
 
 # This parameter has no effect on the device without BestSafe.
-# BestSafe interaction must be enabled. Please refer to [session_probe]enable_bestsafe_interaction.
+# BestSafe interaction must be enabled. Refer to [session_probe]enable_bestsafe_interaction.
 # This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.
 # Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.
 #   0: allow: User action will be accepted.
@@ -1137,14 +1134,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (Ex. for backwards compatibility only: 10.1.0.0/16:22)
 # A global rule that matches all IP addresses/Ports such as "0.0.0.0/0:*" is highly unrecommended.
 # Session Probe must be enabled to use this feature.
-# BestSafe can be used to perform detection of outgoing connections created in the session. Please refer to [session_probe]enable_bestsafe_interaction.
+# BestSafe can be used to perform detection of outgoing connections created in the session. Refer to [session_probe]enable_bestsafe_interaction.
 # (acl config: proxy ⇐ session_probe:outbound_connection_monitoring_rules)
 #outbound_connection_monitoring_rules = 
 
 # This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session.
 # (Ex.: $deny:taskmgr.exe)
 # @ = All child processes of (Bastion) application (Ex.: $deny:@)
-# BestSafe can be used to perform detection of process launched in the session. Please refer to [session_probe]enable_bestsafe_interaction.
+# BestSafe can be used to perform detection of process launched in the session. Refer to [session_probe]enable_bestsafe_interaction.
 # (acl config: proxy ⇐ session_probe:process_monitoring_rules)
 #process_monitoring_rules = 
 
@@ -1203,21 +1200,21 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [server_cert]
 
-# Keep known server certificates on Bastion
+# Keep known target server certificates on Bastion
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ server_cert:server_cert_store)
 #server_cert_store = 1
 
 # Behavior of certificates check.
-#   0: fails if certificates doesn't match or miss.
-#   1: fails if certificate doesn't match, succeed if no known certificate.
-#   2: succeed if certificates exists (not checked), fails if missing.
+#   0: fails if certificates do not match or are missing.
+#   1: fails if certificate does not match, succeeds if no known certificate.
+#   2: succeeds if certificates exist (not checked), fails if missing.
 #   3: always succeed.
 # System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
 # (acl config: proxy ⇐ server_cert:server_cert_check)
 #server_cert_check = 1
 
-# Warn if check allow connexion to server.
+# Warn if check allow connexion to target server.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM
 # 
@@ -1226,7 +1223,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ server_cert:server_access_allowed_message)
 #server_access_allowed_message = 0
 
-# Warn that new server certificate file was created.
+# Warn that new target server certificate file was created.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM
 # 
@@ -1235,7 +1232,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ server_cert:server_cert_create_message)
 #server_cert_create_message = 1
 
-# Warn that server certificate file was successfully checked.
+# Warn that target server certificate file was successfully checked.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM
 # 
@@ -1244,7 +1241,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ server_cert:server_cert_success_message)
 #server_cert_success_message = 0
 
-# Warn that server certificate file checking failed.
+# Warn that target server certificate file checking failed.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM
 # 
@@ -1253,7 +1250,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ server_cert:server_cert_failure_message)
 #server_cert_failure_message = 1
 
-# Warn that server certificate check raised some internal error.
+# Warn that target server certificate check raised some internal error.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM
 # 
@@ -1262,19 +1259,19 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [mod_vnc]
 
-# Check this option to enable the clipboard upload (from client to server).
-# This only support text data clipboard (not files).
+# Check this option to enable the clipboard upload (from client to target server).
+# This only supports text data clipboard (not files).
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ clipboard_up)
 #clipboard_up = 0
 
-# Check this option to enable the clipboard download (from server to client).
-# This only support text data clipboard (not files).
+# Check this option to enable the clipboard download (from target server to client).
+# This only supports text data clipboard (not files).
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ clipboard_down)
 #clipboard_down = 0
 
-# Sets additional graphics encoding types that will be negotiated with the VNC server:
+# Sets additional graphics encoding types that will be negotiated with the VNC target server:
 #   2: RRE
 #   5: HEXTILE
 #   16: ZRLE
@@ -1286,16 +1283,16 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:support_cursor_pseudo_encoding)
 #support_cursor_pseudo_encoding = 1
 
-# VNC server clipboard text data encoding type.
+# VNC target server clipboard text data encoding type.
 # values: utf-8, latin1
 #_advanced
 # (acl config: proxy ⇐ vnc_server_clipboard_encoding_type)
 #server_clipboard_encoding_type = latin1
 
-# The RDP clipboard is based on a token that indicates who owns data between server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
 # This option indicates the strategy to adopt in such situations.
 #   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
-#   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the server when the client clipboard is blocked, and vice versa.
+#   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
 #   2: continued: No special processing is done, the proxy always responds immediately.
 #_advanced
 # (acl config: proxy ⇐ vnc_bogus_clipboard_infinite_loop)
@@ -1336,7 +1333,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:cipher_string)
 #cipher_string = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256
 
-# Allow TLS legacy insecure renegotiation to unpatched servers.
+# Allow TLS legacy insecure renegotiation to unpatched target servers.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=TLS enable legacy server
@@ -1357,7 +1354,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:tls_key_exchange_groups)
 #tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
 
-# Show in the logs the common cipher list supported by client and server.
+# Show in the logs the common cipher list supported by client and target server.
 # ⚠ Only for debugging purposes.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
@@ -1366,7 +1363,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # ⚠ The use of this feature is not recommended!
 # 
-# When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made.
+# When specified, force the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
 #   - noauth
 #   - vncauth
 #   - mslogon
@@ -1401,7 +1398,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Classification of input data is performed using Session Probe.
 # Without Session Probe, all the texts entered are considered unidentified.
-#   0: Keyboard input are not masked.
+#   0: Keyboard inputs are not masked.
 #   1: Only passwords are masked.
 #   2: Passwords and unidentified texts are masked.
 #   3: Keyboard inputs are not logged.
@@ -1420,8 +1417,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 #   cyrillic: Recognizes Latin and Cyrillic characters
 #locale = latin
 
-# Time interval between two analyzes.
-# Too low a value will affect session reactivity.
+# Time interval between two analyses.
+# A value too low will affect session reactivity.
 # (in 1/100 seconds)
 #_advanced
 #interval = 100
@@ -1463,7 +1460,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #capture_flags = 11
 
 # Disable keyboard log:
-# (Please see also [session_log]keyboard_input_masking_level)
+# (See also [session_log]keyboard_input_masking_level)
 #   0x0: none
 #   0x1: disable keyboard log in session log
 #   0x2: disable keyboard log in recorded sessions
@@ -1491,22 +1488,22 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #disable_file_system_log = 0
 
-# Time between two wrm recording file.
+# Time between two .wrm recording files.
 # ⚠ A value that is too small increases the disk space required for recordings.
 # (in seconds)
 #_advanced
 #wrm_break_interval = 600
 
-# The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):
+# Color depth for the Session Recording file (.wrm):
 #   0: 24-bit
 #   1: 16-bit
 #_advanced
 #wrm_color_depth_selection_strategy = 1
 
-# The compression method of the session recording file (wrm):
+# Compression method of the Session Recording file (.wrm):
 #   0: no compression
-#   1: GZip: Files are better compressed, but this takes more time and CPU load
-#   2: Snappy: Faster than GZip, but files are less compressed
+#   1: GZip: Files are better compressed, but this takes more time and CPU load.
+#   2: Snappy: Faster than GZip, but files are less compressed.
 #_advanced
 #wrm_compression_algorithm = 1
 
@@ -1516,8 +1513,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [audit]
 
-# Show keyboard input events in meta file.
-# (Please see also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP)
+# Show keyboard input events in the meta file.
+# (See also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP)
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #enable_keyboard_log = 1
@@ -1553,7 +1550,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #   2: v2: When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session.
 #smart_video_cropping = 2
 
-# Check this option will allow to play a video with corrupted Bitmap Update.
+# Checking this option will allow to play a video with corrupted Bitmap Update.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #play_video_with_corrupted_bitmap = 0
@@ -1596,37 +1593,37 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ file_verification:enable_down)
 #enable_down = 0
 
-# Verify text data via clipboard from client to server.
-# File verification on upload must be enabled via option Enable up.
+# Verify text data via clipboard from the client to the target server.
+# File verification on upload must be enabled via the Enable up option.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ file_verification:clipboard_text_up)
 #clipboard_text_up = 0
 
-# Verify text data via clipboard from server to client
-# File verification on download must be enabled via option Enable down.
+# Verify text data via clipboard from the target server to the client
+# File verification on download must be enabled via the Enable down option.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ file_verification:clipboard_text_down)
 #clipboard_text_down = 0
 
-# Block file transfer from client to server on invalid file verification.
-# File verification on upload must be enabled via option Enable up.
+# Block file transfer from the client to the target server on invalid file verification.
+# File verification on upload must be enabled via the Enable up option.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ file_verification:block_invalid_file_up)
 #block_invalid_file_up = 0
 
-# Block file transfer from server to client on invalid file verification.
-# File verification on download must be enabled via option Enable down.
+# Block file transfer from the target server to the client on invalid file verification.
+# File verification on download must be enabled via the Enable down option.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ file_verification:block_invalid_file_down)
 #block_invalid_file_down = 0
 
-# Block text transfer from client to server on invalid text verification.
-# Text verification on upload must be enabled via option Clipboard text up.
+# Block text transfer from the client to the target server on invalid text verification.
+# Text verification on upload must be enabled via the Clipboard text up option.
 # (type: boolean (0/no/false or 1/yes/true))
 #block_invalid_clipboard_text_up = 0
 
-# Block text transfer from server to client on invalid text verification.
-# Text verification on download must be enabled via option Clipboard text down.
+# Block text transfer from the target server to the client on invalid text verification.
+# Text verification on download must be enabled via the Clipboard text down option.
 # (type: boolean (0/no/false or 1/yes/true))
 #block_invalid_clipboard_text_down = 0
 
@@ -1675,7 +1672,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [internal_mod]
 
-# Enable target edit field in login page. This target edit field allows to enter the target and the login separately.
+# Allow separate target and login entries by enabling the edit target field on the login page.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #enable_target_field = 1
@@ -1687,7 +1684,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #keyboard_layout_proposals = en-US, fr-FR, de-DE
 
 # Display the close screen.
-# This displays errors related to the secondary connection then closes automatically after a timeout specified by the [internal_mod]close_box_timeout or on user request.
+# Displays secondary connection errors and closes automatically after the specified [internal_mod]close_box_timeout value or on user request.
 # (type: boolean (0/no/false or 1/yes/true))
 #enable_close_box = 1
 
@@ -1714,8 +1711,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [translation]
 
-# Language used on the login page. When the user logs in, their user preference language is used.
-#   Auto: The language will be deduced according to the keyboard layout announced by the client.
+# The login page shows this language to all users. Once logged in, users see their preferred language.
+#   Auto: The language is determined based on the keyboard layout specified by the client.
 #   EN: 
 #   FR: 
 #_advanced

@@ -224,7 +224,7 @@ inline FileSystemLogFlags operator ~ (FileSystemLogFlags x)
 inline FileSystemLogFlags & operator |= (FileSystemLogFlags & x, FileSystemLogFlags y) { return x = x | y; }
 inline FileSystemLogFlags & operator &= (FileSystemLogFlags & x, FileSystemLogFlags y) { return x = x & y; }
 
-// Specifies the maximum color resolution (color depth) for the client connection session:
+// Specifies the maximum color depth for the client connection session:
 enum class ColorDepth : uint8_t
 {
     // 8-bit
@@ -296,11 +296,11 @@ inline ServerCertNotification & operator &= (ServerCertNotification & x, ServerC
 // System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
 enum class ServerCertCheck : uint8_t
 {
-    // fails if certificates doesn't match or miss.
+    // fails if certificates do not match or are missing.
     fails_if_no_match_or_missing = 0,
-    // fails if certificate doesn't match, succeed if no known certificate.
+    // fails if certificate does not match, succeeds if no known certificate.
     fails_if_no_match_and_succeed_if_no_know = 1,
-    // succeed if certificates exists (not checked), fails if missing.
+    // succeeds if certificates exist (not checked), fails if missing.
     succeed_if_exists_and_fails_if_missing = 2,
     // always succeed.
     always_succeed = 3,
@@ -330,7 +330,7 @@ template<> struct is_valid_enum_value<TraceType>
 
 enum class KeyboardInputMaskingLevel : uint8_t
 {
-    // Keyboard input are not masked.
+    // Keyboard inputs are not masked.
     unmasked = 0,
     // Only passwords are masked.
     password_only = 1,
@@ -365,7 +365,7 @@ enum class VncBogusClipboardInfiniteLoop : uint8_t
 {
     // Clipboard processing is deferred and, if necessary, the token is left with the client.
     delayed = 0,
-    // When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the server when the client clipboard is blocked, and vice versa.
+    // When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
     duplicated = 1,
     // No special processing is done, the proxy always responds immediately.
     continued = 2,
@@ -376,7 +376,7 @@ template<> struct is_valid_enum_value<VncBogusClipboardInfiniteLoop>
     constexpr static bool is_valid(uint64_t n) { return n <= 2; }
 };
 
-// The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):
+// Color depth for the Session Recording file (.wrm):
 enum class ColorDepthSelectionStrategy : uint8_t
 {
     // 24-bit
@@ -390,13 +390,13 @@ template<> struct is_valid_enum_value<ColorDepthSelectionStrategy>
     constexpr static bool is_valid(uint64_t n) { return n <= 1; }
 };
 
-// The compression method of the session recording file (wrm):
+// Compression method of the Session Recording file (.wrm):
 enum class WrmCompressionAlgorithm : uint8_t
 {
     no_compression = 0,
-    // GZip: Files are better compressed, but this takes more time and CPU load
+    // GZip: Files are better compressed, but this takes more time and CPU load.
     gzip = 1,
-    // Snappy: Faster than GZip, but files are less compressed
+    // Snappy: Faster than GZip, but files are less compressed.
     snappy = 2,
 };
 
@@ -636,7 +636,7 @@ template<> struct is_valid_enum_value<ModRdpUseFailureSimulationSocketTransport>
 
 enum class LoginLanguage : uint8_t
 {
-    // The language will be deduced according to the keyboard layout announced by the client.
+    // The language is determined based on the keyboard layout specified by the client.
     Auto = 0,
     EN = 1,
     FR = 2,
@@ -684,9 +684,9 @@ template<> struct is_valid_enum_value<BannerType>
 
 enum class SessionProbeCPUUsageAlarmAction : uint8_t
 {
-    // Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
+    // Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
     Restart = 0,
-    // Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section.
+    // Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
     Stop = 1,
 };
 

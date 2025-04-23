@@ -21,8 +21,8 @@ vault_transformation_rule = string(default="")
 [session]
 
 # No automatic disconnection due to inactivity, timer is set on target session.
-# If value is between 1 and 30, then 30 is used.
-# If value is set to 0, then value set in "Base inactivity timeout" option (in "globals" section of "RDP Proxy" configuration option) is used.<br/>
+# If the value is between 1 and 30, then 30 is used.
+# If the value is set to 0, then the value set in "Base inactivity timeout" option (in "globals" section of "RDP Proxy" configuration option) is used.<br/>
 # (in seconds)
 inactivity_timeout = integer(min=0, default=0)
 
@@ -36,7 +36,7 @@ tcp_user_timeout = integer(min=0, max=3600000, default=0)
 
 [rdp]
 
-# This option should only be used if the server or client is showing graphical issues.
+# This option should only be used if the target server or client is showing graphical issues.
 # In general, disabling RDP orders has a negative impact on performance.<br/>
 # Drawing orders that can be disabled:
 # &nbsp; &nbsp;    0: DstBlt
@@ -56,7 +56,7 @@ tcp_user_timeout = integer(min=0, max=3600000, default=0)
 #_advanced
 disabled_orders = string(default="27")
 
-# Enable NLA authentication in secondary target.
+# Enable NLA authentication in secondary targets.
 #_display_name=Enable NLA
 enable_nla = boolean(default=True)
 
@@ -94,7 +94,7 @@ tls_max_level = integer(min=0, default=0)
 # The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 cipher_string = string(default="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256")
 
-# Allow TLS legacy insecure renegotiation to unpatched servers.
+# Allow TLS legacy insecure renegotiation to unpatched target servers.
 # For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in "Cipher string" option.
 #_advanced
 #_display_name=TLS enable legacy server
@@ -112,22 +112,22 @@ tls_1_3_ciphersuites = string(default="TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SH
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
 
-# Show in the logs the common cipher list supported by client and server
+# Show in the logs the common cipher list supported by client and target server
 # ⚠ Only for debugging purposes.
 #_advanced
 show_common_cipher_list = boolean(default=False)
 
 # List of (comma-separated) enabled dynamic virtual channel. If character '*' is used as a name then enables everything.
-# An explicit name will have higher priority than '*' in "Denied dynamic channels" option.
+# Explicit names have higher priority than '*' in "Denied dynamic channels" option.
 #_advanced
 allowed_dynamic_channels = string(default="*")
 
 # List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.
-# An explicit name will have higher priority than '*' in "Allowed dynamic channels" option.
+# Explicit names have higher priority than '*' in "Allowed dynamic channels" option.
 #_advanced
 denied_dynamic_channels = string(default="")
 
-# If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel.
+# If this option is unchecked, keyboard/mouse inputs are transmitted over the dynamic virtual channel.
 # This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025.
 #_advanced
 disable_coreinput_dynamic_channel = boolean(default=True)
@@ -171,13 +171,13 @@ wabam_uses_translated_remoteapp = boolean(default=False)
 #_display_name=Enable RemoteFX
 enable_remotefx = boolean(default=False)
 
-# Connect to the server in Restricted Admin mode.
-# This mode must be supported by the server (available from Windows Server 2012 R2), otherwise, connection will fail.
+# Connect to the target server in Restricted Admin mode.
+# This mode must be supported by the target server (available from Windows Server 2012 R2), otherwise, connection will fail.
 # NLA must be enabled.
 enable_restricted_admin_mode = boolean(default=False)
 
 # NLA will be disabled.
-# Target must be set for interactive login, otherwise server connection may not be guaranteed.
+# Target must be set for interactive login, otherwise the  connection may not be guaranteed.
 # Smartcard device must be available on client desktop.
 # Smartcard redirection (Proxy option RDP_SMARTCARD) must be enabled on service.
 force_smartcard_authentication = boolean(default=False)
@@ -194,7 +194,7 @@ enable_ipv6 = boolean(default=True)
 mode_console = option('allow', 'force', 'forbid', default="allow")
 
 # Allows the proxy to automatically reconnect to secondary target when a network error occurs.
-# The server must support reconnection cookie.
+# The target server must support reconnection cookie.
 #_advanced
 auto_reconnection_on_losing_target_link = boolean(default=False)
 
@@ -210,7 +210,7 @@ allow_session_reconnection_by_shortcut = boolean(default=False)
 #_advanced
 session_reconnection_delay = integer(min=0, max=15000, default=0)
 
-# Forward the build number advertised by the client to the server. If forwarding is disabled a default (static) build number will be sent to the server.
+# Forward the build number advertised by the client to the target server. If forwarding is disabled a default (static) build number will be sent to the target server.
 #_advanced
 forward_client_build_number = boolean(default=True)
 
@@ -440,9 +440,9 @@ memory_usage_limit = integer(min=0, max=200000000, default=0)
 #_display_name=CPU usage alarm threshold
 cpu_usage_alarm_threshold = integer(min=0, max=10000, default=0)
 
-# Additional behavior when CPU consumption exceeds what is allowed. Please refer to the "CPU usage alarm threshold" option.
-# &nbsp; &nbsp;   0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
-# &nbsp; &nbsp;   1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section.
+# Additional behavior when CPU consumption exceeds what is allowed. Refer to the "CPU usage alarm threshold" option.
+# &nbsp; &nbsp;   0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
+# &nbsp; &nbsp;   1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
 #_advanced
 #_display_name=CPU usage alarm action
 cpu_usage_alarm_action = option(0, 1, default=0)
@@ -469,7 +469,7 @@ extra_system_processes = string(default="")
 # This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
 # Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
 # One of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash.
-# Please refer to the "Keyboard input masking level" option (in "session_log" section).
+# Refer to the "Keyboard input masking level" option (in "session_log" section).
 #_advanced
 childless_window_as_unidentified_input_field = boolean(default=True)
 
@@ -477,7 +477,7 @@ childless_window_as_unidentified_input_field = boolean(default=True)
 # This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
 # Unfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
 # This parameter is used to provide the list of processes whose windows are considered as input fields of unknown type.
-# Please refer to the "Keyboard input masking level" option (in "session_log" section).
+# Refer to the "Keyboard input masking level" option (in "session_log" section).
 windows_of_these_applications_as_unidentified_input_field = string(default="")
 
 # This parameter is used when resuming a session hosting a existing Session Probe.
@@ -488,8 +488,8 @@ update_disabled_features = boolean(default=True)
 
 # This parameter was created to work around some compatibility issues and to limit the CPU load that the Session Probe process causes.
 # If 'Java Acccess Bridge' feature is disabled, data entered in the password field of Java applications may be visible in the metadata.
-# For more information please refer to "Keyboard input masking level" option (in "session_log" section).
-# For more information please also refer to "Childless window as unidentified input field" option and "Windows of these applications as unidentified input field" option.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.
+# For more information, refer to "Keyboard input masking level" option (in "session_log" section).
+# For more information, also refer to "Childless window as unidentified input field" option and "Windows of these applications as unidentified input field" option.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.
 # &nbsp; &nbsp;   0x000: none
 # &nbsp; &nbsp;   0x001: disable Java Access Bridge. General user activity monitoring in the Java applications (including detection of password fields).
 # &nbsp; &nbsp;   0x002: disable MS Active Accessbility. General user activity monitoring (including detection of password fields). (legacy API)
@@ -507,12 +507,12 @@ disabled_features = integer(min=0, max=511, default=352)
 # This parameter has no effect on the device without BestSafe.
 # Is enabled, Session Probe relies on BestSafe to perform the detection of application launches and the detection of outgoing connections.
 # BestSafe has more efficient mechanisms in these tasks than Session Probe.
-# For more information please refer to "Outbound connection monitoring rules" option and "Process monitoring rules" option.
+# For more information, refer to "Outbound connection monitoring rules" option and "Process monitoring rules" option.
 #_display_name=Enable BestSafe interaction
 enable_bestsafe_interaction = boolean(default=False)
 
 # This parameter has no effect on the device without BestSafe.
-# BestSafe interaction must be enabled. Please refer to "Enable BestSafe interaction" option.
+# BestSafe interaction must be enabled. Refer to "Enable BestSafe interaction" option.
 # This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.
 # Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.
 # &nbsp; &nbsp;   0: allow: User action will be accepted.
@@ -539,13 +539,13 @@ public_session = boolean(default=False)
 # (Ex. for backwards compatibility only: 10.1.0.0/16:22)
 # A global rule that matches all IP addresses/Ports such as "0.0.0.0/0:*" is highly unrecommended.
 # Session Probe must be enabled to use this feature.
-# BestSafe can be used to perform detection of outgoing connections created in the session. Please refer to "Enable BestSafe interaction" option.
+# BestSafe can be used to perform detection of outgoing connections created in the session. Refer to "Enable BestSafe interaction" option.
 outbound_connection_monitoring_rules = string(default="")
 
 # This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session.
 # (Ex.: $deny:taskmgr.exe)
 # @ = All child processes of (Bastion) application (Ex.: $deny:@)
-# BestSafe can be used to perform detection of process launched in the session. Please refer to "Enable BestSafe interaction" option.
+# BestSafe can be used to perform detection of process launched in the session. Refer to "Enable BestSafe interaction" option.
 process_monitoring_rules = string(default="")
 
 # &nbsp; &nbsp;   0: windows management instrumentation: Get command-line of processes via Windows Management Instrumentation. (Legacy method)
@@ -573,18 +573,18 @@ monitor_own_resources_consumption = boolean(default=False)
 
 [server_cert]
 
-# Keep known server certificates on Bastion
+# Keep known target server certificates on Bastion
 server_cert_store = boolean(default=True)
 
 # Behavior of certificates check.
-# &nbsp; &nbsp;   0: fails if certificates doesn't match or miss.
-# &nbsp; &nbsp;   1: fails if certificate doesn't match, succeed if no known certificate.
-# &nbsp; &nbsp;   2: succeed if certificates exists (not checked), fails if missing.
+# &nbsp; &nbsp;   0: fails if certificates do not match or are missing.
+# &nbsp; &nbsp;   1: fails if certificate does not match, succeeds if no known certificate.
+# &nbsp; &nbsp;   2: succeeds if certificates exist (not checked), fails if missing.
 # &nbsp; &nbsp;   3: always succeed.
 # System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
 server_cert_check = option(0, 1, 2, 3, default=1)
 
-# Warn if check allow connexion to server.
+# Warn if check allow connexion to target server.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -592,7 +592,7 @@ server_cert_check = option(0, 1, 2, 3, default=1)
 #_hex
 server_access_allowed_message = integer(min=0, max=1, default=0)
 
-# Warn that new server certificate file was created.
+# Warn that new target server certificate file was created.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -600,7 +600,7 @@ server_access_allowed_message = integer(min=0, max=1, default=0)
 #_hex
 server_cert_create_message = integer(min=0, max=1, default=1)
 
-# Warn that server certificate file was successfully checked.
+# Warn that target server certificate file was successfully checked.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -608,7 +608,7 @@ server_cert_create_message = integer(min=0, max=1, default=1)
 #_hex
 server_cert_success_message = integer(min=0, max=1, default=0)
 
-# Warn that server certificate file checking failed.
+# Warn that target server certificate file checking failed.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -620,7 +620,7 @@ server_cert_failure_message = integer(min=0, max=1, default=1)
 
 # Classification of input data is performed using Session Probe.
 # Without Session Probe, all the texts entered are considered unidentified.
-# &nbsp; &nbsp;   0: Keyboard input are not masked.
+# &nbsp; &nbsp;   0: Keyboard inputs are not masked.
 # &nbsp; &nbsp;   1: Only passwords are masked.
 # &nbsp; &nbsp;   2: Passwords and unidentified texts are masked.
 # &nbsp; &nbsp;   3: Keyboard inputs are not logged.
@@ -629,7 +629,7 @@ keyboard_input_masking_level = option(0, 1, 2, 3, default=2)
 [capture]
 
 # Disable keyboard log:
-# (Please see also "Keyboard input masking level" option (in "session_log" section))
+# (See also "Keyboard input masking level" option (in "session_log" section))
 # &nbsp; &nbsp;   0x0: none
 # &nbsp; &nbsp;   0x1: disable keyboard log in session log
 # &nbsp; &nbsp;   0x2: disable keyboard log in recorded sessions<br/>
@@ -646,20 +646,20 @@ enable_up = boolean(default=False)
 # Enable use of ICAP service for file verification on download.
 enable_down = boolean(default=False)
 
-# Verify text data via clipboard from client to server.
-# File verification on upload must be enabled via option Enable up.
+# Verify text data via clipboard from the client to the target server.
+# File verification on upload must be enabled via the Enable up option.
 clipboard_text_up = boolean(default=False)
 
-# Verify text data via clipboard from server to client
-# File verification on download must be enabled via option Enable down.
+# Verify text data via clipboard from the target server to the client
+# File verification on download must be enabled via the Enable down option.
 clipboard_text_down = boolean(default=False)
 
-# Block file transfer from client to server on invalid file verification.
-# File verification on upload must be enabled via option Enable up.
+# Block file transfer from the client to the target server on invalid file verification.
+# File verification on upload must be enabled via the Enable up option.
 block_invalid_file_up = boolean(default=False)
 
-# Block file transfer from server to client on invalid file verification.
-# File verification on download must be enabled via option Enable down.
+# Block file transfer from the target server to the client on invalid file verification.
+# File verification on download must be enabled via the Enable down option.
 block_invalid_file_down = boolean(default=False)
 
 # Log the files and clipboard texts that are verified and accepted. By default, only those rejected are logged.

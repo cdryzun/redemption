@@ -95,7 +95,7 @@ inline void config_type_definition(type_enumerations & e)
       .value("meta", "(redirected) file system log in recorded meta")
     ;
 
-    e.enumeration_set("ColorDepth", withoutNameWhenDescription, "Specifies the maximum color resolution (color depth) for the client connection session:")
+    e.enumeration_set("ColorDepth", withoutNameWhenDescription, "Specifies the maximum color depth for the client connection session:")
       .value("depth8", 8, "8-bit")
       .value("depth15", 15, "15-bit 555 RGB mask")
       .value("depth16", 16, "16-bit 565 RGB mask")
@@ -109,9 +109,9 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("ServerCertCheck", withoutNameWhenDescription, "Behavior of certificates check.", "System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.")
-      .value("fails_if_no_match_or_missing", "fails if certificates doesn't match or miss.")
-      .value("fails_if_no_match_and_succeed_if_no_know", "fails if certificate doesn't match, succeed if no known certificate.")
-      .value("succeed_if_exists_and_fails_if_missing", "succeed if certificates exists (not checked), fails if missing.")
+      .value("fails_if_no_match_or_missing", "fails if certificates do not match or are missing.")
+      .value("fails_if_no_match_and_succeed_if_no_know", "fails if certificate does not match, succeeds if no known certificate.")
+      .value("succeed_if_exists_and_fails_if_missing", "succeeds if certificates exist (not checked), fails if missing.")
       .value("always_succeed", "always succeed.")
     ;
 
@@ -122,7 +122,7 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("KeyboardInputMaskingLevel", withoutNameWhenDescription)
-      .value("unmasked", "Keyboard input are not masked.")
+      .value("unmasked", "Keyboard inputs are not masked.")
       .value("password_only", "Only passwords are masked.")
       .value("password_and_unidentified", "Passwords and unidentified texts are masked.")
       .value("fully_masked", "Keyboard inputs are not logged.")
@@ -136,19 +136,19 @@ inline void config_type_definition(type_enumerations & e)
 
     e.enumeration_list("VncBogusClipboardInfiniteLoop", withNameWhenDescription)
       .value("delayed", "Clipboard processing is deferred and, if necessary, the token is left with the client.")
-      .value("duplicated", "When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the server when the client clipboard is blocked, and vice versa.")
+      .value("duplicated", "When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.")
       .value("continued", "No special processing is done, the proxy always responds immediately.")
     ;
 
-    e.enumeration_list("ColorDepthSelectionStrategy", withoutNameWhenDescription, "The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):")
+    e.enumeration_list("ColorDepthSelectionStrategy", withoutNameWhenDescription, "Color depth for the Session Recording file (.wrm):")
       .value("depth24", "24-bit")
       .value("depth16", "16-bit")
     ;
 
-    e.enumeration_list("WrmCompressionAlgorithm", withoutNameWhenDescription, "The compression method of the session recording file (wrm):")
+    e.enumeration_list("WrmCompressionAlgorithm", withoutNameWhenDescription, "Compression method of the Session Recording file (.wrm):")
       .value("no_compression")
-      .value("gzip", "GZip: Files are better compressed, but this takes more time and CPU load")
-      .value("snappy", "Snappy: Faster than GZip, but files are less compressed")
+      .value("gzip", "GZip: Files are better compressed, but this takes more time and CPU load.")
+      .value("snappy", "Snappy: Faster than GZip, but files are less compressed.")
     ;
 
     e.enumeration_list("RdpCompression", withoutNameWhenDescription, "Specifies the highest RDP compression support available")
@@ -235,7 +235,7 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("LoginLanguage", withNameWhenDescription)
-      .value("Auto", "The language will be deduced according to the keyboard layout announced by the client.")
+      .value("Auto", "The language is determined based on the keyboard layout specified by the client.")
       .value("EN")
       .value("FR")
     ;
@@ -258,8 +258,8 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("SessionProbeCPUUsageAlarmAction", withoutNameWhenDescription)
-      .value("Restart", "Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.")
-      .value("Stop", "Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Please refer to 'On keepalive timeout' parameter of current section.")
+      .value("Restart", "Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.")
+      .value("Stop", "Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.")
     ;
 
     e.enumeration_list("SessionProbeProcessCommandLineRetrieveMethod", withNameWhenDescription)

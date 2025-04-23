@@ -6,16 +6,15 @@ R"gen_config_ini(## Python spec file for RDP proxy.
 [globals]
 
 # Port of RDP Proxy service.<br/>
-# Service will be automatically restarted and active sessions will be disconnected.
-# The port set in this field must not be already used, otherwise the service will not run.
-# Changing the port number will prevent WALLIX Access Manager from working properly.
+# Changing the port number will restart the service and disconnect active sessions. It will also block WALLIX Access Manager connections unless its RDP port is configured.
+# Choose a port that is not already in use. Otherwise, the service will not run.
 #_iptables
 #_advanced
 #_logged
 port = integer(min=0, default=3389)
 
 # Timeout during RDP connection initialization.
-# Increase the value if connection between workstations and Bastion can be slow.<br/>
+# Increase this value if the connection between workstations and Bastion is slow.<br/>
 # (in seconds)
 handshake_timeout = integer(min=0, default=10)
 
@@ -25,37 +24,37 @@ handshake_timeout = integer(min=0, default=10)
 # (in seconds)
 base_inactivity_timeout = integer(min=0, default=900)
 
-# Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate).<br/>
+# Specifies how long the RDP proxy login screen should be displayed before the client window closes (use 0 to deactivate).<br/>
 # (in seconds)
 #_advanced
 authentication_timeout = integer(min=0, default=120)
 
-# The transparent mode allows to intercept network traffic for a target even when the user specifies the target's address directly, instead of using the proxy address.
+# Transparent mode allows network traffic interception for a target, even when users directly specify a target's address instead of a proxy address.
 #_iptables
 enable_transparent_mode = boolean(default=False)
 
-# Displays a reminder box at the top of the session when a session is limited in time (timeframe or approval).
-# The reminder is displayed successively 30min, 10min, 5min and 1min before the session is closed.
+# Displays a reminder box at the top of the session when a session has a time limit (timeframe or approval).
+# Reminders appear at 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends.
 #_advanced
 #_display_name=Enable end time warning OSD
 enable_end_time_warning_osd = boolean(default=True)
 
-# Allow to show the target device name with F12 during the session.
+# Allows showing the target device name with F12 during the session.
 #_advanced
 #_display_name=Enable OSD display remote target
 enable_osd_display_remote_target = boolean(default=True)
 
-# Show in session the target username when F12 is pressed.
+# Displays the target username in the session when F12 is pressed.
 # This option needs "Enable OSD display remote target" option.
 show_target_user_in_f12_message = boolean(default=False)
 
-# Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client.
+# Prevent Remote Desktop session timeouts due to idle TCP sessions by periodically sending keepalive packets to the client.
 # Set to 0 to disable this feature.<br/>
 # (in milliseconds)
 #_display_name=RDP keepalive connection interval
 rdp_keepalive_connection_interval = integer(min=0, default=0)
 
-# ⚠ Service redemption needs to be manually restarted to take changes into account.<br/>
+# ⚠ Manually restart service redemption to take changes into account.<br/>
 # Enable primary connection on IPv6.
 #_advanced
 #_display_name=Enable IPv6
@@ -63,15 +62,15 @@ enable_ipv6 = boolean(default=True)
 
 [client]
 
-# If true, ignore the password provided by RDP client, user need do login manually.
+# If true, ignore the password provided by the RDP client. The user needs to manually log in.
 #_advanced
 ignore_logon_password = boolean(default=False)
 
-# Sends the client screen count to the server. Not supported for VNC targets.
+# Sends the client screen count to the target server. Not supported for VNC targets.
 # Uncheck to disable multiple monitors.
 allow_using_multiple_monitors = boolean(default=True)
 
-# Sends Scale &amp; Layout configuration to the server.
+# Sends Scale &amp; Layout configuration to the target server.
 # On Windows 11, this corresponds to the options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display.
 # ⚠ Title bar detection via OCR will no longer work.
 allow_scale_factor = boolean(default=False)
@@ -120,7 +119,7 @@ tls_key_exchange_groups = string(default="")
 #_display_name=TLS signature algorithms
 tls_signature_algorithms = string(default="RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512")
 
-# Show in the logs the common cipher list supported by client and server.
+# Show the common cipher list supported by client and target server in the logs.
 # ⚠ Only for debugging purposes.
 #_advanced
 show_common_cipher_list = boolean(default=False)
@@ -135,7 +134,7 @@ show_common_cipher_list = boolean(default=False)
 #_display_name=RDP compression
 rdp_compression = option(0, 1, 2, 3, 4, default=4)
 
-# Specifies the maximum color resolution (color depth) for the client connection session:
+# Specifies the maximum color depth for the client connection session:
 # &nbsp; &nbsp;   8: 8-bit
 # &nbsp; &nbsp;   15: 15-bit 555 RGB mask
 # &nbsp; &nbsp;   16: 16-bit 565 RGB mask
@@ -144,32 +143,32 @@ rdp_compression = option(0, 1, 2, 3, 4, default=4)
 #_advanced
 max_color_depth = option(8, 15, 16, 24, 32, default=24)
 
-# Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased.
+# Persistent Disk Bitmap Cache on the primary connection side. If the RDP client supports it, this setting increases the size of image caches.
 #_advanced
 persistent_disk_bitmap_cache = boolean(default=True)
 
-# If enabled, the contents of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if "Persistent disk bitmap cache" option is disabled).
+# If enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if "Persistent disk bitmap cache" option is disabled).
 #_advanced
 persist_bitmap_cache_on_disk = boolean(default=False)
 
 # Enable Bitmap Compression when supported by the RDP client.
-# Disable this option will increase network bandwith usage.
+# Disabling this option increases the network bandwith usage.
 #_advanced
 bitmap_compression = boolean(default=True)
 
-# Allows the client to request the server to stop graphical updates. This can occur when the RDP client window is minimized to reduce bandwidth.
+# Allows the client to request the target server to stop graphical updates. For example, when the RDP client window is minimized to reduce bandwidth.
 # ⚠ If changes occur on the target, they will not be visible in the recordings either.
 enable_suppress_output = boolean(default=True)
 
-# Same effect as "Transform glyph to bitmap" option, but only for RDP client on iOS platform.
+# Same effect as "Transform glyph to bitmap" option, but only for RDP clients on an iOS platform.
 #_display_name=Bogus iOS glyph support level
 bogus_ios_glyph_support_level = boolean(default=True)
 
-# Some RDP clients advertise glyph support, but this does not work properly with the RDP proxy. This option replaces glyph orders with bitmap orders.
+# This option converts glyphs to bitmaps to resolve issues with certain RDP clients.
 #_advanced
 transform_glyph_to_bitmap = boolean(default=False)
 
-# Enables the display of a message informing user that his/her session is being audited.
+# Informs users with a message when their session is audited.
 #_display_name=Enable OSD 4 eyes
 enable_osd_4_eyes = boolean(default=True)
 
@@ -180,7 +179,7 @@ enable_osd_4_eyes = boolean(default=True)
 #_display_name=Enable RemoteFX
 enable_remotefx = boolean(default=True)
 
-# This option should only be used if the server or client is showing graphical issues.
+# This option should only be used if the target server or client is showing graphical issues.
 # In general, disabling RDP orders has a negative impact on performance.<br/>
 # Drawing orders that can be disabled:
 # &nbsp; &nbsp;    0: DstBlt
@@ -200,17 +199,16 @@ enable_remotefx = boolean(default=True)
 #_advanced
 disabled_orders = string(default="25")
 
-# Workaround for a bug encountered with the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2.
-# Randomly, some areas of the screen may not refresh.
-# This is due to a bug in the RDP client. If a single BitmapUpdate message contains multiple images, only the first one is correctly displayed by the client. Enabling this option will prevent this situation.
-# Enabling this option will cause a slight increase in the amount of data sent to the client. It has no other effect, even for clients not affected by the bug.
-# The option will be automatically disabled if the connection comes from an Access Manager.
+# This option fixes a bug in the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2.
+# Occasionally, some screen areas may not refresh due to a bug where only the first image in a BitmapUpdate message with multiple images is displayed correctly.
+# Enabling this option prevents this issue, but will slightly increase the data sent to the client.
+# The option is automatically disabled if the connection is from an Access Manager.
 #_advanced
 workaround_incomplete_images = boolean(default=False)
 
 [all_target_mod]
 
-# The maximum time that the proxy will wait while attempting to connect to a target.<br/>
+# The maximum wait time for the proxy to connect to a target.<br/>
 # (in milliseconds)
 #_advanced
 connection_establishment_timeout = integer(min=1000, max=10000, default=3000)
@@ -237,14 +235,13 @@ allow_resize_hosted_desktop = boolean(default=True)
 #_advanced
 force_performance_flags = string(default="-mouse_cursor_shadows,-theme,-menu_animations")
 
-# If enabled, avoid automatically font smoothing in recorded session.
+# If enabled, the font smoothing desktop feature is automatically disabled in recorded session.
 # This allows OCR (when session probe is disabled) to better detect window titles.
-# If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled.
-# In this case, window titles will not be detected.
+# If disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
 #_advanced
 auto_adjust_performance_flags = boolean(default=True)
 
-# Specifies the highest RDP compression support available on the server connection.
+# Specifies the highest RDP compression support available on the target server connection.
 # &nbsp; &nbsp;   0: The RDP bulk compression is disabled
 # &nbsp; &nbsp;   1: RDP 4.0 bulk compression
 # &nbsp; &nbsp;   2: RDP 5.0 bulk compression
@@ -257,13 +254,13 @@ rdp_compression = option(0, 1, 2, 3, 4, default=4)
 #_advanced
 disconnect_on_logon_user_change = boolean(default=False)
 
-# The maximum time that the proxy will wait while attempting to logon to an RDP session.
+# The maximum wait time for the proxy to log on to an RDP session.
 # Value 0 is equivalent to 15 seconds.<br/>
 # (in seconds)
 #_advanced
 open_session_timeout = integer(min=0, default=0)
 
-# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased.
+# Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP target server, the size of image caches will be increased.
 #_advanced
 persistent_disk_bitmap_cache = boolean(default=True)
 
@@ -288,7 +285,7 @@ auth_channel = string(max=7, default="*")
 # Authentication channel used by other scripts. No default name. Keep empty to disable virtual channel.
 checkout_channel = string(max=7, default="")
 
-# Do not transmit the client machine name to RDP server.
+# Do not transmit the client machine name to the RDP server.
 # If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.
 hide_client_name = boolean(default=False)
 
@@ -311,7 +308,7 @@ bogus_ios_rdpdr_virtual_channel = boolean(default=True)
 #_advanced
 bogus_refresh_rect = boolean(default=True)
 
-# Delay before automatically bypass Windows's Legal Notice screen in RemoteApp mode.
+# Delay before automatically bypassing Windows's Legal Notice screen in RemoteApp mode.
 # Set to 0 to disable this feature.<br/>
 # (in milliseconds)
 #_advanced
@@ -355,15 +352,15 @@ allow_multiple_handshake = boolean(default=False)
 
 [mod_vnc]
 
-# Check this option to enable the clipboard upload (from client to server).
-# This only support text data clipboard (not files).
+# Check this option to enable the clipboard upload (from client to target server).
+# This only supports text data clipboard (not files).
 clipboard_up = boolean(default=False)
 
-# Check this option to enable the clipboard download (from server to client).
-# This only support text data clipboard (not files).
+# Check this option to enable the clipboard download (from target server to client).
+# This only supports text data clipboard (not files).
 clipboard_down = boolean(default=False)
 
-# Sets additional graphics encoding types that will be negotiated with the VNC server:
+# Sets additional graphics encoding types that will be negotiated with the VNC target server:
 # &nbsp; &nbsp;   2: RRE
 # &nbsp; &nbsp;   5: HEXTILE
 # &nbsp; &nbsp;   16: ZRLE<br/>
@@ -371,14 +368,14 @@ clipboard_down = boolean(default=False)
 #_advanced
 encodings = string(default="")
 
-# VNC server clipboard text data encoding type.
+# VNC target server clipboard text data encoding type.
 #_advanced
 server_clipboard_encoding_type = option('utf-8', 'latin1', default="latin1")
 
-# The RDP clipboard is based on a token that indicates who owns data between server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
 # This option indicates the strategy to adopt in such situations.
 # &nbsp; &nbsp;   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
-# &nbsp; &nbsp;   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the server when the client clipboard is blocked, and vice versa.
+# &nbsp; &nbsp;   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
 # &nbsp; &nbsp;   2: continued: No special processing is done, the proxy always responds immediately.
 #_advanced
 bogus_clipboard_infinite_loop = option(0, 1, 2, default=0)
@@ -395,8 +392,8 @@ version = option(1, 2, default=2)
 # &nbsp; &nbsp;   cyrillic: Recognizes Latin and Cyrillic characters
 locale = option('latin', 'cyrillic', default="latin")
 
-# Time interval between two analyzes.
-# Too low a value will affect session reactivity.<br/>
+# Time interval between two analyses.
+# A value too low will affect session reactivity.<br/>
 # (in 1/100 seconds)
 #_advanced
 interval = integer(min=0, default=100)
@@ -441,29 +438,29 @@ disable_clipboard_log = integer(min=0, max=3, default=0)
 #_hex
 disable_file_system_log = integer(min=0, max=3, default=0)
 
-# Time between two wrm recording file.
+# Time between two .wrm recording files.
 # ⚠ A value that is too small increases the disk space required for recordings.<br/>
 # (in seconds)
 #_advanced
 wrm_break_interval = integer(min=0, default=600)
 
-# The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm):
+# Color depth for the Session Recording file (.wrm):
 # &nbsp; &nbsp;   0: 24-bit
 # &nbsp; &nbsp;   1: 16-bit
 #_advanced
 wrm_color_depth_selection_strategy = option(0, 1, default=1)
 
-# The compression method of the session recording file (wrm):
+# Compression method of the Session Recording file (.wrm):
 # &nbsp; &nbsp;   0: no compression
-# &nbsp; &nbsp;   1: GZip: Files are better compressed, but this takes more time and CPU load
-# &nbsp; &nbsp;   2: Snappy: Faster than GZip, but files are less compressed
+# &nbsp; &nbsp;   1: GZip: Files are better compressed, but this takes more time and CPU load.
+# &nbsp; &nbsp;   2: Snappy: Faster than GZip, but files are less compressed.
 #_advanced
 wrm_compression_algorithm = option(0, 1, 2, default=1)
 
 [audit]
 
-# Show keyboard input events in meta file.
-# (Please see also "Keyboard input masking level" option (in "session_log" section of "Connection Policy" configuration) for RDP and "Disable keyboard log" option (in "capture" section of "Connection Policy" configuration) for VNC and RDP)
+# Show keyboard input events in the meta file.
+# (See also "Keyboard input masking level" option (in "session_log" section of "Connection Policy" configuration) for RDP and "Disable keyboard log" option (in "capture" section of "Connection Policy" configuration) for VNC and RDP)
 #_advanced
 enable_keyboard_log = boolean(default=True)
 
@@ -493,7 +490,7 @@ ffmpeg_options = string(default="crf=35 preset=superfast")
 # &nbsp; &nbsp;   2: v2: When replaying the session video, the content of the RDP viewer is fully covered by the size of the greatest application window during the session.
 smart_video_cropping = option(0, 1, 2, default=2)
 
-# Check this option will allow to play a video with corrupted Bitmap Update.
+# Checking this option will allow to play a video with corrupted Bitmap Update.
 #_advanced
 play_video_with_corrupted_bitmap = boolean(default=False)
 
@@ -546,7 +543,7 @@ filename_percent_encoding = boolean(default=False)
 
 [internal_mod]
 
-# Enable target edit field in login page. This target edit field allows to enter the target and the login separately.
+# Allow separate target and login entries by enabling the edit target field on the login page.
 #_advanced
 enable_target_field = boolean(default=True)
 
@@ -557,7 +554,7 @@ enable_target_field = boolean(default=True)
 keyboard_layout_proposals = string(default="en-US, fr-FR, de-DE")
 
 # Display the close screen.
-# This displays errors related to the secondary connection then closes automatically after a timeout specified by the "Close box timeout" option or on user request.
+# Displays secondary connection errors and closes automatically after the specified "Close box timeout" option value or on user request.
 enable_close_box = boolean(default=True)
 
 # Specifies the time to spend on the close box of the RDP proxy before closing client window.
@@ -568,8 +565,8 @@ close_box_timeout = integer(min=0, default=600)
 
 [translation]
 
-# Language used on the login page. When the user logs in, their user preference language is used.
-# &nbsp; &nbsp;   Auto: The language will be deduced according to the keyboard layout announced by the client.
+# The login page shows this language to all users. Once logged in, users see their preferred language.
+# &nbsp; &nbsp;   Auto: The language is determined based on the keyboard layout specified by the client.
 # &nbsp; &nbsp;   EN: 
 # &nbsp; &nbsp;   FR: 
 #_advanced

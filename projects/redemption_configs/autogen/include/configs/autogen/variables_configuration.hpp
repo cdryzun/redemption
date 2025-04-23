@@ -199,9 +199,8 @@ namespace cfg
     };
     /// Port of RDP Proxy service. <br/>
     ///  <br/>
-    /// Service will be automatically restarted and active sessions will be disconnected. <br/>
-    /// The port set in this field must not be already used, otherwise the service will not run. <br/>
-    /// Changing the port number will prevent WALLIX Access Manager from working properly. <br/>
+    /// Changing the port number will restart the service and disconnect active sessions. It will also block WALLIX Access Manager connections unless its RDP port is configured. <br/>
+    /// Choose a port that is not already in use. Otherwise, the service will not run. <br/>
     /// type: unsigned <br/>
     /// default: 3389 <br/>
     struct globals::port {
@@ -210,7 +209,7 @@ namespace cfg
         using mapped_type = unsigned;
         type value { 3389 };
     };
-    /// Socket path or socket address of passthrough / acl. <br/>
+    /// Socket path or socket address of passthrough / ACL. <br/>
     /// type: std::string <br/>
     /// default: REDEMPTION_CONFIG_AUTHFILE <br/>
     struct globals::authfile {
@@ -220,7 +219,7 @@ namespace cfg
         type value { REDEMPTION_CONFIG_AUTHFILE };
     };
     /// Timeout during RDP connection initialization. <br/>
-    /// Increase the value if connection between workstations and Bastion can be slow. <br/>
+    /// Increase this value if the connection between workstations and Bastion is slow. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 10 <br/>
     struct globals::handshake_timeout {
@@ -241,8 +240,8 @@ namespace cfg
         type value { 900 };
     };
     /// No automatic disconnection due to inactivity, timer is set on target session. <br/>
-    /// If value is between 1 and 30, then 30 is used. <br/>
-    /// If value is set to 0, then value set in [globals]base_inactivity_timeout is used. <br/>
+    /// If the value is between 1 and 30, then 30 is used. <br/>
+    /// If the value is set to 0, then the value set in [globals]base_inactivity_timeout is used. <br/>
     /// type: std::chrono::seconds <br/>
     /// connpolicy -> proxy    [name: session::inactivity_timeout] <br/>
     /// aclName: globals:inactivity_timeout <br/>
@@ -256,7 +255,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value {  };
     };
-    /// Internal keepalive between acl and rdp proxy. <br/>
+    /// Internal keepalive between ACL and RDP proxy. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 30 <br/>
     struct globals::keepalive_grace_delay {
@@ -265,7 +264,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value { 30 };
     };
-    /// Specifies the time to spend on the login screen of RDP proxy before closing client window (0 to desactivate). <br/>
+    /// Specifies how long the RDP proxy login screen should be displayed before the client window closes (use 0 to deactivate). <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 120 <br/>
     struct globals::authentication_timeout {
@@ -296,7 +295,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::ip;
         type value { "0.0.0.0" };
     };
-    /// The transparent mode allows to intercept network traffic for a target even when the user specifies the target's address directly, instead of using the proxy address. <br/>
+    /// Transparent mode allows network traffic interception for a target, even when users directly specify a target's address instead of a proxy address. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct globals::enable_transparent_mode {
@@ -335,8 +334,8 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Displays a reminder box at the top of the session when a session is limited in time (timeframe or approval). <br/>
-    /// The reminder is displayed successively 30min, 10min, 5min and 1min before the session is closed. <br/>
+    /// Displays a reminder box at the top of the session when a session has a time limit (timeframe or approval). <br/>
+    /// Reminders appear at 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends. <br/>
     /// type: bool <br/>
     /// displayName: Enable end time warning OSD <br/>
     /// default: true <br/>
@@ -346,7 +345,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Allow to show the target device name with F12 during the session. <br/>
+    /// Allows showing the target device name with F12 during the session. <br/>
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
     /// displayName: Enable OSD display remote target <br/>
@@ -360,7 +359,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Show in session the target username when F12 is pressed. <br/>
+    /// Displays the target username in the session when F12 is pressed. <br/>
     /// This option needs [globals]enable_osd_display_remote_target. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -378,8 +377,8 @@ namespace cfg
         using mapped_type = bool;
         type value { REDEMPTION_CONFIG_ENABLE_WAB_INTEGRATION };
     };
-    /// Enable support for pointers of size 96x96. <br/>
-    /// ⚠ If this option is disabled and the application doesn't support smaller pointers, the pointer may not change and remain on the last active pointer. For example, the resize window pointer would remain visible rather than change to a 'normal' pointer. <br/>
+    /// Enable support for 96x96 size pointers. <br/>
+    /// ⚠ If this option is disabled and the application does not support smaller pointers, the pointer may remain stuck on the last active pointer. For example, the resize window pointer would remain visible rather than change to a 'normal' pointer. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct globals::large_pointer_support {
@@ -404,7 +403,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Prevent Remote Desktop session timeouts due to idle TCP sessions by sending periodically keep alive packet to client. <br/>
+    /// Prevent Remote Desktop session timeouts due to idle TCP sessions by periodically sending keepalive packets to the client. <br/>
     /// Set to 0 to disable this feature. <br/>
     /// type: std::chrono::milliseconds <br/>
     /// displayName: RDP keepalive connection interval <br/>
@@ -415,7 +414,7 @@ namespace cfg
         using mapped_type = std::chrono::milliseconds;
         type value {  };
     };
-    /// ⚠ Service redemption needs to be manually restarted to take changes into account. <br/>
+    /// ⚠ Manually restart service redemption to take changes into account. <br/>
     ///  <br/>
     /// Enable primary connection on IPv6. <br/>
     /// type: bool <br/>
@@ -438,7 +437,7 @@ namespace cfg
         type value { 100 };
     };
 
-    /// If true, ignore the password provided by RDP client, user need do login manually. <br/>
+    /// If true, ignore the password provided by the RDP client. The user needs to manually log in. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct client::ignore_logon_password {
@@ -447,7 +446,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Sends the client screen count to the server. Not supported for VNC targets. <br/>
+    /// Sends the client screen count to the target server. Not supported for VNC targets. <br/>
     /// Uncheck to disable multiple monitors. <br/>
     /// type: bool <br/>
     /// default: true <br/>
@@ -457,7 +456,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Sends Scale & Layout configuration to the server. <br/>
+    /// Sends Scale & Layout configuration to the target server. <br/>
     /// On Windows 11, this corresponds to the options "Scale", "Display Resolution" and "Display Orientation" of Settings > System > Display. <br/>
     /// ⚠ Title bar detection via OCR will no longer work. <br/>
     /// type: bool <br/>
@@ -478,7 +477,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disable. <br/>
+    /// Legacy encryption when External Security Protocol (TLS, CredSSP, etc) is disabled. <br/>
     /// type: RdpSecurityEncryptionLevel <br/>
     /// default: RdpSecurityEncryptionLevel::high <br/>
     struct client::encryption_level {
@@ -583,7 +582,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { "RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512" };
     };
-    /// Show in the logs the common cipher list supported by client and server. <br/>
+    /// Show the common cipher list supported by client and target server in the logs. <br/>
     /// ⚠ Only for debugging purposes. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -626,7 +625,7 @@ namespace cfg
         using mapped_type = RdpCompression;
         type value { RdpCompression::rdp6_1 };
     };
-    /// Specifies the maximum color resolution (color depth) for the client connection session: <br/>
+    /// Specifies the maximum color depth for the client connection session: <br/>
     /// type: ColorDepth <br/>
     /// default: ColorDepth::depth24 <br/>
     struct client::max_color_depth {
@@ -635,7 +634,7 @@ namespace cfg
         using mapped_type = ColorDepth;
         type value { ColorDepth::depth24 };
     };
-    /// Persistent Disk Bitmap Cache on the primary connection side. If supported by the RDP client, the size of image caches will be increased. <br/>
+    /// Persistent Disk Bitmap Cache on the primary connection side. If the RDP client supports it, this setting increases the size of image caches. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct client::persistent_disk_bitmap_cache {
@@ -653,7 +652,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// If enabled, the contents of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if [client]persistent_disk_bitmap_cache is disabled). <br/>
+    /// If enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if [client]persistent_disk_bitmap_cache is disabled). <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct client::persist_bitmap_cache_on_disk {
@@ -663,7 +662,7 @@ namespace cfg
         type value { false };
     };
     /// Enable Bitmap Compression when supported by the RDP client. <br/>
-    /// Disable this option will increase network bandwith usage. <br/>
+    /// Disabling this option increases the network bandwith usage. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct client::bitmap_compression {
@@ -681,7 +680,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Allows the client to request the server to stop graphical updates. This can occur when the RDP client window is minimized to reduce bandwidth. <br/>
+    /// Allows the client to request the target server to stop graphical updates. For example, when the RDP client window is minimized to reduce bandwidth. <br/>
     /// ⚠ If changes occur on the target, they will not be visible in the recordings either. <br/>
     /// type: bool <br/>
     /// default: true <br/>
@@ -691,7 +690,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Same effect as [client]transform_glyph_to_bitmap, but only for RDP client on iOS platform. <br/>
+    /// Same effect as [client]transform_glyph_to_bitmap, but only for RDP clients on an iOS platform. <br/>
     /// type: bool <br/>
     /// displayName: Bogus iOS glyph support level <br/>
     /// default: true <br/>
@@ -701,7 +700,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Some RDP clients advertise glyph support, but this does not work properly with the RDP proxy. This option replaces glyph orders with bitmap orders. <br/>
+    /// This option converts glyphs to bitmaps to resolve issues with certain RDP clients. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct client::transform_glyph_to_bitmap {
@@ -718,7 +717,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 100, 10000>;
         type value { 1000 };
     };
-    /// Enables the display of a message informing user that his/her session is being audited. <br/>
+    /// Informs users with a message when their session is audited. <br/>
     /// type: bool <br/>
     /// displayName: Enable OSD 4 eyes <br/>
     /// default: true <br/>
@@ -740,7 +739,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// This option should only be used if the server or client is showing graphical issues. <br/>
+    /// This option should only be used if the target server or client is showing graphical issues. <br/>
     /// In general, disabling RDP orders has a negative impact on performance. <br/>
     ///  <br/>
     /// Drawing orders that can be disabled: <br/>
@@ -765,11 +764,10 @@ namespace cfg
         using mapped_type = ::configs::spec_types::list<unsigned>;
         type value { "25" };
     };
-    /// Workaround for a bug encountered with the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2. <br/>
-    /// Randomly, some areas of the screen may not refresh. <br/>
-    /// This is due to a bug in the RDP client. If a single BitmapUpdate message contains multiple images, only the first one is correctly displayed by the client. Enabling this option will prevent this situation. <br/>
-    /// Enabling this option will cause a slight increase in the amount of data sent to the client. It has no other effect, even for clients not affected by the bug. <br/>
-    /// The option will be automatically disabled if the connection comes from an Access Manager. <br/>
+    /// This option fixes a bug in the Remote Desktop client on Windows 11/Windows Server 2025 starting with version 24H2. <br/>
+    /// Occasionally, some screen areas may not refresh due to a bug where only the first image in a BitmapUpdate message with multiple images is displayed correctly. <br/>
+    /// Enabling this option prevents this issue, but will slightly increase the data sent to the client. <br/>
+    /// The option is automatically disabled if the connection is from an Access Manager. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct client::workaround_incomplete_images {
@@ -779,7 +777,7 @@ namespace cfg
         type value { false };
     };
 
-    /// The maximum time that the proxy will wait while attempting to connect to a target. <br/>
+    /// The maximum wait time for the proxy to connect to a target. <br/>
     /// type: std::chrono::milliseconds <br/>
     /// default: 3000 <br/>
     struct all_target_mod::connection_establishment_timeout {
@@ -836,10 +834,9 @@ namespace cfg
         using mapped_type = RdpPerformanceFlags;
         type value { 0x2c, 0x0 };
     };
-    /// If enabled, avoid automatically font smoothing in recorded session. <br/>
+    /// If enabled, the font smoothing desktop feature is automatically disabled in recorded session. <br/>
     /// This allows OCR (when session probe is disabled) to better detect window titles. <br/>
-    /// If disabled, allows font smoothing in recorded sessions, but OCR will not work when the session recording is disabled. <br/>
-    /// In this case, window titles will not be detected. <br/>
+    /// If disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct mod_rdp::auto_adjust_performance_flags {
@@ -848,7 +845,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Specifies the highest RDP compression support available on the server connection. <br/>
+    /// Specifies the highest RDP compression support available on the target server connection. <br/>
     /// type: RdpCompression <br/>
     /// displayName: RDP compression <br/>
     /// default: RdpCompression::rdp6_1 <br/>
@@ -866,7 +863,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// The maximum time that the proxy will wait while attempting to logon to an RDP session. <br/>
+    /// The maximum wait time for the proxy to log on to an RDP session. <br/>
     /// Value 0 is equivalent to 15 seconds. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 0 <br/>
@@ -876,7 +873,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value {  };
     };
-    /// This option should only be used if the server or client is showing graphical issues. <br/>
+    /// This option should only be used if the target server or client is showing graphical issues. <br/>
     /// In general, disabling RDP orders has a negative impact on performance. <br/>
     ///  <br/>
     /// Drawing orders that can be disabled: <br/>
@@ -906,7 +903,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::list<unsigned>;
         type value { "27" };
     };
-    /// Enable NLA authentication in secondary target. <br/>
+    /// Enable NLA authentication in secondary targets. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:enable_nla <br/>
@@ -1031,7 +1028,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256" };
     };
-    /// Allow TLS legacy insecure renegotiation to unpatched servers. <br/>
+    /// Allow TLS legacy insecure renegotiation to unpatched target servers. <br/>
     /// For Windows Server 2008, requires also to set ALL@SECLEVEL=0 in [mod_rdp]cipher_string. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
@@ -1081,7 +1078,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" };
     };
-    /// Show in the logs the common cipher list supported by client and server <br/>
+    /// Show in the logs the common cipher list supported by client and target server <br/>
     /// ⚠ Only for debugging purposes. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
@@ -1096,7 +1093,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP server, the size of image caches will be increased. <br/>
+    /// Persistent Disk Bitmap Cache on the secondary connection side. If supported by the RDP target server, the size of image caches will be increased. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct mod_rdp::persistent_disk_bitmap_cache {
@@ -1124,7 +1121,7 @@ namespace cfg
         type value { false };
     };
     /// List of (comma-separated) enabled (static) virtual channel. If character '*' is used as a name then enables everything. <br/>
-    /// An explicit name will have higher priority than '*' in [mod_rdp]denied_channels. <br/>
+    /// Explicit names have higher priority than '*' in [mod_rdp]denied_channels. <br/>
     /// type: std::string <br/>
     /// acl ⇒ proxy <br/>
     /// default: "*" <br/>
@@ -1138,7 +1135,7 @@ namespace cfg
         type value { "*" };
     };
     /// List of (comma-separated) disabled (static) virtual channel. If character '*' is used as a name then disables everything. <br/>
-    /// An explicit name will have higher priority than '*' in [mod_rdp]allowed_channels. <br/>
+    /// Explicit names have higher priority than '*' in [mod_rdp]allowed_channels. <br/>
     /// type: std::string <br/>
     /// acl ⇒ proxy <br/>
     /// default: "" <br/>
@@ -1152,7 +1149,7 @@ namespace cfg
         type value {  };
     };
     /// List of (comma-separated) enabled dynamic virtual channel. If character '*' is used as a name then enables everything. <br/>
-    /// An explicit name will have higher priority than '*' in [mod_rdp]denied_dynamic_channels. <br/>
+    /// Explicit names have higher priority than '*' in [mod_rdp]denied_dynamic_channels. <br/>
     /// type: std::string <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:allowed_dynamic_channels <br/>
@@ -1167,7 +1164,7 @@ namespace cfg
         type value { "*" };
     };
     /// List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything. <br/>
-    /// An explicit name will have higher priority than '*' in [mod_rdp]allowed_dynamic_channels. <br/>
+    /// Explicit names have higher priority than '*' in [mod_rdp]allowed_dynamic_channels. <br/>
     /// type: std::string <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:denied_dynamic_channels <br/>
@@ -1181,7 +1178,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// If this option is unchecked, keyboard/mouse input will be transmitted over the dynamic virtual channel. <br/>
+    /// If this option is unchecked, keyboard/mouse inputs are transmitted over the dynamic virtual channel. <br/>
     /// This will cause the session inactivity detection and keyboard input log to malfunction in Windows 11 and Windows Server 2025. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
@@ -1212,7 +1209,7 @@ namespace cfg
         type value {  };
     };
     /// Enables support of Client/Server Fast-Path Input/Update PDUs. <br/>
-    /// Fast-Path is required for Windows Server 2012 (or more recent)! <br/>
+    /// Fast-Path is required for Windows Server 2012 (or more recent). <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct mod_rdp::fast_path {
@@ -1261,7 +1258,7 @@ namespace cfg
         type value { ClientAddressSent::no_address };
     };
     /// Shared directory between proxy and secondary target. <br/>
-    /// Requires rdpdr support. <br/>
+    /// Requires RDPDR support. <br/>
     /// type: std::string <br/>
     /// acl ⇒ proxy <br/>
     /// default: "" <br/>
@@ -1435,7 +1432,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::fixed_string;
         type value { REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_SCRIPT };
     };
-    /// Do not transmit the client machine name to RDP server. <br/>
+    /// Do not transmit the client machine name to the RDP server. <br/>
     /// If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -1499,7 +1496,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// Delay before automatically bypass Windows's Legal Notice screen in RemoteApp mode. <br/>
+    /// Delay before automatically bypassing Windows's Legal Notice screen in RemoteApp mode. <br/>
     /// Set to 0 to disable this feature. <br/>
     /// type: std::chrono::milliseconds <br/>
     /// displayName: RemoteApp bypass legal notice delay <br/>
@@ -1583,8 +1580,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Connect to the server in Restricted Admin mode. <br/>
-    /// This mode must be supported by the server (available from Windows Server 2012 R2), otherwise, connection will fail. <br/>
+    /// Connect to the target server in Restricted Admin mode. <br/>
+    /// This mode must be supported by the target server (available from Windows Server 2012 R2), otherwise, connection will fail. <br/>
     /// NLA must be enabled. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
@@ -1600,7 +1597,7 @@ namespace cfg
         type value { false };
     };
     /// NLA will be disabled. <br/>
-    /// Target must be set for interactive login, otherwise server connection may not be guaranteed. <br/>
+    /// Target must be set for interactive login, otherwise the  connection may not be guaranteed. <br/>
     /// Smartcard device must be available on client desktop. <br/>
     /// Smartcard redirection (Proxy option RDP_SMARTCARD) must be enabled on service. <br/>
     /// type: bool <br/>
@@ -1647,7 +1644,7 @@ namespace cfg
         type value { RdpModeConsole::allow };
     };
     /// Allows the proxy to automatically reconnect to secondary target when a network error occurs. <br/>
-    /// The server must support reconnection cookie. <br/>
+    /// The target server must support reconnection cookie. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:auto_reconnection_on_losing_target_link <br/>
@@ -1691,7 +1688,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 15000>;
         type value { 0 };
     };
-    /// Forward the build number advertised by the client to the server. If forwarding is disabled a default (static) build number will be sent to the server. <br/>
+    /// Forward the build number advertised by the client to the target server. If forwarding is disabled a default (static) build number will be sent to the target server. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:forward_client_build_number <br/>
@@ -2279,7 +2276,7 @@ namespace cfg
         using mapped_type = ::configs::spec_types::range<uint32_t, 0, 10000>;
         type value { 0 };
     };
-    /// Additional behavior when CPU consumption exceeds what is allowed. Please refer to the [session_probe]cpu_usage_alarm_threshold. <br/>
+    /// Additional behavior when CPU consumption exceeds what is allowed. Refer to the [session_probe]cpu_usage_alarm_threshold. <br/>
     /// type: SessionProbeCPUUsageAlarmAction <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:cpu_usage_alarm_action <br/>
@@ -2346,7 +2343,7 @@ namespace cfg
     /// This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log). <br/>
     /// Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata. <br/>
     /// One of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash. <br/>
-    /// Please refer to the [session_log]keyboard_input_masking_level. <br/>
+    /// Refer to the [session_log]keyboard_input_masking_level. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:childless_window_as_unidentified_input_field <br/>
@@ -2364,7 +2361,7 @@ namespace cfg
     /// This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log). <br/>
     /// Unfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata. <br/>
     /// This parameter is used to provide the list of processes whose windows are considered as input fields of unknown type. <br/>
-    /// Please refer to the [session_log]keyboard_input_masking_level. <br/>
+    /// Refer to the [session_log]keyboard_input_masking_level. <br/>
     /// type: std::string <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:windows_of_these_applications_as_unidentified_input_field <br/>
@@ -2396,8 +2393,8 @@ namespace cfg
     };
     /// This parameter was created to work around some compatibility issues and to limit the CPU load that the Session Probe process causes. <br/>
     /// If 'Java Acccess Bridge' feature is disabled, data entered in the password field of Java applications may be visible in the metadata. <br/>
-    /// For more information please refer to [session_log]keyboard_input_masking_level. <br/>
-    /// For more information please also refer to [session_probe]childless_window_as_unidentified_input_field and [session_probe]windows_of_these_applications_as_unidentified_input_field.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata. <br/>
+    /// For more information, refer to [session_log]keyboard_input_masking_level. <br/>
+    /// For more information, also refer to [session_probe]childless_window_as_unidentified_input_field and [session_probe]windows_of_these_applications_as_unidentified_input_field.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata. <br/>
     /// type: SessionProbeDisabledFeature <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:disabled_features <br/>
@@ -2414,7 +2411,7 @@ namespace cfg
     /// This parameter has no effect on the device without BestSafe. <br/>
     /// Is enabled, Session Probe relies on BestSafe to perform the detection of application launches and the detection of outgoing connections. <br/>
     /// BestSafe has more efficient mechanisms in these tasks than Session Probe. <br/>
-    /// For more information please refer to [session_probe]outbound_connection_monitoring_rules and [session_probe]process_monitoring_rules. <br/>
+    /// For more information, refer to [session_probe]outbound_connection_monitoring_rules and [session_probe]process_monitoring_rules. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:enable_bestsafe_interaction <br/>
@@ -2430,7 +2427,7 @@ namespace cfg
         type value { false };
     };
     /// This parameter has no effect on the device without BestSafe. <br/>
-    /// BestSafe interaction must be enabled. Please refer to [session_probe]enable_bestsafe_interaction. <br/>
+    /// BestSafe interaction must be enabled. Refer to [session_probe]enable_bestsafe_interaction. <br/>
     /// This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation. <br/>
     /// Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group. <br/>
     /// type: SessionProbeOnAccountManipulation <br/>
@@ -2486,7 +2483,7 @@ namespace cfg
     /// (Ex. for backwards compatibility only: 10.1.0.0/16:22) <br/>
     /// A global rule that matches all IP addresses/Ports such as "0.0.0.0/0:*" is highly unrecommended. <br/>
     /// Session Probe must be enabled to use this feature. <br/>
-    /// BestSafe can be used to perform detection of outgoing connections created in the session. Please refer to [session_probe]enable_bestsafe_interaction. <br/>
+    /// BestSafe can be used to perform detection of outgoing connections created in the session. Refer to [session_probe]enable_bestsafe_interaction. <br/>
     /// type: std::string <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:outbound_connection_monitoring_rules <br/>
@@ -2503,7 +2500,7 @@ namespace cfg
     /// This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session. <br/>
     /// (Ex.: $deny:taskmgr.exe) <br/>
     /// @ = All child processes of (Bastion) application (Ex.: $deny:@) <br/>
-    /// BestSafe can be used to perform detection of process launched in the session. Please refer to [session_probe]enable_bestsafe_interaction. <br/>
+    /// BestSafe can be used to perform detection of process launched in the session. Refer to [session_probe]enable_bestsafe_interaction. <br/>
     /// type: std::string <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:process_monitoring_rules <br/>
@@ -2624,7 +2621,7 @@ namespace cfg
         type value { false };
     };
 
-    /// Keep known server certificates on Bastion <br/>
+    /// Keep known target server certificates on Bastion <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: server_cert:server_cert_store <br/>
@@ -2652,7 +2649,7 @@ namespace cfg
         using mapped_type = ServerCertCheck;
         type value { ServerCertCheck::fails_if_no_match_and_succeed_if_no_know };
     };
-    /// Warn if check allow connexion to server. <br/>
+    /// Warn if check allow connexion to target server. <br/>
     /// type: ServerCertNotification <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: server_cert:server_access_allowed_message <br/>
@@ -2666,7 +2663,7 @@ namespace cfg
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::nobody };
     };
-    /// Warn that new server certificate file was created. <br/>
+    /// Warn that new target server certificate file was created. <br/>
     /// type: ServerCertNotification <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: server_cert:server_cert_create_message <br/>
@@ -2680,7 +2677,7 @@ namespace cfg
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::SIEM };
     };
-    /// Warn that server certificate file was successfully checked. <br/>
+    /// Warn that target server certificate file was successfully checked. <br/>
     /// type: ServerCertNotification <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: server_cert:server_cert_success_message <br/>
@@ -2694,7 +2691,7 @@ namespace cfg
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::nobody };
     };
-    /// Warn that server certificate file checking failed. <br/>
+    /// Warn that target server certificate file checking failed. <br/>
     /// type: ServerCertNotification <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: server_cert:server_cert_failure_message <br/>
@@ -2708,7 +2705,7 @@ namespace cfg
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::SIEM };
     };
-    /// Warn that server certificate check raised some internal error. <br/>
+    /// Warn that target server certificate check raised some internal error. <br/>
     /// type: ServerCertNotification <br/>
     /// default: ServerCertNotification::SIEM <br/>
     struct server_cert::error_message {
@@ -2755,8 +2752,8 @@ namespace cfg
         type value {  };
     };
 
-    /// Check this option to enable the clipboard upload (from client to server). <br/>
-    /// This only support text data clipboard (not files). <br/>
+    /// Check this option to enable the clipboard upload (from client to target server). <br/>
+    /// This only supports text data clipboard (not files). <br/>
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
     /// default: false <br/>
@@ -2769,8 +2766,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Check this option to enable the clipboard download (from server to client). <br/>
-    /// This only support text data clipboard (not files). <br/>
+    /// Check this option to enable the clipboard download (from target server to client). <br/>
+    /// This only supports text data clipboard (not files). <br/>
     /// type: bool <br/>
     /// acl ⇒ proxy <br/>
     /// default: false <br/>
@@ -2783,7 +2780,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Sets additional graphics encoding types that will be negotiated with the VNC server: <br/>
+    /// Sets additional graphics encoding types that will be negotiated with the VNC target server: <br/>
     ///   2: RRE <br/>
     ///   5: HEXTILE <br/>
     ///   16: ZRLE <br/>
@@ -2808,7 +2805,7 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// VNC server clipboard text data encoding type. <br/>
+    /// VNC target server clipboard text data encoding type. <br/>
     /// type: ClipboardEncodingType <br/>
     /// acl ⇒ proxy <br/>
     /// acl::name: vnc_server_clipboard_encoding_type <br/>
@@ -2822,7 +2819,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { ClipboardEncodingType::latin1 };
     };
-    /// The RDP clipboard is based on a token that indicates who owns data between server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops. <br/>
+    /// The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops. <br/>
     /// This option indicates the strategy to adopt in such situations. <br/>
     /// type: VncBogusClipboardInfiniteLoop <br/>
     /// acl ⇒ proxy <br/>
@@ -2927,7 +2924,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256" };
     };
-    /// Allow TLS legacy insecure renegotiation to unpatched servers. <br/>
+    /// Allow TLS legacy insecure renegotiation to unpatched target servers. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_vnc:tls_enable_legacy_server <br/>
@@ -2976,7 +2973,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192" };
     };
-    /// Show in the logs the common cipher list supported by client and server. <br/>
+    /// Show in the logs the common cipher list supported by client and target server. <br/>
     /// ⚠ Only for debugging purposes. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
@@ -2991,7 +2988,7 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made. <br/>
+    /// When specified, force the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made. <br/>
     ///   - noauth <br/>
     ///   - vncauth <br/>
     ///   - mslogon <br/>
@@ -3075,8 +3072,8 @@ namespace cfg
         using mapped_type = std::string;
         type value { OcrLocale::latin };
     };
-    /// Time interval between two analyzes. <br/>
-    /// Too low a value will affect session reactivity. <br/>
+    /// Time interval between two analyses. <br/>
+    /// A value too low will affect session reactivity. <br/>
     /// type: std::chrono::duration&lt;unsigned, std::ratio&lt;1, 100>> <br/>
     /// default: 100 <br/>
     struct ocr::interval {
@@ -3193,7 +3190,7 @@ namespace cfg
         type value { CaptureFlags{11} };
     };
     /// Disable keyboard log: <br/>
-    /// (Please see also [session_log]keyboard_input_masking_level) <br/>
+    /// (See also [session_log]keyboard_input_masking_level) <br/>
     /// type: KeyboardLogFlags <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: capture:disable_keyboard_log <br/>
@@ -3225,7 +3222,7 @@ namespace cfg
         using mapped_type = FileSystemLogFlags;
         type value { FileSystemLogFlags::none };
     };
-    /// Time between two wrm recording file. <br/>
+    /// Time between two .wrm recording files. <br/>
     /// ⚠ A value that is too small increases the disk space required for recordings. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 600 <br/>
@@ -3235,7 +3232,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value { 600 };
     };
-    /// The method by which the proxy RDP establishes criteria on which to choose a color depth for the session recording file (wrm): <br/>
+    /// Color depth for the Session Recording file (.wrm): <br/>
     /// type: ColorDepthSelectionStrategy <br/>
     /// default: ColorDepthSelectionStrategy::depth16 <br/>
     struct capture::wrm_color_depth_selection_strategy {
@@ -3244,7 +3241,7 @@ namespace cfg
         using mapped_type = ColorDepthSelectionStrategy;
         type value { ColorDepthSelectionStrategy::depth16 };
     };
-    /// The compression method of the session recording file (wrm): <br/>
+    /// Compression method of the Session Recording file (.wrm): <br/>
     /// type: WrmCompressionAlgorithm <br/>
     /// default: WrmCompressionAlgorithm::gzip <br/>
     struct capture::wrm_compression_algorithm {
@@ -3263,8 +3260,8 @@ namespace cfg
         type value { 0440 };
     };
 
-    /// Show keyboard input events in meta file. <br/>
-    /// (Please see also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP) <br/>
+    /// Show keyboard input events in the meta file. <br/>
+    /// (See also [session_log]keyboard_input_masking_level for RDP and [capture]disable_keyboard_log for VNC and RDP) <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct audit::enable_keyboard_log {
@@ -3330,7 +3327,7 @@ namespace cfg
         using mapped_type = SmartVideoCropping;
         type value { SmartVideoCropping::v2 };
     };
-    /// Check this option will allow to play a video with corrupted Bitmap Update. <br/>
+    /// Checking this option will allow to play a video with corrupted Bitmap Update. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct audit::play_video_with_corrupted_bitmap {
@@ -3538,8 +3535,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Verify text data via clipboard from client to server. <br/>
-    /// File verification on upload must be enabled via option Enable up. <br/>
+    /// Verify text data via clipboard from the client to the target server. <br/>
+    /// File verification on upload must be enabled via the Enable up option. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: file_verification:clipboard_text_up <br/>
@@ -3553,8 +3550,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Verify text data via clipboard from server to client <br/>
-    /// File verification on download must be enabled via option Enable down. <br/>
+    /// Verify text data via clipboard from the target server to the client <br/>
+    /// File verification on download must be enabled via the Enable down option. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: file_verification:clipboard_text_down <br/>
@@ -3568,8 +3565,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Block file transfer from client to server on invalid file verification. <br/>
-    /// File verification on upload must be enabled via option Enable up. <br/>
+    /// Block file transfer from the client to the target server on invalid file verification. <br/>
+    /// File verification on upload must be enabled via the Enable up option. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: file_verification:block_invalid_file_up <br/>
@@ -3583,8 +3580,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Block file transfer from server to client on invalid file verification. <br/>
-    /// File verification on download must be enabled via option Enable down. <br/>
+    /// Block file transfer from the target server to the client on invalid file verification. <br/>
+    /// File verification on download must be enabled via the Enable down option. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: file_verification:block_invalid_file_down <br/>
@@ -3598,8 +3595,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Block text transfer from client to server on invalid text verification. <br/>
-    /// Text verification on upload must be enabled via option Clipboard text up. <br/>
+    /// Block text transfer from the client to the target server on invalid text verification. <br/>
+    /// Text verification on upload must be enabled via the Clipboard text up option. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct file_verification::block_invalid_clipboard_text_up {
@@ -3608,8 +3605,8 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Block text transfer from server to client on invalid text verification. <br/>
-    /// Text verification on download must be enabled via option Clipboard text down. <br/>
+    /// Block text transfer from the target server to the client on invalid text verification. <br/>
+    /// Text verification on download must be enabled via the Clipboard text down option. <br/>
     /// type: bool <br/>
     /// default: false <br/>
     struct file_verification::block_invalid_clipboard_text_down {
@@ -3746,7 +3743,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
-    /// Specifies the maximum color resolution (color depth) for the client connection session: <br/>
+    /// Specifies the maximum color depth for the client connection session: <br/>
     /// type: ColorDepth <br/>
     /// acl ⇐ proxy <br/>
     /// acl::name: bpp <br/>
@@ -4833,7 +4830,7 @@ namespace cfg
         type value {  };
     };
 
-    /// Enable target edit field in login page. This target edit field allows to enter the target and the login separately. <br/>
+    /// Allow separate target and login entries by enabling the edit target field on the login page. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct internal_mod::enable_target_field {
@@ -4852,7 +4849,7 @@ namespace cfg
         type value { "en-US, fr-FR, de-DE" };
     };
     /// Display the close screen. <br/>
-    /// This displays errors related to the secondary connection then closes automatically after a timeout specified by the [internal_mod]close_box_timeout or on user request. <br/>
+    /// Displays secondary connection errors and closes automatically after the specified [internal_mod]close_box_timeout value or on user request. <br/>
     /// type: bool <br/>
     /// default: true <br/>
     struct internal_mod::enable_close_box {
@@ -4922,7 +4919,7 @@ namespace cfg
         using mapped_type = std::string;
         type value { Language::en };
     };
-    /// Language used on the login page. When the user logs in, their user preference language is used. <br/>
+    /// The login page shows this language to all users. Once logged in, users see their preferred language. <br/>
     /// type: LoginLanguage <br/>
     /// default: LoginLanguage::Auto <br/>
     struct translation::login_language {

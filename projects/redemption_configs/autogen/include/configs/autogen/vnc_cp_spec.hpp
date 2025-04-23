@@ -25,8 +25,8 @@ vault_transformation_rule = string(default="")
 [session]
 
 # No automatic disconnection due to inactivity, timer is set on target session.
-# If value is between 1 and 30, then 30 is used.
-# If value is set to 0, then value set in "Base inactivity timeout" option (in "globals" section of "RDP Proxy" configuration option) is used.<br/>
+# If the value is between 1 and 30, then 30 is used.
+# If the value is set to 0, then the value set in "Base inactivity timeout" option (in "globals" section of "RDP Proxy" configuration option) is used.<br/>
 # (in seconds)
 inactivity_timeout = integer(min=0, default=0)
 
@@ -40,18 +40,18 @@ tcp_user_timeout = integer(min=0, max=3600000, default=0)
 
 [server_cert]
 
-# Keep known server certificates on Bastion
+# Keep known target server certificates on Bastion
 server_cert_store = boolean(default=True)
 
 # Behavior of certificates check.
-# &nbsp; &nbsp;   0: fails if certificates doesn't match or miss.
-# &nbsp; &nbsp;   1: fails if certificate doesn't match, succeed if no known certificate.
-# &nbsp; &nbsp;   2: succeed if certificates exists (not checked), fails if missing.
+# &nbsp; &nbsp;   0: fails if certificates do not match or are missing.
+# &nbsp; &nbsp;   1: fails if certificate does not match, succeeds if no known certificate.
+# &nbsp; &nbsp;   2: succeeds if certificates exist (not checked), fails if missing.
 # &nbsp; &nbsp;   3: always succeed.
 # System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
 server_cert_check = option(0, 1, 2, 3, default=1)
 
-# Warn if check allow connexion to server.
+# Warn if check allow connexion to target server.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -59,7 +59,7 @@ server_cert_check = option(0, 1, 2, 3, default=1)
 #_hex
 server_access_allowed_message = integer(min=0, max=1, default=0)
 
-# Warn that new server certificate file was created.
+# Warn that new target server certificate file was created.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -67,7 +67,7 @@ server_access_allowed_message = integer(min=0, max=1, default=0)
 #_hex
 server_cert_create_message = integer(min=0, max=1, default=1)
 
-# Warn that server certificate file was successfully checked.
+# Warn that target server certificate file was successfully checked.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -75,7 +75,7 @@ server_cert_create_message = integer(min=0, max=1, default=1)
 #_hex
 server_cert_success_message = integer(min=0, max=1, default=0)
 
-# Warn that server certificate file checking failed.
+# Warn that target server certificate file checking failed.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -111,7 +111,7 @@ tls_max_level = integer(min=0, default=0)
 # The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 cipher_string = string(default="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256")
 
-# Allow TLS legacy insecure renegotiation to unpatched servers.
+# Allow TLS legacy insecure renegotiation to unpatched target servers.
 #_advanced
 #_display_name=TLS enable legacy server
 tls_enable_legacy_server = boolean(default=False)
@@ -128,13 +128,13 @@ tls_1_3_ciphersuites = string(default="")
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
 
-# Show in the logs the common cipher list supported by client and server.
+# Show in the logs the common cipher list supported by client and target server.
 # ⚠ Only for debugging purposes.
 #_advanced
 show_common_cipher_list = boolean(default=False)
 
 # ⚠ The use of this feature is not recommended!<br/>
-# When specified, force the proxy to use a specific authentication method. If this method is not supported by the server, the connection will not be made.
+# When specified, force the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
 # &nbsp; &nbsp;   - noauth
 # &nbsp; &nbsp;   - vncauth
 # &nbsp; &nbsp;   - mslogon
