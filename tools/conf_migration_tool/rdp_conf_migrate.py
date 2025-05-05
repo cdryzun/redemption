@@ -164,6 +164,12 @@ class RemoveItem(NamedTuple):
     ini_only: bool = False
 
 
+ValueCreator = Callable[[Iterable[ConfigurationFragment]], str | None]
+
+class NewItem(NamedTuple):
+    create: ValueCreator
+
+
 # for information only
 class ToIniOnly(NamedTuple):
     reason: str = ''
@@ -175,7 +181,7 @@ class MoveSection(NamedTuple):
     old_display_name: str = ''
 
 
-MigrationKeyOrderType = Union[RemoveItem, UpdateItem, ToIniOnly]
+MigrationKeyOrderType = Union[RemoveItem, UpdateItem, NewItem, ToIniOnly]
 MigrationSectionOrderType = Union[RemoveItem,
                                   MoveSection,
                                   Dict[str, MigrationKeyOrderType]]
@@ -338,6 +344,19 @@ def migrate(fragments: List[ConfigurationFragment],
             )
 
     added_keys: Dict[str, List[ConfigurationFragment]] = {}
+
+    for section, order in migration_def.items():
+        if isinstance(order, dict):
+            for key, order in order.items():
+                if isinstance(order, NewItem):
+                    value = order.create(fragments)
+                    if value is not None:
+                        added_keys.setdefault(section, []).extend((
+                            newline_fragment,
+                            ConfigurationFragment(f'{key}={value}', ConfigKind.KeyValue,
+                                                  key, value),
+                            newline_fragment,
+                        ))
 
     for old_section, old_key, new_section, new_key, new_value in moved_keys:
         for _ in iter_key_fragment(old_section, old_key):
@@ -522,6 +541,7 @@ def dump_json(defs: Sequence[MigrationType]) -> List[Any]:
         ToIniOnly: ini_only_to_dict,
         MoveSection: move_to_dict,
         UpdateItem: update_to_dict,
+        NewItem: lambda _: None,
         dict: dict_to_dict,
     }
 
@@ -573,6 +593,23 @@ def main(migration_defs: Sequence[MigrationType], argv: List[str]) -> int:
     return 0
 
 
+def _copy_of(section: str, key: str) -> ValueCreator:
+    """
+    Utility function for copy value with NewItem
+    """
+    def cp_option(fragments: Iterable[ConfigurationFragment]) -> str | None:
+        section_found = False
+        last_value = None
+        for fragment in fragments:
+            if fragment.kind == ConfigKind.KeyValue:
+                if section_found and key == fragment.value1:
+                    last_value = fragment.value2
+            elif fragment.kind == ConfigKind.Section:
+                section_found = section == fragment.value1
+        return last_value
+    return cp_option
+
+
 def to_bool(value: str) -> bool:
     return value.strip().lower() in {'1', 'yes', 'true', 'on'}
 
@@ -590,7 +627,12 @@ _IniValue = TypeVar("_IniValue")
 
 
 def _get_values(fragments: Iterable[ConfigurationFragment],
-                desc: Sequence[Tuple[str, str, _IniValue, Callable[[str], _IniValue]]],
+                desc: Sequence[Tuple[
+                    str,  # section name
+                    str,  # key name
+                    _IniValue,  # default value
+                    Callable[[str], _IniValue]  # value converter
+                ]],
                 ) -> List[_IniValue]:
     values = [default_value for section, name, default_value, converter in desc]
 
@@ -859,6 +901,12 @@ migration_defs: Sequence[MigrationType] = (
     (RedemptionVersion("12.0.1"), {
         'video': RemoveItem(reason="No more keys"),
         'crypto': RemoveItem(reason="Never used"),
+    }),
+    (RedemptionVersion("12.0.29"), {
+        'theme': {
+            'edit_focus_color': UpdateItem(key='edit_focus_border_color'),
+            'edit_border_color': NewItem(_copy_of('theme', 'bgcolor')),
+        },
     }),
 )
 

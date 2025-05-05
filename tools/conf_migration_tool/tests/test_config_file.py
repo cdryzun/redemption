@@ -518,3 +518,22 @@ tata = titi
             'server_cert_create_message=0xa\nserver_cert_success_message=0xb\n'),
         (True, '[server_cert]\n'
             'server_cert_create_message=1\nserver_cert_success_message=1\n'))
+
+    def test_migrate_12_0_29(self):
+        migrate_def = find_migrade_def(RedemptionVersion("12.0.29"))
+
+        self.assertEqual(
+            process_migrate(migrate_def, '[theme]\n'
+                'edit_focus_color=red\n'),
+            (True, '[theme]\n'
+                'edit_focus_border_color=red\n'))
+
+        self.assertEqual(
+            process_migrate(migrate_def, '[theme]\n'
+                'edit_focus_color=red\n'
+                'bgcolor=green\n'),
+            (True, '[theme]\n'
+                'edit_border_color=green\n'
+                '\n'
+                'edit_focus_border_color=red\n'
+                'bgcolor=green\n'))
