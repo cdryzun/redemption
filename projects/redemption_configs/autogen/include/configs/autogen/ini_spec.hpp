@@ -609,9 +609,13 @@ edit_bgcolor = string(default="#FFFFFF")
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
 edit_fgcolor = string(default="#000000")
 
+# Outline color for editing field.<br/>
+# (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
+edit_border_color = string(default="#081F60")
+
 # Outline color for editing field that has focus.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))
-edit_focus_color = string(default="#004D9C")
+edit_focus_border_color = string(default="#004D9C")
 
 # Cursor color for editing field.<br/>
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href="https://en.wikipedia.org/wiki/Web_colors#Extended_colors">named color</a> case insensitive (red, skyBlue, etc))

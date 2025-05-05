@@ -2409,10 +2409,18 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
-        else if (key == "edit_focus_color"_zv) {
+        else if (key == "edit_border_color"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
-                static_cast<cfg::theme::edit_focus_color&>(this->variables).value,
+                static_cast<cfg::theme::edit_border_color&>(this->variables).value,
+                ::configs::spec_type<::configs::spec_types::rgb>{},
+                value
+            );
+        }
+        else if (key == "edit_focus_border_color"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::theme::edit_focus_border_color&>(this->variables).value,
                 ::configs::spec_type<::configs::spec_types::rgb>{},
                 value
             );

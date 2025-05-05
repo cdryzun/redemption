@@ -27,8 +27,8 @@ enum {
     HORIZONTAL_MARGIN = 15,
     VERTICAL_MARGIN = 10,
     TEXT_MARGIN = 20,
-    FILTER_VERTICAL_SEPARATOR = 6,
-    FILTER_HORIZONTAL_SEPARATOR = 5,
+    FILTER_VERTICAL_SEPARATOR = 4,
+    FILTER_HORIZONTAL_SEPARATOR = 4,
     NAV_SEPARATOR = 15,
     HELP_ICON_SEPARATOR = 9,
     EXPANSION_BUTTON_SEPARATOR = 5,
@@ -802,14 +802,14 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
     );
 
     // filters
-    int16_t filters_y = checked_int(labels_y + h_text + FILTER_HORIZONTAL_SEPARATOR);
+    int16_t filters_y = checked_int(labels_y + h_text + FILTER_VERTICAL_SEPARATOR);
     for (auto & edit : this->edit_filters) {
         edit.set_xy(0, filters_y);
     }
 
     // grid
     auto line_height = grid_line_height(font());
-    this->grid.set_xy(grid_x, this->edit_filters[0].ebottom() + FILTER_HORIZONTAL_SEPARATOR);
+    this->grid.set_xy(grid_x, this->edit_filters[0].ebottom() + FILTER_VERTICAL_SEPARATOR);
     nb_max_line = std::max(0, current_page_edit.y() - grid.y() - VERTICAL_MARGIN) / line_height;
     nb_max_line = std::min(NB_MAX_LINE, nb_max_line);
     if (nb_max_line == 0) {
@@ -913,8 +913,8 @@ void WidgetSelector::rearrange_grid()
         edit_filters[i].update_width(checked_int(
             width - (
                 i == 1  // is target column
-                    ? FILTER_VERTICAL_SEPARATOR
-                    : FILTER_VERTICAL_SEPARATOR / 2
+                    ? FILTER_HORIZONTAL_SEPARATOR
+                    : FILTER_HORIZONTAL_SEPARATOR / 2
             )
         ));
 

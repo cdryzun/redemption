@@ -1674,7 +1674,7 @@ RED_AUTO_TEST_CASE(TestConfigThemeDefault)
     RED_CHECK(bgr(ini.get<cfg::theme::error_color>()) == theme.global.error_color);
     RED_CHECK(bgr(ini.get<cfg::theme::edit_bgcolor>()) == theme.edit.bgcolor);
     RED_CHECK(bgr(ini.get<cfg::theme::edit_fgcolor>()) == theme.edit.fgcolor);
-    RED_CHECK(bgr(ini.get<cfg::theme::edit_focus_color>()) == theme.edit.focus_color);
+    RED_CHECK(bgr(ini.get<cfg::theme::edit_border_color>()) == theme.edit.border_color);
     RED_CHECK(bgr(ini.get<cfg::theme::tooltip_bgcolor>()) == theme.tooltip.bgcolor);
     RED_CHECK(bgr(ini.get<cfg::theme::tooltip_fgcolor>()) == theme.tooltip.fgcolor);
     RED_CHECK(bgr(ini.get<cfg::theme::tooltip_border_color>()) == theme.tooltip.border_color);

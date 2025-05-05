@@ -41,7 +41,8 @@ struct Theme
     struct Edit {
         BGRColor bgcolor = NamedBGRColor::WHITE;
         BGRColor fgcolor = NamedBGRColor::BLACK;
-        BGRColor focus_color = NamedBGRColor::FOCUS_BLUE;
+        BGRColor border_color = NamedBGRColor::BG_BLUE;
+        BGRColor focus_border_color = NamedBGRColor::FOCUS_BLUE;
         BGRColor placeholder_color = NamedBGRColor::MEDIUM_GREY;
         BGRColor cursor_color = BGRColor{0x888888};
         BGRColor password_toggle_color = NamedBGRColor::MEDIUM_GREY;

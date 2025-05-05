@@ -3777,8 +3777,15 @@ _.section("theme", [&]
     });
 
     _.member(MemberInfo{
-        .name = "edit_focus_color",
-        .value = rgb(Theme::Edit().focus_color),
+        .name = "edit_border_color",
+        .value = rgb(Theme::Edit().border_color),
+        .spec = global_spec(no_acl),
+        .desc = "Outline color for editing field.",
+    });
+
+    _.member(MemberInfo{
+        .name = "edit_focus_border_color",
+        .value = rgb(Theme::Edit().focus_border_color),
         .spec = global_spec(no_acl),
         .desc = "Outline color for editing field that has focus.",
     });

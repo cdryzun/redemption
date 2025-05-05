@@ -568,8 +568,8 @@ WidgetEditValid::Colors WidgetEditValid::Colors::from_theme(const Theme& theme) 
         .placeholder = theme.edit.placeholder_color,
         .edit_fg = theme.edit.fgcolor,
         .edit_bg = theme.edit.bgcolor,
-        .border = theme.global.bgcolor,
-        .focus_border = theme.edit.focus_color,
+        .border = theme.edit.border_color,
+        .focus_border = theme.edit.focus_border_color,
         .cursor = theme.edit.cursor_color,
         .password_toggle = theme.edit.password_toggle_color,
     };

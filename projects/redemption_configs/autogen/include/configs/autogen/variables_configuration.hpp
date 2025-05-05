@@ -4998,10 +4998,19 @@ namespace cfg
         using mapped_type = ::configs::spec_types::rgb;
         type value { 0x000000 };
     };
+    /// Outline color for editing field. <br/>
+    /// type: ::configs::spec_types::rgb <br/>
+    /// default: 0x081F60 <br/>
+    struct theme::edit_border_color {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = ::configs::spec_types::rgb;
+        using mapped_type = ::configs::spec_types::rgb;
+        type value { 0x081F60 };
+    };
     /// Outline color for editing field that has focus. <br/>
     /// type: ::configs::spec_types::rgb <br/>
     /// default: 0x004D9C <br/>
-    struct theme::edit_focus_color {
+    struct theme::edit_focus_border_color {
         static constexpr unsigned acl_proxy_communication_flags = 0b00;
         using type = ::configs::spec_types::rgb;
         using mapped_type = ::configs::spec_types::rgb;
@@ -5884,7 +5893,8 @@ struct theme
 , cfg::theme::error_color
 , cfg::theme::edit_bgcolor
 , cfg::theme::edit_fgcolor
-, cfg::theme::edit_focus_color
+, cfg::theme::edit_border_color
+, cfg::theme::edit_focus_border_color
 , cfg::theme::edit_cursor_color
 , cfg::theme::edit_placeholder_color
 , cfg::theme::password_toggle_color

@@ -49,7 +49,8 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_hardcoded_default_values)
 
     RED_CHECK_EQUAL(colors.edit.bgcolor, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.fgcolor, NamedBGRColor::BLACK);
-    RED_CHECK_EQUAL(colors.edit.focus_color, NamedBGRColor::FOCUS_BLUE);
+    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::BG_BLUE);
+    RED_CHECK_EQUAL(colors.edit.focus_border_color, NamedBGRColor::FOCUS_BLUE);
 
     RED_CHECK_EQUAL(colors.tooltip.bgcolor, NamedBGRColor::LIGHT_YELLOW);
     RED_CHECK_EQUAL(colors.tooltip.fgcolor, NamedBGRColor::BLACK);
@@ -86,7 +87,7 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_hardcoded_default_values_even_if_inifile_i
 
     ini.set<cfg::theme::edit_bgcolor>(to_rgb(NamedBGRColor::YELLOW));
     ini.set<cfg::theme::edit_fgcolor>(to_rgb(NamedBGRColor::WHITE));
-    ini.set<cfg::theme::edit_focus_color>(to_rgb(NamedBGRColor::DARK_RED));
+    ini.set<cfg::theme::edit_border_color>(to_rgb(NamedBGRColor::DARK_RED));
 
     ini.set<cfg::theme::tooltip_bgcolor>(to_rgb(NamedBGRColor::PALE_BLUE));
     ini.set<cfg::theme::tooltip_fgcolor>(to_rgb(NamedBGRColor::DARK_BLUE));
@@ -122,7 +123,8 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_hardcoded_default_values_even_if_inifile_i
 
     RED_CHECK_EQUAL(colors.edit.bgcolor, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.fgcolor, NamedBGRColor::BLACK);
-    RED_CHECK_EQUAL(colors.edit.focus_color, NamedBGRColor::FOCUS_BLUE);
+    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::BG_BLUE);
+    RED_CHECK_EQUAL(colors.edit.focus_border_color, NamedBGRColor::FOCUS_BLUE);
 
     RED_CHECK_EQUAL(colors.tooltip.bgcolor, NamedBGRColor::LIGHT_YELLOW);
     RED_CHECK_EQUAL(colors.tooltip.fgcolor, NamedBGRColor::BLACK);
@@ -159,7 +161,7 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_from_inifile)
 
     ini.set<cfg::theme::edit_bgcolor>(to_rgb(NamedBGRColor::WHITE));
     ini.set<cfg::theme::edit_fgcolor>(to_rgb(NamedBGRColor::BLACK));
-    ini.set<cfg::theme::edit_focus_color>(to_rgb(NamedBGRColor::DARK_RED));
+    ini.set<cfg::theme::edit_border_color>(to_rgb(NamedBGRColor::DARK_RED));
 
     ini.set<cfg::theme::tooltip_bgcolor>(to_rgb(NamedBGRColor::PALE_BLUE));
     ini.set<cfg::theme::tooltip_fgcolor>(to_rgb(NamedBGRColor::DARK_BLUE));
@@ -196,7 +198,7 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_from_inifile)
 
     RED_CHECK_EQUAL(colors.edit.bgcolor, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.fgcolor, NamedBGRColor::BLACK);
-    RED_CHECK_EQUAL(colors.edit.focus_color, NamedBGRColor::DARK_RED);
+    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::DARK_RED);
 
     RED_CHECK_EQUAL(colors.tooltip.bgcolor, NamedBGRColor::PALE_BLUE);
     RED_CHECK_EQUAL(colors.tooltip.fgcolor, NamedBGRColor::DARK_BLUE);

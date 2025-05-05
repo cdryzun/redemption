@@ -4338,7 +4338,15 @@
     },
     {
       "section": "theme",
-      "name": "edit_focus_color",
+      "name": "edit_border_color",
+      "type": "rgb",
+      "value": "#081F60",
+      "description": "Outline color for editing field.",
+      "globalSpec": true
+    },
+    {
+      "section": "theme",
+      "name": "edit_focus_border_color",
       "type": "rgb",
       "value": "#004D9C",
       "description": "Outline color for editing field that has focus.",

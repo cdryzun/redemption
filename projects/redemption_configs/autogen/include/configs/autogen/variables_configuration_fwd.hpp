@@ -465,7 +465,8 @@ namespace cfg
         struct error_color;
         struct edit_bgcolor;
         struct edit_fgcolor;
-        struct edit_focus_color;
+        struct edit_border_color;
+        struct edit_focus_border_color;
         struct edit_cursor_color;
         struct edit_placeholder_color;
         struct password_toggle_color;
