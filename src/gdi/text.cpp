@@ -390,10 +390,10 @@ int draw_text(
                 w += fcs.back()->incby - fcs.back()->width;
             }
             Rect rect(
-                checked_int(px),
-                checked_int(y),
-                checked_int(w),
-                checked_int(max_height_text + padding.top + padding.bottom)
+                checked_int{px},
+                checked_int{y},
+                checked_int{w},
+                checked_int{max_height_text + padding.top + padding.bottom}
             );
             drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
             return rect.intersect(clip).eright();
