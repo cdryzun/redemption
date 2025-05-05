@@ -387,9 +387,12 @@ void WidgetSelector::WidgetGrid::rdp_input_invalidate(Rect clip)
 {
     clip = clip.intersect(get_rect());
 
+    int h = grid_line_height(h_line);
     int py = y();
-    int iline = 0;
-    for (auto const& line : lines) {
+    int iline = (clip.y - py) / h;
+    auto offset = std::min(lines.size(), static_cast<std::size_t>(iline));
+
+    for (auto const& line : lines.from_offset(offset)) {
         auto line_colors
             = (iline == selected_line)
             ? (has_focus ? colors.focus : colors.selected)
@@ -398,7 +401,11 @@ void WidgetSelector::WidgetGrid::rdp_input_invalidate(Rect clip)
 
         draw_line(line, line_colors, py, h_line, clip);
 
-        py += grid_line_height(h_line);
+        py += h;
+
+        if (py >= clip.ebottom()) {
+            break;
+        }
     }
 }
 
@@ -428,7 +435,7 @@ void WidgetSelector::WidgetGrid::draw_line(
     for (unsigned i = 0; i < nb_columns; ++i) {
         rect.cx += column_width(i);
     }
-    drawable.draw(RDPOpaqueRect(rect, colors.bg), rect, gdi::ColorCtx::depth24());
+    drawable.draw(RDPOpaqueRect(rect, colors.bg), clip, gdi::ColorCtx::depth24());
 
     /*
      * Draw labels

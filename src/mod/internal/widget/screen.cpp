@@ -106,9 +106,9 @@ void WidgetScreen::show_tooltip(
 {
     if (text.empty()) {
         if (this->tooltip.has_text()) {
+            this->tooltip.clear_text();
             this->remove_widget(this->tooltip);
             this->rdp_input_invalidate(this->tooltip.get_rect());
-            this->tooltip.clear_text();
         }
     }
     else if (!this->tooltip.has_text()) {
