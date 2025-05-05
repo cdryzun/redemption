@@ -208,6 +208,7 @@ public:
         this->rect.y = y;
     }
 
+protected:
     void set_wh(uint16_t w, uint16_t h)
     {
         this->rect.cx = w;
@@ -219,6 +220,7 @@ public:
         this->set_wh(dim.w, dim.h);
     }
 
+public:
     virtual void move_xy(int16_t x, int16_t y)
     {
         this->set_xy(this->rect.x + x, this->rect.y + y);

@@ -31,34 +31,45 @@
 
 RED_AUTO_TEST_CASE(TraceWidgetComposite)
 {
+    struct WComposite : WidgetComposite
+    {
+        using WidgetComposite::WidgetComposite;
+        using WidgetComposite::set_wh;
+    };
+
+    struct WRect : WidgetRect
+    {
+        using WidgetRect::WidgetRect;
+        using WidgetRect::set_wh;
+    };
+
     TestGraphic drawable(800, 600);
 
-    WidgetComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
-    wcomposite.set_wh(drawable.width(),
-                      drawable.height());
+    WComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
+    wcomposite.set_wh(drawable.width(), drawable.height());
     wcomposite.set_xy(0, 0);
 
-    WidgetRect wrect1(drawable, NamedBGRColor::CYAN);
+    WRect wrect1(drawable, NamedBGRColor::CYAN);
     wrect1.set_wh(100, 100);
     wrect1.set_xy(0, 0);
 
-    WidgetRect wrect2(drawable, NamedBGRColor::RED);
+    WRect wrect2(drawable, NamedBGRColor::RED);
     wrect2.set_wh(100, 100);
     wrect2.set_xy(0, 100);
 
-    WidgetRect wrect3(drawable, NamedBGRColor::BLUE);
+    WRect wrect3(drawable, NamedBGRColor::BLUE);
     wrect3.set_wh(100, 100);
     wrect3.set_xy(100, 100);
 
-    WidgetRect wrect4(drawable, NamedBGRColor::GREEN);
+    WRect wrect4(drawable, NamedBGRColor::GREEN);
     wrect4.set_wh(100, 100);
     wrect4.set_xy(300, 300);
 
-    WidgetRect wrect5(drawable, NamedBGRColor::WHITE);
+    WRect wrect5(drawable, NamedBGRColor::WHITE);
     wrect5.set_wh(100, 100);
     wrect5.set_xy(700, -50);
 
-    WidgetRect wrect6(drawable, NamedBGRColor::GREY);
+    WRect wrect6(drawable, NamedBGRColor::GREY);
     wrect6.set_wh(100, 100);
     wrect6.set_xy(-50, 550);
 
@@ -70,7 +81,7 @@ RED_AUTO_TEST_CASE(TraceWidgetComposite)
     wcomposite.add_widget(wrect6);
 
     {
-        WidgetRect wrect7(drawable, NamedBGRColor::GREY);
+        WRect wrect7(drawable, NamedBGRColor::GREY);
         wrect7.set_wh(800, 800);
         wrect7.set_xy(0, 0);
 

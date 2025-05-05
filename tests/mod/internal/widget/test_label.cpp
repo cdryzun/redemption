@@ -18,9 +18,15 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 RED_AUTO_TEST_CASE(TraceWidgetLabelAndComposite)
 {
+    struct WComposite : WidgetComposite
+    {
+        using WidgetComposite::WidgetComposite;
+        using WidgetComposite::set_wh;
+    };
+
     TestGraphic drawable(200, 100);
 
-    WidgetComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
+    WComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
     wcomposite.set_wh(drawable.width(), drawable.height());
     wcomposite.set_xy(0, 0);
 

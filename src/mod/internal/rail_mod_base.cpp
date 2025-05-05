@@ -34,8 +34,6 @@ RailModBase::RailModBase(
     , rail_client_execute(rail_client_execute)
     , rail_enabled(rail_client_execute.is_rail_enabled())
 {
-    this->screen.set_wh(width, height);
-
     gd.set_palette(BGRPalette::classic_332());
 }
 

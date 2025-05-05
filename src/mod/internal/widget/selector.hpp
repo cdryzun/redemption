@@ -141,6 +141,8 @@ private:
 
     struct WidgetGrid final : Widget
     {
+        using Widget::set_wh;
+
         struct Events
         {
             WidgetEventNotifier onsubmit;
@@ -237,6 +239,8 @@ private:
     struct WidgetHeaders final : Widget
     {
         using Colors = FgBgColors;
+
+        using Widget::set_wh;
 
         WidgetHeaders(
             gdi::GraphicApi & drawable, Font const & font, Texts::Headers headers,

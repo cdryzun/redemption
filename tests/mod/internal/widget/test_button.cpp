@@ -154,11 +154,17 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonEvent)
 
 RED_AUTO_TEST_CASE(TraceWidgetButtonAndComposite)
 {
+    struct WComposite : WidgetComposite
+    {
+        using WidgetComposite::WidgetComposite;
+        using WidgetComposite::set_wh;
+    };
+
     TestGraphic drawable(300, 200);
 
     WidgetEventNotifier notifier2;
 
-    WidgetComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
+    WComposite wcomposite(drawable, Widget::Focusable::No, NamedBGRColor::BLACK);
     wcomposite.set_wh(300, 200);
     wcomposite.set_xy(0, 0);
 
