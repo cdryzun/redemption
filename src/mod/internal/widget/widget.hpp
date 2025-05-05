@@ -219,12 +219,6 @@ public:
         this->set_wh(dim.w, dim.h);
     }
 
-    virtual void set_color(Color bg_color, Color fg_color)
-    {
-        (void)bg_color;
-        (void)fg_color;
-    }
-
     virtual void move_xy(int16_t x, int16_t y)
     {
         this->set_xy(this->rect.x + x, this->rect.y + y);
