@@ -3844,10 +3844,10 @@ namespace cfg
         type value {  };
     };
     /// type: unsigned <br/>
-    /// acl ⇔ proxy <br/>
+    /// acl ⇐ proxy <br/>
     /// default: 0 <br/>
     struct context::selector_lines_per_page {
-        static constexpr unsigned acl_proxy_communication_flags = 0b11;
+        static constexpr unsigned acl_proxy_communication_flags = 0b01;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
         static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section21 + 9};
@@ -6228,7 +6228,7 @@ using VariablesAclPack = Pack<
 constexpr U64BitFlags<5> loggable_field{ {
   0b1110111111111111111111111111111111111111111111111111011111101100
 , 0b1111111101111111111111111111111111111111111111111111111111111111
-, 0b0111000011111101100011000000111111111111110111111101111111111111
+, 0b0111000011111101000011000000111111111111110111111101111111111111
 , 0b1111000000011100000110001101111111000101001111111111010001011110
 , 0b0000000000000000000000000000000000000000000000000000000000000001
 },

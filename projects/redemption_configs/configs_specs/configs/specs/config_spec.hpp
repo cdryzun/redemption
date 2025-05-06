@@ -3205,7 +3205,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "selector_lines_per_page",
         .value = value<types::unsigned_>(0),
-        .spec = acl_rw(reset_back_to_selector, loggable),
+        .spec = proxy_to_acl(reset_back_to_selector),
     });
 
     _.member(MemberInfo{

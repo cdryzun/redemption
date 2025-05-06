@@ -3426,10 +3426,8 @@
       "type": "uint",
       "value": 0,
       "description": "",
-      "aclToProxy": true,
       "ProxyToAcl": true,
-      "resetBackToSelector": true,
-      "logStategy": "1"
+      "resetBackToSelector": true
     },
     {
       "section": "context",

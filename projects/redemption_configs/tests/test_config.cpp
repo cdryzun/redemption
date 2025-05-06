@@ -197,7 +197,6 @@ RED_AUTO_TEST_CASE(TestConfigDefaultEmpty)
 
     RED_CHECK_EQUAL(false, ini.is_asked<cfg::context::selector>());
     RED_CHECK_EQUAL(false, ini.is_asked<cfg::context::selector_current_page>());
-    RED_CHECK_EQUAL(false, ini.is_asked<cfg::context::selector_lines_per_page>());
 
     RED_CHECK_EQUAL(false, ini.get<cfg::context::selector>());
     RED_CHECK_EQUAL(1,     ini.get<cfg::context::selector_current_page>());
@@ -1428,7 +1427,6 @@ RED_AUTO_TEST_CASE(TestContextSetValue)
 
     RED_CHECK_EQUAL(true, ini.is_asked<cfg::context::selector>());
     RED_CHECK_EQUAL(true, ini.is_asked<cfg::context::selector_current_page>());
-    RED_CHECK_EQUAL(true, ini.is_asked<cfg::context::selector_lines_per_page>());
 
     get_acl_field(ini, cfg::context::selector::index).parse("True"_zv);
     get_acl_field(ini, cfg::context::selector_current_page::index).parse("2"_zv);
@@ -1439,7 +1437,6 @@ RED_AUTO_TEST_CASE(TestContextSetValue)
 
     RED_CHECK_EQUAL(false,     ini.is_asked<cfg::context::selector>());
     RED_CHECK_EQUAL(false,     ini.is_asked<cfg::context::selector_current_page>());
-    RED_CHECK_EQUAL(false,     ini.is_asked<cfg::context::selector_lines_per_page>());
 
     RED_CHECK_EQUAL(true,      ini.get<cfg::context::selector>());
     RED_CHECK_EQUAL(2,         ini.get<cfg::context::selector_current_page>());
