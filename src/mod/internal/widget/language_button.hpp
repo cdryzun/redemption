@@ -40,6 +40,8 @@ public:
     void rdp_input_invalidate(Rect clip) override;
 
 private:
+    struct D;
+
     unsigned selected_language = 0;
     Colors colors;
     Font const & font;

@@ -19,9 +19,9 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "utils/txt2d_to_rects.hpp"
 
 
-namespace
+struct LanguageButton::D
 {
-    constexpr auto kbd_icon_rects = TXT2D_TO_RECTS(
+    static constexpr auto kbd_icon_rects = TXT2D_TO_RECTS(
         // "            ##                                                  ",
         // "            ##                                                  ",
         // "            ########################################            ",
@@ -47,20 +47,20 @@ namespace
         "##------------------------------------------------------------##",
         "################################################################",
     );
-    constexpr uint16_t kbd_icon_cx = kbd_icon_rects.back().cx;
-    constexpr uint16_t kbd_icon_cy = kbd_icon_rects.back().ebottom();
+    static constexpr uint16_t kbd_icon_cx = kbd_icon_rects.back().cx;
+    static constexpr uint16_t kbd_icon_cy = kbd_icon_rects.back().ebottom();
 
-    constexpr uint16_t border_width = 2;
-    constexpr uint16_t icon_w_padding = 6;
-    constexpr uint16_t icon_right_padding = 5;
-    constexpr uint16_t icon_h_padding = 6;
+    static constexpr uint16_t border_width = 2;
+    static constexpr uint16_t icon_w_padding = 6;
+    static constexpr uint16_t icon_right_padding = 5;
+    static constexpr uint16_t icon_h_padding = 6;
 
-    uint16_t compute_inner_height(Font const & font)
+    static uint16_t compute_inner_height(Font const & font)
     {
         return std::max(font.max_height(), kbd_icon_cy);
     }
 
-    Dimension compute_optimial_dim(Font const & font, WidgetText<64> & text)
+    static Dimension compute_optimial_dim(Font const & font, WidgetText<64> & text)
     {
         uint16_t w = text.width()
                    + icon_w_padding * 2
@@ -72,7 +72,7 @@ namespace
                    + icon_h_padding * 2;
         return {w, h};
     }
-} // namespace
+};
 
 
 LanguageButton::Colors LanguageButton::Colors::from_theme(const Theme& theme) noexcept
@@ -119,7 +119,7 @@ LanguageButton::LanguageButton(
 
     button_text.set_text(font, locales.front().get().name);
 
-    set_wh(compute_optimial_dim(font, button_text));
+    set_wh(D::compute_optimial_dim(font, button_text));
 }
 
 void LanguageButton::next_layout()
@@ -130,7 +130,7 @@ void LanguageButton::next_layout()
     KeyLayout const& layout = this->locales[this->selected_language];
     button_text.set_text(font, layout.name);
 
-    Dimension dim = compute_optimial_dim(font, button_text);
+    Dimension dim = D::compute_optimial_dim(font, button_text);
     this->set_wh(dim);
 
     rect.cx = std::max(rect.cx, this->cx());
@@ -144,43 +144,43 @@ void LanguageButton::rdp_input_invalidate(Rect clip)
 {
     auto h_text = font.max_height();
 
-    int cy_inner = cy() - border_width * 2;
+    int cy_inner = cy() - D::border_width * 2;
     int y_padding = (cy_inner - h_text) / 2;
     int pressed_pad = is_pressed();
 
     gdi_draw_border(
         drawable, colors.fg, get_rect(),
-        border_width, clip,
+        D::border_width, clip,
         gdi::ColorCtx::depth24()
     );
 
     gdi::draw_text(
         drawable,
-        x() + border_width,
-        y() + border_width,
+        x() + D::border_width,
+        y() + D::border_width,
         h_text,
         gdi::DrawTextPadding{
             .top = checked_int(y_padding + pressed_pad),
-            .right = checked_int(icon_w_padding - pressed_pad),
+            .right = checked_int(D::icon_w_padding - pressed_pad),
             .bottom = checked_int(cy_inner - h_text - y_padding - pressed_pad),
-            .left = checked_int(icon_w_padding + kbd_icon_cx + icon_right_padding + pressed_pad),
+            .left = checked_int(D::icon_w_padding + D::kbd_icon_cx + D::icon_right_padding + pressed_pad),
         },
         button_text.fcs(),
         colors.fg,
         has_focus ? colors.focus_bg : colors.bg,
-        clip.intersect(get_rect().shrink(border_width))
+        clip.intersect(get_rect().shrink(D::border_width))
     );
 
-    int ox = x() + icon_w_padding;
-    int oy = y() + (cy() - compute_inner_height(font)) / 2;
+    int ox = x() + D::icon_w_padding;
+    int oy = y() + (cy() - D::compute_inner_height(font)) / 2;
 
     Rect rect_intersect = clip.intersect(Rect(
         checked_int(ox), checked_int(oy),
-        kbd_icon_cx, kbd_icon_cy
+        D::kbd_icon_cx, D::kbd_icon_cy
     ));
 
     if (!rect_intersect.isempty()) {
-        for (auto r : kbd_icon_rects) {
+        for (auto r : D::kbd_icon_rects) {
             r.x += ox;
             r.y += oy;
             drawable.draw(RDPOpaqueRect(r, colors.fg), rect_intersect, gdi::ColorCtx::depth24());

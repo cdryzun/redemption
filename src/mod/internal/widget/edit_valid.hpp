@@ -109,6 +109,8 @@ public:
     Widget * widget_at_pos(int16_t x, int16_t y) override;
 
 private:
+    struct D;
+
     void draw_placeholder(Rect clip);
     void draw_button_zone(Rect clip);
 

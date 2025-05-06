@@ -136,6 +136,8 @@ public:
     }
 
 private:
+    struct D;
+
     using FontCharPtr = FontCharView const *;
 
     struct BufferData
@@ -169,6 +171,8 @@ private:
     void draw_cursor(Rect clip, Color color);
     void draw_inner(Rect clip);
     void draw_text(Rect clip);
+
+    void draw_rect(Rect rect, Widget::Color color);
 
     struct RedrawInfo
     {

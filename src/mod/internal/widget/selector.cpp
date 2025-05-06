@@ -20,50 +20,68 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include <memory_resource>
 
 
-namespace
+struct WidgetSelector::D
 {
+    static constexpr uint16_t HORIZONTAL_MARGIN = 15;
+    static constexpr uint16_t VERTICAL_MARGIN = 10;
+    static constexpr uint16_t TEXT_MARGIN = 20;
+    static constexpr uint16_t FILTER_VERTICAL_SEPARATOR = 4;
+    static constexpr uint16_t FILTER_HORIZONTAL_SEPARATOR = 4;
+    static constexpr uint16_t NAV_SEPARATOR = 15;
+    static constexpr uint16_t HELP_ICON_SEPARATOR = 9;
+    static constexpr uint16_t EXPANSION_BUTTON_SEPARATOR = 5;
 
-enum {
-    HORIZONTAL_MARGIN = 15,
-    VERTICAL_MARGIN = 10,
-    TEXT_MARGIN = 20,
-    FILTER_VERTICAL_SEPARATOR = 4,
-    FILTER_HORIZONTAL_SEPARATOR = 4,
-    NAV_SEPARATOR = 15,
-    HELP_ICON_SEPARATOR = 9,
-    EXPANSION_BUTTON_SEPARATOR = 5,
+    static constexpr uint16_t GRID_LABEL_X_PADDING = 5;
+    static constexpr uint16_t GRID_LABEL_Y_PADDING = 3;
+    static constexpr int NB_MAX_LINE = 1024;
+
+    static constexpr std::array<int, 3> WEIGHTS { 20, 70, 10 };
+
+    static int grid_line_height(uint16_t font_height)
+    {
+        return font_height + GRID_LABEL_Y_PADDING * 2;
+    }
+
+    static int grid_line_height(Font const& font)
+    {
+        return grid_line_height(font.max_height());
+    }
+
+    template<class T>
+    static writable_array_view<T>
+    allocate_view(std::pmr::monotonic_buffer_resource & mbr, std::size_t n)
+    {
+        auto * p = static_cast<T*>(mbr.allocate(n * sizeof(T), alignof(T)));
+        return writable_array_view{p, n};
+    }
+
+    static uint16_t expansion_button_width(Font const& font)
+    {
+        int h = font.max_height();
+        return checked_int{(h + 1) / 2 - 1};
+    }
+
+    static void expansion_event(WidgetSelector & selector, unsigned i)
+    {
+        selector.column_expansion_buttons[i].has_focus = false;
+        selector.column_expansion_buttons[i].reset_state();
+        selector.grid.has_focus = true;
+        selector.grid.set_priority_column_index(static_cast<int>(i));
+        selector.rearrange_grid();
+        redraw(selector, selector.grid.ebottom());
+    }
+
+    static void redraw(WidgetSelector & selector, int16_t bottom)
+    {
+        int y = std::min(selector.header_labels.y(), selector.target_helpicon.y());
+        selector.rdp_input_invalidate(Rect{
+            selector.header_labels.x(),
+            checked_int(y),
+            selector.cx(),
+            checked_int(bottom - y),
+        });
+    }
 };
-
-constexpr uint16_t GRID_LABEL_X_PADDING = 5;
-constexpr uint16_t GRID_LABEL_Y_PADDING = 3;
-constexpr int NB_MAX_LINE = 1024;
-
-constexpr std::array<int, 3> WEIGHTS { 20, 70, 10 };
-
-int grid_line_height(uint16_t font_height)
-{
-    return font_height + GRID_LABEL_Y_PADDING * 2;
-}
-
-int grid_line_height(Font const& font)
-{
-    return grid_line_height(font.max_height());
-}
-
-template<class T>
-writable_array_view<T> allocate_view(std::pmr::monotonic_buffer_resource & mbr, std::size_t n)
-{
-    auto * p = static_cast<T*>(mbr.allocate(n * sizeof(T), alignof(T)));
-    return writable_array_view{p, n};
-}
-
-uint16_t expansion_button_width(Font const& font)
-{
-    int h = font.max_height();
-    return checked_int{(h + 1) / 2 - 1};
-}
-
-} // anonymous namespace
 
 
 WidgetSelector::WidgetGrid::WidgetGrid(
@@ -135,12 +153,12 @@ bool WidgetSelector::WidgetGrid::set_devices(
          * Set a "not found" message
          */
 
-        auto lines = allocate_view<Line>(mbr, 1);
+        auto lines = D::allocate_view<Line>(mbr, 1);
         lines[0] = {};
 
         auto text = tr(trkeys::no_results);
         lines[0].fcs[1] = init_widget_text(
-            allocate_view<FontCharView const*>(mbr, text.size()),
+            D::allocate_view<FontCharView const*>(mbr, text.size()),
             OutParam{lines[0].widths[1]}, font, text
         );
 
@@ -200,7 +218,7 @@ void WidgetSelector::WidgetGrid::init_lines(
      * Init Lines
      */
 
-    auto lines = allocate_view<Line>(mbr, rows);
+    auto lines = D::allocate_view<Line>(mbr, rows);
 
     auto next_item = [is_sep](chars_view & list) {
         for (char const& c : list) {
@@ -234,11 +252,11 @@ void WidgetSelector::WidgetGrid::init_lines(
          * Populate Line
          */
 
-        auto authorization_text = allocate_view<char>(mbr, authorization.size());
+        auto authorization_text = D::allocate_view<char>(mbr, authorization.size());
         byte_copy(authorization_text.data(), authorization);
         line.authorization_text = authorization_text;
 
-        auto target_text = allocate_view<char>(mbr, target.size());
+        auto target_text = D::allocate_view<char>(mbr, target.size());
         byte_copy(target_text.data(), target);
         line.target_text = target_text;
 
@@ -246,7 +264,7 @@ void WidgetSelector::WidgetGrid::init_lines(
 
         for (unsigned i = 0; i < nb_columns; ++i) {
             line.fcs[i] = init_widget_text(
-                allocate_view<FontCharView const*>(mbr, texts[i].size()),
+                D::allocate_view<FontCharView const*>(mbr, texts[i].size()),
                 OutParam{line.widths[i]}, font, texts[i]
             );
         }
@@ -257,12 +275,12 @@ void WidgetSelector::WidgetGrid::init_lines(
 
 int WidgetSelector::WidgetGrid::column_width(unsigned i) const noexcept
 {
-    return columns_width[i] + GRID_LABEL_X_PADDING * 2;
+    return columns_width[i] + D::GRID_LABEL_X_PADDING * 2;
 }
 
 std::array<bool, WidgetSelector::nb_columns> WidgetSelector::WidgetGrid::arrange()
 {
-    int const columns_cx = cx() - GRID_LABEL_X_PADDING * 2 * int{nb_columns};
+    int const columns_cx = cx() - D::GRID_LABEL_X_PADDING * 2 * int{nb_columns};
 
     auto sum = [](auto & cont){ return std::accumulate(cont.begin(), cont.end(), 0); };
 
@@ -271,9 +289,9 @@ std::array<bool, WidgetSelector::nb_columns> WidgetSelector::WidgetGrid::arrange
      */
 
     bool is_optimal = true;
-    int const total_weight = sum(WEIGHTS);
+    int const total_weight = sum(D::WEIGHTS);
     for (unsigned i = 0; i < nb_columns; ++i) {
-        columns_width[i] = checked_int(columns_cx * WEIGHTS[i] / total_weight);
+        columns_width[i] = checked_int(columns_cx * D::WEIGHTS[i] / total_weight);
         if (columns_width[i] < optimal_columns_width[i]) {
             is_optimal = false;
         }
@@ -302,7 +320,7 @@ std::array<bool, WidgetSelector::nb_columns> WidgetSelector::WidgetGrid::arrange
 
         for (unsigned i = 0; i < nb_columns; ++i) {
             columns_width[i] = checked_int(
-                optimal_columns_width[i] + remaining_cx * WEIGHTS[i] / total_weight
+                optimal_columns_width[i] + remaining_cx * D::WEIGHTS[i] / total_weight
             );
         }
 
@@ -387,7 +405,7 @@ void WidgetSelector::WidgetGrid::rdp_input_invalidate(Rect clip)
 {
     clip = clip.intersect(get_rect());
 
-    int h = grid_line_height(h_line);
+    int h = D::grid_line_height(h_line);
     int py = y();
     int iline = (clip.y - py) / h;
     auto offset = std::min(lines.size(), static_cast<std::size_t>(iline));
@@ -420,7 +438,7 @@ void WidgetSelector::WidgetGrid::set_selected_line(int new_selected_line)
 
 void WidgetSelector::WidgetGrid::draw_line_at(int i, FgBgColors colors)
 {
-    int py = y() + grid_line_height(h_line) * i;
+    int py = y() + D::grid_line_height(h_line) * i;
     draw_line(lines[checked_int(i)], colors, py, h_line, get_rect());
 }
 
@@ -431,7 +449,7 @@ void WidgetSelector::WidgetGrid::draw_line(
      * Draw background line
      */
     Rect rect{x(), checked_int(py), 0, 0};
-    rect.cy = checked_int(grid_line_height(h_line));
+    rect.cy = checked_int(D::grid_line_height(h_line));
     for (unsigned i = 0; i < nb_columns; ++i) {
         rect.cx += column_width(i);
     }
@@ -446,8 +464,8 @@ void WidgetSelector::WidgetGrid::draw_line(
 
         gdi::draw_text(
             drawable,
-            px + GRID_LABEL_X_PADDING,
-            py + GRID_LABEL_Y_PADDING,
+            px + D::GRID_LABEL_X_PADDING,
+            py + D::GRID_LABEL_Y_PADDING,
             h_line,
             gdi::DrawTextPadding{},
             line.fcs[i],
@@ -456,12 +474,12 @@ void WidgetSelector::WidgetGrid::draw_line(
             clip.intersect(Rect{
                 checked_int(px),
                 checked_int(py),
-                checked_int(text_width + GRID_LABEL_X_PADDING),
-                checked_int(grid_line_height(h_line)),
+                checked_int(text_width + D::GRID_LABEL_X_PADDING),
+                checked_int(D::grid_line_height(h_line)),
             })
         );
 
-        px += text_width + GRID_LABEL_X_PADDING * 2;
+        px += text_width + D::GRID_LABEL_X_PADDING * 2;
     }
 }
 
@@ -518,7 +536,7 @@ void WidgetSelector::WidgetGrid::rdp_input_mouse(uint16_t device_flags, uint16_t
 {
     using namespace std::chrono_literals;
 
-    int h = grid_line_height(h_line);
+    int h = D::grid_line_height(h_line);
     int new_selected_line = (y - this->y()) / h;
     int py = this->y() + new_selected_line * h;
     Rect rect(checked_int(this->x()), checked_int(py), this->cx(), checked_int(h));
@@ -605,7 +623,7 @@ void WidgetSelector::WidgetHeaders::rdp_input_invalidate(Rect clip)
                 .top = 0,
                 .right = widths[i],
                 .bottom = 0,
-                .left = GRID_LABEL_X_PADDING,
+                .left = D::GRID_LABEL_X_PADDING,
             },
             labels[i].fcs(),
             colors.fg,
@@ -646,31 +664,6 @@ void WidgetSelector::WidgetExpansionButton::rdp_input_invalidate(Rect clip)
     drawable.draw(RDPOpaqueRect(rect, bg), clip, gdi::ColorCtx::depth24());
 }
 
-
-struct WidgetSelector::D
-{
-    static void expansion_event(WidgetSelector & selector, unsigned i)
-    {
-        selector.column_expansion_buttons[i].has_focus = false;
-        selector.column_expansion_buttons[i].reset_state();
-        selector.grid.has_focus = true;
-        selector.grid.set_priority_column_index(static_cast<int>(i));
-        selector.rearrange_grid();
-        redraw(selector, selector.grid.ebottom());
-    }
-
-    static void redraw(WidgetSelector & selector, int16_t bottom)
-    {
-        int y = std::min(selector.header_labels.y(), selector.target_helpicon.y());
-        selector.rdp_input_invalidate(Rect{
-            selector.header_labels.x(),
-            checked_int(y),
-            selector.cx(),
-            checked_int(bottom - y),
-        });
-    }
-};
-
 WidgetSelector::WidgetSelector(
     gdi::GraphicApi & drawable, Font const & font, CopyPaste & copy_paste,
     Theme const & theme, WidgetTooltipShower & tooltip_shower,
@@ -693,7 +686,7 @@ WidgetSelector::WidgetSelector(
     .bg = theme.selector_label.bgcolor,
 })
 , column_expansion_buttons{[&]{
-    auto hw = expansion_button_width(font);
+    auto hw = D::expansion_button_width(font);
     return decltype(column_expansion_buttons){
         WidgetExpansionButton{drawable, theme, hw, [this]{ D::expansion_event(*this, 0); } },
         WidgetExpansionButton{drawable, theme, hw, [this]{ D::expansion_event(*this, 1); } },
@@ -707,11 +700,11 @@ WidgetSelector::WidgetSelector(
 , grid(
     drawable, theme, *this,
     {
-        checked_int(header_labels.labels[0].width() + expansion_button_width(font)
-            + EXPANSION_BUTTON_SEPARATOR),
-        checked_int(header_labels.labels[1].width() + expansion_button_width(font)
-            + EXPANSION_BUTTON_SEPARATOR
-            + HELP_ICON_SEPARATOR
+        checked_int(header_labels.labels[0].width() + D::expansion_button_width(font)
+            + D::EXPANSION_BUTTON_SEPARATOR),
+        checked_int(header_labels.labels[1].width() + D::expansion_button_width(font)
+            + D::EXPANSION_BUTTON_SEPARATOR
+            + D::HELP_ICON_SEPARATOR
             + target_helpicon.cx()),
         header_labels.labels[2].width(),
     },
@@ -784,7 +777,7 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
     this->set_xy(left, top);
     this->set_wh(width, height);
 
-    this->device_label.set_xy(left + TEXT_MARGIN, top + VERTICAL_MARGIN);
+    this->device_label.set_xy(left + D::TEXT_MARGIN, top + D::VERTICAL_MARGIN);
 
     this->less_than_800 = (this->cx() < 800);
 
@@ -792,13 +785,13 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
 
     // filter button position
     this->apply.set_xy(
-        checked_int(left + this->cx() - (this->apply.cx() + TEXT_MARGIN)),
-        checked_int(top + VERTICAL_MARGIN)
+        checked_int(left + this->cx() - (this->apply.cx() + D::TEXT_MARGIN)),
+        checked_int(top + D::VERTICAL_MARGIN)
     );
 
     // grid headers
-    int16_t grid_x = left + (this->less_than_800 ? 0 : HORIZONTAL_MARGIN);
-    int16_t labels_y = this->device_label.ebottom() + HORIZONTAL_MARGIN;
+    int16_t grid_x = left + (this->less_than_800 ? 0 : D::HORIZONTAL_MARGIN);
+    int16_t labels_y = this->device_label.ebottom() + D::HORIZONTAL_MARGIN;
     this->header_labels.set_xy(grid_x, labels_y);
 
     // help icon
@@ -809,16 +802,16 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
     );
 
     // filters
-    int16_t filters_y = checked_int(labels_y + h_text + FILTER_VERTICAL_SEPARATOR);
+    int16_t filters_y = checked_int(labels_y + h_text + D::FILTER_VERTICAL_SEPARATOR);
     for (auto & edit : this->edit_filters) {
         edit.set_xy(0, filters_y);
     }
 
     // grid
-    auto line_height = grid_line_height(font());
-    this->grid.set_xy(grid_x, this->edit_filters[0].ebottom() + FILTER_VERTICAL_SEPARATOR);
-    nb_max_line = std::max(0, current_page_edit.y() - grid.y() - VERTICAL_MARGIN) / line_height;
-    nb_max_line = std::min(NB_MAX_LINE, nb_max_line);
+    auto line_height = D::grid_line_height(font());
+    this->grid.set_xy(grid_x, this->edit_filters[0].ebottom() + D::FILTER_VERTICAL_SEPARATOR);
+    nb_max_line = std::max(0, current_page_edit.y() - grid.y() - D::VERTICAL_MARGIN) / line_height;
+    nb_max_line = std::min(D::NB_MAX_LINE, nb_max_line);
     if (nb_max_line == 0) {
         ++nb_max_line;
     }
@@ -838,28 +831,28 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
 void WidgetSelector::move_and_resize_navigation_buttons()
 {
     // Navigation buttons
-    int nav_bottom_y = this->cy() - (this->connect.cy() + VERTICAL_MARGIN);
-    int nav_top_y = this->y() + nav_bottom_y - (this->last_page.cy() + VERTICAL_MARGIN);
+    int nav_bottom_y = this->cy() - (this->connect.cy() + D::VERTICAL_MARGIN);
+    int nav_top_y = this->y() + nav_bottom_y - (this->last_page.cy() + D::VERTICAL_MARGIN);
     int nav_offset_x = this->eright();
 
     if (extra_button) {
         extra_button->set_xy(
             checked_int(this->x() + (this->less_than_800 ? 30 : 60)),
-            checked_int((this->cy() - nav_top_y - VERTICAL_MARGIN - extra_button->cy()) / 2
+            checked_int((this->cy() - nav_top_y - D::VERTICAL_MARGIN - extra_button->cy()) / 2
                         + nav_top_y)
         );
     }
 
     // ">>" button
-    nav_offset_x -= (this->last_page.cx() + TEXT_MARGIN);
+    nav_offset_x -= (this->last_page.cx() + D::TEXT_MARGIN);
     this->last_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
 
     // ">" button
-    nav_offset_x -= (this->next_page.cx() + NAV_SEPARATOR);
+    nav_offset_x -= (this->next_page.cx() + D::NAV_SEPARATOR);
     this->next_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
 
     // "/ N" button
-    nav_offset_x -= (this->number_page.cx() + NAV_SEPARATOR);
+    nav_offset_x -= (this->number_page.cx() + D::NAV_SEPARATOR);
     this->number_page.set_xy(
         checked_int(nav_offset_x),
         checked_int(nav_top_y + (this->next_page.cy() - this->number_page.cy()) / 2)
@@ -878,11 +871,11 @@ void WidgetSelector::move_and_resize_navigation_buttons()
     this->current_page_edit.update_width(checked_int(edit_cx));
 
     // "<" button
-    nav_offset_x -= (this->prev_page.cx() + NAV_SEPARATOR);
+    nav_offset_x -= (this->prev_page.cx() + D::NAV_SEPARATOR);
     this->prev_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
 
     // "<<" button
-    nav_offset_x -= (this->first_page.cx() + NAV_SEPARATOR);
+    nav_offset_x -= (this->first_page.cx() + D::NAV_SEPARATOR);
     this->first_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
 
     // "connect" button
@@ -907,21 +900,21 @@ void WidgetSelector::rearrange_grid()
      * Header and edit positioning
      */
 
-    int offset = this->less_than_800 ? 0 : HORIZONTAL_MARGIN;
+    int offset = this->less_than_800 ? 0 : D::HORIZONTAL_MARGIN;
     offset += this->x();
 
     for (unsigned i = 0; i < nb_columns; ++i) {
         int width = grid.column_width(i);
         header_labels.widths[i] = checked_int(width);
         edit_filters[i].set_xy(
-            checked_int(offset + (i ? FILTER_VERTICAL_SEPARATOR / 2 : 0)),
+            checked_int(offset + (i ? D::FILTER_VERTICAL_SEPARATOR / 2 : 0)),
             edit_filters[i].y()
         );
         edit_filters[i].update_width(checked_int(
             width - (
                 i == 1  // is target column
-                    ? FILTER_HORIZONTAL_SEPARATOR
-                    : FILTER_HORIZONTAL_SEPARATOR / 2
+                    ? D::FILTER_HORIZONTAL_SEPARATOR
+                    : D::FILTER_HORIZONTAL_SEPARATOR / 2
             )
         ));
 
@@ -937,7 +930,7 @@ void WidgetSelector::rearrange_grid()
             }
             else if (!button.inserted) {
                 button.set_xy(
-                    checked_int(offset + width - button.cx() - GRID_LABEL_X_PADDING),
+                    checked_int(offset + width - button.cx() - D::GRID_LABEL_X_PADDING),
                     checked_int(header_labels.y() + (header_labels.cy() - button.cy()) / 2)
                 );
                 button.inserted = true;
@@ -953,8 +946,8 @@ void WidgetSelector::rearrange_grid()
         checked_int(header_labels.x()
                   + header_labels.widths[0]
                   + header_labels.labels[1].width()
-                  + GRID_LABEL_X_PADDING
-                  + HELP_ICON_SEPARATOR),
+                  + D::GRID_LABEL_X_PADDING
+                  + D::HELP_ICON_SEPARATOR),
         this->target_helpicon.y()
     );
 }
@@ -984,7 +977,7 @@ void WidgetSelector::set_page(Page page)
         max_line_per_page()
     );
 
-    grid.set_wh(grid.cx(), checked_int(grid.count_line() * grid_line_height(font())));
+    grid.set_wh(grid.cx(), checked_int(grid.count_line() * D::grid_line_height(font())));
 
     // focus to grid without redraw
     if (has_devices) {

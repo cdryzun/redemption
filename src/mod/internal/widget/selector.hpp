@@ -112,7 +112,6 @@ private:
     static const unsigned nb_columns = 3;
 
     struct D;
-    friend D;
 
     void rearrange_grid();
     void move_and_resize_navigation_buttons();

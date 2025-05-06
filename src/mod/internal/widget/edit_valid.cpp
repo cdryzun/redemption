@@ -29,48 +29,34 @@
 #include "gdi/text.hpp"
 #include "utils/theme.hpp"
 
-namespace
+
+struct WidgetEditValid::D
 {
-    constexpr uint32_t button_toggle_visibility_hidden = 0x000025c9; // ◉
-    constexpr uint32_t button_toggle_visibility_visible = 0x000025ce; // ◎
-    constexpr uint32_t button_valid = 0x0000279c; // ➜
+    static const uint32_t button_toggle_visibility_hidden = 0x000025c9; // ◉
+    static const uint32_t button_toggle_visibility_visible = 0x000025ce; // ◎
+    static const uint32_t button_valid = 0x0000279c; // ➜
 
-    constexpr uint16_t border_len = 1;
-    constexpr uint16_t w_button_valid_padding = 5;
-    constexpr uint16_t w_button_toggle_padding = 3;
-    constexpr uint16_t x_placeholder = 3;
+    static const uint16_t border_len = 1;
+    static const uint16_t w_button_valid_padding = 5;
+    static const uint16_t w_button_toggle_padding = 3;
+    static const uint16_t x_placeholder = 3;
 
-
-    void draw_rect(gdi::GraphicApi& gd, Rect clip, RDPColor color, int x, int y, int w, int h)
-    {
-        gd.draw(
-            RDPOpaqueRect(
-                Rect(
-                    checked_int(x), checked_int(y),
-                    checked_int(w), checked_int(h)
-                ),
-                color
-            ),
-            clip, gdi::ColorCtx::depth24()
-        );
-    }
-
-    int button_valid_width(FontCharView const& fc)
+    static int button_valid_width(FontCharView const& fc)
     {
         return fc.boxed_width() + w_button_valid_padding * 2;
     }
 
-    int button_toggle_width(FontCharView const& fc)
+    static int button_toggle_width(FontCharView const& fc)
     {
         return fc.boxed_width() + w_button_toggle_padding * 2;
     }
 
     template<class T>
-    void destruct(T & value) noexcept
+    static void destruct(T & value) noexcept
     {
         value.~T();
     }
-}
+};
 
 
 WidgetEditValid::NoEditableText::NoEditableText(const Font& font, chars_view text)
@@ -110,13 +96,13 @@ WidgetEditValid::WidgetEditValid(
     : Widget(gd, opts.type == Type::Text ? Focusable::No : Focusable::Yes)
     , buttons{
         .valid_text = opts.type != Type::Text
-            ? &font.item(button_valid).view
+            ? &font.item(D::button_valid).view
             : nullptr,
         .visibility_hidden = opts.type == Type::Password
-            ? &font.item(button_toggle_visibility_hidden).view
+            ? &font.item(D::button_toggle_visibility_hidden).view
             : nullptr,
         .visibility_visible = opts.type == Type::Password
-            ? &font.item(button_toggle_visibility_visible).view
+            ? &font.item(D::button_toggle_visibility_visible).view
             : nullptr,
     }
     , password_toggle_color(colors.password_toggle)
@@ -154,10 +140,10 @@ WidgetEditValid::WidgetEditValid(
 WidgetEditValid::~WidgetEditValid()
 {
     if (is_text_widget()) {
-        destruct(edit_or_text.text);
+        D::destruct(edit_or_text.text);
     }
     else {
-        destruct(edit_or_text.edit);
+        D::destruct(edit_or_text.edit);
     }
 }
 
@@ -171,12 +157,12 @@ void WidgetEditValid::init_focus()
 
 uint16_t WidgetEditValid::label_width(bool has_placeholder) const noexcept
 {
-    return label.text.width() + border_len * 2 + has_placeholder * x_placeholder;
+    return label.text.width() + D::border_len * 2 + has_placeholder * D::x_placeholder;
 }
 
 uint16_t WidgetEditValid::text_width() const noexcept
 {
-    return is_text_widget() ? edit_or_text.text.width() + border_len * 2 : 0;
+    return is_text_widget() ? edit_or_text.text.width() + D::border_len * 2 : 0;
 }
 
 void WidgetEditValid::set_text(bytes_view text, TextOptions opts)
@@ -210,15 +196,15 @@ void WidgetEditValid::update_layout(Layout layout)
     if (is_text_widget()) {
         edit_or_text.text.offset_x = label.has_placeholder ? 0 : layout.edit_offset;
         widget_h = edit_or_text.text.height();
-        widget_w = edit_or_text.text.offset_x + edit_or_text.text.width() + border_len * 2;
+        widget_w = edit_or_text.text.offset_x + edit_or_text.text.width() + D::border_len * 2;
     }
     else {
-        int w = button_valid_width(*buttons.valid_text) + border_len * 2;
+        int w = D::button_valid_width(*buttons.valid_text) + D::border_len * 2;
         if (!label.has_placeholder) {
             w += layout.edit_offset;
         }
         if (auto * fc = buttons.visibility_visible) {
-            w += button_toggle_width(*fc);
+            w += D::button_toggle_width(*fc);
         }
 
         auto edit_offset = label.has_placeholder ? uint16_t{} : layout.edit_offset;
@@ -326,6 +312,19 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
 
 void WidgetEditValid::draw_button_zone(Rect clip)
 {
+    auto draw_rect = [this](Rect clip, RDPColor color, int x, int y, int w, int h) {
+        drawable.draw(
+            RDPOpaqueRect(
+                Rect(
+                    checked_int(x), checked_int(y),
+                    checked_int(w), checked_int(h)
+                ),
+                color
+            ),
+            clip, gdi::ColorCtx::depth24()
+        );
+    };
+
     auto draw_border3 = [&](RDPColor color, int shring) {
         int16_t xb = checked_int(edit_or_text.edit.eright() - shring);
         int16_t yb = checked_int(y() + shring);
@@ -333,18 +332,18 @@ void WidgetEditValid::draw_button_zone(Rect clip)
         uint16_t hb = checked_int(cy() - shring * 2);
 
         // top
-        draw_rect(drawable, clip, color, xb, yb, wb, border_len);
+        draw_rect(clip, color, xb, yb, wb, D::border_len);
         // bottom
-        draw_rect(drawable, clip, color, xb, checked_int(yb + hb - border_len), wb, border_len);
+        draw_rect(clip, color, xb, checked_int(yb + hb - D::border_len), wb, D::border_len);
         // right
-        draw_rect(drawable, clip, color, checked_int(xb + wb - border_len), yb + border_len, border_len, hb - border_len * 2);
+        draw_rect(clip, color, checked_int(xb + wb - D::border_len), yb + D::border_len, D::border_len, hb - D::border_len * 2);
     };
 
     RDPColor border_color;
 
     if (this->has_focus) {
-        int const y_button = y() + border_len * 2;
-        int const cy_button = cy() - border_len * 4;
+        int const y_button = y() + D::border_len * 2;
+        int const cy_button = cy() - D::border_len * 4;
 
         auto draw_button = [this, y_button, cy_button, clip](
             int x_button, bool is_pressed, FontCharView const* fc,
@@ -370,19 +369,19 @@ void WidgetEditValid::draw_button_zone(Rect clip)
         };
 
         int x_button = edit_or_text.edit.eright();
-        int adjust_border = border_len;
+        int adjust_border = D::border_len;
         if (auto * fc = buttons.visibility_visible) {
             draw_button(
-                x_button - border_len,
+                x_button - D::border_len,
                 toggle_password_pressed.is_pressed(),
                 edit_or_text.edit.password_is_visible()
                     ? buttons.visibility_visible
                     : buttons.visibility_hidden,
                 password_toggle_color,
                 edit_or_text.edit.get_colors().bg,
-                w_button_toggle_padding, adjust_border
+                D::w_button_toggle_padding, adjust_border
             );
-            x_button += button_toggle_width(*fc) - border_len;
+            x_button += D::button_toggle_width(*fc) - D::border_len;
             adjust_border = 0;
         }
         draw_button(
@@ -391,22 +390,21 @@ void WidgetEditValid::draw_button_zone(Rect clip)
             buttons.valid_text,
             edit_or_text.edit.get_colors().bg,
             edit_or_text.edit.get_colors().focus_border,
-            w_button_valid_padding, adjust_border
+            D::w_button_valid_padding, adjust_border
         );
 
-        draw_border3(edit_or_text.edit.get_colors().bg, border_len);
+        draw_border3(edit_or_text.edit.get_colors().bg, D::border_len);
 
         border_color = edit_or_text.edit.get_colors().focus_border;
     }
     else {
         draw_rect(
-            drawable,
             clip,
             edit_or_text.edit.get_colors().bg,
-            checked_int(edit_or_text.edit.eright() - border_len),
-            checked_int(y() + border_len),
+            checked_int(edit_or_text.edit.eright() - D::border_len),
+            checked_int(y() + D::border_len),
             checked_int(eright() - edit_or_text.edit.eright()),
-            checked_int(cy() - border_len * 2)
+            checked_int(cy() - D::border_len * 2)
         );
 
         border_color = edit_or_text.edit.get_colors().border;
@@ -464,7 +462,7 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             // toggle visibility button
             if (auto * fc = buttons.visibility_visible)
             {
-                int w = button_toggle_width(*fc) - border_len;
+                int w = D::button_toggle_width(*fc) - D::border_len;
 
                 auto rect = Rect(
                     checked_int(btn1),
@@ -473,7 +471,7 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
                     cy()
                 );
 
-                btn2 += button_toggle_width(*fc);
+                btn2 += D::button_toggle_width(*fc);
 
                 toggle_password_pressed.update(
                     rect, x, y, device_flags, ButtonState::RedrawOnSubmit::Yes,
@@ -485,7 +483,7 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             auto rect = Rect(
                 checked_int(btn2),
                 this->y(),
-                checked_int(button_toggle_width(*fc) - border_len),
+                checked_int(D::button_toggle_width(*fc) - D::border_len),
                 cy()
             );
 
@@ -539,13 +537,13 @@ void WidgetEditValid::draw_placeholder(Rect clip)
     auto& font = edit_or_text.edit.get_font();
     auto h_text = font.max_height();
     auto edit_rect = edit_or_text.edit.get_rect();
-    edit_rect.x += border_len + 1/*cursor width*/;
-    edit_rect.y += border_len;
-    edit_rect.cx -= border_len * 2 - 1;
-    edit_rect.cy -= border_len * 2;
+    edit_rect.x += D::border_len + 1/*cursor width*/;
+    edit_rect.y += D::border_len;
+    edit_rect.cx -= D::border_len * 2 - 1;
+    edit_rect.cy -= D::border_len * 2;
     gdi::draw_text(
         drawable,
-        x() + x_placeholder,
+        x() + D::x_placeholder,
         y() + (edit_or_text.edit.cy() - h_text) / 2,
         h_text,
         gdi::DrawTextPadding::Padding(0),

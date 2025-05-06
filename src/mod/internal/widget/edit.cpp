@@ -30,63 +30,49 @@
 #include "utils/sugar/cast.hpp"
 #include "utils/theme.hpp"
 
-namespace
-{
 
-static constexpr FontCharView empty_ch {};
-
-static int fc_width(FontCharView const * fc) noexcept
+struct WidgetEdit::D
 {
-    return fc->boxed_width();
-}
+    static const uint16_t w_cursor = 1;
+    static const uint16_t h_padding = 2;
+    static const uint16_t w_padding = 2;
+    static const uint16_t border_len = 1;
+    static const uint16_t w_cursor_padding = 1;
+    static const uint16_t start_x_cursor = w_padding + border_len + w_cursor_padding;
 
-template<class T>
-void mem_move(T* to, array_view<T> from)
-{
-    std::memmove(to, from.data(), sizeof(T) * from.size());
-}
+    static constexpr FontCharView empty_ch {};
 
-void draw_rect(gdi::GraphicApi& drawable, Rect rect, Widget::Color color)
-{
-    if (!rect.isempty()) {
-        drawable.draw(RDPOpaqueRect(rect, color), rect, gdi::ColorCtx::depth24());
+    static Dimension compute_optimal_dim(int w_text, int h_text) noexcept
+    {
+        return Dimension{
+            checked_int(start_x_cursor * 2 + w_cursor + w_text),
+            checked_int((h_padding + border_len) * 2 + h_text),
+        };
     }
-}
 
-template<class F>
-auto sanitized_char(F&& f)
-{
-    return [f](uint32_t uc) {
-        if (uc >= ' ') {
-            // ok
-        }
-        else if (uc == '\n' || uc == '\t') {
-            uc = ' ';
-        }
-        else {
-            // char is ignored
-            return ;
-        }
-        f(uc);
-    };
-}
+    static int fc_width(FontCharView const * fc) noexcept
+    {
+        return fc->boxed_width();
+    }
 
-constexpr uint16_t w_cursor = 1;
-constexpr uint16_t h_padding = 2;
-constexpr uint16_t w_padding = 2;
-constexpr uint16_t border_len = 1;
-constexpr uint16_t w_cursor_padding = 1;
-constexpr uint16_t start_x_cursor = w_padding + border_len + w_cursor_padding;
-
-Dimension compute_optimal_dim(int w_text, int h_text)
-{
-    return Dimension{
-        checked_int(start_x_cursor * 2 + w_cursor + w_text),
-        checked_int((h_padding + border_len) * 2 + h_text),
-    };
-}
-
-} // anonymous namespace
+    template<class F>
+    static auto sanitized_char(F&& f)
+    {
+        return [f](uint32_t uc) {
+            if (uc >= ' ') {
+                // ok
+            }
+            else if (uc == '\n' || uc == '\t') {
+                uc = ' ';
+            }
+            else {
+                // char is ignored
+                return ;
+            }
+            f(uc);
+        };
+    }
+};
 
 
 /*
@@ -145,13 +131,19 @@ class WidgetEdit::Buffer : private WidgetEdit::BufferData
         return unicode_buffer + reserved_index;
     }
 
+    template<class T>
+    void mem_move(T* to, array_view<T> from)
+    {
+        std::memmove(to, from.data(), sizeof(T) * from.size());
+    }
+
 public:
     void init() noexcept
     {
         current_fc_it = begin_fc_buffer();
         end_fc_it = current_fc_it;
         current_unicode_it = begin_unicode_buffer();
-        fc_buffer[0] = &empty_ch;
+        fc_buffer[0] = &D::empty_ch;
         unicode_buffer[0] = 0;
     }
 
@@ -186,7 +178,7 @@ public:
         assert(is_movable_to_left());
         --current_fc_it;
         --current_unicode_it;
-        return fc_width(*current_fc_it);
+        return D::fc_width(*current_fc_it);
     }
 
     bool is_movable_to_right() const noexcept
@@ -198,7 +190,7 @@ public:
     int move_to_right() noexcept
     {
         assert(is_movable_to_right());
-        int w = fc_width(*current_fc_it);
+        int w = D::fc_width(*current_fc_it);
         ++current_fc_it;
         ++current_unicode_it;
         return w;
@@ -282,7 +274,7 @@ public:
         assert(!is_full());
         *current_unicode_it = uc;
         *current_fc_it = &font.item(uc).view;
-        int w = fc_width(*current_fc_it);
+        int w = D::fc_width(*current_fc_it);
         ++current_unicode_it;
         ++current_fc_it;
         ++end_fc_it;
@@ -318,12 +310,13 @@ public:
     }
 };
 
+
 WidgetEdit::WidgetEdit(
     gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
     Colors colors, WidgetEventNotifier onsubmit
 )
     : Widget(gd, Focusable::Yes)
-    , x_cursor(start_x_cursor)
+    , x_cursor(D::start_x_cursor)
     , x_text(0)
     , colors(colors)
     , font(&font)
@@ -334,7 +327,7 @@ WidgetEdit::WidgetEdit(
     buffer().init();
     pointer_flag = PointerType::Edit;
     // set a "random" width
-    Widget::set_wh(compute_optimal_dim(h_text * 10, h_text));
+    Widget::set_wh(D::compute_optimal_dim(h_text * 10, h_text));
 }
 
 WidgetEdit::WidgetEdit(
@@ -355,7 +348,7 @@ WidgetEdit::~WidgetEdit()
 
 uint16_t WidgetEdit::x_padding() noexcept
 {
-    return compute_optimal_dim(0, 0).w;
+    return D::compute_optimal_dim(0, 0).w;
 }
 
 bool WidgetEdit::has_text() const noexcept
@@ -391,7 +384,7 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
 
     buffer().remove_all();
 
-    x_cursor = start_x_cursor;
+    x_cursor = D::start_x_cursor;
     x_text = 0;
 
     int shift = 0;
@@ -416,8 +409,8 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
                     ? fcs.from_offset(old_pos)
                     : fcs.first(old_pos);
                 int partial_shift = 0;
-                for (auto const & fc : partial_fcs) {
-                    partial_shift += fc_width(fc);
+                for (auto const * fc : partial_fcs) {
+                    partial_shift += D::fc_width(fc);
                 }
                 shift = right_part_is_lower ? shift - partial_shift : partial_shift;
             }
@@ -441,11 +434,11 @@ void WidgetEdit::set_text(bytes_view text, TextOptions opts)
 
 void WidgetEdit::update_width(uint16_t width)
 {
-    Widget::set_wh(width, (h_padding + border_len) * 2 + h_text);
+    Widget::set_wh(width, (D::h_padding + D::border_len) * 2 + h_text);
 
-    int shift = x_text - start_x_cursor + x_cursor;
+    int shift = x_text - D::start_x_cursor + x_cursor;
     x_text = 0;
-    x_cursor = start_x_cursor;
+    x_cursor = D::start_x_cursor;
     move_cursor_to_right(shift);
 }
 
@@ -547,7 +540,7 @@ void WidgetEdit::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
         return;
     }
 
-    auto insert_char = sanitized_char([&](uint32_t uc){
+    auto insert_char = D::sanitized_char([&](uint32_t uc){
         insert_chars({&uc, 1}, Redraw::Yes);
     });
     insert_char(unicode32_decoder.convert(unicode));
@@ -584,7 +577,7 @@ void WidgetEdit::rdp_input_mouse(uint16_t device_flags, uint16_t x_, uint16_t y)
 
             shift += buffer().move_to_left();
 
-            if (x_cursor - shift < start_x_cursor) {
+            if (x_cursor - shift < D::start_x_cursor) {
                 break;
             }
         }
@@ -625,7 +618,7 @@ void WidgetEdit::clipboard_insert_utf8(zstring_view text)
     auto * p = ucs;
     utf8_for_each(
         text,
-        sanitized_char([&](uint32_t uc) {
+        D::sanitized_char([&](uint32_t uc) {
             --remaining;
             *p++ = uc;
         }),
@@ -656,7 +649,7 @@ void WidgetEdit::blur()
 
 int WidgetEdit::get_end_pos() const
 {
-    return this->cx() - (w_padding + border_len + w_cursor);
+    return this->cx() - (D::w_padding + D::border_len + D::w_cursor);
 }
 
 bool WidgetEdit::action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw)
@@ -707,7 +700,7 @@ bool WidgetEdit::action_move_cursor_to_begin_of_line(Redraw redraw)
 {
     if (buffer().is_movable_to_left()) {
         buffer().move_to_start();
-        int shift = x_text + x_cursor - start_x_cursor;
+        int shift = x_text + x_cursor - D::start_x_cursor;
         move_cursor_to_left_and_redraw(shift, redraw);
         return true;
     }
@@ -853,26 +846,26 @@ Rect WidgetEdit::cursor_rect(int x_cursor) noexcept
 {
     return Rect(
         checked_int(x() + x_cursor),
-        checked_int(y() + h_padding + border_len),
-        w_cursor,
+        checked_int(y() + D::h_padding + D::border_len),
+        D::w_cursor,
         h_text
     );
 }
 
 void WidgetEdit::draw_border(Rect clip, Color color)
 {
-    gdi_draw_border(drawable, color, this->get_rect(), border_len, clip, gdi::ColorCtx::depth24());
+    gdi_draw_border(drawable, color, get_rect(), D::border_len, clip, gdi::ColorCtx::depth24());
 }
 
 void WidgetEdit::draw_cursor(Rect clip, Color color)
 {
-    draw_rect(drawable, cursor_rect(x_cursor).intersect(clip), color);
+    draw_rect(cursor_rect(x_cursor).intersect(clip), color);
 }
 
 void WidgetEdit::draw_inner(Rect clip)
 {
-    auto rect = get_rect().shrink(border_len).intersect(clip);
-    draw_rect(drawable, rect, colors.bg);
+    auto rect = get_rect().shrink(D::border_len).intersect(clip);
+    draw_rect(rect, colors.bg);
     draw_text(rect);
 
     if (has_focus) {
@@ -882,12 +875,12 @@ void WidgetEdit::draw_inner(Rect clip)
 
 void WidgetEdit::draw_text(Rect clip)
 {
-    int x = this->x() - x_text + w_padding + border_len;
+    int x = this->x() - x_text + D::w_padding + D::border_len;
 
     gdi::draw_text(
         drawable,
         x,
-        y() + h_padding + border_len,
+        y() + D::h_padding + D::border_len,
         font->max_height(),
         gdi::DrawTextPadding::Padding(0),
         buffer().font_chars(),
@@ -897,28 +890,35 @@ void WidgetEdit::draw_text(Rect clip)
     );
 }
 
+void WidgetEdit::draw_rect(Rect rect, Widget::Color color)
+{
+    if (!rect.isempty()) {
+        drawable.draw(RDPOpaqueRect(rect, color), rect, gdi::ColorCtx::depth24());
+    }
+}
+
 /// \return last pixel drawn
 int WidgetEdit::redraw_text(RedrawInfo redraw_info)
 {
-    Rect clip = get_rect().shrink(border_len);
+    Rect clip = get_rect().shrink(D::border_len);
     int x = this->x();
     auto fcs = buffer().font_chars();
 
     if (redraw_info.partial_update) {
-        int shift = redraw_info.x_cursor - w_cursor_padding;
+        int shift = redraw_info.x_cursor - D::w_cursor_padding;
         clip.cx -= shift;
         clip.x += shift;
         x += shift;
         fcs = fcs.from_offset(redraw_info.it);
     }
     else {
-        x += -x_text + w_padding + border_len;
+        x += -x_text + D::w_padding + D::border_len;
     }
 
     int last_x = gdi::draw_text(
         drawable,
         x,
-        y() + h_padding + border_len,
+        y() + D::h_padding + D::border_len,
         font->max_height(),
         gdi::DrawTextPadding::Padding(0),
         fcs,
@@ -934,41 +934,41 @@ int WidgetEdit::redraw_text(RedrawInfo redraw_info)
 void WidgetEdit::redraw_cursor(int old_x_cursor)
 {
     auto rect = cursor_rect(old_x_cursor);
-    draw_rect(drawable, rect, colors.bg);
+    draw_rect(rect, colors.bg);
     rect.x = checked_int(x() + x_cursor);
-    draw_rect(drawable, rect, colors.cursor);
+    draw_rect(rect, colors.cursor);
 }
 
 void WidgetEdit::redraw_removed_right_text(bool partial_update, int shift)
 {
     int last_x = redraw_text({partial_update, buffer().current(), x_cursor});
-    auto clip = get_rect().shrink(border_len);
+    auto clip = get_rect().shrink(D::border_len);
     // redraws over removed chars
     if (last_x < clip.eright()) {
         int eright = buffer().is_movable_to_right()
             ? last_x
-            : x() + x_cursor + w_cursor;
+            : x() + x_cursor + D::w_cursor;
         int w = std::min(clip.eright() - eright, shift);
         clip.x = checked_int(eright);
         clip.cx = checked_int(w);
-        draw_rect(drawable, clip, colors.bg);
+        draw_rect(clip, colors.bg);
     }
 }
 
 void WidgetEdit::redraw_right_empty_padding()
 {
-    Rect clip = get_rect().shrink(border_len);
-    clip.x = this->eright() - w_padding - w_cursor_padding;
-    clip.cx = w_padding;
-    draw_rect(drawable, clip, colors.bg);
+    Rect clip = get_rect().shrink(D::border_len);
+    clip.x = this->eright() - D::w_padding - D::w_cursor_padding;
+    clip.cx = D::w_padding;
+    draw_rect(clip, colors.bg);
 }
 
 void WidgetEdit::maybe_redraw_left_empty_padding(int old_x_text)
 {
     if (old_x_text && !x_text) {
-        Rect clip = get_rect().shrink(border_len);
-        clip.cx = w_padding;
-        draw_rect(drawable, clip, colors.bg);
+        Rect clip = get_rect().shrink(D::border_len);
+        clip.cx = D::w_padding;
+        draw_rect(clip, colors.bg);
     }
 }
 
@@ -1006,13 +1006,13 @@ void WidgetEdit::move_cursor_to_right_and_redraw(int shift, Redraw redraw)
 
 bool WidgetEdit::move_cursor_to_left(int shift)
 {
-    if (x_cursor - shift >= start_x_cursor) {
+    if (x_cursor - shift >= D::start_x_cursor) {
         x_cursor -= shift;
         return true;
     }
     else {
-        x_text -= start_x_cursor - (x_cursor - shift);
-        x_cursor = start_x_cursor;
+        x_text -= D::start_x_cursor - (x_cursor - shift);
+        x_cursor = D::start_x_cursor;
         return false;
     }
 }
@@ -1056,9 +1056,9 @@ void WidgetEdit::set_font(Font const & font, Redraw redraw)
 
     int shift = 0;
     for (auto & fc : left) {
-        shift -= fc_width(fc);
+        shift -= D::fc_width(fc);
         fc = &font.item(*uc_it).view;
-        shift += fc_width(fc);
+        shift += D::fc_width(fc);
         ++uc_it;
     }
     for (auto & fc : right) {
@@ -1090,4 +1090,3 @@ WidgetEdit::Colors WidgetEdit::Colors::from_theme(const Theme& theme) noexcept
         .cursor = theme.edit.cursor_color,
     };
 }
-
