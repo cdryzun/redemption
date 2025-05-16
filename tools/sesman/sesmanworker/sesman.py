@@ -1092,10 +1092,6 @@ class Sesman():
                                 # , 'selector'                : "True"
                                 'ip_client': self.shared.get('ip_client'),
                                 'selector_number_of_pages': "0",
-                                # No lines sent, reset filters
-                                'selector_group_filter': "",
-                                'selector_device_filter': "",
-                                'selector_proto_filter': "",
                                 'module': 'selector',
                             }
 
@@ -1134,12 +1130,6 @@ class Sesman():
                                 'selector_current_page': (
                                     str(_current_page + 1)
                                 ),
-                                'selector_group_filter':
-                                self.shared.get('selector_group_filter'),
-                                'selector_device_filter':
-                                self.shared.get('selector_device_filter'),
-                                'selector_proto_filter':
-                                self.shared.get('selector_proto_filter'),
                                 'opt_message': '',
                                 'module': 'selector',
                             }
