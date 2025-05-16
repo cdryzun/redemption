@@ -174,7 +174,16 @@ void WidgetScreen::allow_mouse_pointer_change(bool allow)
 
 void WidgetScreen::redo_mouse_pointer_change(int x, int y)
 {
-    Widget * w = this->last_widget_at_pos(x, y);
+    Widget * w = this;
+    // last_widget_at_pos(x, y)
+    {
+        Widget * wnext;
+        int count = 10;
+        while (--count > 0 && (wnext = w->widget_at_pos(x, y))) {
+            w = wnext;
+        }
+    }
+
     if (this->current_over != w){
         if (this->allow_mouse_pointer_change_) {
             switch (w ? w->pointer_flag : PointerType::Normal) {

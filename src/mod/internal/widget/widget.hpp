@@ -162,18 +162,6 @@ public:
             : NextFocusResult::Focusable;
     }
 
-    Widget * last_widget_at_pos(int16_t x, int16_t y)
-    {
-        Widget * w = this;
-        int count = 10;
-        while (w->widget_at_pos(x, y)
-               && (w != w->widget_at_pos(x, y))
-               && (--count > 0)) {
-            w = w->widget_at_pos(x, y);
-        }
-        return w;
-    }
-
     void rdp_gdi_up_and_running() override
     {}
 
