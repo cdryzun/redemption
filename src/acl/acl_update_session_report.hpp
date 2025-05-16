@@ -44,9 +44,9 @@ struct AclUpdateSessionReport
             already_set_flags |= to_mask(id);
         }
 
-        auto previous_len = s.size();
-        str_append(s, sep, acl_report.reason(), ':', target_device, ':', acl_report.message());
-        auto added_mes = make_writable_array_view(s).drop_front(previous_len + 2);
+        auto acl_msg = acl_report.message();
+        str_append(s, sep, acl_report.reason(), ':', target_device, ':', acl_msg);
+        auto added_mes = make_writable_array_view(s).last(acl_msg.size());
 
         // check \x01
         auto* p = static_cast<char*>(memchr(added_mes.data(), '\x01', added_mes.size()));
