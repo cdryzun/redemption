@@ -42,7 +42,7 @@ struct AclReport {
     enum class ReasonId {
         REDEMPTION_ACL_REPORT_DEF(REDEMPTION_ACL_REPORT_ID)
     };
-    #undef REDEMPTION_ACL_REPORT_X
+    #undef REDEMPTION_ACL_REPORT_ID
 
     #define REDEMPTION_ACL_REPORT_SIG_PARAM() (chars_view message)
     #define REDEMPTION_ACL_REPORT_VAR_PARAM() message
