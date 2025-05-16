@@ -44,9 +44,10 @@ struct ButtonContextTest
         chars_view text,
         int16_t x, int16_t y,
         int16_t dx = 0, int16_t dy = 0,
-        uint16_t cx = 0, uint16_t cy = 0
+        uint16_t cx = 0, uint16_t cy = 0,
+        bool force_focus = false
     )
-    : ButtonContextTest(100, 50, text, x, y, dx, dy, cx, cy)
+    : ButtonContextTest(100, 50, text, x, y, dx, dy, cx, cy, force_focus)
     {}
 
     ButtonContextTest(
@@ -54,27 +55,32 @@ struct ButtonContextTest
         chars_view text,
         int16_t x, int16_t y,
         int16_t dx = 0, int16_t dy = 0,
-        uint16_t cx = 0, uint16_t cy = 0
+        uint16_t cx = 0, uint16_t cy = 0,
+        bool force_focus = false
     )
     : drawable(w, h)
     , wbutton{
         drawable, global_font_deja_vu_14(), text,
         WidgetButton::Colors{
             .focus = {
-              .fg = NamedBGRColor::YELLOW,
-              .bg = NamedBGRColor::RED,
-              .border = NamedBGRColor::WINBLUE,
+                .fg = NamedBGRColor::YELLOW,
+                .bg = NamedBGRColor::RED,
+                .border = NamedBGRColor::WINBLUE,
             },
             .blur = {
-              .fg = NamedBGRColor::RED,
-              .bg = NamedBGRColor::YELLOW,
-              .border = NamedBGRColor::GREEN,
-            }
+                .fg = NamedBGRColor::RED,
+                .bg = NamedBGRColor::YELLOW,
+                .border = NamedBGRColor::GREEN,
+            },
         },
         notifier
     }
     {
         wbutton.set_xy(x, y);
+
+        if (force_focus) {
+            wbutton.has_focus = true;
+        }
 
         // ask to widget to redraw at it's current position
         wbutton.rdp_input_invalidate(Rect(
@@ -103,7 +109,7 @@ RED_AUTO_TEST_CASE(TraceWidgetButton)
 
 RED_AUTO_TEST_CASE(TraceWidgetButtonDownAndUp)
 {
-    ButtonContextTest button("test6"_av, 10, 10);
+    ButtonContextTest button("test6"_av, 10, 10, 0, 0, 0, 0, true);
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_9.png");
 
     auto& wbutton = button.wbutton;

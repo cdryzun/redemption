@@ -550,11 +550,16 @@ void WidgetSelector::WidgetGrid::rdp_input_mouse(uint16_t device_flags, uint16_t
             if (new_selected_line != selected_line) {
                 set_selected_line(new_selected_line);
                 last_tick = MonotonicTimePoint();
+                has_focus = true;
             }
             else if (now - last_tick <= MonotonicTimePoint::duration(700ms)) {
                 events.onsubmit();
             }
             last_tick = now;
+
+            if (!has_focus) {
+                focus();
+            }
         }
 
         /*

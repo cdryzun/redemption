@@ -66,6 +66,7 @@ void WidgetVerticalScrollText::update_dimension(DimensionContraints contraints)
     };
 
     this->has_scroll = false;
+    this->set_focusable(Focusable::No);
 
     uint16_t const max_cx = contraints.width.max;
     uint16_t const max_cy = contraints.height.max;
@@ -81,6 +82,7 @@ void WidgetVerticalScrollText::update_dimension(DimensionContraints contraints)
     }
 
     this->has_scroll = true;
+    this->set_focusable(Focusable::Yes);
 
     uint16_t const scroll_w = this->button_dim.w + D::scroll_sep;
     uint16_t const new_cx = max_cx - scroll_w;

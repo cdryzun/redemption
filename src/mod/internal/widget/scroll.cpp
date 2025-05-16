@@ -247,6 +247,7 @@ void WidgetScrollBar::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
         }
 
         this->rdp_input_invalidate(this->get_rect());
+        this->has_focus = true;
     }
     else if (device_flags == MOUSE_FLAG_BUTTON1) {
         this->mouse_down               = false;

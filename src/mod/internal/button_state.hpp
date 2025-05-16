@@ -12,16 +12,17 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 struct ButtonState
 {
-    enum class State
+    enum class State : bool
     {
         Normal,
         Pressed,
     };
 
-    enum class RedrawOnSubmit
+    enum class Redraw : uint8_t
     {
         No,
-        Yes,
+        OnSubmit,
+        Always,
     };
 
     ButtonState() noexcept = default;
@@ -59,24 +60,24 @@ struct ButtonState
     template<class OnSubmit, class OnChange>
     void update(
         Rect area, uint16_t x, uint16_t y, uint16_t device_flags,
-        RedrawOnSubmit redraw_on_submit, OnSubmit&& onsubmit, OnChange&& onchange)
+        Redraw redraw_behavior, OnSubmit&& onsubmit, OnChange&& onchange)
     {
-        auto redraw = RedrawOnSubmit::Yes;
+        auto redraw = Redraw::OnSubmit;
         if (is_toggable(device_flags) && area.contains_pt(checked_int(x), checked_int(y))) {
             toggle();
             if (device_flags == MOUSE_FLAG_BUTTON1) {
                 onsubmit();
-                redraw = redraw_on_submit;
+                redraw = redraw_behavior;
             }
         }
         else if (device_flags == MOUSE_FLAG_BUTTON1) {
             pressed(false);
         }
-        else {
+        else if (redraw_behavior != Redraw::Always) {
             return;
         }
 
-        if (redraw == RedrawOnSubmit::Yes) {
+        if (redraw != Redraw::No) {
             onchange(area);
         }
     }

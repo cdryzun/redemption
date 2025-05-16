@@ -34,7 +34,11 @@ public:
     static bool is_submit_event(Keymap const& keymap) noexcept;
     static bool is_submit_event(KbdFlags flag, uint16_t unicode) noexcept;
 
-    using RedrawOnSubmit = ButtonState::RedrawOnSubmit;
+    enum class RedrawOnSubmit : uint8_t
+    {
+        No,
+        Yes,
+    };
 
     WidgetButtonEvent(
         gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit,
@@ -54,7 +58,7 @@ protected:
     void reset_state() noexcept;
 
 private:
-    RedrawOnSubmit redraw_on_submit;
+    ButtonState::Redraw redraw_on_submit;
     ButtonState button_state;
     WidgetEventNotifier onsubmit;
 };

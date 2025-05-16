@@ -392,17 +392,26 @@ void WidgetComposite::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
 
     if (w) {
         // get focus when mouse clic
-        if (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)) {
-            if (w->focusable == Focusable::Yes) {
-                this->pressed = w;
-                if (auto * curr = current_focus()) {
-                    curr->blur();
-                }
-                current_focus_index = idx;
+        auto activate_focus
+            = (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN))
+           && (w->focusable == Focusable::Yes);
+        if (activate_focus) {
+            pressed = w;
+            if (auto * curr = current_focus()) {
+                curr->blur();
+            }
+            current_focus_index = idx;
+        }
+
+        w->rdp_input_mouse(device_flags, x, y);
+
+        // when not done in rdp_input_mouse
+        if (activate_focus) {
+            has_focus = true;
+            if (activate_focus && !w->has_focus) {
                 w->focus();
             }
         }
-        w->rdp_input_mouse(device_flags, x, y);
     }
 
     if (device_flags == MOUSE_FLAG_MOVE && this->pressed) {

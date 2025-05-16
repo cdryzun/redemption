@@ -14,15 +14,22 @@ SPDX-License-Identifier: GPL-2.0-or-later
 WidgetButtonEvent::WidgetButtonEvent(
     gdi::GraphicApi & drawable, WidgetEventNotifier onsubmit, RedrawOnSubmit redraw_on_submit)
 : Widget(drawable, Focusable::Yes)
-, redraw_on_submit(redraw_on_submit)
+, redraw_on_submit(redraw_on_submit == RedrawOnSubmit::Yes
+    ? ButtonState::Redraw::OnSubmit
+    : ButtonState::Redraw::No)
 , onsubmit(onsubmit)
 {
 }
 
 void WidgetButtonEvent::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
+    auto redraw_behavior = redraw_on_submit;
+    if (should_be_focused(device_flags)) {
+        has_focus = true;
+        redraw_behavior = ButtonState::Redraw::Always;
+    }
     button_state.update(
-        get_rect(), x, y, device_flags, redraw_on_submit, onsubmit,
+        get_rect(), x, y, device_flags, redraw_behavior, onsubmit,
         [this](Rect rect){ rdp_input_invalidate(rect); }
     );
 }

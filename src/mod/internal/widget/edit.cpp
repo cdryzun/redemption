@@ -631,8 +631,8 @@ void WidgetEdit::clipboard_insert_utf8(zstring_view text)
 
 void WidgetEdit::focus()
 {
-    if (!this->has_focus) {
-        this->has_focus = true;
+    if (!has_focus) {
+        has_focus = true;
         draw_border(get_rect(), colors.focus_border);
         draw_cursor(get_rect(), colors.cursor);
     }
@@ -640,8 +640,8 @@ void WidgetEdit::focus()
 
 void WidgetEdit::blur()
 {
-    if (this->has_focus) {
-        this->has_focus = false;
+    if (has_focus) {
+        has_focus = false;
         draw_border(get_rect(), colors.border);
         draw_cursor(get_rect(), colors.bg);
     }
