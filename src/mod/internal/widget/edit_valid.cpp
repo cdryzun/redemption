@@ -461,49 +461,45 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
 
         bool force_focus = should_be_focused(device_flags);
 
-        // valid button
-        if (auto * fc = buttons.valid_text)
+        // toggle visibility button
+        if (auto * fc = buttons.visibility_visible)
         {
-            // toggle visibility button
-            if (auto * fc = buttons.visibility_visible)
-            {
-                int w = D::button_toggle_width(*fc) - D::border_len;
-
-                auto rect = Rect(
-                    checked_int(btn1),
-                    this->y(),
-                    checked_int(w),
-                    cy()
-                );
-
-                btn2 += D::button_toggle_width(*fc);
-
-                auto redraw_behavior = force_focus
-                    ? ButtonState::Redraw::No
-                    : ButtonState::Redraw::OnSubmit;
-                toggle_password_pressed.update(
-                    rect, x, y, device_flags, redraw_behavior,
-                    [this]{ edit_or_text.edit.toggle_password_visibility(WidgetEdit::Redraw::Yes); },
-                    [this](Rect rect){ rdp_input_invalidate(rect); }
-                );
-            }
+            int w = D::button_toggle_width(*fc) - D::border_len;
 
             auto rect = Rect(
-                checked_int(btn2),
+                checked_int(btn1),
                 this->y(),
-                checked_int(D::button_toggle_width(*fc) - D::border_len),
+                checked_int(w),
                 cy()
             );
+
+            btn2 += D::button_toggle_width(*fc);
 
             auto redraw_behavior = force_focus
                 ? ButtonState::Redraw::No
                 : ButtonState::Redraw::OnSubmit;
-            valid_pressed.update(
+            toggle_password_pressed.update(
                 rect, x, y, device_flags, redraw_behavior,
-                [this]{ edit_or_text.edit.submit(); },
+                [this]{ edit_or_text.edit.toggle_password_visibility(WidgetEdit::Redraw::Yes); },
                 [this](Rect rect){ rdp_input_invalidate(rect); }
             );
         }
+
+        auto rect = Rect(
+            checked_int(btn2),
+            this->y(),
+            checked_int(D::button_toggle_width(*buttons.valid_text) - D::border_len),
+            cy()
+        );
+
+        auto redraw_behavior = force_focus
+            ? ButtonState::Redraw::No
+            : ButtonState::Redraw::OnSubmit;
+        valid_pressed.update(
+            rect, x, y, device_flags, redraw_behavior,
+            [this]{ edit_or_text.edit.submit(); },
+            [this](Rect rect){ rdp_input_invalidate(rect); }
+        );
 
         if (force_focus) {
             focus();
