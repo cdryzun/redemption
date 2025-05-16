@@ -76,6 +76,7 @@ public:
 
 protected:
     void show_copied_msg();
+    void focus_to_ok();
 
 private:
     WidgetEventNotifier onctrl_shift;

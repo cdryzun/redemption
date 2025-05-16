@@ -131,7 +131,7 @@ RED_AUTO_TEST_CASE(WidgetEditGd)
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_1.png");
 
     for (auto & d : datas) {
-        d.edit.focus(Widget::focus_reason_tabkey);
+        d.edit.focus();
     }
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_2.png");

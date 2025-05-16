@@ -28,7 +28,9 @@ namespace
 {
     WidgetEventNotifier next_focus_event(WidgetInteractiveTarget & w)
     {
-        return WidgetEventNotifier([&w]{ w.next_focus(); });
+        return WidgetEventNotifier([&w]{
+            (void)w.next_focus(Widget::FocusDirection::Forward, Widget::FocusStrategy::Next);
+        });
     }
 }
 

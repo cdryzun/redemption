@@ -248,12 +248,12 @@ RED_AUTO_TEST_CASE(TraceWidgetButtonFocus)
 
     auto& wbutton = button.wbutton;
 
-    wbutton.focus(Widget::focus_reason_tabkey);
+    wbutton.focus();
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_15.png");
 
     wbutton.blur();
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_14.png");
 
-    wbutton.focus(Widget::focus_reason_tabkey);
+    wbutton.focus();
     RED_CHECK_IMG(button.drawable, IMG_TEST_PATH "button_15.png");
 }

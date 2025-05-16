@@ -23,9 +23,6 @@ public:
                       Rect preferred_display_rect,
                       Rect mouse_area) override;
 
-    bool next_focus() override;
-    bool previous_focus() override;
-
     void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
     void rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap) override;

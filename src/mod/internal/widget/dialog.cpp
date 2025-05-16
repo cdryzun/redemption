@@ -261,6 +261,10 @@ void WidgetDialogBase::show_copied_msg()
     }
 }
 
+void WidgetDialogBase::focus_to_ok()
+{
+    this->set_widget_focus(this->ok, Redraw::Yes);
+}
 
 
 WidgetDialog::WidgetDialog(
@@ -333,7 +337,7 @@ WidgetDialogWithCopyableLink::WidgetDialogWithCopyableLink(
         drawable, [this]{
             this->copy_paste.copy(this->link_value);
             this->show_copied_msg();
-            this->next_focus();
+            this->focus_to_ok();
         },
         WidgetDelegatedCopy::Colors::from_theme(theme), font)
 }

@@ -94,7 +94,7 @@ public:
 
     void rdp_input_invalidate(Rect clip) override;
 
-    void focus(int reason) override;
+    void focus() override;
 
     void blur() override;
 

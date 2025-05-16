@@ -166,7 +166,7 @@ private:
 
         void rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y) override;
 
-        void focus(int reason) override;
+        void focus() override;
         void blur() override;
 
         bool set_devices(

@@ -133,50 +133,6 @@ void WidgetScreen::show_tooltip(
     }
 }
 
-bool WidgetScreen::next_focus()
-{
-    if (this->current_focus) {
-        if (this->current_focus->next_focus()) {
-            return true;
-        }
-
-        Widget * future_focus_w = this->get_next_focus(this->current_focus);
-        if (!future_focus_w) {
-            future_focus_w = this->get_next_focus(nullptr);
-        }
-
-        if (future_focus_w) {
-            this->set_widget_focus(*future_focus_w, focus_reason_tabkey);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool WidgetScreen::previous_focus()
-{
-    if (this->current_focus) {
-        if (this->current_focus->previous_focus()) {
-            return true;
-        }
-
-        Widget * future_focus_w = this->get_previous_focus(this->current_focus);
-        if (!future_focus_w) {
-            future_focus_w = this->get_previous_focus(nullptr);
-        }
-
-        if (future_focus_w) {
-            this->set_widget_focus(*future_focus_w, focus_reason_backtabkey);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
 void WidgetScreen::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
     this->redo_mouse_pointer_change(x, y);

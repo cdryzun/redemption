@@ -629,7 +629,7 @@ void WidgetEdit::clipboard_insert_utf8(zstring_view text)
     insert_chars({ucs, p}, Redraw::Yes);
 }
 
-void WidgetEdit::focus(int /*reason*/)
+void WidgetEdit::focus()
 {
     if (!this->has_focus) {
         this->has_focus = true;

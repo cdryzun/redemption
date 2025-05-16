@@ -57,6 +57,7 @@ struct TestWidgetInteractivePasswordCtx
         "Login"_av, "user1"_av, "Password"_av,
         global_font_deja_vu_14(), nullptr)
     {
+        interactive.init_focus();
         interactive.rdp_input_invalidate(interactive.get_rect());
     }
 };

@@ -577,7 +577,7 @@ void WidgetSelector::WidgetGrid::rdp_input_mouse(uint16_t device_flags, uint16_t
     }
 }
 
-void WidgetSelector::WidgetGrid::focus(int /*reason*/)
+void WidgetSelector::WidgetGrid::focus()
 {
     if (!has_focus) {
         if (!lines.empty()) {
@@ -981,11 +981,7 @@ void WidgetSelector::set_page(Page page)
 
     // focus to grid without redraw
     if (has_devices) {
-        if (current_focus) {
-            current_focus->has_focus = false;
-        }
-        current_focus = &grid;
-        grid.has_focus = true;
+        set_widget_focus(grid, Redraw::No);
     }
     else {
         grid.has_focus = false;

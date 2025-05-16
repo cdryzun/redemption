@@ -1,26 +1,11 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *   Product name: redemption, a FLOSS RDP proxy
- *   Copyright (C) Wallix 2010-2012
- *   Author(s): Christophe Grosjean, Dominique Lafages, Jonathan Poelen,
- *              Meng Tan, Raphael Zhou
- */
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 #include "mod/internal/widget/composite.hpp"
 #include "keyboard/keymap.hpp"
+#include "utils/out_param.hpp"
 #include "utils/region.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "gdi/graphic_api.hpp"
@@ -87,17 +72,6 @@ void CompositeArray::remove(Widget const & w)
     }
 }
 
-Widget** CompositeArray::find(Widget const & w)
-{
-    for (int i = 0; i < this->count; ++i) {
-        if (p[i] == &w) {
-            return p + i;
-        }
-    }
-
-    return end();
-}
-
 void CompositeArray::clear()
 {
     this->count = 0;
@@ -111,162 +85,96 @@ WidgetComposite::WidgetComposite(gdi::GraphicApi & drawable, Focusable focusable
 
 WidgetComposite::~WidgetComposite() = default;
 
-void WidgetComposite::set_widget_focus(Widget & new_focused, int reason)
+void WidgetComposite::set_widget_focus(Widget & new_focused, Redraw redraw)
 {
-    if (&new_focused != this->current_focus) {
-        if (this->current_focus) {
-            this->current_focus->blur();
+    auto * w = current_focus();
+    if (&new_focused != w) {
+        if (w) {
+            if (redraw == Redraw::Yes) {
+                w->blur();
+            }
+            else {
+                w->has_focus = false;
+            }
         }
-        this->current_focus = &new_focused;
-    }
 
-    this->current_focus->focus(reason);
+        for (auto & curr : widgets) {
+            if (curr == &new_focused) {
+                current_focus_index = checked_int(&curr - widgets.begin());
+                if (redraw == Redraw::Yes) {
+                    curr->focus();
+                }
+                else {
+                    curr->has_focus = true;
+                }
+                return;
+            }
+        }
+    }
 }
 
-void WidgetComposite::focus(int reason)
+void WidgetComposite::focus()
 {
-    const bool tmp_has_focus = this->has_focus;
-    if (!this->has_focus) {
-        this->has_focus = true;
-
-        if (reason == focus_reason_tabkey) {
-            this->current_focus = this->get_next_focus(nullptr);
-        }
-        else if (reason == focus_reason_backtabkey) {
-            this->current_focus = this->get_previous_focus(nullptr);
-        }
-    }
-    if (this->current_focus) {
-        this->current_focus->focus(reason);
-    }
-    if (!tmp_has_focus) {
-        this->rdp_input_invalidate(this->get_rect());
+    this->has_focus = true;
+    if (auto * w = current_focus()) {
+        w->focus();
     }
 }
 
 void WidgetComposite::blur()
 {
-    if (this->has_focus) {
-        this->has_focus = false;
+    this->has_focus = false;
+    if (auto * w = current_focus()) {
+        w->blur();
     }
-    if (this->current_focus) {
-        this->current_focus->blur();
-    }
-    this->rdp_input_invalidate(this->get_rect());
 }
 
-Widget * WidgetComposite::get_next_focus(Widget * w)
+Widget * WidgetComposite::current_focus()
 {
-    Widget** it = this->widgets.begin();
-    Widget** last = this->widgets.end();
-
-    if (!w) {
-        if (it == last) {
-            return nullptr;
-        }
-
-        w = *it;
-        if (w->focusable == Focusable::Yes) {
-            return w;
-        }
-    }
-    else {
-        it = this->widgets.find(*w);
-
-        if (it == last) {
-            return nullptr;
-        }
-    }
-
-    while (++it != last) {
-        Widget* future_focus_w = *it;
-        if (future_focus_w->focusable == Focusable::Yes) {
-            return future_focus_w;
-        }
-    }
-
-    return nullptr;
+    return current_focus_index < widgets_len()
+        ? *(widgets.begin() + current_focus_index)
+        : nullptr;
 }
 
-Widget * WidgetComposite::get_previous_focus(Widget * w)
+WidgetComposite::FocusIndex WidgetComposite::widgets_len()
 {
-    Widget** it = this->widgets.begin();
-    Widget** last = this->widgets.end();
-
-    if (!w) {
-        if (it == last) {
-            return nullptr;
-        }
-
-        w = *(last - 1);
-        if (w->focusable == Focusable::Yes) {
-            return w;
-        }
-
-        it = last;
-    }
-    else {
-        it = this->widgets.find(*w);
-
-        if (it == last) {
-            return nullptr;
-        }
-    }
-
-    Widget** first = this->widgets.begin();
-    if (it != first) {
-        do {
-            --it;
-            Widget* future_focus_w = *it;
-            if (future_focus_w->focusable == Focusable::Yes) {
-                return future_focus_w;
-            }
-        } while (it != first);
-    }
-
-    return nullptr;
+    return checked_int(widgets.end() - widgets.begin());
 }
 
 void WidgetComposite::init_focus()
 {
-    this->has_focus = true;
-    if (this->current_focus) {
-        this->current_focus->init_focus();
+    has_focus = true;
+    if (auto * w = current_focus()) {
+        w->init_focus();
     }
 }
 
 void WidgetComposite::add_widget(Widget & w, HasFocus has_focus)
 {
-    this->widgets.add(w);
+    widgets.add(w);
 
-    if (w.focusable == Focusable::Yes && (has_focus == HasFocus::Yes || !this->current_focus)) {
-        this->current_focus = &w;
+    if (w.focusable == Focusable::Yes
+     && (has_focus == HasFocus::Yes || current_focus_index == invalid_focus_index)
+    ) {
+        current_focus_index = widgets_len() - 1;
     }
 }
 
 void WidgetComposite::remove_widget(Widget & w)
 {
-    if (this->current_focus == &w) {
-        Widget * future_focus_w = this->get_next_focus(&w);
-        if (not future_focus_w) {
-            future_focus_w = this->get_previous_focus(&w);
-        }
-        this->current_focus = future_focus_w;
+    if (current_focus() == &w) {
+        current_focus_index = invalid_focus_index;
     }
-
-    this->widgets.remove(w);
-}
-
-bool WidgetComposite::contains_widget(Widget & w)
-{
-    return this->widgets.find(w) != this->widgets.end();
+    if (pressed == &w) {
+        pressed = nullptr;
+    }
+    widgets.remove(w);
 }
 
 void WidgetComposite::clear_widget()
 {
-    this->widgets.clear();
-
-    this->current_focus = nullptr;
+    widgets.clear();
+    current_focus_index = invalid_focus_index;
 }
 
 void WidgetComposite::invalidate_children(Rect clip)
@@ -308,61 +216,88 @@ void WidgetComposite::move_children_xy(int16_t x, int16_t y)
     }
 }
 
-bool WidgetComposite::next_focus()
+Widget::NextFocusResult WidgetComposite::next_focus(FocusDirection dir, FocusStrategy strategy)
 {
-    if (this->current_focus) {
-        if (this->current_focus->next_focus()) {
-            return true;
+    auto first = widgets.begin();
+    auto last = widgets.end();
+
+    auto result = NextFocusResult::Unfocusable;
+
+    if (current_focus() && strategy == Widget::FocusStrategy::Next)
+    {
+        auto * w = current_focus();
+        switch (w->next_focus(dir, strategy))
+        {
+            case NextFocusResult::Unfocusable:
+                break;
+            case NextFocusResult::Focusable:
+                result = NextFocusResult::Focusable;
+                break;
+            case NextFocusResult::Focused:
+                return NextFocusResult::Focused;
         }
 
-        Widget * future_focus_w = this->get_next_focus(this->current_focus);
-
-        if (future_focus_w) {
-            this->set_widget_focus(*future_focus_w, focus_reason_tabkey);
-
-            return true;
+        if (current_focus_index < widgets_len())
+        {
+            auto idx = (dir == FocusDirection::Forward)
+                ? current_focus_index + 1
+                : current_focus_index;
+            first += idx;
         }
-
-        this->current_focus->blur();
-        this->current_focus = this->get_next_focus(nullptr);
-        assert(this->current_focus);
+    }
+    else if (dir == FocusDirection::Backward)
+    {
+        first = widgets.end();
     }
 
-    return false;
-}
-
-bool WidgetComposite::previous_focus()
-{
-    if (this->current_focus) {
-        if (this->current_focus->previous_focus()) {
-            return true;
-        }
-
-        Widget * future_focus_w = this->get_previous_focus(this->current_focus);
-
-        if (future_focus_w) {
-            this->set_widget_focus(*future_focus_w, focus_reason_backtabkey);
-
-            return true;
-        }
-
-        this->current_focus->blur();
-        this->current_focus = this->get_previous_focus(nullptr);
-        assert(this->current_focus);
+    auto inc = 1;
+    auto adjust = 0;
+    if (dir == FocusDirection::Backward)
+    {
+        inc = -1;
+        adjust = -1;
+        last = widgets.begin();
     }
 
-    return false;
+    for (; first != last; first += inc)
+    {
+        Widget* w = *(first + adjust);
+        if (w->focusable == Widget::Focusable::Yes)
+        {
+            switch (w->next_focus(dir, Widget::FocusStrategy::Restart))
+            {
+                case NextFocusResult::Unfocusable:
+                    break;
+                case NextFocusResult::Focusable:
+                case NextFocusResult::Focused: {
+                    auto new_idx = checked_cast<FocusIndex>(first + adjust - widgets.begin());
+                    if (current_focus_index != new_idx)
+                    {
+                        if (auto * old_w = current_focus())
+                        {
+                            old_w->blur();
+                        }
+                        current_focus_index = new_idx;
+                        w->focus();
+                    }
+                    return NextFocusResult::Focused;
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
-Widget * WidgetComposite::widget_at_pos(int16_t x, int16_t y)
+WidgetComposite::FocusIndex WidgetComposite::widget_index_at_pos(int16_t x, int16_t y)
 {
     if (!this->get_rect().contains_pt(x, y)) {
-        return nullptr;
+        return invalid_focus_index;
     }
 
-    if (this->current_focus) {
-        if (this->current_focus->get_rect().contains_pt(x, y)) {
-            return this->current_focus;
+    if (auto * w = current_focus()) {
+        if (w->get_rect().contains_pt(x, y)) {
+            return current_focus_index;
         }
     }
 
@@ -375,12 +310,18 @@ Widget * WidgetComposite::widget_at_pos(int16_t x, int16_t y)
             --last;
             Widget* w = *last;
             if (w->get_rect().contains_pt(x, y)) {
-                return w;
+                return checked_int{last - first};
             }
         } while (first != last);
     }
 
-    return nullptr;
+    return invalid_focus_index;
+}
+
+Widget * WidgetComposite::widget_at_pos(int16_t x, int16_t y)
+{
+    auto idx = widget_index_at_pos(x, y);
+    return (idx < widgets_len()) ? this->widgets.begin()[idx] : nullptr;
 }
 
 void WidgetComposite::rdp_input_invalidate(Rect clip)
@@ -395,20 +336,26 @@ void WidgetComposite::rdp_input_invalidate(Rect clip)
 
 void WidgetComposite::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
 {
+    auto next_focus_impl = [this](FocusDirection dir){
+        if (NextFocusResult::Focused != this->next_focus(dir, FocusStrategy::Next)) {
+            (void)this->next_focus(dir, FocusStrategy::Restart);
+        }
+    };
+
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
-    switch (keymap.last_kevent()){
+    switch (keymap.last_kevent()) {
         case Keymap::KEvent::Tab:
-            this->next_focus();
+            next_focus_impl(FocusDirection::Forward);
             break;
 
         case Keymap::KEvent::BackTab:
-            this->previous_focus();
+            next_focus_impl(FocusDirection::Backward);
             break;
 
         default:
-            if (this->current_focus) {
-                this->current_focus->rdp_input_scancode(flags, scancode, event_time, keymap);
+            if (auto * w = current_focus()) {
+                w->rdp_input_scancode(flags, scancode, event_time, keymap);
             }
             break;
     }
@@ -417,46 +364,47 @@ void WidgetComposite::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint
 
 void WidgetComposite::rdp_input_unicode(KbdFlags flag, uint16_t unicode)
 {
-    if (this->current_focus) {
-        this->current_focus->rdp_input_unicode(flag, unicode);
+    if (auto * w = current_focus()) {
+        w->rdp_input_unicode(flag, unicode);
     }
 }
 
 void WidgetComposite::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
     if (device_flags & (MOUSE_FLAG_WHEEL | MOUSE_FLAG_HWHEEL)) {
-        x = this->old_mouse_x;
-        y = this->old_mouse_y;
-    }
-    else {
-        this->old_mouse_x = x;
-        this->old_mouse_y = y;
+        if (auto * w = current_focus()) {
+            w->rdp_input_mouse(device_flags, x, y);
+        }
+        return;
     }
 
-    Widget * w = this->widget_at_pos(x, y);
+    auto idx = widget_index_at_pos(x, y);
+    Widget * w = (idx < widgets_len()) ? this->widgets.begin()[idx] : nullptr;
 
     // Mouse clic release
     // w could be null if mouse is located at an empty space
     if (device_flags == MOUSE_FLAG_BUTTON1) {
-        if (this->pressed
-            && (w != this->pressed)) {
+        if (this->pressed && w != this->pressed) {
             this->pressed->rdp_input_mouse(device_flags, x, y);
         }
         this->pressed = nullptr;
     }
+
     if (w) {
         // get focus when mouse clic
         if (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)) {
-            this->pressed = w;
             if (w->focusable == Focusable::Yes) {
-                this->set_widget_focus(*w, focus_reason_mousebutton1);
+                this->pressed = w;
+                if (auto * curr = current_focus()) {
+                    curr->blur();
+                }
+                current_focus_index = idx;
+                w->focus();
             }
         }
         w->rdp_input_mouse(device_flags, x, y);
     }
-    else {
-        Widget::rdp_input_mouse(device_flags, x, y);
-    }
+
     if (device_flags == MOUSE_FLAG_MOVE && this->pressed) {
         this->pressed->rdp_input_mouse(device_flags, x, y);
     }

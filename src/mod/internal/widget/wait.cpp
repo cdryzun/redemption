@@ -393,7 +393,7 @@ void WidgetWait::check_form_confirmation()
             Translator::FmtMsg<256>(tr, k, tr(field).c_str(), args...),
             get_rect()
         );
-        this->set_widget_focus(focused_edit, focus_reason_mousebutton1);
+        this->set_widget_focus(focused_edit, Redraw::Yes);
     };
 
     auto has_flags = [this](unsigned m){

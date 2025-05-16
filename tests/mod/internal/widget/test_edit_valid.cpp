@@ -140,7 +140,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithLabel)
     edit.blur();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_5.png");
 
-    edit.focus(0);
+    edit.focus();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_4.png");
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
@@ -198,7 +198,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditWithPlaceholder)
     edit.blur();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_5.png");
 
-    edit.focus(0);
+    edit.focus();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_placeholder_4.png");
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
@@ -256,7 +256,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditLabelsPassword)
     edit.blur();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_5.png");
 
-    edit.focus(0);
+    edit.focus();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_password_4.png");
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
@@ -328,7 +328,7 @@ RED_AUTO_TEST_CASE(TraceWidgetEditTextWithLabel)
     edit.blur();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
 
-    edit.focus(0);
+    edit.focus();
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "edit_valid_text_2.png");
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);

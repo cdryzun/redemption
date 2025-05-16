@@ -134,14 +134,32 @@ public:
         focusable = Focusable::No;
     }
 
-    virtual bool next_focus()
+    enum class FocusDirection : bool
     {
-        return false;
-    }
+        Forward,
+        Backward,
+    };
 
-    virtual bool previous_focus()
+    enum class FocusStrategy : bool
     {
-        return false;
+        Restart,
+        Next,
+    };
+
+    enum class [[nodiscard]] NextFocusResult : uint8_t
+    {
+        Unfocusable,
+        Focusable, // focused, but final widget
+        Focused,
+    };
+
+    virtual NextFocusResult next_focus(FocusDirection dir, FocusStrategy strategy)
+    {
+        (void)dir;
+        (void)strategy;
+        return focusable == Focusable::No
+            ? NextFocusResult::Unfocusable
+            : NextFocusResult::Focusable;
     }
 
     Widget * last_widget_at_pos(int16_t x, int16_t y)
@@ -233,25 +251,23 @@ public:
         }
     }
 
-    enum {
-          focus_reason_tabkey
-        , focus_reason_backtabkey
-        , focus_reason_mousebutton1
-    };
-    virtual void focus(int reason)
+    virtual void focus()
     {
-        (void)reason;
-        if (!this->has_focus){
-            this->has_focus = true;
-            this->rdp_input_invalidate(this->rect);
+        if (this->focusable == Focusable::Yes) {
+            if (!this->has_focus) {
+                this->has_focus = true;
+                this->rdp_input_invalidate(this->rect);
+            }
         }
     }
 
     virtual void blur()
     {
-        if (this->has_focus){
+        if (this->has_focus) {
             this->has_focus = false;
-            this->rdp_input_invalidate(this->rect);
+            if (this->focusable == Focusable::Yes) {
+                this->rdp_input_invalidate(this->rect);
+            }
         }
     }
 

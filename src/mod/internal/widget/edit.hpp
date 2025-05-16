@@ -105,7 +105,7 @@ public:
 
     void clipboard_insert_utf8(zstring_view text) override;
 
-    void focus(int reason) override;
+    void focus() override;
 
     void blur() override;
 

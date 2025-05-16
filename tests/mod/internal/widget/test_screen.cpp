@@ -79,11 +79,11 @@ RED_AUTO_TEST_CASE(TestScreenEvent)
     wbutton4.set_xy(100, 30);
 
     wscreen.add_widget(wbutton1);
-    wscreen.add_widget(wbutton2);
+    wscreen.add_widget(wbutton2, WidgetComposite::HasFocus::Yes);
     wscreen.add_widget(wbutton3);
     wscreen.add_widget(wbutton4);
 
-    wscreen.set_widget_focus(wbutton2, Widget::focus_reason_tabkey);
+    wscreen.init_focus();
 
     wscreen.rdp_input_invalidate(wscreen.get_rect());
 

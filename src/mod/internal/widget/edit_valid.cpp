@@ -413,11 +413,11 @@ void WidgetEditValid::draw_button_zone(Rect clip)
     draw_border3(border_color, 0);
 }
 
-void WidgetEditValid::focus(int reason)
+void WidgetEditValid::focus()
 {
     if (!is_text_widget() && !has_focus){
         has_focus = true;
-        edit_or_text.edit.focus(reason);
+        edit_or_text.edit.focus();
         if (label.has_placeholder && !this->edit_or_text.edit.has_text()) {
             edit_or_text.edit.draw_current_cursor(get_rect());
         }
@@ -492,7 +492,6 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
                 [this]{ edit_or_text.edit.submit(); },
                 [this](Rect rect){ rdp_input_invalidate(rect); }
             );
-
         }
 
         if (sx > x && device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN)) {

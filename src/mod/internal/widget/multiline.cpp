@@ -20,7 +20,7 @@ WidgetMultiLine::Colors WidgetMultiLine::Colors::from_theme(const Theme& theme) 
 
 
 WidgetMultiLine::WidgetMultiLine(gdi::GraphicApi & drawable, Colors colors)
-    : Widget(drawable, Focusable::Yes)
+    : Widget(drawable, Focusable::No)
     , colors(colors)
 {}
 

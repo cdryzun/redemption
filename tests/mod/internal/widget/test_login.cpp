@@ -91,9 +91,10 @@ RED_AUTO_TEST_CASE(TraceWidgetLogin3)
 {
     TestWidgetLoginCtx ctx("test3"_av, nullptr, nullptr, nullptr, LOGON_MESSAGE);
 
-    ctx.flat_login.next_focus();
-    ctx.flat_login.next_focus();
-    ctx.flat_login.next_focus();  // password
+    (void)ctx.flat_login.next_focus(Widget::FocusDirection::Forward, Widget::FocusStrategy::Next);
+    (void)ctx.flat_login.next_focus(Widget::FocusDirection::Forward, Widget::FocusStrategy::Next);
+    // password
+    (void)ctx.flat_login.next_focus(Widget::FocusDirection::Forward, Widget::FocusStrategy::Next);
 
     RED_CHECK(ctx.onsubmit.get_and_reset() == 0);
     RED_CHECK(ctx.oncancel.get_and_reset() == 0);
