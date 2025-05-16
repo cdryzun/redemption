@@ -259,13 +259,16 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
                     fcs,
                     label.fg_color,
                     label.bg_color,
-                    clip
+                    rect
                 );
             };
 
             draw_text(x() + edit_or_text.text.offset_x, edit_or_text.text.fcs(), 0);
             if (!label.has_placeholder) {
-                clip.cx = edit_or_text.text.offset_x;
+                rect = rect.intersect(
+                    checked_int{x() + edit_or_text.text.offset_x},
+                    checked_int{rect.ebottom()}
+                );
                 draw_text(x(), label.text.fcs(), 1);
             }
 
@@ -281,7 +284,7 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
         // placeholder
         if (label.has_placeholder) {
             if (!this->edit_or_text.edit.has_text()) {
-                draw_placeholder(clip);
+                draw_placeholder(rect);
             }
         }
         // label
@@ -302,11 +305,11 @@ void WidgetEditValid::rdp_input_invalidate(Rect clip)
                 label.text.fcs(),
                 label.fg_color,
                 label.bg_color,
-                Rect(x(), y(), w_text, cy())
+                Rect(x(), y(), w_text, cy()).intersect(rect)
             );
         }
 
-        draw_button_zone(clip);
+        draw_button_zone(rect);
     }
 }
 
