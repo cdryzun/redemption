@@ -158,6 +158,8 @@ protected:
     BmpCache      & bmp_cache;
     GlyphCache    & glyph_cache;
 
+    size_t const max_request_size;
+
     RDPSerializerVerbose verbose;
 
 public:
@@ -172,6 +174,7 @@ public:
                  , const bool use_compact_packets
                  , size_t max_data_block_size
                  , bool experimental_enable_serializer_data_block_size_limit
+                 , size_t max_request_size
                  , RDPSerializerVerbose verbose)
     : stream_orders(stream_orders)
     , stream_bitmaps(stream_bitmaps)
@@ -184,6 +187,7 @@ public:
         : max_data_block_size)
     , bmp_cache(bmp_cache)
     , glyph_cache(glyph_cache)
+    , max_request_size(max_request_size)
     , verbose{verbose}
     {
     }
@@ -215,7 +219,7 @@ public:
           , asked_size, used_size
           , max_packet_size - used_size - SERIALIZER_HEADER_SIZE);
 
-        if (asked_size + SERIALIZER_HEADER_SIZE > max_packet_size) {
+        if (!this->max_request_size && asked_size + SERIALIZER_HEADER_SIZE > max_packet_size) {
             LOG( LOG_ERR
                , "(asked size (%zu) + HEADER_SIZE (%zu) = %zu) > order batch capacity (%zu)"
                , asked_size
@@ -732,7 +736,7 @@ public:
           , used_size
           , max_packet_size - used_size - SERIALIZER_HEADER_SIZE);
 
-        if (asked_size + SERIALIZER_HEADER_SIZE > max_packet_size) {
+        if (!this->max_request_size && asked_size + SERIALIZER_HEADER_SIZE > max_packet_size) {
             LOG( LOG_ERR
                , "(asked size (%zu) + HEADER_SIZE (%zu) = %zu) > image batch capacity (%zu)"
                , asked_size

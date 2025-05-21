@@ -278,6 +278,7 @@ private:
               , int& input_front_id
               , bool workaround_incomplete_images
               , const bool& is_wabam
+              , size_t max_request_size
               , RDPSerializerVerbose verbose
             )
             : GraphicsUpdatePDU(
@@ -298,6 +299,7 @@ private:
               , fastpath_support
               , mppc_enc
               , compression
+              , max_request_size
               , verbose
             )
             , client_order_caps(client_order_caps)
@@ -511,6 +513,7 @@ private:
           , input_front_id
           , ini.get<cfg::client::workaround_incomplete_images>()
           , ini.get<cfg::context::is_wabam>()
+          , client_info.multi_fragment_update_caps.MaxRequestSize
           , safe_cast<RDPSerializerVerbose>(underlying_cast(verbose) >> 16)
         )
         {}

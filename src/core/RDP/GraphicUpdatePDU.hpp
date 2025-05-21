@@ -353,13 +353,14 @@ public:
                      , bool fastpath_support
                      , rdp_mppc_enc * mppc_enc
                      , bool compression
+                     , size_t max_request_size
                      , RDPSerializerVerbose verbose
                      )
         : RDPSerializer( this->buffer_stream_orders.get_data_stream()
                        , this->buffer_stream_bitmaps.get_data_stream()
                        , bpp, bmp_cache, gly_cache, bitmap_cache_version
                        , use_bitmap_comp, op2, max_data_block_size
-                       , experimental_enable_serializer_data_block_size_limit, verbose)
+                       , experimental_enable_serializer_data_block_size_limit, max_request_size, verbose)
         , userid(userid)
         , shareid(shareid)
         , encryptionLevel(encryptionLevel)

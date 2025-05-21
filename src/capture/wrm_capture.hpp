@@ -143,7 +143,7 @@ public:
                 , WrmCompressionAlgorithm wrm_compression_algorithm
                 , RDPSerializerVerbose verbose)
     : RDPSerializer( this->buffer_stream_orders, this->buffer_stream_bitmaps, capture_bpp
-                   , bmp_cache, gly_cache, 0, true, true, 32 * 1024, true, verbose)
+                   , bmp_cache, gly_cache, 0, true, true, 32 * 1024, true, 38055, verbose)
     , compression_builder(trans, wrm_compression_algorithm)
     , trans_target(trans)
     , trans(this->compression_builder.get())
