@@ -345,8 +345,8 @@ void WidgetEditValid::draw_button_zone(Rect clip)
     RDPColor border_color;
 
     if (this->has_focus) {
-        int const y_button = y() + D::border_len * 2;
-        int const cy_button = cy() - D::border_len * 4;
+        int const y_button = y() + D::border_len + 1;
+        int const cy_button = cy() - D::border_len * 2 - 2;
 
         auto draw_button = [this, y_button, cy_button, clip](
             int x_button, bool is_pressed, FontCharView const* fc,
@@ -382,7 +382,8 @@ void WidgetEditValid::draw_button_zone(Rect clip)
                     : buttons.visibility_hidden,
                 password_toggle_color,
                 edit_or_text.edit.get_colors().bg,
-                D::w_button_toggle_padding, adjust_border
+                D::w_button_toggle_padding,
+                adjust_border
             );
             x_button += D::button_toggle_width(*fc) - D::border_len;
             adjust_border = 0;
@@ -393,7 +394,8 @@ void WidgetEditValid::draw_button_zone(Rect clip)
             buttons.valid_text,
             edit_or_text.edit.get_colors().bg,
             edit_or_text.edit.get_colors().focus_border,
-            D::w_button_valid_padding, adjust_border
+            D::w_button_valid_padding,
+            adjust_border
         );
 
         draw_border3(edit_or_text.edit.get_colors().bg, D::border_len);
