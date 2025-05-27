@@ -291,7 +291,7 @@ private:
 struct EncryptContext
 {
     /// init or reinit
-    bool init(uint8_t const (&trace_key)[CRYPTO_KEY_LENGTH], uint8_t * iv) noexcept
+    bool init(uint8_t const (&trace_key)[CRYPTO_KEY_LENGTH], uint8_t const * iv) noexcept
     {
         unsigned char key[CRYPTO_KEY_LENGTH];
         const EVP_CIPHER * cipher = get_cipher_and_prepare_key(trace_key, key);
