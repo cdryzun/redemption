@@ -457,9 +457,8 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
 {
     if (!is_text_widget() && bool(device_flags & MOUSE_FLAG_BUTTON1))
     {
-        int sx = edit_or_text.edit.eright();
-        int btn1 = sx;
-        int btn2 = sx;
+        int16_t sx = edit_or_text.edit.eright();
+        int16_t x_button = sx;
 
         bool force_focus = should_be_focused(device_flags);
 
@@ -469,13 +468,13 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
             int w = D::button_toggle_width(*fc) - D::border_len;
 
             auto rect = Rect(
-                checked_int(btn1),
+                x_button,
                 this->y(),
                 checked_int(w),
                 cy()
             );
 
-            btn2 += D::button_toggle_width(*fc);
+            x_button = checked_int(x_button + w);
 
             auto redraw_behavior = force_focus
                 ? ButtonState::Redraw::No
@@ -488,9 +487,9 @@ void WidgetEditValid::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
         }
 
         auto rect = Rect(
-            checked_int(btn2),
+            x_button,
             this->y(),
-            checked_int(D::button_toggle_width(*buttons.valid_text) - D::border_len),
+            checked_int(eright() - x_button - D::border_len),
             cy()
         );
 
