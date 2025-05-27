@@ -4338,7 +4338,7 @@
       "section": "theme",
       "name": "edit_border_color",
       "type": "rgb",
-      "value": "#081F60",
+      "value": "#FFFFFF",
       "description": "Outline color for editing field.",
       "globalSpec": true
     },

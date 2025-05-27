@@ -519,8 +519,8 @@ tata = titi
         (True, '[server_cert]\n'
             'server_cert_create_message=1\nserver_cert_success_message=1\n'))
 
-    def test_migrate_12_0_29(self):
-        migrate_def = find_migrade_def(RedemptionVersion("12.0.29"))
+    def test_migrate_12_1_29(self):
+        migrate_def = find_migrade_def(RedemptionVersion("12.1.31"))
 
         self.assertEqual(
             process_migrate(migrate_def, '[theme]\n'
@@ -531,9 +531,9 @@ tata = titi
         self.assertEqual(
             process_migrate(migrate_def, '[theme]\n'
                 'edit_focus_color=red\n'
-                'bgcolor=green\n'),
+                'edit_bgcolor=green\n'),
             (True, '[theme]\n'
                 'edit_border_color=green\n'
                 '\n'
                 'edit_focus_border_color=red\n'
-                'bgcolor=green\n'))
+                'edit_bgcolor=green\n'))

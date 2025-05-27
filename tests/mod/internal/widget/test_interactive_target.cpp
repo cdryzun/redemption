@@ -51,6 +51,7 @@ struct TestWidgetInteractivePasswordCtx
             Theme colors;
             colors.global.bgcolor = NamedBGRColor::BG_BLUE;
             colors.global.fgcolor = NamedBGRColor::WHITE;
+            colors.edit.border_color = NamedBGRColor::BG_BLUE;
             return colors;
         }(),
         caption, text_device, device_str,

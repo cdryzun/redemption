@@ -50,6 +50,7 @@ struct TestWidgetWaitCtx
             Theme colors;
             colors.global.bgcolor = NamedBGRColor::BG_BLUE;
             colors.global.fgcolor = NamedBGRColor::WHITE;
+            colors.edit.border_color = NamedBGRColor::BG_BLUE;
             return colors;
         }(), MsgTranslationCatalog::default_catalog(), flags,
         std::chrono::minutes::zero()

@@ -5000,12 +5000,12 @@ namespace cfg
     };
     /// Outline color for editing field. <br/>
     /// type: ::configs::spec_types::rgb <br/>
-    /// default: 0x081F60 <br/>
+    /// default: 0xFFFFFF <br/>
     struct theme::edit_border_color {
         static constexpr unsigned acl_proxy_communication_flags = 0b00;
         using type = ::configs::spec_types::rgb;
         using mapped_type = ::configs::spec_types::rgb;
-        type value { 0x081F60 };
+        type value { 0xFFFFFF };
     };
     /// Outline color for editing field that has focus. <br/>
     /// type: ::configs::spec_types::rgb <br/>

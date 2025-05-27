@@ -1757,7 +1757,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Outline color for editing field.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))
-#edit_border_color = #081F60
+#edit_border_color = #FFFFFF
 
 # Outline color for editing field that has focus.
 # (in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive ("https://en.wikipedia.org/wiki/Web_colors#Extended_colors"))

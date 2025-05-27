@@ -53,12 +53,16 @@ struct TestWidgetLoginCtx
         chars_view password,
         chars_view target,
         chars_view login_message = LOGON_MESSAGE,
-        Theme theme = Theme(),
         bool enable_target_field = false,
         uint16_t w = 800,
-        uint16_t h = 600)
+        uint16_t h = 600,
+        Theme theme = []{
+            Theme colors;
+            colors.edit.border_color = NamedBGRColor::BG_BLUE;
+            return colors;
+        }())
     : drawable{w, h}
-    , parent{drawable, w, h, global_font_deja_vu_14(), Theme{}}
+    , parent{drawable, w, h, global_font_deja_vu_14(), theme}
     , flat_login(
         drawable, copy_paste, parent, 0, 0, parent.cx(), parent.cy(),
         {onsubmit, oncancel, WidgetEventNotifier()},
@@ -172,7 +176,7 @@ RED_AUTO_TEST_CASE(TraceWidgetLogin4)
 
 RED_AUTO_TEST_CASE(TraceWidgetLogin_target_field)
 {
-    TestWidgetLoginCtx ctx("test1"_av, "rec"_av, "rec"_av, ""_av, LOGON_MESSAGE, Theme{}, true);
+    TestWidgetLoginCtx ctx("test1"_av, "rec"_av, "rec"_av, ""_av, LOGON_MESSAGE, true);
 
     ctx.flat_login.rdp_input_invalidate(ctx.flat_login.get_rect());
 
@@ -183,7 +187,7 @@ RED_AUTO_TEST_CASE(TraceWidgetLogin_little_width)
 {
     TestWidgetLoginCtx ctx(
         "caption"_av, "login"_av, "password"_av, "target"_av,
-        LOGON_MESSAGE, Theme{}, true, 300, 300
+        LOGON_MESSAGE, true, 300, 300
     );
 
     ctx.flat_login.rdp_input_invalidate(ctx.flat_login.get_rect());

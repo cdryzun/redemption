@@ -902,10 +902,10 @@ migration_defs: Sequence[MigrationType] = (
         'video': RemoveItem(reason="No more keys"),
         'crypto': RemoveItem(reason="Never used"),
     }),
-    (RedemptionVersion("12.0.29"), {
+    (RedemptionVersion("12.1.31"), {
         'theme': {
             'edit_focus_color': UpdateItem(key='edit_focus_border_color'),
-            'edit_border_color': NewItem(_copy_of('theme', 'bgcolor')),
+            'edit_border_color': NewItem(_copy_of('theme', 'edit_bgcolor')),
         },
     }),
 )

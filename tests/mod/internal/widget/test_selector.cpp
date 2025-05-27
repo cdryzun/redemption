@@ -31,7 +31,12 @@ struct TestWidgetSelectorCtx
     TestWidgetSelectorCtx(uint16_t width, uint16_t height)
     : drawable{width, height}
     , selector(
-        drawable, global_font_deja_vu_14(), copy_paste, Theme(),
+        drawable, global_font_deja_vu_14(), copy_paste,
+        []{
+            Theme colors;
+            colors.edit.border_color = NamedBGRColor::BG_BLUE;
+            return colors;
+        }(),
         tooltip_shower, MsgTranslationCatalog::default_catalog(),
         nullptr, Rect(0, 0, width, height),
         {

@@ -49,7 +49,7 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_hardcoded_default_values)
 
     RED_CHECK_EQUAL(colors.edit.bgcolor, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.fgcolor, NamedBGRColor::BLACK);
-    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::BG_BLUE);
+    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.focus_border_color, NamedBGRColor::FOCUS_BLUE);
 
     RED_CHECK_EQUAL(colors.tooltip.bgcolor, NamedBGRColor::LIGHT_YELLOW);
@@ -123,7 +123,7 @@ RED_AUTO_TEST_CASE(TestLoadTheme_load_hardcoded_default_values_even_if_inifile_i
 
     RED_CHECK_EQUAL(colors.edit.bgcolor, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.fgcolor, NamedBGRColor::BLACK);
-    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::BG_BLUE);
+    RED_CHECK_EQUAL(colors.edit.border_color, NamedBGRColor::WHITE);
     RED_CHECK_EQUAL(colors.edit.focus_border_color, NamedBGRColor::FOCUS_BLUE);
 
     RED_CHECK_EQUAL(colors.tooltip.bgcolor, NamedBGRColor::LIGHT_YELLOW);
