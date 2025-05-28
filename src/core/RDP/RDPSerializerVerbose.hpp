@@ -27,6 +27,7 @@
 REDEMPTION_VERBOSE_FLAGS_DEF(RDPSerializerVerbose)
 {
     none,
+    // 0x0001 and 0x0002 are reserved by Front::Verbose
     pointer             = 0x0004,
     primary_orders      = 0x0020,
     secondary_orders    = 0x0040,
@@ -35,5 +36,6 @@ REDEMPTION_VERBOSE_FLAGS_DEF(RDPSerializerVerbose)
     bmp_cache           = 0x0200,
     internal_buffer     = 0x0400,
     sec_decrypted       = 0x1000,
-    // update Front::Verbose when verbose > 0xffff
+    // All values ​​must be less than 0xffff, otherwise they will be lost when
+    // converting from Front:Verbose to RDPSerializerVerbose
 };

@@ -240,10 +240,10 @@ public:
         nla             = 0x0001'0000,
         nla_dump        = 0x0002'0000,
 
-        keymap_and_basic_trace3 = keymap | basic_trace3,
-
         // /!\ RDPSerializer
-        // (verbose >> 16) & 0xffff
+        // (verbose >> 16) & 0xfffC
+
+        keymap_and_basic_trace3 = keymap | basic_trace3,
     };
 
 private:
