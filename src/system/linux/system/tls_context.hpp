@@ -228,6 +228,7 @@ public:
         }
 
         SSL* ssl = SSL_new(ctx);
+        // ssl_debug_log(ssl);
 
         if (ssl == nullptr) {
             return tls_ctx_print_error("enable_client_tls", "SSL_new returned NULL");

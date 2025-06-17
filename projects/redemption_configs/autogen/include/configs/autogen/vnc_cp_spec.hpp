@@ -128,6 +128,15 @@ tls_1_3_ciphersuites = string(default="")
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
 
+# Configure the supported client signature algorithms.
+# Empty to apply system-wide configuration.
+# The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.
+# algorithm is one of RSA, RSA-PSS or ECDSA.
+# hash is one of SHA224, SHA256, SHA384 or SHA512.
+# signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
+#_display_name=TLS signature algorithms
+tls_signature_algorithms = string(default="")
+
 # Show in the logs the common cipher list supported by client and target server.
 # ⚠ Only for debugging purposes.
 #_advanced

@@ -166,7 +166,7 @@ ModPack create_mod_vnc(
         .cipher_list = ini.get<cfg::mod_vnc::cipher_string>(),
         .tls_1_3_ciphersuites = ini.get<cfg::mod_vnc::tls_1_3_ciphersuites>(),
         .key_exchange_groups = ini.get<cfg::mod_vnc::tls_key_exchange_groups>(),
-        .signature_algorithms = {}, // TODO should be configurable
+        .signature_algorithms = ini.get<cfg::mod_vnc::tls_signature_algorithms>(),
         .enable_legacy_server_connect = ini.get<cfg::mod_vnc::tls_enable_legacy_server>(),
         .show_common_cipher_list = ini.get<cfg::mod_vnc::show_common_cipher_list>(),
     };

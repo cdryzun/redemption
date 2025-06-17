@@ -930,6 +930,22 @@
     },
     {
       "section": "mod_rdp",
+      "name": "tls_signature_algorithms",
+      "type": "str",
+      "value": "RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512",
+      "description": "Configure the supported client signature algorithms.\nEmpty to apply system-wide configuration.\nThe format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.\nalgorithm is one of RSA, RSA-PSS or ECDSA.\nhash is one of SHA224, SHA256, SHA384 or SHA512.\nsignature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.",
+      "connpolicyValues": {
+        "rdp-sogisces_1.3_2030": {"value": "RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512", "forced": false}
+      },
+      "tags": ["SOG-IS"],
+      "displayName": "TLS signature algorithms",
+      "rdp": true,
+      "rdp_sogisces_1_3_2030": true,
+      "aclToProxy": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "mod_rdp",
       "name": "show_common_cipher_list",
       "type": "bool",
       "value": false,
@@ -2520,6 +2536,17 @@
       "value": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192",
       "description": "Configure the supported key exchange groups.\nEmpty to apply system-wide configuration.\nThe format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups",
       "displayName": "TLS key exchange groups",
+      "vnc": true,
+      "aclToProxy": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "mod_vnc",
+      "name": "tls_signature_algorithms",
+      "type": "str",
+      "value": "",
+      "description": "Configure the supported client signature algorithms.\nEmpty to apply system-wide configuration.\nThe format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.\nalgorithm is one of RSA, RSA-PSS or ECDSA.\nhash is one of SHA224, SHA256, SHA384 or SHA512.\nsignature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.",
+      "displayName": "TLS signature algorithms",
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"

@@ -103,6 +103,7 @@ namespace cfg
         struct tls_enable_legacy_server;
         struct tls_1_3_ciphersuites;
         struct tls_key_exchange_groups;
+        struct tls_signature_algorithms;
         struct show_common_cipher_list;
         struct persistent_disk_bitmap_cache;
         struct cache_waiting_list;
@@ -252,6 +253,7 @@ namespace cfg
         struct tls_enable_legacy_server;
         struct tls_1_3_ciphersuites;
         struct tls_key_exchange_groups;
+        struct tls_signature_algorithms;
         struct show_common_cipher_list;
         struct force_authentication_method;
     };

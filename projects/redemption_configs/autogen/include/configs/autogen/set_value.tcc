@@ -683,6 +683,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "tls_signature_algorithms"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_rdp::tls_signature_algorithms&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
         else if (key == "show_common_cipher_list"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
@@ -1767,6 +1775,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
             ::config_parse_and_log(
                 this->section_name, key.c_str(),
                 static_cast<cfg::mod_vnc::tls_key_exchange_groups&>(this->variables).value,
+                ::configs::spec_type<std::string>{},
+                value
+            );
+        }
+        else if (key == "tls_signature_algorithms"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::mod_vnc::tls_signature_algorithms&>(this->variables).value,
                 ::configs::spec_type<std::string>{},
                 value
             );

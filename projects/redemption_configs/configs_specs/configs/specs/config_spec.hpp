@@ -173,17 +173,12 @@ std::string_view tls_key_exchange_groups =
     "The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups"
 ;
 
-std::string_view tls_signature_algorithms_desc =
-    "Configure the supported server signature algorithms.\n"
+std::string_view tls_signature_algorithms_desc_base =
     "Empty to apply system-wide configuration.\n"
     "The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.\n"
     "algorithm is one of RSA, RSA-PSS or ECDSA.\n"
     "hash is one of SHA224, SHA256, SHA384 or SHA512.\n"
     "signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256."
-;
-
-std::string_view tls_signature_algorithms_server_extra_desc =
-    "\nThis list needs at least one signature algorithm compatible with the RDP Proxy certificate.\n"
 ;
 
 _.display_name_word_replacement_table = {
@@ -676,8 +671,11 @@ _.section("client", [&]
         .name = "tls_signature_algorithms",
         .value = value<std::string>("RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512"),
         .spec = global_spec(no_acl),
-        .desc = str_concat(tls_signature_algorithms_desc,
-                           tls_signature_algorithms_server_extra_desc),
+        .desc = str_concat(
+            "Configure the supported server signature algorithms.\n",
+            tls_signature_algorithms_desc_base,
+            "\nThis list needs at least one signature algorithm compatible with the RDP Proxy certificate."
+        ),
     });
 
     _.member(MemberInfo{
@@ -1054,6 +1052,33 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         ),
         .spec = connpolicy(rdp, loggable),
         .desc = tls_key_exchange_groups,
+    });
+
+    _.member(MemberInfo{
+        .name = "tls_signature_algorithms",
+        .value = value<std::string>(
+            "RSA+SHA256"
+            ":RSA+SHA384"
+            ":RSA+SHA512"
+            ":RSA-PSS+SHA256"
+            ":RSA-PSS+SHA384"
+            ":RSA-PSS+SHA512"
+            ":ECDSA+SHA256"
+            ":ECDSA+SHA384"
+            ":ECDSA+SHA512",
+            rdp_sogisces_1_3_2030_policy_value(
+                "RSA-PSS+SHA256"
+                ":RSA-PSS+SHA384"
+                ":RSA-PSS+SHA512"
+                ":ECDSA+SHA256"
+                ":ECDSA+SHA384"
+                ":ECDSA+SHA512"
+            )),
+        .spec = connpolicy(rdp, loggable),
+        .desc = str_concat(
+            "Configure the supported client signature algorithms.\n",
+            tls_signature_algorithms_desc_base
+        ),
     });
 
     _.member(MemberInfo{
@@ -2296,6 +2321,16 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         ),
         .spec = connpolicy(vnc, loggable),
         .desc = tls_key_exchange_groups,
+    });
+
+    _.member(MemberInfo{
+        .name = "tls_signature_algorithms",
+        .value = value<std::string>(),
+        .spec = connpolicy(vnc, loggable),
+        .desc = str_concat(
+            "Configure the supported client signature algorithms.\n",
+            tls_signature_algorithms_desc_base
+        ),
     });
 
     _.member(MemberInfo{
