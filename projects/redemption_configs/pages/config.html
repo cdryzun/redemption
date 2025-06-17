@@ -193,6 +193,12 @@ nav {
   opacity: 50%;
 }
 
+#top-site {
+  float: left;
+  padding: 0;
+  margin: 0;
+}
+
 #tabs {
   margin: 0;
   padding: 0;
@@ -200,7 +206,7 @@ nav {
   background: #333;
 }
 
-.tab-label > a {
+.tab-label > a, #top-site > a {
   display: block;
   padding: .75rem 1.5rem;
   /* border-left: .5em #000 solid; */
@@ -925,7 +931,7 @@ const mappingDisplayFn = {
   const [htmlMenu, htmlBody] = makeHtmlSpec(enumDatas, sections, globalSpec, 'g', false);
   const [htmlIniMenu, htmlIniBody] = makeHtmlSpec(enumDatas, sections, iniOnlySpec, 'ini', false);
   const htmlFragments = [
-    '<ul role="nav" id="tabs">', ...htmlTabsMenu, '</ul>',
+    '<p id="top-site"><a href="..">../</a></p><ul role="nav" id="tabs">', ...htmlTabsMenu, '</ul>',
 
     '<p id="tag-filter">Tag: ', ...htmlFilterTag, '</p>',
 
