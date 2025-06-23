@@ -10,3 +10,4 @@ libssl-dev
 libswscale-dev
 libx264-dev
 zlib1g-dev
+libk5crypto3
