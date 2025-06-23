@@ -64,6 +64,7 @@ To compile Redemption you need the following packages:
 - zlib1g-dev
 - libssl-dev
 - libkrb5-dev
+- libk5crypto3
 - libsnappy-dev
 - libpng-dev
 - libbz2-dev
@@ -73,7 +74,7 @@ To compile Redemption you need the following packages:
 - g++ >= 13.0 or clang++ >= 18.0 or other C++20 compiler
 
 ```sh
-apt install libboost-tools-dev libboost-test-dev libssl-dev libkrb5-dev libsnappy-dev libpng-dev libbz2-dev libhyperscan-dev
+apt install libboost-tools-dev libboost-test-dev libssl-dev libkrb5-dev libsnappy-dev libpng-dev libbz2-dev libhyperscan-dev libk5crypto3
 ```
 
 ## FFmpeg
