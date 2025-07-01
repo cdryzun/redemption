@@ -267,7 +267,7 @@ class Engine:
     def keepalive(self, timeout: int) -> None:
         if self.avatar_id:
             with manage_transaction(self.wabengine):
-                self.wabengine.save_session(self.avatar_id, timeout=timeout)
+                self.wabengine.save_session(self.avatar_id, timeout=timeout, rights_update=False)
 
             if self.session_id:
                 with manage_transaction(self.wabengine):
