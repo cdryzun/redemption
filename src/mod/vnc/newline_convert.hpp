@@ -81,14 +81,13 @@ inline static writable_chars_view linux_to_windows_newline_convert(
     char const * s = source.data();
     size_t s_length = source.size();
     char * d = destination.data();
-    size_t max_d_length = destination.size();
 
-    size_t d_length = 0;
+    size_t d_length = destination.size();
 
     while (char const * p = static_cast<char const*>(memchr(s, '\n', s_length))) {
         size_t l = p - s;
 
-        if (l + 2 /* CRLF(2) */ > max_d_length) {
+        if (l + 2 /* CRLF(2) */ > d_length) {
             LOG(LOG_ERR,
                 "linux_to_windows_newline_convert: "
                     "Destination buffer is too small to hold all the result data.");
@@ -98,10 +97,9 @@ inline static writable_chars_view linux_to_windows_newline_convert(
         if (l) {
             memcpy(d, s, l);
 
-            d_length += l;
+            d_length -= l;
 
             d            += l;
-            max_d_length -= l;
 
             s        += l;
             s_length -= l;
@@ -110,16 +108,14 @@ inline static writable_chars_view linux_to_windows_newline_convert(
         *d++ = '\r';
         *d++ = '\n';
 
-        d_length += 2 /* CRLF(2) */ ;
-
-        max_d_length -= (l + 2 /* CRLF(2) */);
+        d_length -= 2 /* CRLF(2) */ ;
 
         s++;    // LF(1)
 
         s_length--; // LF(1)
     }
 
-    if (s_length > max_d_length) {
+    if (s_length > d_length) {
         LOG(LOG_ERR,
             "linux_to_windows_newline_convert: "
                 "Destination buffer is too small to hold all the result data.");
@@ -128,5 +124,5 @@ inline static writable_chars_view linux_to_windows_newline_convert(
 
     memcpy(d, s, s_length);
 
-    return destination.first(d_length + s_length);
+    return destination.before(d + s_length);
 }
