@@ -36,11 +36,11 @@ namespace configs
         // inline constexpr int section19 = 168; /* websocket */
         // inline constexpr int section20 = 168; /* vnc_over_ssh */
         inline constexpr int section21 = 168; /* context */
-        // inline constexpr int section22 = 256; /* internal_mod */
-        inline constexpr int section23 = 256; /* mod_replay */
-        inline constexpr int section24 = 258; /* translation */
-        // inline constexpr int section25 = 259; /* theme */
-        // inline constexpr int section26 = 259; /* debug */
+        // inline constexpr int section22 = 257; /* internal_mod */
+        inline constexpr int section23 = 257; /* mod_replay */
+        inline constexpr int section24 = 259; /* translation */
+        // inline constexpr int section25 = 260; /* theme */
+        // inline constexpr int section26 = 260; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -4857,6 +4857,18 @@ namespace cfg
         using mapped_type = type;
         type value {  };
     };
+    /// type: bool <br/>
+    /// acl ⇐ proxy <br/>
+    /// default: false <br/>
+    struct context::authenticated_by_nla {
+        static constexpr unsigned acl_proxy_communication_flags = 0b01;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section21 + 88};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
 
     /// Allow separate target and login entries by enabling the edit target field on the login page. <br/>
     /// type: bool <br/>
@@ -5907,6 +5919,7 @@ struct context
 , cfg::context::session_sharing_invitation_error_code
 , cfg::context::rail_module_host_mod_is_active
 , cfg::context::banner_type
+, cfg::context::authenticated_by_nla
 { static constexpr bool is_section = true; };
 
 struct internal_mod
@@ -6265,6 +6278,7 @@ using VariablesAclPack = Pack<
 , cfg::context::smartcard_login
 , cfg::context::banner_message
 , cfg::context::banner_type
+, cfg::context::authenticated_by_nla
 , cfg::mod_replay::replay_path
 , cfg::mod_replay::replay_on_loop
 , cfg::translation::language
@@ -6276,7 +6290,7 @@ constexpr U64BitFlags<5> loggable_field{ {
 , 0b1111111011111111111111111111111111111111111111111111111111111111
 , 0b1100001111110100001100000011111111111111011111110111111111111111
 , 0b1100000001110000011000110111111100010100111111111101000101111001
-, 0b0000000000000000000000000000000000000000000000000000000000000111
+, 0b0000000000000000000000000000000000000000000000000000000000001110
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000

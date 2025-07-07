@@ -4198,6 +4198,15 @@
       "subtype": "u8"
     },
     {
+      "section": "context",
+      "name": "authenticated_by_nla",
+      "type": "bool",
+      "value": false,
+      "description": "",
+      "ProxyToAcl": true,
+      "resetBackToSelector": true
+    },
+    {
       "section": "internal_mod",
       "name": "enable_target_field",
       "type": "bool",

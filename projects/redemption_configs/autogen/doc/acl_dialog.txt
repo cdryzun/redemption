@@ -699,6 +699,7 @@ cfg::context::banner_type ⇐ banner_type   [BannerType]
       0: info
       1: warn
       2: alert
+cfg::context::authenticated_by_nla ⇒ authenticated_by_nla   [bool]
 
 
 cfg::mod_replay::replay_path ⇐ replay_path   [::configs::spec_types::directory_path]

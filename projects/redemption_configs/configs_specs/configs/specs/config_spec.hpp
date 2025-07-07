@@ -3736,6 +3736,13 @@ _.section("context", [&]
         .value = value<std::vector<uint8_t>>(),
         .spec = no_acl,
     });
+
+
+    _.member(MemberInfo{
+        .name = "authenticated_by_nla",
+        .value = value(false),
+        .spec = proxy_to_acl(reset_back_to_selector),
+    });
 });
 
 _.section("theme", [&]

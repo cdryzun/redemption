@@ -2973,6 +2973,9 @@ public:
             LOG(LOG_INFO, "NLA NegoServer Done");
             this->state = BASIC_SETTINGS_EXCHANGE;
             this->current_tpdu_type = TpduBuffer::PDU;
+
+            this->ini.set_acl<cfg::context::authenticated_by_nla>(true);
+
             break;
         }
     }

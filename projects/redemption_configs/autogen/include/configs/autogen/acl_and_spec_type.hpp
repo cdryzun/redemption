@@ -385,6 +385,7 @@ template<> struct acl_and_spec_type<cfg::context::session_sharing_target_login> 
 template<> struct acl_and_spec_type<cfg::context::smartcard_login> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::banner_message> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::banner_type> { using type = BannerType; };
+template<> struct acl_and_spec_type<cfg::context::authenticated_by_nla> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::internal_mod::enable_target_field> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::internal_mod::keyboard_layout_proposals> { using type = ::configs::spec_types::list<std::string>; };
 template<> struct acl_and_spec_type<cfg::internal_mod::enable_close_box> { using type = bool; };

@@ -437,6 +437,7 @@ namespace cfg
         struct banner_message;
         struct banner_type;
         struct redirection_password_or_cookie;
+        struct authenticated_by_nla;
     };
 
     struct internal_mod {
