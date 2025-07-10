@@ -39,6 +39,7 @@
       "description": "Secondary login Transformation rule\n${LOGIN} will be replaced by login\n${DOMAIN} (optional) will be replaced by domain if it exists.\nEmpty value means no transformation rule.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "external": true
     },
@@ -50,6 +51,7 @@
       "description": "Account Mapping password retriever\nTransformation to apply to find the correct account.\n${USER} will be replaced by the user's login.\n${DOMAIN} will be replaced by the user's domain (in case of LDAP mapping).\n${USER_DOMAIN} will be replaced by the user's login + \"@\" + user's domain (or just user's login if there's no domain).\n${GROUP} will be replaced by the authorization's user group.\n${DEVICE} will be replaced by the device's name.\nA regular expression is allowed to transform a variable, with the syntax: ${USER:/regex/replacement}, groups can be captured with parentheses and used with \\1, \\2, ...\nFor example to replace leading \"A\" by \"B\" in the username: ${USER:/^A/B}\nEmpty value means no transformation rule.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "external": true
     },
@@ -214,6 +216,7 @@
       "connpolicySection": "session",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
@@ -690,6 +693,7 @@
       "displayName": "TCP user timeout",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -762,6 +766,7 @@
       "tags": ["debug","compatibility"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -776,6 +781,7 @@
       "displayName": "Enable NLA",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -786,11 +792,13 @@
       "value": true,
       "description": "When <code>\"Enable NLA\"</code> is selected:\nEnabling this option instructs the Bastion to use Kerberos as its initial method.\nDisabling this option instructs the Bastion to only use NTLM.",
       "connpolicyValues": {
+        "rdp-ccn": {"value": true, "forced": false},
         "rdp-sogisces_1.3_2030": {"value": true, "forced": false}
       },
       "displayName": "Enable Kerberos",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -801,11 +809,13 @@
       "value": false,
       "description": "When both <code>\"Enable NLA\"</code> and <code>\"Enable Kerberos\"</code> are selected:\nEnabling this option instructs the Bastion to use Kerberos first and, if necessary, NTLM as a backup.\nDisabling this option instructs the Bastion to only use Kerberos.",
       "connpolicyValues": {
+        "rdp-ccn": {"value": false, "forced": false},
         "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
       "displayName": "Allow NLA NTLM fallback",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -816,11 +826,13 @@
       "value": false,
       "description": "Allow TLS only.",
       "connpolicyValues": {
+        "rdp-ccn": {"value": false, "forced": false},
         "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
       "displayName": "Allow TLS only fallback",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -831,11 +843,13 @@
       "value": false,
       "description": "Allow Standard RDP Security (Legacy).",
       "connpolicyValues": {
+        "rdp-ccn": {"value": false, "forced": false},
         "rdp-sogisces_1.3_2030": {"value": false, "forced": false}
       },
       "displayName": "Allow RDP legacy fallback",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -847,11 +861,13 @@
       "value": 2,
       "description": "Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
       "connpolicyValues": {
+        "rdp-ccn": {"value": 2, "forced": false},
         "rdp-sogisces_1.3_2030": {"value": 2, "forced": false}
       },
       "displayName": "TLS min level",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -862,11 +878,13 @@
       "value": 0,
       "description": "Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
       "connpolicyValues": {
+        "rdp-ccn": {"value": 0, "forced": false},
         "rdp-sogisces_1.3_2030": {"value": 0, "forced": false}
       },
       "displayName": "TLS max level",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -877,10 +895,13 @@
       "value": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256",
       "description": "TLSv1.2 and below additional ciphers supported.\nEmpty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.\nThe format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
       "connpolicyValues": {
-        "rdp-sogisces_1.3_2030": {"value": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256", "forced": false}
+        "rdp-sogisces_1.3_2030": {"value": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256", "forced": false},
+        "rdp-ccn": {"value": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256", "forced": false}
       },
+      "tags": ["CCN"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -893,6 +914,7 @@
       "displayName": "TLS enable legacy server",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -904,12 +926,14 @@
       "value": "",
       "description": "Configure the available TLSv1.3 ciphersuites.\nEmpty to apply system-wide configuration.\nThe format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION",
       "connpolicyValues": {
+        "rdp-ccn": {"value": "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256", "forced": false},
         "rdp-sogisces_1.3_2030": {"value": "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256", "forced": false}
       },
-      "tags": ["SOG-IS"],
+      "tags": ["SOG-IS","CCN"],
       "displayName": "TLS 1.3 cipher suites",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -920,11 +944,13 @@
       "value": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192",
       "description": "Configure the supported key exchange groups.\nEmpty to apply system-wide configuration.\nThe format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups",
       "connpolicyValues": {
+        "rdp-ccn": {"value": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192", "forced": false},
         "rdp-sogisces_1.3_2030": {"value": "P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192", "forced": false}
       },
       "displayName": "TLS key exchange groups",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -953,6 +979,7 @@
       "tags": ["debug"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1016,6 +1043,7 @@
       "description": "List of (comma-separated) enabled dynamic virtual channel. If character '*' is used as a name then enables everything.\nExplicit names have higher priority than '*' in <code>\"Denied dynamic channels\" option</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1028,6 +1056,7 @@
       "description": "List of (comma-separated) disabled dynamic virtual channel. If character '*' is used as a name then disables everything.\nExplicit names have higher priority than '*' in <code>\"Allowed dynamic channels\" option</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1041,6 +1070,7 @@
       "tags": ["compatibility"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1053,6 +1083,7 @@
       "description": "Force the screen resolution of a RDP target.\nThis option is ignored when the value is 0x0 or empty.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1074,6 +1105,7 @@
       "displayName": "Enable Server Redirection Support",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1085,6 +1117,7 @@
       "description": "Load balancing information.\nFor example 'tsv://MS Terminal Services Plugin.1.Sessions' where 'Sessions' is the name of the targeted RD Collection which works fine.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1181,6 +1214,7 @@
       "description": "As far as possible, use client-provided initial program (Alternate Shell).",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1193,6 +1227,7 @@
       "displayName": "Use client provided RemoteApp",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1205,6 +1240,7 @@
       "displayName": "Use native RemoteApp capability",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1318,6 +1354,7 @@
       "displayName": "Enable RDPDR data analysis",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1369,6 +1406,7 @@
       "displayName": "Enable translated RemoteApp with AM",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1391,6 +1429,7 @@
       "displayName": "Enable RemoteFX",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1402,6 +1441,7 @@
       "description": "Connect to the target server in Restricted Admin mode.\nThis mode must be supported by the target server (available from Windows Server 2012 R2), otherwise, connection will fail.\nNLA must be enabled.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1413,6 +1453,7 @@
       "description": "NLA will be disabled.\nTarget must be set for interactive login, otherwise the  connection may not be guaranteed.\nSmartcard device must be available on client desktop.\nSmartcard redirection (Proxy option RDP_SMARTCARD) must be enabled on service.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1425,6 +1466,7 @@
       "displayName": "Enable IPv6",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1437,6 +1479,7 @@
       "displayName": "Console mode",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "RdpModeConsole"
@@ -1449,6 +1492,7 @@
       "description": "Allows the proxy to automatically reconnect to secondary target when a network error occurs.\nThe target server must support reconnection cookie.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1462,6 +1506,7 @@
       "tags": ["workaround"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1474,6 +1519,7 @@
       "description": "The delay between a session disconnection and the automatic reconnection that follows.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1487,6 +1533,7 @@
       "description": "Forward the build number advertised by the client to the target server. If forwarding is disabled a default (static) build number will be sent to the target server.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1499,6 +1546,7 @@
       "description": "To resolve the session freeze issue with Windows 7/Windows Server 2008 target.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1510,6 +1558,7 @@
       "description": "Account to be used for armoring Kerberos tickets. Must be in the form 'account_name@domain_name[@device_name]'. If account resolution succeeds the username and password associated with this account will be used; otherwise the below fallback username and password will be used instead.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "advanced": true,
       "external": true
     },
@@ -1521,6 +1570,7 @@
       "description": "Realm to be used for armoring Kerberos tickets.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "advanced": true,
       "external": true
     },
@@ -1532,6 +1582,7 @@
       "description": "Fallback username to be used for armoring Kerberos tickets.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "advanced": true,
       "external": true
     },
@@ -1543,6 +1594,7 @@
       "description": "Fallback password to be used for armoring Kerberos tickets.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "advanced": true,
       "external": true
     },
@@ -1573,6 +1625,7 @@
       "description": "Delay before showing disconnect message after the last RemoteApp window is closed.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1587,6 +1640,7 @@
       "displayName": "Use Session Probe to launch remote program",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1599,6 +1653,7 @@
       "tags": ["workaround"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1611,6 +1666,7 @@
       "description": "Enable Windows XP clipboard support.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1623,6 +1679,7 @@
       "displayName": "Block user input until Application Driver completes",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1634,6 +1691,7 @@
       "description": "",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1647,11 +1705,13 @@
       "description": "",
       "connpolicyValues": {
         "rdp": {"value": true, "forced": false},
-        "rdp-sogisces_1.3_2030": {"value": true, "forced": false}
+        "rdp-sogisces_1.3_2030": {"value": true, "forced": false},
+        "rdp-ccn": {"value": true, "forced": false}
       },
       "displayName": "Enable Session Probe",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1681,6 +1741,7 @@
       "description": "This parameter only has an effect in Desktop sessions.\nIt allows you to choose between Smart launcher and Legacy launcher to launch the Session Probe.\nThe Smart launcher and the Legacy launcher do not have the same technical prerequisites. Detailed information can be found in the Administration guide.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1692,6 +1753,7 @@
       "description": "This parameter enables or disables the Session Probe’s launch mask.\nThe Launch mask hides the Session Probe launch steps from the end-users.\nDisabling the mask makes it easier to diagnose Session Probe launch issues. It is recommended to enable the mask for normal operation.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1704,6 +1766,7 @@
       "description": "It is recommended to use option 1 (disconnect user).",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "SessionProbeOnLaunchFailure"
@@ -1716,6 +1779,7 @@
       "description": "This parameter is used if <code>\"On launch failure\" option</code> is 1 (disconnect user).\n0 to disable timeout.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1729,6 +1793,7 @@
       "description": "This parameter is used if <code>\"On launch failure\" option</code> is 0 (ignore failure and continue) or 2 (retry without Session Probe).\n0 to disable timeout.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1742,6 +1807,7 @@
       "description": "If enabled, the <code>\"Launch timeout\" option</code> countdown timer will be started only after user logged in Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1753,6 +1819,7 @@
       "description": "The amount of time that RDP Proxy waits for a reply from the Session Probe to the KeepAlive message before adopting the behavior defined by <code>\"On keepalive timeout\" option</code>.\nIf our local network is subject to congestion, or if the Windows lacks responsiveness, it is possible to increase the value of the timeout to minimize disturbances related to the behavior defined by <code>\"On keepalive timeout\" option</code>.\nThe KeepAlive message is used to detect Session Probe unavailability. Without Session Probe, session monitoring will be minimal. No metadata will be collected.\nDuring the delay between sending a KeepAlive request and receiving the corresponding reply, Session Probe availability is indeterminate.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1766,6 +1833,7 @@
       "description": "This parameter allows us to choose the behavior of the RDP Proxy in case of losing the connection with Session Probe.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "SessionProbeOnKeepaliveTimeout"
@@ -1778,6 +1846,7 @@
       "description": "The behavior of this parameter is different between the Desktop session and the RemoteApp session (RDS meaning). But in each case, the purpose of enabling this parameter is to not leave disconnected sessions in a state unusable by the RDP proxy.\nIf enabled, Session Probe will automatically end the disconnected Desktop session. Otherwise, the RDP session and the applications it contains will remain active after user disconnection (unless a parameter defined at the RDS-level decides otherwise).\nThe parameter in RemoteApp session (RDS meaning) does not cause the latter to be closed but a simple cleanup. However, this makes the session suitable for reuse.\nThis parameter must be enabled for Web applications because an existing session with a running browser cannot be reused.\nIt is also recommended to enable this parameter for connections in RemoteApp mode (RDS meaning) when <code>\"Use Session Probe to launch remote program\" option (in \"rdp\" section)</code> is enabled. Because an existing Session Probe does not launch a startup program (a new Bastion application) when the RemoteApp session resumes.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1790,6 +1859,7 @@
       "displayName": "Enable autodeployed Application Driver affinity",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -1801,6 +1871,7 @@
       "description": "This parameter allows you to enable the Windows-side logging of Session Probe.\nThe generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team.\nThis log does not help diagnose a launch problem. For this, you should instead use the debugging settings in the Configuration options.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1813,6 +1884,7 @@
       "description": "This parameter enables or disables the Log files rotation for Windows-side logging of Session Probe.\nThe Log files rotation helps reduce disk space consumption caused by logging. But the interesting information may be lost if the corresponding file is not retrieved in time.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1826,6 +1898,7 @@
       "tags": ["debug"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1839,6 +1912,7 @@
       "description": "(Deprecated!)\nThe period above which the disconnected Application session will be automatically closed by the Session Probe.\n0 to disable timeout.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1852,6 +1926,7 @@
       "description": "The period above which the disconnected Desktop session will be automatically closed by the Session Probe.\n0 to disable timeout.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1865,6 +1940,7 @@
       "description": "The period of user inactivity above which the session will be locked by the Session Probe.\n0 to disable timeout.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1878,6 +1954,7 @@
       "description": "The additional period given to the device to make Clipboard redirection available.\nThis parameter is effective only if <code>\"Use smart launcher\" option</code> is enabled.\nIf we see the message \"Clipboard Virtual Channel is unavailable\" in the Bastion’s syslog and we are sure that this virtual channel is allowed on the device (confirmed by a direct connection test for example), we probably need to use this parameter.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1890,6 +1967,7 @@
       "description": "For under-performing devices.\nThe extra time given to the device before starting the Session Probe launch sequence.\nThis parameter is effective only if <code>\"Use smart launcher\" option</code> is enabled.\nThis parameter can be useful when (with Launch mask disabled) Windows Explorer is not immediately visible when the RDP session is opened.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1902,6 +1980,7 @@
       "description": "The delay between two simulated keystrokes during the Session Probe launch sequence execution.\nThis parameter is effective only if <code>\"Use smart launcher\" option</code> is enabled.\nThis parameter may help if the Session Probe launch failure is caused by network slowness or device under-performance.\nThis parameter is usually used together with the <code>\"Smart launcher short delay\" option</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1914,6 +1993,7 @@
       "description": "The delay between two steps of the same simulated keystrokes during the Session Probe launch sequence execution.\nThis parameter is effective only if <code>\"Use smart launcher\" option</code> is enabled.\nThis parameter may help if the Session Probe launch failure is caused by network slowness or device under-performance.\nThis parameter is usually used together with the <code>\"Smart launcher long delay\" option</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1927,6 +2007,7 @@
       "displayName": "Enable Smart launcher with AM affinity",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1939,6 +2020,7 @@
       "description": "The time interval between the detection of an error (example: a refusal by the target of the redirected drive) and the actual abandonment of the Session Probe launch.\nThe purpose of this parameter is to give the target time to gracefully stop some ongoing processing.\nIt is strongly recommended to keep the default value of this parameter.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1953,6 +2035,7 @@
       "tags": ["debug"],
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -1965,6 +2048,7 @@
       "description": "Use only if you see unusually high consumption of system object handles by the Session Probe.\nThe Session Probe will sabotage and then restart it-self if it consumes more handles than what is defined by this parameter.\nA value of 0 disables this feature.\nThis feature can cause the session to be disconnected if the value of the <code>\"On keepalive timeout\" option</code> is set to 1 (Disconnect user).\nIf <code>\"Allow multiple handshakes\" option (in \"session_probe\" section of \"RDP Proxy\" configuration option)</code> is disabled, restarting the Session Probe will cause the session to disconnect.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1978,6 +2062,7 @@
       "description": "Use only if you see unusually high consumption of memory by the Session Probe.\nThe Session Probe will sabotage and then restart it-self if it consumes more memory than what is defined by this parameter.\nA value of 0 disables this feature.\nThis feature can cause the session to be disconnected if the value of the <code>\"On keepalive timeout\" option</code> is set to 1 (Disconnect user).\nIf <code>\"Allow multiple handshakes\" option (in \"session_probe\" section of \"RDP Proxy\" configuration option)</code> is disabled, restarting the Session Probe will cause the session to disconnect.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -1992,6 +2077,7 @@
       "displayName": "CPU usage alarm threshold",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2006,6 +2092,7 @@
       "displayName": "CPU usage alarm action",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2019,6 +2106,7 @@
       "description": "For application session only.\nThe delay between the launch of the application and the start of End of session check.\nSometimes an application takes a long time to create its window. If the End of session check is start too early, the Session Probe may mistakenly conclude that there is no longer any active process in the session. And without active processes, the application session will be logged off by the Session Probe.\n'End of session check delay time' allow you to delay the start of End of session check in order to give the application the time to create its window.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2033,6 +2121,7 @@
       "displayName": "Ignore UI less processes during end of session check",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -2045,6 +2134,7 @@
       "description": "This parameter is used to provide the list of (comma-separated) system processes that can be run in the session.\nEx.: dllhos.exe,TSTheme.exe\nUnlike user processes, system processes do not keep the session open. A session with no user process will be automatically closed by Session Probe after starting the End of session check.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2056,6 +2146,7 @@
       "description": "This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).\nUnfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.\nOne of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash.\nRefer to the <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -2068,6 +2159,7 @@
       "description": "Comma-separated process names. (Ex.: chrome.exe,ngf.exe)\nThis parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).\nUnfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.\nThis parameter is used to provide the list of processes whose windows are considered as input fields of unknown type.\nRefer to the <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2079,6 +2171,7 @@
       "description": "This parameter is used when resuming a session hosting a existing Session Probe.\nIf enabled, the Session Probe will activate or deactivate features according to the value of <code>\"Disabled features\" option</code> received when resuming its host session. Otherwise, the Session Probe will keep the same set of features that were used during the previous connection.\nIt is recommended to keep the default value of this parameter.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -2091,6 +2184,7 @@
       "description": "This parameter was created to work around some compatibility issues and to limit the CPU load that the Session Probe process causes.\nIf 'Java Acccess Bridge' feature is disabled, data entered in the password field of Java applications may be visible in the metadata.\nFor more information, refer to <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>.\nFor more information, also refer to <code>\"Childless window as unidentified input field\" option</code> and <code>\"Windows of these applications as unidentified input field\" option</code>.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2105,6 +2199,7 @@
       "displayName": "Enable BestSafe interaction",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2116,6 +2211,7 @@
       "description": "This parameter has no effect on the device without BestSafe.\nBestSafe interaction must be enabled. Refer to <code>\"Enable BestSafe interaction\" option</code>.\nThis parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.\nDetectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "SessionProbeOnAccountManipulation"
@@ -2128,6 +2224,7 @@
       "description": "This parameter is used to indicate the name of an environment variable, to be set on the Windows device, and pointed to a directory (on the device) that can be used to store and start the Session Probe. The environment variable must be available in the Windows user session.\nThe environment variable name is limited to 3 characters or less.\nBy default, the Session Probe will be stored and started from the temporary directory of Windows user.\nThis parameter is useful if a GPO prevents Session Probe from starting from the Windows user's temporary directory.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2141,6 +2238,7 @@
       "description": "If enabled, the session, once disconnected, can be resumed by another Bastion user.\nExcept in special cases, this is usually a security problem.\nBy default, a session can only be resumed by the Bastion user who created it.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2152,6 +2250,7 @@
       "description": "This parameter is used to provide the list of (comma-separated) rules used to monitor outgoing connections created in the session.\n(Ex. IPv4 addresses: $deny:192.168.0.0/24:5900,$allow:192.168.0.110:21)\n(Ex. IPv6 addresses: $deny:2001:0db8:85a3:0000:0000:8a2e:0370:7334:3389,$allow:[20D1:0:3238:DFE1:63::FEFB]:21)\n(Ex. hostname can be used to resolve to both IPv4 and IPv6 addresses: $allow:host.domain.net:3389)\n(Ex. for backwards compatibility only: 10.1.0.0/16:22)\nA global rule that matches all IP addresses/Ports such as \"0.0.0.0/0:*\" is highly unrecommended.\nSession Probe must be enabled to use this feature.\nBestSafe can be used to perform detection of outgoing connections created in the session. Refer to <code>\"Enable BestSafe interaction\" option</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2163,6 +2262,7 @@
       "description": "This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session.\n(Ex.: $deny:taskmgr.exe)\n@ = All child processes of (Bastion) application (Ex.: $deny:@)\nBestSafe can be used to perform detection of process launched in the session. Refer to <code>\"Enable BestSafe interaction\" option</code>.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -2217,6 +2317,7 @@
       "description": "",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2230,6 +2331,7 @@
       "description": "Time between two polling performed by Session Probe.\nThe parameter is created to adapt the CPU consumption to the performance of the Windows device.\nThe longer this interval, the less detailed the session metadata collection and the lower the CPU consumption.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1",
@@ -2243,6 +2345,7 @@
       "description": "If enabled, Session Probe activity will be minimized when the user is disconnected from the session. No metadata will be collected during this time.\nThe purpose of this behavior is to optimize CPU consumption.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -2255,6 +2358,7 @@
       "description": "If enabled, Session Probe will monitor its own system resource consumption.\nThis feature increases CPU consumption.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -2267,6 +2371,7 @@
       "description": "Keep known target server certificates on Bastion",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
@@ -2279,6 +2384,7 @@
       "description": "Behavior of certificates check.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1",
@@ -2292,6 +2398,7 @@
       "description": "Warn if check allow connexion to target server.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -2306,6 +2413,7 @@
       "description": "Warn that new target server certificate file was created.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -2320,6 +2428,7 @@
       "description": "Warn that target server certificate file was successfully checked.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -2334,6 +2443,7 @@
       "description": "Warn that target server certificate file checking failed.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -2605,6 +2715,7 @@
       },
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1",
@@ -2738,6 +2849,7 @@
       },
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "vnc": true,
       "aclToProxy": true,
       "advanced": true,
@@ -3021,6 +3133,7 @@
       "description": "Enable use of ICAP service for file verification on upload.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3032,6 +3145,7 @@
       "description": "Enable use of ICAP service for file verification on download.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3043,6 +3157,7 @@
       "description": "Verify text data via clipboard from the client to the target server.\nFile verification on upload must be enabled via the Enable up option.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3054,6 +3169,7 @@
       "description": "Verify text data via clipboard from the target server to the client\nFile verification on download must be enabled via the Enable down option.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3065,6 +3181,7 @@
       "description": "Block file transfer from the client to the target server on invalid file verification.\nFile verification on upload must be enabled via the Enable up option.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3076,6 +3193,7 @@
       "description": "Block file transfer from the target server to the client on invalid file verification.\nFile verification on download must be enabled via the Enable down option.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },
@@ -3103,6 +3221,7 @@
       "description": "Log the files and clipboard texts that are verified and accepted. By default, only those rejected are logged.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -3115,6 +3234,7 @@
       "description": "⚠ This value affects the RAM used by the session.\n\nIf option Block invalid file (up or down) is enabled, automatically reject file with greater filesize.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
@@ -3135,6 +3255,7 @@
       "description": "Enable storage of transferred files (via RDP Clipboard).\n⚠ Saving files can take up a lot of disk space.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1",
       "subtype": "RdpStoreFile"

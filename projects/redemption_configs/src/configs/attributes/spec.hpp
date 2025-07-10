@@ -104,6 +104,8 @@ enum class DestSpecFile : uint8_t
     // proxy (DHE-PSK-*, DHE-DSS-*, ...) or where not included in documentation
     // submited by WALLIX for BSZ certification (*-CCM)
     rdp_sogisces_1_3_2030 = 1 << 4,
+    // CCN Agreed Cryptographic Mechanisms
+    rdp_ccn = 1 << 5,
 };
 MK_ENUM_OP(DestSpecFile)
 

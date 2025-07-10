@@ -635,7 +635,8 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
 
     for (const option of sectionData.options) {
       let value = option.value;
-      let rdpSogisces = '';
+      let rdpSpecials = '';
+      let rdpCCN = '';
       let defaultValueType = 'default';
       let connpolicyDesc = undefined;
       let delBefore = '';
@@ -652,12 +653,17 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
           }
         }
 
-        if (prefix === 'rdp' && 'rdp-sogisces_1.3_2030' in option.connpolicyValues) {
-          const connValue = option.connpolicyValues['rdp-sogisces_1.3_2030'].value;
-          if (connValue !== value) {
-            const [type, description, extraDescription, humanValue, defaultValue]
-              = makeInfoSpec(enumDatas, option, connValue);
-            rdpSogisces = ` ${optSep} <span class="type-info-connpolicy-special">RDP-sogisces_1.3_2030</span>: <code>${defaultValue}</code>${humanValue}`;
+        if (prefix === 'rdp') {
+          for (const policyName in ['rdp-sogisces_1.3_2030', 'rdp-ccn']) {
+            if (!(policyName in option.connpolicyValues)) {
+              continue;
+            }
+            const connValue = option.connpolicyValues[policyName].value;
+            if (connValue !== value) {
+              const [type, description, extraDescription, humanValue, defaultValue]
+                = makeInfoSpec(enumDatas, option, connValue);
+              rdpSpecials += ` ${optSep} <span class="type-info-connpolicy-special">RDP${policyName.substr(4)}</span>: <code>${defaultValue}</code>${humanValue}`;
+            }
           }
         }
       }
@@ -688,7 +694,7 @@ const makeHtmlSpec = (enumDatas, sections, spec, prefix, isConnpolicy, prefixPre
       htmlBodyFragments.push(`
         <article class="option ${classes}" id="${optId}">
           <h3><a href="#${optId}">${sectionPrefix}<span class="section-prefix">[${realSectionName}]</span> ${delBefore}${option.displayName}${delAfter}</a>${tags}</h3>
-          <p class="type-info">type: ${type} ${optSep} ${option.advanced ? `advanced ${optSep} ` : ''}<span class="type-info-${defaultValueType}">${defaultValueType}</span>: <code>${defaultValue}</code>${humanValue}${rdpSogisces}</p>
+          <p class="type-info">type: ${type} ${optSep} ${option.advanced ? `advanced ${optSep} ` : ''}<span class="type-info-${defaultValueType}">${defaultValueType}</span>: <code>${defaultValue}</code>${humanValue}${rdpSpecials}</p>
           <p class="description">${description.replaceAll('\n', '</p><p class="description">')}</p>
           ${extraDescription}
           ${option.details || ''}

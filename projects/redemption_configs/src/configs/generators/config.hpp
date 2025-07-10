@@ -73,6 +73,7 @@ constexpr inline std::array conn_policies {
     DestSpecFile::rdp,
     DestSpecFile::vnc,
     DestSpecFile::rdp_sogisces_1_3_2030,
+    DestSpecFile::rdp_ccn,
 };
 
 constexpr inline auto conn_policies_acl_map_mask
@@ -88,6 +89,7 @@ constexpr std::string_view dest_file_to_filename(DestSpecFile dest)
         case DestSpecFile::global_spec: return ""sv;
         case DestSpecFile::rdp: return "rdp"sv;
         case DestSpecFile::rdp_sogisces_1_3_2030: return "rdp-sogisces_1.3_2030"sv;
+        case DestSpecFile::rdp_ccn: return "rdp-ccn"sv;
         case DestSpecFile::vnc: return "vnc"sv;
     }
     return ""sv;
@@ -453,7 +455,7 @@ inline void check_policy(std::initializer_list<DestSpecFile> dest_files)
 #define DECL(name) bool(mask & DestSpecFile::name) ? " (" #name ")"sv : ""sv
             throw std::runtime_error(
                 str_concat("duplicate connection policy value"sv,
-                           DECL(vnc), DECL(rdp), DECL(rdp_sogisces_1_3_2030))
+                           DECL(vnc), DECL(rdp), DECL(rdp_sogisces_1_3_2030), DECL(rdp_ccn))
             );
 #undef DECL
         }
@@ -1724,10 +1726,16 @@ ConnectionPolicyValue<minify_type_t<T>> rdp_sogisces_1_3_2030_policy_value(T&& v
 }
 
 template<class T>
+ConnectionPolicyValue<minify_type_t<T>> rdp_ccn_policy_value(T&& value)
+{
+    return {DestSpecFile::rdp_ccn, static_cast<T&&>(value), false};
+}
+
+template<class T>
 ConnectionPolicyValue<minify_type_t<T>> rdp_all_policy_value(T&& value)
 {
     return {
-        DestSpecFile::rdp | DestSpecFile::rdp_sogisces_1_3_2030,
+        DestSpecFile::rdp | DestSpecFile::rdp_sogisces_1_3_2030 | DestSpecFile::rdp_ccn,
         static_cast<T&&>(value), false
     };
 }
@@ -2597,6 +2605,7 @@ public:
 
             std::string const* rdp_value = &mem_info.value.values.json;
             std::string const* rdp_sogis_value = nullptr;
+            std::string const* rdp_ccn_value = nullptr;
 
             if (!mem_info.value.values.connection_policies.empty()) {
                 json_values += ",\n      \"connpolicyValues\": "sv;
@@ -2611,6 +2620,9 @@ public:
                         }
                         if (bool(dest_file & DestSpecFile::rdp_sogisces_1_3_2030)) {
                             rdp_sogis_value = &connpolicy.json;
+                        }
+                        if (bool(dest_file & DestSpecFile::rdp_ccn)) {
+                            rdp_ccn_value = &connpolicy.json;
                         }
                         Appender{json_values}(
                             c, "\n        \""sv,
@@ -2636,8 +2648,9 @@ public:
             }
 
             const bool has_rdp_sogis = rdp_sogis_value && *rdp_sogis_value != *rdp_value;
+            const bool has_rdp_ccn = rdp_ccn_value && *rdp_ccn_value != *rdp_value;
 
-            if (bool(mem_info.tags) || has_rdp_sogis) {
+            if (bool(mem_info.tags) || has_rdp_sogis || has_rdp_ccn) {
                 json_values += ",\n      \"tags\": ["sv;
                 for (std::size_t i = 0; i < mem_info.tags.max; ++i) {
                     if (mem_info.tags.test(Tag(i))) {
@@ -2649,6 +2662,9 @@ public:
                 }
                 if (has_rdp_sogis) {
                     json_values += "\"SOG-IS\","sv;
+                }
+                if (has_rdp_ccn) {
+                    json_values += "\"CCN\","sv;
                 }
                 json_values.back() = ']';
             }
@@ -2674,6 +2690,7 @@ public:
             append_if_true("iniOnly", bool(mem_info.spec.dest & DestSpecFile::ini_only));
             append_if_true("rdp", bool(mem_info.spec.dest & DestSpecFile::rdp));
             append_if_true("rdp_sogisces_1_3_2030", bool(mem_info.spec.dest & DestSpecFile::rdp_sogisces_1_3_2030));
+            append_if_true("rdp_ccn", bool(mem_info.spec.dest & DestSpecFile::rdp_ccn));
             append_if_true("vnc", bool(mem_info.spec.dest & DestSpecFile::vnc));
             append_if_true("aclToProxy", bool(mem_info.spec.acl_io & SesmanIO::acl_to_proxy));
             append_if_true("ProxyToAcl", bool(mem_info.spec.acl_io & SesmanIO::proxy_to_acl));
@@ -3134,6 +3151,7 @@ private:
         DescRefReplacer vnc;
         DescRefReplacer rdp;
         DescRefReplacer rdp_sogisces_1_3_2030;
+        DescRefReplacer rdp_ccn;
         DestSpecFile policy_types;
 
         void init(Description const& desc, Section const& section_info, MemberInfo const& mem_info, ConfigInfo const& conf)
@@ -3169,6 +3187,7 @@ private:
                 D{DestSpecFile::vnc, vnc},
                 D{DestSpecFile::rdp, rdp},
                 D{DestSpecFile::rdp_sogisces_1_3_2030, rdp_sogisces_1_3_2030},
+                D{DestSpecFile::rdp_ccn, rdp_ccn},
             }) {
                 f(d.type, d.ref);
             }

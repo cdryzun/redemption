@@ -108,6 +108,10 @@ using cfg_generators::value;
 using cfg_generators::rdp_all_policy_value;
 using cfg_generators::rdp_general_policy_value;
 using cfg_generators::rdp_sogisces_1_3_2030_policy_value;
+using cfg_generators::rdp_ccn_policy_value;
+#define RDP_SOGISCES_AND_CCN(value) \
+    rdp_ccn_policy_value(value),    \
+    rdp_sogisces_1_3_2030_policy_value(value)
 using cfg_generators::vnc_policy_value;
 using cfg_generators::MemberInfo;
 using cfg_generators::Description;
@@ -130,7 +134,8 @@ auto no_reset_back_to_selector = ResetBackToSelector::No;
 auto vnc = DestSpecFile::vnc;
 auto rdp_general = DestSpecFile::rdp;
 auto rdp_sogisces_1_3_2030 = DestSpecFile::rdp_sogisces_1_3_2030;
-auto rdp = rdp_general | rdp_sogisces_1_3_2030;
+auto rdp_ccn = DestSpecFile::rdp_ccn;
+auto rdp = rdp_general | rdp_sogisces_1_3_2030 | rdp_ccn;
 
 
 // updated by acl
@@ -931,7 +936,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "enable_kerberos",
-        .value = value(true, rdp_sogisces_1_3_2030_policy_value(true)),
+        .value = value(true, RDP_SOGISCES_AND_CCN(true)),
         .spec = connpolicy(rdp, loggable),
         .desc =
             "When :REF:NOSUFFIX:[mod_rdp]:enable_nla is selected:\n"
@@ -942,7 +947,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "allow_nla_ntlm_fallback",
-        .value = value<bool>(false, rdp_sogisces_1_3_2030_policy_value(false)),
+        .value = value<bool>(false, RDP_SOGISCES_AND_CCN(false)),
         .spec = connpolicy(rdp, loggable),
         .desc =
             "When both :REF:NOSUFFIX:[mod_rdp]:enable_nla and"
@@ -954,28 +959,28 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "allow_tls_only_fallback",
-        .value = value<bool>(false, rdp_sogisces_1_3_2030_policy_value(false)),
+        .value = value<bool>(false, RDP_SOGISCES_AND_CCN(false)),
         .spec = connpolicy(rdp, loggable),
         .desc = "Allow TLS only."
     });
 
     _.member(MemberInfo{
         .name = "allow_rdp_legacy_fallback",
-        .value = value<bool>(false, rdp_sogisces_1_3_2030_policy_value(false)),
+        .value = value<bool>(false, RDP_SOGISCES_AND_CCN(false)),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc = "Allow Standard RDP Security (Legacy).",
     });
 
     _.member(MemberInfo{
         .name = "tls_min_level",
-        .value = value<types::u32>(2, rdp_sogisces_1_3_2030_policy_value(2)),
+        .value = value<types::u32>(2, RDP_SOGISCES_AND_CCN(2)),
         .spec = connpolicy(rdp, loggable),
         .desc = "Minimal incoming TLS level 0=TLSv1, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
     });
 
     _.member(MemberInfo{
         .name = "tls_max_level",
-        .value = value<types::u32>(0, rdp_sogisces_1_3_2030_policy_value(0)),
+        .value = value<types::u32>(0, RDP_SOGISCES_AND_CCN(0)),
         .spec = connpolicy(rdp, loggable),
         .desc = "Maximal incoming TLS level 0=no restriction, 1=TLSv1.1, 2=TLSv1.2, 3=TLSv1.3",
     });
@@ -999,6 +1004,12 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
                 ":ECDHE-ECDSA-AES128-GCM-SHA256"
                 ":ECDHE-RSA-AES128-GCM-SHA256"
                 ":DHE-RSA-AES128-GCM-SHA256"
+            ),
+            rdp_ccn_policy_value(
+                "ECDHE-ECDSA-AES256-GCM-SHA384"
+                ":ECDHE-RSA-AES256-GCM-SHA384"
+                ":ECDHE-ECDSA-AES128-GCM-SHA256"
+                ":ECDHE-RSA-AES128-GCM-SHA256"
             )),
         .spec = connpolicy(rdp, loggable),
         .desc =
@@ -1022,7 +1033,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
             .display = "TLS 1.3 cipher suites",
         },
         .value = value<std::string>("",
-            rdp_sogisces_1_3_2030_policy_value(
+            RDP_SOGISCES_AND_CCN(
                 "TLS_AES_256_GCM_SHA384"
                 ":TLS_AES_128_GCM_SHA256")
           ),
@@ -1040,7 +1051,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
             ":ffdhe4096"
             ":ffdhe6144"
             ":ffdhe8192",
-            rdp_sogisces_1_3_2030_policy_value(
+            RDP_SOGISCES_AND_CCN(
                 "P-256"
                 ":P-384"
                 ":P-521"
