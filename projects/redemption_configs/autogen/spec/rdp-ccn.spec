@@ -119,7 +119,7 @@ tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:
 # hash is one of SHA224, SHA256, SHA384 or SHA512.
 # signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
 #_display_name=TLS signature algorithms
-tls_signature_algorithms = string(default="RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512")
+tls_signature_algorithms = string(default="RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512")
 
 # Show in the logs the common cipher list supported by client and target server
 # ⚠ Only for debugging purposes.

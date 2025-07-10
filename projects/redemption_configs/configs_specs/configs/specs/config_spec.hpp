@@ -1077,7 +1077,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
             ":ECDSA+SHA256"
             ":ECDSA+SHA384"
             ":ECDSA+SHA512",
-            rdp_sogisces_1_3_2030_policy_value(
+            RDP_SOGISCES_AND_CCN(
                 "RSA-PSS+SHA256"
                 ":RSA-PSS+SHA384"
                 ":RSA-PSS+SHA512"
