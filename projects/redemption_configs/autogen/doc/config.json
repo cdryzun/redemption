@@ -967,6 +967,7 @@
       "displayName": "TLS signature algorithms",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
       "aclToProxy": true,
       "logStategy": "1"
     },

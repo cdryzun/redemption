@@ -47,6 +47,7 @@ back_to_selector_default_sent = {
 back_to_selector_default_reinit = {
     'auth_channel_target': "",
     'auth_notify': "",
+    'authenticated_by_nla': False,
     'comment': "",
     'disconnect_reason_ack': False,
     'duration': "",
