@@ -2150,7 +2150,8 @@ public:
         for (std::size_t i = 0; i < Tags::max; ++i) {
             json.out << '"' << tag_to_sv(Tag(i)) << "\","sv;
         }
-        json.out << "\"SOG-IS\"],\n\"sections\": [\n";
+        // rdp_sogisces_1_3_2030 + other special policies
+        json.out << "\"SOG-IS\",  \"CCN\"],\n\"sections\": [\n";
         std::string_view json_sep = {};
         for (std::string_view section_name : ordered_section_names) {
             auto& section = sections.find(section_name)->second;
