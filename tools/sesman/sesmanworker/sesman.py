@@ -902,7 +902,7 @@ class Sesman():
 
                     return False, TR(Sesmsg.X509_AUTH_REFUSED_BY_USER)
                 authenticated = True
-            elif self.passthrough_mode:
+            elif self.passthrough_mode or self.shared.get('authenticated_by_nla'):
                 # Passthrough Authentification
                 method = "Passthrough"
                 self.rdplog.log("AUTHENTICATION_TRY", method=method)
