@@ -224,8 +224,10 @@ cfg::session_probe::launch_fallback_timeout ⇐ session_probe:launch_fallback_ti
     This parameter is used if [session_probe]on_launch_failure is 0 (ignore failure and continue) or 2 (retry without Session Probe).
     0 to disable timeout.
     in milliseconds
+cfg::session_probe::ensure_launch_sequence_only_starts_after_logon ⇐ session_probe:ensure_launch_sequence_only_starts_after_logon   [bool]
+    If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.
 cfg::session_probe::start_launch_timeout_timer_only_after_logon ⇐ session_probe:start_launch_timeout_timer_only_after_logon   [bool]
-    If enabled, the [session_probe]launch_timeout countdown timer will be started only after user logged in Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
+    If enabled, the [session_probe]launch_timeout countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
 cfg::session_probe::keepalive_timeout ⇐ session_probe:keepalive_timeout   [std::chrono::milliseconds]
     The amount of time that RDP Proxy waits for a reply from the Session Probe to the KeepAlive message before adopting the behavior defined by [session_probe]on_keepalive_timeout.
     If our local network is subject to congestion, or if the Windows lacks responsiveness, it is possible to increase the value of the timeout to minimize disturbances related to the behavior defined by [session_probe]on_keepalive_timeout.

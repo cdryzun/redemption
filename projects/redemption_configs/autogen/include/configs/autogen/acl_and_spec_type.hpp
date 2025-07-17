@@ -162,6 +162,7 @@ template<> struct acl_and_spec_type<cfg::session_probe::enable_launch_mask> { us
 template<> struct acl_and_spec_type<cfg::session_probe::on_launch_failure> { using type = SessionProbeOnLaunchFailure; };
 template<> struct acl_and_spec_type<cfg::session_probe::launch_timeout> { using type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 300000>; };
 template<> struct acl_and_spec_type<cfg::session_probe::launch_fallback_timeout> { using type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 300000>; };
+template<> struct acl_and_spec_type<cfg::session_probe::ensure_launch_sequence_only_starts_after_logon> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::session_probe::start_launch_timeout_timer_only_after_logon> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::session_probe::keepalive_timeout> { using type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 60000>; };
 template<> struct acl_and_spec_type<cfg::session_probe::on_keepalive_timeout> { using type = SessionProbeOnKeepaliveTimeout; };

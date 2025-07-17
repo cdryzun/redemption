@@ -108,6 +108,11 @@ public:
         return false;
     }
 
+    void on_user_logon() override {
+        LOG_IF(bool(this->verbose & RDPVerbose::sesprobe_launcher), LOG_INFO,
+            "SessionProbeAlternateShellBasedLauncher :=> on_user_logon");
+    }
+
     void set_remote_programs_virtual_channel(RemoteProgramsVirtualChannel* channel) override {
         this->rail_channel = channel;
     }

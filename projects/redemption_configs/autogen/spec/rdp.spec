@@ -307,7 +307,10 @@ launch_timeout = integer(min=0, max=300000, default=40000)
 #_advanced
 launch_fallback_timeout = integer(min=0, max=300000, default=40000)
 
-# If enabled, the "Launch timeout" option countdown timer will be started only after user logged in Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
+# If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.
+ensure_launch_sequence_only_starts_after_logon = boolean(default=False)
+
+# If enabled, the "Launch timeout" option countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
 start_launch_timeout_timer_only_after_logon = boolean(default=True)
 
 # The amount of time that RDP Proxy waits for a reply from the Session Probe to the KeepAlive message before adopting the behavior defined by "On keepalive timeout" option.

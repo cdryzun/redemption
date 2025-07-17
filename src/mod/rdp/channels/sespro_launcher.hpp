@@ -43,6 +43,8 @@ public:
 
     virtual bool on_image_read(uint64_t offset, uint32_t length) = 0;
 
+    virtual void on_user_logon() = 0;
+
     virtual void set_remote_programs_virtual_channel(
         RemoteProgramsVirtualChannel* channel) = 0;
 

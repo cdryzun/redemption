@@ -1235,6 +1235,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "ensure_launch_sequence_only_starts_after_logon"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::session_probe::ensure_launch_sequence_only_starts_after_logon&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
         else if (key == "start_launch_timeout_timer_only_after_logon"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),

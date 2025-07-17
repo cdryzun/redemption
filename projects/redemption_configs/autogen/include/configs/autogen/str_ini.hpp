@@ -854,7 +854,12 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:launch_fallback_timeout)
 #launch_fallback_timeout = 40000
 
-# If enabled, the [session_probe]launch_timeout countdown timer will be started only after user logged in Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
+# If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.
+# (type: boolean (0/no/false or 1/yes/true))
+# (acl config: proxy ⇐ session_probe:ensure_launch_sequence_only_starts_after_logon)
+#ensure_launch_sequence_only_starts_after_logon = 0
+
+# If enabled, the [session_probe]launch_timeout countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ session_probe:start_launch_timeout_timer_only_after_logon)
 #start_launch_timeout_timer_only_after_logon = 1

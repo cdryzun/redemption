@@ -1674,10 +1674,17 @@ _.section("session_probe", [&]
     });
 
     _.member(MemberInfo{
+        .name = "ensure_launch_sequence_only_starts_after_logon",
+        .value = value(false),
+        .spec = connpolicy(rdp, loggable),
+        .desc = "If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.",
+    });
+
+    _.member(MemberInfo{
         .name = "start_launch_timeout_timer_only_after_logon",
         .value = value(true),
         .spec = connpolicy(rdp, loggable),
-        .desc = "If enabled, the :REF::launch_timeout countdown timer will be started only after user logged in Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.",
+        .desc = "If enabled, the :REF::launch_timeout countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.",
     });
 
     _.member(MemberInfo{

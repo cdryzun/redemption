@@ -71,6 +71,12 @@ private:
 
     bool on_server_format_list_response();
 
+    bool start_launch_sequence();
+
+public:
+    void on_user_logon() override;
+
+private:
     void process_client_message(uint32_t total_length, uint32_t flags,
         bytes_view chunk_data, RDPECLIP::CliprdrHeader const* decoded_header)
             override;
@@ -135,6 +141,8 @@ private:
 
     bool clipboard_initialized            = false;
     bool clipboard_initialized_by_proxy   = false;
+
+    bool user_is_logged_on = false;
 
     enum class CurClientClipboardInitStep
     {

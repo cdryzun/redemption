@@ -1917,6 +1917,7 @@ class mod_rdp : public mod_api, public rdp_api, public sespro_api
     bool const allow_session_reconnection_by_shortcut;
 
 #ifndef __EMSCRIPTEN__
+    bool const session_probe_ensure_launch_sequence_only_starts_after_logon;
     bool const session_probe_start_launch_timeout_timer_only_after_logon;
 #endif
 
@@ -2060,6 +2061,8 @@ public:
         , vars(vars)
         , allow_session_reconnection_by_shortcut(mod_rdp_params.allow_session_reconnection_by_shortcut)
         #ifndef __EMSCRIPTEN__
+        , session_probe_ensure_launch_sequence_only_starts_after_logon(
+            mod_rdp_params.session_probe_params.ensure_launch_sequence_only_starts_after_logon)
         , session_probe_start_launch_timeout_timer_only_after_logon(mod_rdp_params.session_probe_params.start_launch_timeout_timer_only_after_logon)
         #endif
         , save_session_info_pdu(mod_rdp_params.save_session_info_pdu)
@@ -5155,6 +5158,11 @@ public:
         }
 
 #ifndef __EMSCRIPTEN__
+        if (this->channels.session_probe.session_probe_launcher &&
+            this->session_probe_ensure_launch_sequence_only_starts_after_logon) {
+            this->channels.session_probe.session_probe_launcher->on_user_logon();
+        }
+
         if (this->channels.session_probe_virtual_channel
          && this->session_probe_start_launch_timeout_timer_only_after_logon
         ) {
@@ -5231,9 +5239,15 @@ public:
                 }
             }
 
-            if (this->channels.session_probe_virtual_channel &&
-                this->session_probe_start_launch_timeout_timer_only_after_logon) {
-                this->channels.session_probe_virtual_channel->start_launch_timeout_timer();
+            if (this->channels.session_probe.session_probe_launcher &&
+                this->session_probe_ensure_launch_sequence_only_starts_after_logon) {
+                this->channels.session_probe.session_probe_launcher->on_user_logon();
+            }
+
+            if (this->channels.session_probe_virtual_channel) {
+                if (this->session_probe_start_launch_timeout_timer_only_after_logon) {
+                    this->channels.session_probe_virtual_channel->start_launch_timeout_timer();
+                }
             }
 #endif
         }

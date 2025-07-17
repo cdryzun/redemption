@@ -1803,10 +1803,22 @@
     },
     {
       "section": "session_probe",
+      "name": "ensure_launch_sequence_only_starts_after_logon",
+      "type": "bool",
+      "value": false,
+      "description": "If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.",
+      "rdp": true,
+      "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
+      "aclToProxy": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "session_probe",
       "name": "start_launch_timeout_timer_only_after_logon",
       "type": "bool",
       "value": true,
-      "description": "If enabled, the <code>\"Launch timeout\" option</code> countdown timer will be started only after user logged in Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.",
+      "description": "If enabled, the <code>\"Launch timeout\" option</code> countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,

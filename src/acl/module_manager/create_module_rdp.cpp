@@ -311,6 +311,8 @@ inline static ModRdpSessionProbeParams get_session_probe_params(Inifile & ini)
     spp.enable_session_probe = ini.get<cfg::session_probe::enable_session_probe>();
     spp.enable_launch_mask = ini.get<cfg::session_probe::enable_launch_mask>();
     spp.used_clipboard_based_launcher = ini.get<cfg::session_probe::use_smart_launcher>();
+    spp.ensure_launch_sequence_only_starts_after_logon =
+        ini.get<cfg::session_probe::ensure_launch_sequence_only_starts_after_logon>();
     spp.start_launch_timeout_timer_only_after_logon = ini.get<cfg::session_probe::start_launch_timeout_timer_only_after_logon>();
     spp.vc_params.effective_launch_timeout
         = ini.get<cfg::session_probe::start_launch_timeout_timer_only_after_logon>()
@@ -347,6 +349,8 @@ inline static ModRdpSessionProbeParams get_session_probe_params(Inifile & ini)
         ini.get<cfg::session_probe::smart_launcher_short_delay>();
     spp.clipboard_based_launcher.reset_keyboard_status =
         ini.get<cfg::session_probe::clipboard_based_launcher_reset_keyboard_status>();
+    spp.clipboard_based_launcher.ensure_launch_sequence_only_starts_after_logon =
+        spp.ensure_launch_sequence_only_starts_after_logon;
     spp.vc_params.end_of_session_check_delay_time = ini.get<cfg::session_probe::end_of_session_check_delay_time>();
     spp.vc_params.ignore_ui_less_processes_during_end_of_session_check =
         ini.get<cfg::session_probe::ignore_ui_less_processes_during_end_of_session_check>();

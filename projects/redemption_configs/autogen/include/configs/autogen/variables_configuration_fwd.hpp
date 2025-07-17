@@ -178,6 +178,7 @@ namespace cfg
         struct on_launch_failure;
         struct launch_timeout;
         struct launch_fallback_timeout;
+        struct ensure_launch_sequence_only_starts_after_logon;
         struct start_launch_timeout_timer_only_after_logon;
         struct keepalive_timeout;
         struct on_keepalive_timeout;

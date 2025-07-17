@@ -83,6 +83,7 @@ namespace configs
         "session_probe:on_launch_failure"_zv,
         "session_probe:launch_timeout"_zv,
         "session_probe:launch_fallback_timeout"_zv,
+        "session_probe:ensure_launch_sequence_only_starts_after_logon"_zv,
         "session_probe:start_launch_timeout_timer_only_after_logon"_zv,
         "session_probe:keepalive_timeout"_zv,
         "session_probe:on_keepalive_timeout"_zv,

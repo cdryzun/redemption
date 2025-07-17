@@ -41,6 +41,7 @@ struct ModRdpSessionProbeParams
     bool used_to_launch_remote_program = true;
     bool used_clipboard_based_launcher = false;
 
+    bool ensure_launch_sequence_only_starts_after_logon = false;
     bool start_launch_timeout_timer_only_after_logon = true;
 
     bool customize_executable_name = false;

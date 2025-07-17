@@ -607,6 +607,22 @@ bool SessionProbeClipboardBasedLauncher::on_server_format_list_response()
     LOG_IF(bool(this->verbose & RDPVerbose::sesprobe_launcher), LOG_INFO,
         "SessionProbeClipboardBasedLauncher :=> on_server_format_list_response");
 
+    assert(this->clipboard_initialized);
+
+    if (this->params.ensure_launch_sequence_only_starts_after_logon &&
+        !this->user_is_logged_on)
+    {
+        return true;
+    }
+
+    return this->start_launch_sequence();
+}
+
+bool SessionProbeClipboardBasedLauncher::start_launch_sequence()
+{
+    LOG_IF(bool(this->verbose & RDPVerbose::sesprobe_launcher), LOG_INFO,
+        "SessionProbeClipboardBasedLauncher :=> start_launch_sequence");
+
     if (this->params.start_delay_ms.count()) {
         if (!this->delay_executed) {
             if (this->state != State::START) {
@@ -646,6 +662,21 @@ bool SessionProbeClipboardBasedLauncher::on_server_format_list_response()
     make_run_sequencer();
 
     return false;
+}
+
+void SessionProbeClipboardBasedLauncher::on_user_logon()
+{
+    LOG_IF(bool(this->verbose & RDPVerbose::sesprobe_launcher), LOG_INFO,
+        "SessionProbeClipboardBasedLauncher :=> on_user_logon");
+LOG(LOG_INFO, "SessionProbeClipboardBasedLauncher on_user_logon");
+
+    this->user_is_logged_on = true;
+
+    if (this->clipboard_initialized &&
+        !this->server_format_list_response_processed)
+    {
+        this->server_format_list_response_processed = !this->start_launch_sequence();
+    }
 }
 
 void SessionProbeClipboardBasedLauncher::process_client_message(

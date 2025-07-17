@@ -206,4 +206,6 @@ struct SessionProbeClipboardBasedLauncherParams
     std::chrono::milliseconds short_delay_ms{};
 
     bool reset_keyboard_status = true;
+
+    bool ensure_launch_sequence_only_starts_after_logon = false;
 };

@@ -60,6 +60,7 @@ cp_spec = {
         ('session_probe:on_launch_failure', 'on_launch_failure', 1),
         ('session_probe:launch_timeout', 'launch_timeout', 40000),
         ('session_probe:launch_fallback_timeout', 'launch_fallback_timeout', 40000),
+        ('session_probe:ensure_launch_sequence_only_starts_after_logon', 'ensure_launch_sequence_only_starts_after_logon', False),
         ('session_probe:start_launch_timeout_timer_only_after_logon', 'start_launch_timeout_timer_only_after_logon', True),
         ('session_probe:keepalive_timeout', 'keepalive_timeout', 5000),
         ('session_probe:on_keepalive_timeout', 'on_keepalive_timeout', 2),
