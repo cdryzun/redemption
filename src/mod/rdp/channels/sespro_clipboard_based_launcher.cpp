@@ -668,7 +668,6 @@ void SessionProbeClipboardBasedLauncher::on_user_logon()
 {
     LOG_IF(bool(this->verbose & RDPVerbose::sesprobe_launcher), LOG_INFO,
         "SessionProbeClipboardBasedLauncher :=> on_user_logon");
-LOG(LOG_INFO, "SessionProbeClipboardBasedLauncher on_user_logon");
 
     this->user_is_logged_on = true;
 

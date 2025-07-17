@@ -5163,9 +5163,8 @@ public:
             this->channels.session_probe.session_probe_launcher->on_user_logon();
         }
 
-        if (this->channels.session_probe_virtual_channel
-         && this->session_probe_start_launch_timeout_timer_only_after_logon
-        ) {
+        if (this->channels.session_probe_virtual_channel &&
+            this->session_probe_start_launch_timeout_timer_only_after_logon) {
             this->channels.session_probe_virtual_channel->start_launch_timeout_timer();
         }
 #endif
@@ -5244,10 +5243,9 @@ public:
                 this->channels.session_probe.session_probe_launcher->on_user_logon();
             }
 
-            if (this->channels.session_probe_virtual_channel) {
-                if (this->session_probe_start_launch_timeout_timer_only_after_logon) {
-                    this->channels.session_probe_virtual_channel->start_launch_timeout_timer();
-                }
+            if (this->channels.session_probe_virtual_channel &&
+                this->session_probe_start_launch_timeout_timer_only_after_logon) {
+                this->channels.session_probe_virtual_channel->start_launch_timeout_timer();
             }
 #endif
         }
