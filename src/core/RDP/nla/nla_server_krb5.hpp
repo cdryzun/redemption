@@ -1298,6 +1298,23 @@ public:
                                 return credssp::State::Err;
                             }
 
+                            {
+                                char* entry_principal_str = nullptr;
+                                if (::krb5_unparse_name(this->context, entry.principal, &entry_principal_str))
+                                {
+                                    LOG(LOG_WARNING,
+                                        "Krb5Server::authenticate(): "
+                                            "Failed to convert key table entry principal to string!");
+                                }
+                                else
+                                {
+                                    LOG_IF(this->verbose, LOG_INFO,
+                                        "Krb5Server::authenticate(): EntryPrincipal=%s",
+                                        entry_principal_str);
+                                    ::krb5_free_unparsed_name(this->context, entry_principal_str);
+                                }
+                            }
+
                             if (::krb5_principal_compare_any_realm(this->context, principal, entry.principal) &&
                                 (!realm || krb5_realm_compare(this->context, principal, entry.principal)))
                             {

@@ -2961,7 +2961,8 @@ public:
 
         switch (ret) {
         case credssp::State::Err:
-            LOG(LOG_INFO, "NLA NegoServer Authentication Failed");
+            LOG(LOG_INFO, "NLA NegoServer Authentication Failed - psid=\"%s\"",
+                this->ini.get<cfg::context::psid>());
             throw Error(ERR_NLA_AUTHENTICATION_FAILED);
             break;
 

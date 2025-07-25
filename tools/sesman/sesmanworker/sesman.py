@@ -902,7 +902,7 @@ class Sesman():
 
                     return False, TR(Sesmsg.X509_AUTH_REFUSED_BY_USER)
                 authenticated = True
-            elif self.passthrough_mode or self.shared.get('authenticated_by_nla'):
+            elif self.passthrough_mode:
                 # Passthrough Authentification
                 method = "Passthrough"
                 self.rdplog.log("AUTHENTICATION_TRY", method=method)
@@ -912,6 +912,18 @@ class Sesman():
                         self.shared.get('ip_target')):
                     self.rdplog.log("AUTHENTICATION_FAILURE", method=method)
                     emsg = TR(Sesmsg.PASSTHROUGH_AUTH_FAILED_S) % wab_login
+                    return False, emsg
+                authenticated = True
+            elif self.shared.get('authenticated_by_nla'):
+                # Kerberos Authentification
+                method = "Kerberos"
+                self.rdplog.log("AUTHENTICATION_TRY", method=method)
+                if not self.engine.gssapi_authenticate(
+                        wab_login,
+                        self.shared.get('ip_client'),
+                        self.shared.get('ip_target')):
+                    self.rdplog.log("AUTHENTICATION_FAILURE", method=method)
+                    emsg = TR(Sesmsg.KERBEROS_AUTH_FAILED_S) % wab_login
                     return False, emsg
                 authenticated = True
             elif not authenticated:

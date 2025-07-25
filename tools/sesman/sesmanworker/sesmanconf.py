@@ -57,6 +57,7 @@ class Sesmsg:
         'Your Bastion password will expire soon. Please change it.'
     )
     PASSTHROUGH_AUTH_FAILED_S = 'passthrough_auth_failed_wab %s'
+    KERBEROS_AUTH_FAILED_S = 'kerberos_auth_failed_wab %s'
     IN_SUBNET_S = 'in_subnet %s'
     NO_MATCH_SUBNET_S_S = 'no_match_subnet %s %s'
     ERROR_S = 'error %s'
@@ -151,6 +152,10 @@ class SesmanConfig:
                 ),
                 Sesmsg.PASSTHROUGH_AUTH_FAILED_S: (
                     "Echec de l'authentification passthrough pour "
+                    "l'utilisateur %s."
+                ),
+                Sesmsg.KERBEROS_AUTH_FAILED_S: (
+                    "Echec de l'authentification Kerberos pour "
                     "l'utilisateur %s."
                 ),
                 Sesmsg.IN_SUBNET_S: "dans le sous-réseau %s.",
@@ -249,6 +254,9 @@ class SesmanConfig:
                 ),
                 Sesmsg.PASSTHROUGH_AUTH_FAILED_S: (
                     'Passthrough authentication failed for user %s.'
+                ),
+                Sesmsg.KERBEROS_AUTH_FAILED_S: (
+                    'Kerberos authentication failed for user %s.'
                 ),
                 Sesmsg.IN_SUBNET_S: "in %s subnet.",
                 Sesmsg.NO_MATCH_SUBNET_S_S: "%s not in %s subnet.",
