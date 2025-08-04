@@ -80,9 +80,11 @@ Bitmap & Bitmap::operator=(const Bitmap & other) noexcept
 
 Bitmap & Bitmap::operator=(Bitmap && other) noexcept
 {
-    auto other_data = other.data_bitmap;
-    other.data_bitmap = nullptr;
-    this->data_bitmap = other_data;
+    if (other.data_bitmap != this->data_bitmap) {
+        this->reset();
+        this->data_bitmap = other.data_bitmap;
+        other.data_bitmap = nullptr;
+    }
     return *this;
 }
 
