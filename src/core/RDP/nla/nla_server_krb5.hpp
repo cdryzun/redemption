@@ -58,9 +58,8 @@ private:
 
         case NLAStep::final:
             return "<final>";
-        default:
-            return "<unknown>";
         }
+        return "<unknown>";
     }
 
     krb5_context context = nullptr;
@@ -146,10 +145,8 @@ private:
             return "KRB_TGT_REQ";
         case KerberosMessageType::KRB_RESERVED17:
             return "KRB_TGT_REP";
-
-        default:
-            return "<unknown>";
         }
+        return "<unknown>";
     }
 
     enum class KerberosState
@@ -172,10 +169,8 @@ private:
             return "ApReq";
         case KerberosState::Final:
             return "Final";
-
-        default:
-            return "<unknown>";
         }
+        return "<unknown>";
     }
 
     krb5_key kerberos_session_key = nullptr;
