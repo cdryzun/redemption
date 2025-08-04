@@ -96,11 +96,8 @@ if (( ${modes[gcc_release_valgrind]} == trigger_value )); then
     # valgrind
     cmds=()
     while read l ; do
-        f=${l#*release/tests/}
-        f=valgrind_reports/"${f//\//@}".xml
-        cmds+=("valgrind --max-stackframe=234425648 --child-silent-after-fork=yes --xml=yes --xml-file=$f $l")
+        cmds+=("valgrind --max-stackframe=234425648 --child-silent-after-fork=yes --leak-check=yes --error-exitcode=1 $l")
     done < <(find ./bin/gcc*/release/tests/ -executable -type f -name test_'*')
-    mkdir -p valgrind_reports
     /usr/bin/time --format="%Es - %MK" parallel -j4 ::: "${cmds[@]}"
 
     show_duration valgrind

@@ -101,7 +101,6 @@ build-analyze-release-valgrind:
   artifacts:
     paths:
       - report1.txt
-      - valgrind_reports/
       - "$TESTDIR"
 
 build-analyze-san-coverage:
