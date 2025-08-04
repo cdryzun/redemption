@@ -70,7 +70,9 @@ Bitmap::~Bitmap()
 
 Bitmap & Bitmap::operator=(const Bitmap & other) noexcept
 {
-    other.data_bitmap->inc();
+    if (other.data_bitmap) {
+        other.data_bitmap->inc();
+    }
     this->reset();
     this->data_bitmap = other.data_bitmap;
     return *this;
