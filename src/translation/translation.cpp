@@ -87,17 +87,16 @@ void push_msg(
      * Find msgid index
      */
 
-    unsigned idx = -1u;
+    unsigned idx;
 
     // fast searching (when the next index is the next msgid)
-    if (last_index + 1 < MsgTranslationCatalog::translation_count) {
-        ++last_index;
-        if (msgid_catalog.msgstrs[last_index].plurals[0].to_sv() == msgid) {
-            idx = last_index;
-        }
+    if (last_index + 1 < MsgTranslationCatalog::translation_count
+     && msgid_catalog.msgstrs[last_index + 1].plurals[0].to_sv() == msgid)
+    {
+        idx = last_index + 1;
     }
-
-    if (idx == -1u) {
+    else
+    {
         idx = find_msgid_index(msgid);
         if (idx == -1u) [[unlikely]] {
             LOG(LOG_WARNING, "i18n: %s: unknown msgid: '%.*s'",
