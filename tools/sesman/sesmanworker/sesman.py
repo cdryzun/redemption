@@ -341,6 +341,10 @@ class Sesman():
         self.tun_process = None
         self.sharing_requests = set()
 
+    def reset_kerberos_auth(self) -> None:
+        if self.shared.get("authenticated_by_nla"):
+            self.send_data({"authenticated_by_nla": False, "upn": ""})
+
     def reset_session_var(self) -> None:
         """
         Proxy Session Vars reset
@@ -946,7 +950,8 @@ class Sesman():
                         self.shared.get('ip_target')):
                     self.rdplog.log("AUTHENTICATION_FAILURE", method=method)
                     emsg = TR(Sesmsg.KERBEROS_AUTH_FAILED_S) % wab_login
-                    return False, emsg
+                    self.reset_kerberos_auth()
+                    return None, emsg
                 authenticated = True
                 if not self.shared.get('login'):
                     self.shared['login'] = wab_login
@@ -1701,6 +1706,7 @@ class Sesman():
                         self.engine.stop_session()
                     self.reset_target_session_vars()
                 self.engine.proxy_session_logout()
+                self.reset_kerberos_auth()
                 self.rdplog.log("LOGOUT")
                 self.engine.close_client()
 
