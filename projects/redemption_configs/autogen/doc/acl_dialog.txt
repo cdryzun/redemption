@@ -8,6 +8,7 @@ cfg::globals::front_connection_time ⇒ front_connection_time   [std::chrono::mi
 cfg::globals::target_connection_time ⇒ target_connection_time   [std::chrono::milliseconds]
     From Module rdp creation to "up_and_running" state.
 cfg::globals::auth_user ⇔ login   [std::string]
+cfg::globals::upn ⇒ upn   [std::string]
 cfg::globals::host ⇔ ip_client   [std::string]
 cfg::globals::target ⇒ ip_target   [std::string]
 cfg::globals::target_device ⇐ target_device   [std::string]

@@ -1591,8 +1591,9 @@ public:
             this->tls_client_active = false;
         }
         else if ((0 == (this->clientRequestedProtocols & X224::PROTOCOL_TLS))
+             && !enable_nla
              && !this->ini.get<cfg::client::tls_fallback_legacy>()) {
-            LOG(LOG_WARNING, "Front::incoming: TLS security protocol is not supported by client. Allow falling back to legacy security protocol is probably necessary");
+            LOG(LOG_WARNING, "Front::incoming: TLS security protocol is not supported by client. Enable NLA is probably necessary");
         }
 
         LOG_IF(bool(this->verbose & Verbose::basic_trace), LOG_INFO,
@@ -2976,7 +2977,8 @@ public:
             this->current_tpdu_type = TpduBuffer::PDU;
 
             this->ini.set_acl<cfg::context::authenticated_by_nla>(true);
-
+            auto upn = this->nego_server->getClientPrincipalName();
+            this->ini.set_acl<cfg::globals::upn>(upn);
             break;
         }
     }

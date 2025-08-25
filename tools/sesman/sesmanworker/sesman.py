@@ -220,6 +220,16 @@ class RTManager:
             self.sesman.send_data({"rt_display": rt_display})
 
 
+def check_principal_kerberos(username: str, principal: str) -> bool:
+    user, sep_user, domain = username.partition('@')
+    principal_user, sep_princ, principal_realm = principal.partition('@')
+    user_is_same = (user.lower() == principal_user.lower())
+    both_has_domain = (domain and principal_realm)
+    domain_is_same = (not both_has_domain
+                      or domain.lower() in principal_realm.lower())
+    return (user_is_same and domain_is_same)
+
+
 StatusError = Tuple[bool, str]
 SharedDict = Dict[str, Any]
 
@@ -299,6 +309,11 @@ class Sesman():
 
         self.internal_target = False
         self.check_session_parameters = False
+
+        # UPN behavior
+        self.kerberos_ignore_username = SESMANCONF['sesman'].get(
+            'kerberos_ignore_username', False
+        )
 
         # Passthrough context
         self.passthrough_mode = SESMANCONF['sesman'].get(
@@ -838,6 +853,9 @@ class Sesman():
             return False, _error
 
         login = self.shared.get('login')
+        user_principal = self.shared.get("upn")
+        if (login == MAGICASK or not login) and user_principal:
+            login = user_principal
         if login == MAGICASK:
             return None, TR(Sesmsg.EMPTY_USER)
 
@@ -879,6 +897,8 @@ class Sesman():
                 is_magic_password
                 or not self.shared.get('password')
             ) and not self.engine.get_challenge()
+            is_kerberos_authenticated = (self.shared.get("authenticated_by_nla")
+                                         and user_principal)
             # empty response allowed in challenge
 
             authenticated = False
@@ -914,18 +934,22 @@ class Sesman():
                     emsg = TR(Sesmsg.PASSTHROUGH_AUTH_FAILED_S) % wab_login
                     return False, emsg
                 authenticated = True
-            elif self.shared.get('authenticated_by_nla'):
+            elif (is_kerberos_authenticated
+                  and (self.kerberos_ignore_username
+                       or check_principal_kerberos(wab_login, user_principal))):
                 # Kerberos Authentification
                 method = "Kerberos"
                 self.rdplog.log("AUTHENTICATION_TRY", method=method)
                 if not self.engine.gssapi_authenticate(
-                        wab_login,
+                        user_principal,
                         self.shared.get('ip_client'),
                         self.shared.get('ip_target')):
                     self.rdplog.log("AUTHENTICATION_FAILURE", method=method)
                     emsg = TR(Sesmsg.KERBEROS_AUTH_FAILED_S) % wab_login
                     return False, emsg
                 authenticated = True
+                if not self.shared.get('login'):
+                    self.shared['login'] = wab_login
             elif not authenticated:
                 if is_otp:
                     # only try OTP

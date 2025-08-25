@@ -8,6 +8,7 @@ namespace cfg
         struct front_connection_time;
         struct target_connection_time;
         struct auth_user;
+        struct upn;
         struct host;
         struct target;
         struct target_device;

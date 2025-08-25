@@ -16,31 +16,31 @@ namespace configs
     {
         // inline constexpr int section0 = 0; /* general */
         inline constexpr int section1 = 0; /* globals */
-        inline constexpr int section2 = 16; /* client */
-        inline constexpr int section3 = 17; /* all_target_mod */
-        // inline constexpr int section4 = 18; /* remote_program */
-        inline constexpr int section5 = 18; /* mod_rdp */
-        inline constexpr int section6 = 67; /* protocol */
-        inline constexpr int section7 = 68; /* session_probe */
-        inline constexpr int section8 = 114; /* server_cert */
-        inline constexpr int section9 = 123; /* mod_vnc */
-        inline constexpr int section10 = 140; /* session_log */
-        // inline constexpr int section11 = 142; /* ocr */
-        inline constexpr int section12 = 142; /* capture */
-        inline constexpr int section13 = 149; /* audit */
-        inline constexpr int section14 = 158; /* file_verification */
-        inline constexpr int section15 = 166; /* file_storage */
-        // inline constexpr int section16 = 167; /* icap_server_down */
-        // inline constexpr int section17 = 167; /* icap_server_up */
-        inline constexpr int section18 = 167; /* crypto */
-        // inline constexpr int section19 = 169; /* websocket */
-        // inline constexpr int section20 = 169; /* vnc_over_ssh */
-        inline constexpr int section21 = 169; /* context */
-        // inline constexpr int section22 = 258; /* internal_mod */
-        inline constexpr int section23 = 258; /* mod_replay */
-        inline constexpr int section24 = 260; /* translation */
-        // inline constexpr int section25 = 261; /* theme */
-        // inline constexpr int section26 = 261; /* debug */
+        inline constexpr int section2 = 17; /* client */
+        inline constexpr int section3 = 18; /* all_target_mod */
+        // inline constexpr int section4 = 19; /* remote_program */
+        inline constexpr int section5 = 19; /* mod_rdp */
+        inline constexpr int section6 = 68; /* protocol */
+        inline constexpr int section7 = 69; /* session_probe */
+        inline constexpr int section8 = 115; /* server_cert */
+        inline constexpr int section9 = 124; /* mod_vnc */
+        inline constexpr int section10 = 141; /* session_log */
+        // inline constexpr int section11 = 143; /* ocr */
+        inline constexpr int section12 = 143; /* capture */
+        inline constexpr int section13 = 150; /* audit */
+        inline constexpr int section14 = 159; /* file_verification */
+        inline constexpr int section15 = 167; /* file_storage */
+        // inline constexpr int section16 = 168; /* icap_server_down */
+        // inline constexpr int section17 = 168; /* icap_server_up */
+        inline constexpr int section18 = 168; /* crypto */
+        // inline constexpr int section19 = 170; /* websocket */
+        // inline constexpr int section20 = 170; /* vnc_over_ssh */
+        inline constexpr int section21 = 170; /* context */
+        // inline constexpr int section22 = 259; /* internal_mod */
+        inline constexpr int section23 = 259; /* mod_replay */
+        inline constexpr int section24 = 261; /* translation */
+        // inline constexpr int section25 = 262; /* theme */
+        // inline constexpr int section26 = 262; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -87,6 +87,18 @@ namespace cfg
         type value {  };
     };
     /// type: std::string <br/>
+    /// acl ⇐ proxy <br/>
+    /// default: "" <br/>
+    struct globals::upn {
+        static constexpr unsigned acl_proxy_communication_flags = 0b01;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 3};
+        using type = std::string;
+        using mapped_type = std::string;
+        type value {  };
+    };
+    /// type: std::string <br/>
     /// acl ⇔ proxy <br/>
     /// acl::name: ip_client <br/>
     /// default: "" <br/>
@@ -94,7 +106,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b11;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 3};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 4};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -107,7 +119,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b01;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 4};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 5};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -119,7 +131,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 5};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 6};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -131,7 +143,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 6};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 7};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -143,7 +155,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 7};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 8};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -156,7 +168,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b11;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 8};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 9};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -168,7 +180,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 9};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 10};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -180,7 +192,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 10};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 11};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -192,7 +204,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 11};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 12};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -250,7 +262,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 12};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 13};
         using type = std::chrono::seconds;
         using mapped_type = std::chrono::seconds;
         type value {  };
@@ -281,7 +293,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 13};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 14};
         using type = TraceType;
         using mapped_type = TraceType;
         type value { TraceType::localfile_hashed };
@@ -320,7 +332,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 14};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 15};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -354,7 +366,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 15};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section1 + 16};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -5504,6 +5516,7 @@ struct globals
 : cfg::globals::front_connection_time
 , cfg::globals::target_connection_time
 , cfg::globals::auth_user
+, cfg::globals::upn
 , cfg::globals::host
 , cfg::globals::target
 , cfg::globals::target_device
@@ -6040,6 +6053,7 @@ using VariablesAclPack = Pack<
   cfg::globals::front_connection_time
 , cfg::globals::target_connection_time
 , cfg::globals::auth_user
+, cfg::globals::upn
 , cfg::globals::host
 , cfg::globals::target
 , cfg::globals::target_device
@@ -6302,16 +6316,16 @@ using VariablesAclPack = Pack<
 
 
 constexpr U64BitFlags<5> loggable_field{ {
-  0b1101111111111111111111111111111111111111111111111111011111101100
-, 0b1111110111111111111111111111111111111111111111111111111111111111
-, 0b1000011111101000011000000111111111111110111111101111111111111111
-, 0b1000000011100000110001101111111000101001111111111010001011110011
-, 0b0000000000000000000000000000000000000000000000000000000000011101
+  0b1011111111111111111111111111111111111111111111111110111111010100
+, 0b1111101111111111111111111111111111111111111111111111111111111111
+, 0b0000111111010000110000001111111111111101111111011111111111111111
+, 0b0000000111000001100011011111110001010011111111110100010111100111
+, 0b0000000000000000000000000000000000000000000000000000000000111011
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b0010000000000000000000000000000000000000000000000000000000000000
+, 0b0100000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };

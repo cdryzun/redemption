@@ -84,6 +84,14 @@
     },
     {
       "section": "globals",
+      "name": "upn",
+      "type": "str",
+      "value": "",
+      "description": "",
+      "ProxyToAcl": true
+    },
+    {
+      "section": "globals",
       "name": "host",
       "type": "str",
       "value": "",

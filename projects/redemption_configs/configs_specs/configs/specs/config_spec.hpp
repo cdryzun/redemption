@@ -289,6 +289,12 @@ _.section("globals", [&]
     });
 
     _.member(MemberInfo{
+        .name = "upn",
+        .value = value<std::string>(),
+        .spec = proxy_to_acl(no_reset_back_to_selector),
+    });
+
+    _.member(MemberInfo{
         .name = names{
             .all = "host",
             .acl = "ip_client",

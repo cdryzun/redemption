@@ -1315,7 +1315,7 @@ public:
                             {
                                 LOG_IF(this->verbose, LOG_INFO,
                                     "Krb5Server::authenticate(): "
-                                        "Suitable entry found in the key talbe.");
+                                        "Suitable entry found in the key table.");
                                 break;
                             }
 

@@ -10,6 +10,12 @@ selector_filters_case_sensitive=boolean(default=False)
 # Allow going back to selector
 allow_back_to_selector = boolean(default=True)
 
+# Ignore username when authenticated by Kerberos
+# when authenticated by Kerberos, only use User Principal Name.
+# This could be useful when the RDP client provide the pre-2000 logon format
+# as username and it is totally different from User Principal
+kerberos_ignore_username=boolean(default=False)
+
 # Mode passthrough.
 auth_mode_passthrough=boolean(default=False)
 

@@ -12,6 +12,7 @@ namespace configs
         "front_connection_time"_zv,
         "target_connection_time"_zv,
         "login"_zv,
+        "upn"_zv,
         "ip_client"_zv,
         "ip_target"_zv,
         "target_device"_zv,

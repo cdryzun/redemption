@@ -10,6 +10,7 @@ template<class Cfg> struct acl_and_spec_type {};
 template<> struct acl_and_spec_type<cfg::globals::front_connection_time> { using type = std::chrono::milliseconds; };
 template<> struct acl_and_spec_type<cfg::globals::target_connection_time> { using type = std::chrono::milliseconds; };
 template<> struct acl_and_spec_type<cfg::globals::auth_user> { using type = std::string; };
+template<> struct acl_and_spec_type<cfg::globals::upn> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::globals::host> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::globals::target> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::globals::target_device> { using type = std::string; };
