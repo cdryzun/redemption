@@ -48,7 +48,10 @@ WidgetLogin::WidgetLogin(
     , onctrl_shift(events.onctrl_shift)
     , tooltip_shower(tooltip_shower)
     , error_message_label(drawable, font, label_error_message,
-                          WidgetLabel::Colors::from_theme(theme))
+                          {
+                              .fg = theme.global.error_color,
+                              .bg = theme.global.bgcolor,
+                          })
     , login_edit(
         drawable, font, copy_paste,
         {

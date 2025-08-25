@@ -56,6 +56,7 @@ struct TestWidgetLoginCtx
         bool enable_target_field = false,
         uint16_t w = 800,
         uint16_t h = 600,
+        chars_view error_message = {},
         Theme theme = []{
             Theme colors;
             colors.edit.border_color = NamedBGRColor::BG_BLUE;
@@ -67,7 +68,7 @@ struct TestWidgetLoginCtx
         drawable, copy_paste, parent, 0, 0, parent.cx(), parent.cy(),
         {onsubmit, oncancel, WidgetEventNotifier()},
         caption, login, password, target,
-        "Login"_av, "Password"_av, "Target"_av, ""_av,
+        "Login"_av, "Password"_av, "Target"_av, error_message,
         login_message, nullptr, enable_target_field, global_font_deja_vu_14(),
         MsgTranslationCatalog::default_catalog(), theme)
     {}
@@ -93,7 +94,7 @@ RED_AUTO_TEST_CASE(TraceWidgetLogin2)
 
 RED_AUTO_TEST_CASE(TraceWidgetLogin3)
 {
-    TestWidgetLoginCtx ctx("test3"_av, nullptr, nullptr, nullptr, LOGON_MESSAGE);
+    TestWidgetLoginCtx ctx("test3"_av, nullptr, nullptr, nullptr);
 
     (void)ctx.flat_login.next_focus(Widget::FocusDirection::Forward, Widget::FocusStrategy::Next);
     (void)ctx.flat_login.next_focus(Widget::FocusDirection::Forward, Widget::FocusStrategy::Next);
@@ -131,6 +132,16 @@ RED_AUTO_TEST_CASE(TraceWidgetLoginHelp)
     ctx.flat_login.rdp_input_mouse(MOUSE_FLAG_MOVE, 728, 557);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "login_help_2.png");
+}
+
+RED_AUTO_TEST_CASE(TraceWidgetLoginWithError)
+{
+    TestWidgetLoginCtx ctx("test4"_av, nullptr, nullptr, nullptr, LOGON_MESSAGE, false, 800, 600,
+                           "A error message !"_av);
+
+    ctx.flat_login.rdp_input_invalidate(ctx.flat_login.get_rect());
+
+    RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "login_error_1.png");
 }
 
 RED_AUTO_TEST_CASE(TraceWidgetLoginClip)
