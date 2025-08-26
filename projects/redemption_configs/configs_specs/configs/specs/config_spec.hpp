@@ -126,7 +126,7 @@ using spec::acl_connpolicy;
 
 auto loggable = Loggable::Yes;
 auto non_loggable = Loggable::No;
-auto loggable_when_contains_password_string = Loggable::OnlyWhenContainsPasswordString;
+auto non_loggable_when_contains_password = Loggable::NotWhenContainsPasswordString;
 
 auto reset_back_to_selector = ResetBackToSelector::Yes;
 auto no_reset_back_to_selector = ResetBackToSelector::No;
@@ -3333,7 +3333,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "auth_channel_answer",
         .value = value<std::string>(),
-        .spec = acl_to_proxy(reset_back_to_selector, loggable_when_contains_password_string),
+        .spec = acl_to_proxy(reset_back_to_selector, non_loggable_when_contains_password),
     });
 
     _.member(MemberInfo{

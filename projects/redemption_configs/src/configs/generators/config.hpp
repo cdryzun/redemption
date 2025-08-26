@@ -778,7 +778,7 @@ inline void write_loggable_bitsets(
                 break;
             case Loggable::No:
                 break;
-            case Loggable::OnlyWhenContainsPasswordString:
+            case Loggable::NotWhenContainsPasswordString:
                 unloggable_if_value_contains_passwords.back().set(i);
                 break;
         }

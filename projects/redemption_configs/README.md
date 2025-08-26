@@ -101,7 +101,7 @@ Indicates how to display values when debug logging is enabled.
 ```cpp
 auto loggable = Loggable::Yes;
 auto non_loggable = Loggable::No;
-auto loggable_when_contains_password_string = Loggable::OnlyWhenContainsPasswordString;
+auto loggable_when_contains_password_string = Loggable::NotWhenContainsPasswordString;
 ```
 
 ### Ini only

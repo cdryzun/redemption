@@ -117,7 +117,7 @@ constexpr bool contains_conn_policy(DestSpecFile dest)
 
 enum class ResetBackToSelector : bool { No, Yes };
 
-enum class Loggable : uint8_t { No, Yes, OnlyWhenContainsPasswordString, };
+enum class Loggable : uint8_t { No, Yes, NotWhenContainsPasswordString, };
 
 
 struct names
