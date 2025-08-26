@@ -267,14 +267,14 @@ _.section("globals", [&]
     _.member(MemberInfo{
         .name = "front_connection_time",
         .value = value<std::chrono::milliseconds>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
         .desc = "From incoming connection to \"up_and_running\" state.",
     });
 
     _.member(MemberInfo{
         .name = "target_connection_time",
         .value = value<std::chrono::milliseconds>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
         .desc = "From Module rdp creation to \"up_and_running\" state.",
     });
 
@@ -291,7 +291,7 @@ _.section("globals", [&]
     _.member(MemberInfo{
         .name = "upn",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -309,7 +309,7 @@ _.section("globals", [&]
             .acl = "ip_target",
         },
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -2187,7 +2187,7 @@ _.section(names{"server_cert"}, [&]
     _.member(MemberInfo{
         .name = "external_cert",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -2705,7 +2705,7 @@ _.section("capture", [&]
     _.member(MemberInfo{
         .name = "fdx_path",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3200,7 +3200,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "psid",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
         .desc = "Proxy session log id",
     });
 
@@ -3210,7 +3210,7 @@ _.section("context", [&]
             .acl = "bpp"
         },
         .value = from_enum(ColorDepth::depth24),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3219,7 +3219,7 @@ _.section("context", [&]
             .acl = "height"
         },
         .value = value<types::u16>(600),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3228,7 +3228,7 @@ _.section("context", [&]
             .acl = "width"
         },
         .value = value<types::u16>(800),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3246,25 +3246,25 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "selector_device_filter",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "selector_group_filter",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "selector_proto_filter",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "selector_lines_per_page",
         .value = value<types::unsigned_>(0),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3327,7 +3327,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "reporting",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3339,7 +3339,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "auth_channel_target",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3363,13 +3363,13 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "accept_message",
         .value = value(false),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "display_message",
         .value = value(false),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3402,7 +3402,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "real_target_device",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3414,19 +3414,19 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "ticket",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "comment",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "duration",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3438,7 +3438,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "waitinforeturn",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3504,7 +3504,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "disconnect_reason_ack",
         .value = value(false),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3516,7 +3516,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "recording_started",
         .value = value(false),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3528,7 +3528,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "sharing_ready",
         .value = value(false),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3540,19 +3540,19 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "auth_notify",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "auth_notify_rail_exec_flags",
         .value = value<types::unsigned_>(0),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "auth_notify_rail_exec_exe_or_file",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3619,20 +3619,20 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "pm_request",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
 
     _.member(MemberInfo{
         .name = "native_session_id",
         .value = value<types::u32>(0),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "rd_shadow_available",
         .value = value(false),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3650,31 +3650,31 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "rd_shadow_invitation_error_code",
         .value = value<types::u32>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "rd_shadow_invitation_error_message",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "rd_shadow_invitation_id",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "rd_shadow_invitation_addr",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "rd_shadow_invitation_port",
         .value = value<types::u16>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3698,37 +3698,37 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "session_sharing_invitation_error_code",
         .value = value<types::u32>(0),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "session_sharing_invitation_error_message",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "session_sharing_invitation_id",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, non_loggable),
     });
 
     _.member(MemberInfo{
         .name = "session_sharing_invitation_addr",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "session_sharing_target_ip",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
         .name = "session_sharing_target_login",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(no_reset_back_to_selector),
+        .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3740,7 +3740,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "smartcard_login",
         .value = value<std::string>(),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 
     _.member(MemberInfo{
@@ -3765,7 +3765,7 @@ _.section("context", [&]
     _.member(MemberInfo{
         .name = "authenticated_by_nla",
         .value = value(false),
-        .spec = proxy_to_acl(reset_back_to_selector),
+        .spec = proxy_to_acl(reset_back_to_selector, loggable),
     });
 });
 

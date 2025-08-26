@@ -332,9 +332,9 @@ namespace spec
         return {SesmanIO::acl_to_proxy, reset_back_to_selector, loggable};
     }
 
-    constexpr SesmanInfo proxy_to_acl(ResetBackToSelector reset_back_to_selector)
+    constexpr SesmanInfo proxy_to_acl(ResetBackToSelector reset_back_to_selector, Loggable loggable)
     {
-        return {SesmanIO::proxy_to_acl, reset_back_to_selector, Loggable::No};
+        return {SesmanIO::proxy_to_acl, reset_back_to_selector, loggable};
     }
 
     constexpr SesmanInfo acl_rw(ResetBackToSelector reset_back_to_selector, Loggable loggable)
