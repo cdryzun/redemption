@@ -44,7 +44,8 @@ for f in "${checkers[@]}"; do
      "$f" || errors+=("$f")
 done
 
-if (( ${#errors} )); then
+if (( ${#errors[@]} )); then
+    set +x
     printf 'error: %s\n' "${errors[@]}"
-    exit ${#errors}
+    exit ${#errors[@]}
 fi
