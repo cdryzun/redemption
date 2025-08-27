@@ -8,7 +8,7 @@ TMPDIR_TEST="${TMPDIR_TEST:-${TMPDIR:-/tmp}}"
 
 check_gen_po()
 {
-    bjam update-po &&
+    bjam toolset=gcc update-po &&
     if grep -E '^([-+]#: |@@|[-+]"|diff |index |[-]{3} |[+]{3})' -qv < <(
         git diff --unified=0 ./tools/i18n/po/*/
     ); then
@@ -27,7 +27,7 @@ check_gen_config()
 {
     (
         cd projects/redemption_configs &&
-        bjam &&
+        bjam toolset=gcc &&
         declare r=$(git status -s . 2>&1) &&
         if [[ -n $r ]]; then
             echo "$r"
