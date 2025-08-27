@@ -4,6 +4,8 @@ cd $(realpath -m "$0/../../..")
 
 set -ex
 
+TMPDIR_TEST="${TMPDIR_TEST:-${TMPDIR:-/tmp}}"
+
 check_gen_po()
 {
     bjam update-po &&
