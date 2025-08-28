@@ -63,14 +63,12 @@ struct SubCxCy
 template<class F>
 void contiguous_sub_rect_f(CxCy wh, SubCxCy sub_wh, F && f)
 {
-    Rect rect;
+    for (uint16_t y = 0; y < wh.cy; y += sub_wh.cy) {
+        uint16_t cy = std::min(sub_wh.cy, uint16_t(wh.cy - y));
 
-    for (rect.y = 0; rect.y < wh.cy; rect.y += sub_wh.cy) {
-        rect.cy = std::min(sub_wh.cy, uint16_t(wh.cy - rect.y));
-
-        for (rect.x = 0; rect.x < wh.cx ; rect.x += sub_wh.cx) {
-            rect.cx = std::min(sub_wh.cx, uint16_t(wh.cx - rect.x));
-            f(std::as_const(rect));
+        for (uint16_t x = 0; x < wh.cx ; x += sub_wh.cx) {
+            uint16_t cx = std::min(sub_wh.cx, uint16_t(wh.cx - x));
+            f(Rect{checked_int{x}, checked_int{y}, cx, cy});
         }
     }
 }
