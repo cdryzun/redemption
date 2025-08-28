@@ -1974,7 +1974,7 @@ public:
                      (this->kerberos_security_trailer_size + clientServerHash.size())) ||
                     memcmp(&clientServerHash[0],
                            &ts_request.pubKeyAuth[this->kerberos_security_trailer_size],
-                           clientServerHash.size()))
+                           clientServerHash.size()) != 0)
                 {
                     LOG(LOG_ERR,
                         "Krb5Server::authenticate(): Could not verify server's hash! Err.");
