@@ -408,7 +408,7 @@ void WidgetComposite::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
         // when not done in rdp_input_mouse
         if (activate_focus) {
             has_focus = true;
-            if (activate_focus && !w->has_focus) {
+            if (!w->has_focus) {
                 w->focus();
             }
         }
