@@ -5,6 +5,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
+#include "gdi/graphic_api.hpp"
 #include "mod/internal/widget/wait.hpp"
 #include "keyboard/keymap.hpp"
 #include "translation/trkeys.hpp"

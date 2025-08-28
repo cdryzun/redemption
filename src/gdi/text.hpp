@@ -6,16 +6,18 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #include "utils/sugar/array_view.hpp"
-#include "gdi/graphic_api.hpp" // ColorCtx
+#include "utils/rect.hpp"
+#include "utils/colors.hpp"
 
 
 class Font;
 class FontCharView;
-class GraphicApi;
 
 
 namespace gdi
 {
+
+class GraphicApi;
 
 class MultiLineText
 {

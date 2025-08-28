@@ -3,6 +3,7 @@ SPDX-FileCopyrightText: 2025 Wallix Proxies Team
 SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+#include "gdi/graphic_api.hpp"
 #include "gdi/text.hpp"
 #include "core/RDP/orders/RDPOrdersCommon.hpp"
 #include "core/RDP/orders/RDPOrdersPrimaryGlyphIndex.hpp"
