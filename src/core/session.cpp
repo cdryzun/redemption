@@ -555,7 +555,9 @@ private:
             LOG(LOG_INFO, "Exited from target connection");
             guest_ctx.stop();
             mod_factory.disconnect();
-            if (!ini.get<cfg::context::has_more_target>()) {
+            if (next_mod != mod_factory.mod_name()
+             || !ini.get<cfg::context::has_more_target>()
+            ) {
                 front.must_be_stop_capture();
                 secondary_session.close_secondary_session();
             }
