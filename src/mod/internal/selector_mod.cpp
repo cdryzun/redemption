@@ -168,7 +168,7 @@ void SelectorMod::acl_update(AclFieldMask const& acl_fields)
         });
     }
 
-    if (ini.get<cfg::context::banner_message>().empty()) {
+    if (!ini.get<cfg::context::banner_message>().empty()) {
         // Show OSD banner message only after primary auth
 
         gdi::OsdMsgUrgency omu = gdi::OsdMsgUrgency::NORMAL;
