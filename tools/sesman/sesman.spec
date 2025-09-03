@@ -14,7 +14,8 @@ allow_back_to_selector = boolean(default=True)
 # when authenticated by Kerberos, only use User Principal Name.
 # This could be useful when the RDP client provide the pre-2000 logon format
 # as username and it is totally different from User Principal
-kerberos_ignore_username=boolean(default=False)
+#_advanced
+kerberos_ignore_username=boolean(default=True)
 
 # Mode passthrough.
 auth_mode_passthrough=boolean(default=False)
