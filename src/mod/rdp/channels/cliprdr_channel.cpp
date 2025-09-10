@@ -2553,15 +2553,17 @@ struct ClipboardVirtualChannel::ClipCtx::D
             {
                 assert(!(data_to_dump.size() & 1));
 
-                const size_t length_of_data_to_dump = std::min(
-                    data_to_dump.size(), max_length_of_data_to_dump * 2);
+                if (self.params.log_clipboard_text) {
+                    const size_t length_of_data_to_dump = std::min(
+                        data_to_dump.size(), max_length_of_data_to_dump * 2);
 
-                auto av = ::UTF16toUTF8_buf(
-                    data_to_dump.first(length_of_data_to_dump),
-                    make_writable_array_view(data_to_dump_buf));
-                utf8_string = av.as_chars();
-                if (not utf8_string.empty() && not utf8_string.back()) {
-                    utf8_string = utf8_string.drop_back(1);
+                    auto av = ::UTF16toUTF8_buf(
+                        data_to_dump.first(length_of_data_to_dump),
+                        make_writable_array_view(data_to_dump_buf));
+                    utf8_string = av.as_chars();
+                    if (not utf8_string.empty() && not utf8_string.back()) {
+                        utf8_string = utf8_string.drop_back(1);
+                    }
                 }
             }
             break;

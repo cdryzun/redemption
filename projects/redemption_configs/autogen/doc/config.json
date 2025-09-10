@@ -1404,6 +1404,15 @@
     },
     {
       "section": "mod_rdp",
+      "name": "log_clipboard_text",
+      "type": "bool",
+      "value": false,
+      "description": "Sensitive information may be transmitted via the clipboard. Enabling this option will result in their appearance in the log.",
+      "globalSpec": true,
+      "advanced": true
+    },
+    {
+      "section": "mod_rdp",
       "name": "split_domain",
       "type": "bool",
       "value": false,

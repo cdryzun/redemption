@@ -673,6 +673,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #log_only_relevant_clipboard_activities = 1
 
+# Sensitive information may be transmitted via the clipboard. Enabling this option will result in their appearance in the log.
+# (type: boolean (0/no/false or 1/yes/true))
+#_advanced
+#log_clipboard_text = 0
+
 # Force splitting target domain and username with '@' separator.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced

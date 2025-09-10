@@ -29,6 +29,7 @@ struct ClipboardVirtualChannelParams
     bool clipboard_up_authorized   = false;
     bool clipboard_file_authorized = false;
     bool log_only_relevant_clipboard_activities = false;
+    bool log_clipboard_text = false;
 
     ValidatorParams validator_params;
 };

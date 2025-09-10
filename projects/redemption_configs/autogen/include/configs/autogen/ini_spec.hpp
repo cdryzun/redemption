@@ -326,6 +326,10 @@ remoteapp_bypass_legal_notice_timeout = integer(min=0, default=20000)
 #_advanced
 log_only_relevant_clipboard_activities = boolean(default=True)
 
+# Sensitive information may be transmitted via the clipboard. Enabling this option will result in their appearance in the log.
+#_advanced
+log_clipboard_text = boolean(default=False)
+
 # Force splitting target domain and username with '@' separator.
 #_advanced
 split_domain = boolean(default=False)

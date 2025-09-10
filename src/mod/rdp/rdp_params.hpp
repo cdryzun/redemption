@@ -78,6 +78,7 @@ struct ModRDPParams
     struct ClipboardParams
     {
         bool log_only_relevant_activities = true;
+        bool log_text = false;
     };
 
     ClipboardParams clipboard_params;
@@ -429,6 +430,7 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%s",     yes_or_no,             support_connection_redirection_during_recording);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             clipboard_params.log_only_relevant_activities);
+        RDP_PARAMS_LOG("%s",     yes_or_no,             clipboard_params.log_text);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             use_license_store);
 

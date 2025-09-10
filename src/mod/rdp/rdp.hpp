@@ -612,6 +612,7 @@ private:
             cvc_params.clipboard_up_authorized   = this->channels_authorizations.cliprdr_up_is_authorized();
             cvc_params.clipboard_file_authorized = this->channels_authorizations.cliprdr_file_is_authorized();
             cvc_params.log_only_relevant_clipboard_activities = this->clipboard.log_only_relevant_activities;
+            cvc_params.log_clipboard_text = this->clipboard.log_text;
             cvc_params.validator_params = this->validator_params;
 
             this->clipboard_virtual_channel = std::make_unique<ClipboardVirtualChannel>(

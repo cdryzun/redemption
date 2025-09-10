@@ -1398,6 +1398,13 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     });
 
     _.member(MemberInfo{
+        .name = "log_clipboard_text",
+        .value = value(false),
+        .spec = global_spec(no_acl, spec::advanced),
+        .desc = "Sensitive information may be transmitted via the clipboard. Enabling this option will result in their appearance in the log.",
+    });
+
+    _.member(MemberInfo{
         .name = "split_domain",
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),

@@ -144,6 +144,7 @@ namespace cfg
         struct remoteapp_bypass_legal_notice_delay;
         struct remoteapp_bypass_legal_notice_timeout;
         struct log_only_relevant_clipboard_activities;
+        struct log_clipboard_text;
         struct split_domain;
         struct wabam_uses_translated_remoteapp;
         struct session_shadowing_support;

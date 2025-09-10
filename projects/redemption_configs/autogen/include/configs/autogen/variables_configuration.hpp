@@ -1559,6 +1559,15 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
+    /// Sensitive information may be transmitted via the clipboard. Enabling this option will result in their appearance in the log. <br/>
+    /// type: bool <br/>
+    /// default: false <br/>
+    struct mod_rdp::log_clipboard_text {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
     /// Force splitting target domain and username with '@' separator. <br/>
     /// type: bool <br/>
     /// default: false <br/>
@@ -5654,6 +5663,7 @@ struct mod_rdp
 , cfg::mod_rdp::bogus_refresh_rect
 , cfg::mod_rdp::enable_rdpdr_data_analysis
 , cfg::mod_rdp::log_only_relevant_clipboard_activities
+, cfg::mod_rdp::log_clipboard_text
 , cfg::mod_rdp::split_domain
 , cfg::mod_rdp::wabam_uses_translated_remoteapp
 , cfg::mod_rdp::session_shadowing_support

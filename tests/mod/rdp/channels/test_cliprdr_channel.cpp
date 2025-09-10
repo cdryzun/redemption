@@ -48,6 +48,7 @@ namespace
             clipboard_virtual_channel_params.clipboard_up_authorized   = true;
             clipboard_virtual_channel_params.clipboard_down_authorized = true;
             clipboard_virtual_channel_params.clipboard_file_authorized = true;
+            clipboard_virtual_channel_params.log_clipboard_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_full_auth
@@ -60,6 +61,7 @@ namespace
             clipboard_virtual_channel_params.clipboard_up_authorized   = true;
             clipboard_virtual_channel_params.clipboard_down_authorized = false;
             clipboard_virtual_channel_params.clipboard_file_authorized = true;
+            clipboard_virtual_channel_params.log_clipboard_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_down_denied
@@ -72,6 +74,7 @@ namespace
             clipboard_virtual_channel_params.clipboard_up_authorized   = false;
             clipboard_virtual_channel_params.clipboard_down_authorized = true;
             clipboard_virtual_channel_params.clipboard_file_authorized = true;
+            clipboard_virtual_channel_params.log_clipboard_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_up_denied
@@ -84,6 +87,7 @@ namespace
             clipboard_virtual_channel_params.clipboard_up_authorized   = false;
             clipboard_virtual_channel_params.clipboard_down_authorized = false;
             clipboard_virtual_channel_params.clipboard_file_authorized = true;
+            clipboard_virtual_channel_params.log_clipboard_text = true;
             return clipboard_virtual_channel_params;
         }();
     } // namespace data_full_denied
@@ -194,6 +198,7 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelMalformedFormatListPDU)
     clipboard_virtual_channel_params.clipboard_down_authorized = true;
     clipboard_virtual_channel_params.clipboard_up_authorized   = true;
     clipboard_virtual_channel_params.clipboard_file_authorized = true;
+    clipboard_virtual_channel_params.log_clipboard_text = true;
 
     NullSender to_client_sender;
     NullSender to_server_sender;
@@ -232,6 +237,7 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelFailedFormatDataResponsePDU)
     clipboard_virtual_channel_params.clipboard_down_authorized = true;
     clipboard_virtual_channel_params.clipboard_up_authorized   = true;
     clipboard_virtual_channel_params.clipboard_file_authorized = true;
+    clipboard_virtual_channel_params.log_clipboard_text = true;
 
     NullSender to_client_sender;
     NullSender to_server_sender;
@@ -831,6 +837,7 @@ namespace
             clipboard_virtual_channel_params.clipboard_down_authorized = true;
             clipboard_virtual_channel_params.clipboard_up_authorized   = true;
             clipboard_virtual_channel_params.clipboard_file_authorized = true;
+            clipboard_virtual_channel_params.log_clipboard_text = true;
             clipboard_virtual_channel_params.validator_params.down_target_name = "down";
             clipboard_virtual_channel_params.validator_params.up_target_name = "up";
             clipboard_virtual_channel_params.validator_params.log_if_accepted = true;
