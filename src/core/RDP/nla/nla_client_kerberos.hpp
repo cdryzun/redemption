@@ -244,6 +244,7 @@ private:
         const int pid(getpid());
         char cache_name[256];
         char fast_cache_name[256];
+        const char *cache_name_ptr(nullptr);
         const char *fast_cache_name_ptr(nullptr);
         int ret(-1);
 
@@ -251,8 +252,9 @@ private:
         if (service_identity && service_identity->is_valid())
         {
             // form the service credentials cache name
-            snprintf(fast_cache_name, 255, "FILE:/tmp/krb_red_fast_%d", pid);
-            fast_cache_name[255] = 0;
+            snprintf(fast_cache_name, sizeof(fast_cache_name) - 1,
+                     "MEMORY:fast-%d", pid);
+            fast_cache_name[sizeof(fast_cache_name) - 1] = 0;
 
             // set FAST cache name
             fast_cache_name_ptr = fast_cache_name;
@@ -290,8 +292,9 @@ private:
         }
 
         // form the main credentials cache name
-        snprintf(cache_name, 255, "FILE:/tmp/krb_red_%d", pid);
-        cache_name[255] = 0;
+        snprintf(cache_name, sizeof(cache_name) - 1, "MEMORY:main-%d", pid);
+        cache_name[sizeof(cache_name) - 1] = 0;
+        cache_name_ptr = cache_name;
 
         // set main credentials cache name in environment
         setenv("KRB5CCNAME", cache_name, 1);
@@ -306,7 +309,7 @@ private:
             ret = this->sspi_credentials->get_credentials_password(
                 identity->get_kerberos_principal_name(),
                 identity->get_kerberos_password(),
-                nullptr, fast_cache_name_ptr);
+                cache_name_ptr, fast_cache_name_ptr);
 
             if (ret)
             {

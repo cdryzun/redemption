@@ -480,7 +480,8 @@ int Krb5Creds::destroy_credentials(const char *cache_name)
     }
     else
     {
-        LOG(LOG_INFO, "Credentials cache destroyed");
+        LOG(LOG_INFO, "Credentials cache '%s' destroyed",
+            cache_name ? cache_name : krb5_cc_default_name(this->ctx));
         return 0;
     }
 
