@@ -90,6 +90,15 @@ KBDINT_PENDING_STATUS = {
 
 BANNABLE_STATES = (AuthState.SSH_KEY, AuthState.KERBEROS)
 
+IDFAILURE_CLOSE = (
+    22126,  # cryto unset
+)
+
+
+class ForceCloseException(Exception):
+    def __init__(self, reason=None):
+        self.reason = reason or ""
+
 
 def get_auth_priority(auth_state: str) -> str:
     if auth_state == AuthState.KBDINT_CHECK:
@@ -251,6 +260,9 @@ class Authenticator:
             return False
         except IdentificationFailed as a:
             Logger().debug(f">> PA init_identify IdentificationFailed {a}")
+            if a.rcode in IDFAILURE_CLOSE:
+                Logger().info(f"Identification forces connection close: {a}")
+                raise ForceCloseException(a.reason) from a
             remove_state = None
             if auth_state in BANNABLE_STATES:
                 # if identification failed on "automatic" method,

@@ -48,7 +48,8 @@ from .engine import (LOCAL_TRACE_PATH_RDP,
                      TargetContext,
                      RDP,
                      VNC,
-                     AppParams
+                     AppParams,
+                     ForceCloseException,
                      )
 
 from .logtime import logtimer, Steps as LogSteps, logtime_function_pause
@@ -94,7 +95,7 @@ def rvalue(value):
     return value
 
 
-DEBUG = False
+DEBUG = True
 
 
 def truncat_string(item, maxsize=20):
@@ -843,6 +844,17 @@ class Sesman():
         self.send_data(data_to_send)
         return self.receive_data()
 
+    def interactive_force_close(self) -> None:
+        data_to_send = {
+            'module': 'close',
+        }
+
+        # If we send close we should expect authentifier socket will be
+        # closed by the other end
+        # No need to return some warning message if that happen
+        self.send_data(data_to_send)
+        return
+
     def authentify(self) -> Tuple[Union[None, bool], str]:
         """ Authentify the user through password engine and then retreive his rights
              The user preferred language will be set as the language to use in
@@ -1040,6 +1052,9 @@ class Sesman():
             self.rdplog.log("AUTHENTICATION_SUCCESS", method=method)
             Logger().info(f'lang={self.language}')
 
+        except ForceCloseException as fce:
+            self.interactive_force_close()
+            raise
         except Exception:
             if DEBUG:
                 Logger().info(f"<<<{traceback.format_exc()}>>>")

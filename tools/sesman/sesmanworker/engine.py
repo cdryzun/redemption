@@ -34,7 +34,7 @@ from .logtime import logtime_function_pause
 import time
 import socket
 import traceback
-from .wallixauth import Authenticator
+from .wallixauth import Authenticator, ForceCloseException
 from .challenge import Challenge
 from .checkout import CheckoutEngine, AccountInfos, AccountType
 from .checkout import (
