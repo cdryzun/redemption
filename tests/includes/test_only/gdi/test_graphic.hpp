@@ -48,6 +48,8 @@ struct TestGraphic
 
     WritableImageView get_writable_image_view();
 
+    void draw_rect(Rect rect, BGRColor color);
+
 private:
     class D;
     D* d;

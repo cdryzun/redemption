@@ -141,8 +141,15 @@ RED_AUTO_TEST_CASE(TraceWidgetSelector)
     RED_CHECK(line1 == selected_line());
 
     selector.rdp_input_invalidate(selector.get_rect());
-
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_1.png");
+
+    // redraw test
+    {
+        Rect r(100, 150, 200, 50);
+        ctx.drawable.draw_rect(r, NamedBGRColor::RED);
+        selector.rdp_input_invalidate(r);
+        RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "selector_1.png");
+    }
 
     TestWidgetSelectorCtx::Kbd kbd{ctx};
 

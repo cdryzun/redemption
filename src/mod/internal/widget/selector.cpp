@@ -409,6 +409,7 @@ void WidgetSelector::WidgetGrid::rdp_input_invalidate(Rect clip)
     int py = y();
     int iline = (clip.y - py) / h;
     auto offset = std::min(lines.size(), static_cast<std::size_t>(iline));
+    py += offset * h;
 
     for (auto const& line : lines.from_offset(offset)) {
         auto line_colors
