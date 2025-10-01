@@ -1200,8 +1200,8 @@ ValueAsStrings compute_value_as_strings(type_<T>, V const& value)
             .json_type = "rgb"sv,
             .spec_str_buffer_size = 7,
             .values = color_value_to_strings(value),
-            .spec_note = "in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a <a href=\"https://en.wikipedia.org/wiki/Web_colors#Extended_colors\">named color</a> case insensitive (red, skyBlue, etc)"s,
-            .ini_note = "in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa) or a named color case insensitive (\"https://en.wikipedia.org/wiki/Web_colors#Extended_colors\")"s,
+            .spec_note = "in rgb format: hexadecimal (0x21AF21), #rgb (#2fa), #rrggbb (#22ffaa)"
+                         " or a named color case insensitive: https://en.wikipedia.org/wiki/Web_colors#Extended_colors (e.g. red, skyBlue, etc)"s,
         };
     }
     else if constexpr (std::is_same_v<T, FilePermissions>) {
