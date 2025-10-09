@@ -2216,6 +2216,7 @@
       "type": "enum",
       "value": 352,
       "description": "This parameter was created to work around some compatibility issues and to limit the CPU load that the Session Probe process causes.\nIf 'Java Acccess Bridge' feature is disabled, data entered in the password field of Java applications may be visible in the metadata.\nFor more information, refer to <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>.\nFor more information, also refer to <code>\"Childless window as unidentified input field\" option</code> and <code>\"Windows of these applications as unidentified input field\" option</code>.It is not recommended to deactivate 'MS Active Accessibility' and 'MS UI Automation' at the same time. This configuration will lead to the loss of detection of password input fields. Entries in these fields will be visible as plain text in the session metadata.",
+      "useDisabledEnumDesc": true,
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,
       "rdp_ccn": true,
@@ -2880,6 +2881,7 @@
       "type": "enum",
       "value": 0,
       "description": "Disable keyboard log:\n(See also <code>\"Keyboard input masking level\" option (in \"session_log\" section)</code>)",
+      "useDisabledEnumDesc": true,
       "connpolicyValues": {
         "vnc": {"value": 3, "forced": false, "description": "⚠ Logs may contain passwords.\n\nDisable keyboard log:"}
       },
@@ -2898,6 +2900,7 @@
       "type": "enum",
       "value": 0,
       "description": "Disable clipboard log:",
+      "useDisabledEnumDesc": true,
       "globalSpec": true,
       "advanced": true,
       "subtype": "ClipboardLogFlags"
@@ -2908,6 +2911,7 @@
       "type": "enum",
       "value": 0,
       "description": "Disable (redirected) file system log:",
+      "useDisabledEnumDesc": true,
       "globalSpec": true,
       "advanced": true,
       "subtype": "FileSystemLogFlags"

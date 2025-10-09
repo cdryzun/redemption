@@ -554,14 +554,15 @@ const makeInfoSpec = (enumDatas, option, value) => {
   if (type === 'enumStr') {
     type = option.subtype;
     const e = enumDatas[type];
-    extraDescription = e.strValues;
-    description ??= e.description;
+    extraDescription = option.useDisabledEnumDesc ? e.strDisabledValues : e.strValues;
+    description ??= option.useDisabledEnumDesc ? e.disabledDescription : e.regularDescription;
   }
   else if (type === 'enum') {
     type = option.subtype;
     const e = enumDatas[type];
-    extraDescription = e.intValues;
-    description ??= e.description;
+    extraDescription = option.useDisabledEnumDesc ? e.intDisabledValues : e.intValues;
+    if (option.useDisabledEnumDesc) console.log(option, e)
+    description ??= option.useDisabledEnumDesc ? e.disabledDescription : e.regularDescription;
     preferHex = (e.category === 'flags');
     if (e.category !== 'set') {
       const flags = [];
@@ -869,29 +870,47 @@ const mappingDisplayFn = {
   for (const e of enums) {
     const intDesc = [];
     const strDesc = [];
+    const intDisabledDesc = [];
+    const strDisabledDesc = [];
+
+    const push = (arr1, arr2, msg1, msg2) => {
+        arr1.push(msg1);
+        arr2.push(msg2 || msg1);
+    };
 
     if (e.category !== 'flags') {
-      strDesc.push('<table class="enumStr"><th>Name</th><th>Description</th>');
+      push(strDesc, strDisabledDesc,
+            '<table class="enumStr"><th>Name</th><th>Description</th>');
       for (const info of e.values) {
-        strDesc.push(`<tr><td>${info.name}</td><td>${info.description || ''}</td></tr>`);
+        push(strDesc, strDisabledDesc, `<tr><td>${info.name}</td><td>`);
+        push(strDesc, strDisabledDesc, info.regularDescription || '',
+                                       info.disabledDescription || '');
+        push(strDesc, strDisabledDesc, '</td></tr>');
       }
-      strDesc.push('</table>');
+      push(strDesc, strDisabledDesc, '</table>');
     }
 
-    intDesc.push('<table class="enumInt"><th>Value</th><th>Name</th><th>Description</th>');
+    push(intDesc, intDisabledDesc,
+        '<table class="enumInt"><th>Value</th><th>Name</th><th>Description</th>');
     for (const info of e.values) {
       const value = (e.category === 'flags') ? `0x${info.value.toString(16)}` : info.value;
       const name = info.name.replaceAll('_', ' ');
-      intDesc.push(`<tr><td>${value}</td><td>${name}</td><td>${info.description || info.name}</td></tr>`);
+      push(intDesc, intDisabledDesc, `<tr><td>${value}</td><td>${name}</td><td>`);
+      push(intDesc, intDisabledDesc, info.regularDescription || info.name,
+                                     info.disabledDescription || info.name);
+      push(intDesc, intDisabledDesc, '</td></tr>');
     }
-    intDesc.push('</table>');
+    push(intDesc, intDisabledDesc, '</table>');
 
     enumDatas[e.name] = {
       category: e.category,
       values: e.values,
-      description: e.description,
+      regularDescription: e.regularDescription,
+      disabledDescription: e.disabledDescription,
       intValues: intDesc.join(''),
       strValues: strDesc.join(''),
+      intDisabledValues: intDisabledDesc.join(''),
+      strDisabledValues: strDisabledDesc.join(''),
     };
   }
 

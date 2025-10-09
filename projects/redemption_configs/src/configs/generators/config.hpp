@@ -1452,13 +1452,53 @@ inline std::string enum_options_to_prefix_spec_type(type_enumeration const& e)
     return ret;
 }
 
-inline bool enum_values_has_desc(type_enumeration const& e)
+enum class DescriptionType
 {
-    return std::any_of(begin(e.values), end(e.values),
-        [](type_enumeration::value_type const & v) { return !v.desc.empty(); });
+    Regular,
+    Disabled,
+};
+
+inline std::string_view get_desc_of_enum(
+    type_enumeration const& e,
+    type_enumeration::value_type const * v,
+    type_enumeration::Descriptions desc,
+    DescriptionType desc_type)
+{
+    auto ret = desc.regular;
+    auto other = desc.disabled;
+
+    if (desc_type == DescriptionType::Disabled)
+    {
+        ret = desc.disabled;
+        other = desc.regular;
+    }
+
+    if (ret.empty() && !other.empty())
+    {
+        throw std::runtime_error(str_concat(
+            "selection of an empty "sv,
+            desc_type == DescriptionType::Regular ? "'regular'"sv : "'disabled'"sv,
+            " description when the "sv,
+            desc_type == DescriptionType::Regular ? "'disabled'"sv : "'regular'"sv,
+            " description is not empty"sv,
+            " for \""sv, e.name, v ? "."sv : ""sv, v ? v->name : ""sv, '"'
+        ));
+    }
+
+    return ret;
 }
 
-inline std::string enum_desc_with_values_in_desc(type_enumeration const& e, bool use_disable_prefix)
+inline bool enum_values_has_desc(type_enumeration const& e, DescriptionType desc_type)
+{
+    return std::any_of(begin(e.values), end(e.values),
+        [&](type_enumeration::value_type const & v) {
+            return !get_desc_of_enum(e, &v, v.desc, desc_type).empty();
+        }
+    );
+}
+
+inline std::string enum_desc_with_values_in_desc(
+    type_enumeration const& e, DescriptionType desc_type)
 {
     std::string str;
     str.reserve(128);
@@ -1468,10 +1508,7 @@ inline std::string enum_desc_with_values_in_desc(type_enumeration const& e, bool
             str += "  ";
             str += v.get_name();
             str += ": ";
-            if (use_disable_prefix) {
-                str += "disable ";
-            }
-            str += v.desc;
+            str += get_desc_of_enum(e, &v, v.desc, desc_type);
             str += '\n';
             break;
 
@@ -1568,7 +1605,7 @@ inline std::string enum_to_prefix_spec_type(type_enumeration const& e)
     return ret;
 }
 
-inline std::string numeric_enum_desc(type_enumeration const& e, bool use_disable_prefix)
+inline std::string numeric_enum_desc(type_enumeration const& e, DescriptionType desc_type)
 {
     std::string str;
     std::size_t ndigit16 = (e.cat == type_enumeration::Category::flags)
@@ -1592,21 +1629,23 @@ inline std::string numeric_enum_desc(type_enumeration const& e, bool use_disable
                     str += int_to_decimal_chars(v.val).sv();
                 }
 
-                // skip "disable none" text
-                auto prefix = (use_disable_prefix && (!v.desc.empty() || v.val))
-                    ? ": disable "sv
-                    : ": "sv;
+                auto desc = get_desc_of_enum(e, &v, v.desc, desc_type);
 
-                if (v.desc.empty() || show_name_when_description) {
+                if (desc.empty() || show_name_when_description) {
+                    // skip "disable none" text
+                    auto prefix
+                        = (desc_type == DescriptionType::Disabled && desc.empty() && v.val)
+                        ? ": disable "sv
+                        : ": "sv;
                     str += prefix;
                     for (char c : v.get_name()) {
                         str += ('_' == c ? ' ' : c);
                     }
                 }
 
-                if (!v.desc.empty()) {
-                    str += prefix;
-                    str += v.desc;
+                if (!desc.empty()) {
+                    str += ": "sv;
+                    str += desc;
                 }
 
                 str += '\n';
@@ -1648,9 +1687,13 @@ inline std::string numeric_enum_desc(type_enumeration const& e, bool use_disable
             }
 
             note[note.size() - 2] = '=';
-            str_append(str, "\nNote: values can be added ("sv,
-                (use_disable_prefix ? "disable all: "sv : "enable all: "sv),
-                note, "0x"sv, int_to_hexadecimal_lower_chars(total), ')');
+            str_append(str,
+                "\nNote: values can be added ("sv,
+                (desc_type == DescriptionType::Regular)
+                    ? "enable all: "sv
+                    : "disable all: "sv,
+                note, "0x"sv, int_to_hexadecimal_lower_chars(total), ')'
+            );
         }
     }
 
@@ -2353,6 +2396,8 @@ public:
             ? (acl_network_name_tmp = str_concat(section_names.all, ':', names.all))
             : names.acl_name();
 
+        auto desc_type = DescriptionType::Regular;
+
         if (has_spec
          || mem_info.spec.reset_back_to_selector == ResetBackToSelector::Yes
          || !bool(mem_info.spec.attributes & SpecAttributes::external)
@@ -2360,26 +2405,26 @@ public:
             auto prefix_type = mem_info.prefix_type;
             auto* enumeration = mem_info.value.enumeration;
             if (enumeration) {
-                desc_ref_replacer.set_desc_if_empty(enumeration->desc);
-
-                bool use_disable_prefix_for_enumeration = false;
-
                 switch (prefix_type) {
                     case PrefixType::Unspecified:
-                        use_disable_prefix_for_enumeration
-                          = utils::starts_with(names.cpp_name(), "disable"_av);
+                        if (utils::starts_with(names.cpp_name(), "disable"_av)) {
+                            desc_type = DescriptionType::Disabled;
+                        }
                         break;
                     case PrefixType::ForceDisable:
-                        use_disable_prefix_for_enumeration = true;
+                        desc_type = DescriptionType::Disabled;
                         break;
                     case PrefixType::NoPrefix:
                         break;
                 }
 
+                desc_ref_replacer.set_desc_if_empty(
+                    get_desc_of_enum(*enumeration, nullptr, enumeration->desc, desc_type)
+                );
+
                 if (mem_info.value.string_parser_for_enum) {
-                    if (enum_values_has_desc(*enumeration)) {
-                        spec_desc = enum_desc_with_values_in_desc(
-                            *enumeration, use_disable_prefix_for_enumeration);
+                    if (enum_values_has_desc(*enumeration, desc_type)) {
+                        spec_desc = enum_desc_with_values_in_desc(*enumeration, desc_type);
                         ini_desc = spec_desc;
                     }
                     else {
@@ -2387,8 +2432,7 @@ public:
                     }
                 }
                 else {
-                    spec_desc = numeric_enum_desc(
-                        *enumeration, use_disable_prefix_for_enumeration);
+                    spec_desc = numeric_enum_desc(*enumeration, desc_type);
                     ini_desc = spec_desc;
                 }
             }
@@ -2597,6 +2641,9 @@ public:
             };
             json_quoted(json_values, desc_ref_replacer.replace_refs(true, json_replacer).sv());
             json_values += '"';
+            if (desc_type == DescriptionType::Disabled) {
+                json_values += ",\n      \"useDisabledEnumDesc\": true"sv;
+            }
 
             if (!mem_info.desc.details_desc.empty()) {
                 json_values += ",\n      \"details\": \"";
@@ -2766,7 +2813,9 @@ public:
                     DescRefReplacer desc_policy;
                     desc_policy.init(*specific_desc, section_info, mem_info, conf);
                     if (auto* enumeration = mem_info.value.enumeration) {
-                        desc_policy.set_desc_if_empty(enumeration->desc);
+                        desc_policy.set_desc_if_empty(get_desc_of_enum(
+                            *enumeration, nullptr, enumeration->desc, desc_type
+                        ));
                     }
                     auto mem_desc = desc_policy.replace_refs(true, spec_desc_replacer);
                     std::string spec_str;

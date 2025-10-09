@@ -259,7 +259,23 @@ namespace cpp_enumeration_writer
             const auto max = e.max();
             const auto type = underlying_type_str(max);
 
-            out << cpp_comment(e.desc, 0)
+            auto select_desc = [](type_enumeration::Descriptions desc) {
+                if (desc.regular.empty()) {
+                    auto disabled = desc.disabled;
+                    auto prefix1 = "disable "_av;
+                    auto prefix2 = "Disable "_av;
+                    if (!disabled.empty()
+                        && (utils::starts_with(disabled, prefix1)
+                         || utils::starts_with(disabled, prefix2)))
+                    {
+                        disabled.remove_prefix(prefix1.size());
+                    }
+                    return disabled;
+                }
+                return desc.regular;
+            };
+
+            out << cpp_comment(select_desc(e.desc), 0)
                 << cpp_comment(e.info, 0)
                 << "enum class " << e.name << " : " << type << "\n"
                 "{\n";
@@ -268,7 +284,7 @@ namespace cpp_enumeration_writer
                 switch (v.prop) {
                 case type_enumeration::Prop::Value:
                 case type_enumeration::Prop::Reserved:
-                    out << cpp_comment(v.desc, 4)
+                    out << cpp_comment(select_desc(v.desc), 4)
                         << "    " << v.name << " = " << v.val << ",\n"
                     ;
                     break;
@@ -393,7 +409,8 @@ namespace cpp_enumeration_writer
                 ",\n  \"nameWhenDescription\": "_av,
                     (e.display_name_option == type_enumeration::DisplayNameOption::WithNameWhenDescription) ? "true"_av : "false"_av
             );
-            append_quoted_if_not_empty("description"_av, e.desc);
+            append_quoted_if_not_empty("regularDescription"_av, e.desc.regular);
+            append_quoted_if_not_empty("disabledDescription"_av, e.desc.disabled);
             append_quoted_if_not_empty("info"_av, e.info);
             str_append(json, ",\n  \"values\": [\n"_av);
 
@@ -414,9 +431,14 @@ namespace cpp_enumeration_writer
                 if (!v.alias.empty()) {
                     str_append(json, ",\n      \"alias\": \"", v.alias, '"');
                 }
-                if (!v.desc.empty()) {
-                    json += ",\n      \"description\": \""sv;
-                    json_quoted(json, v.desc);
+                if (!v.desc.regular.empty()) {
+                    json += ",\n      \"regularDescription\": \""sv;
+                    json_quoted(json, v.desc.regular);
+                    json += '"';
+                }
+                if (!v.desc.disabled.empty()) {
+                    json += ",\n      \"disabledDescription\": \""sv;
+                    json_quoted(json, v.desc.disabled);
                     json += '"';
                 }
                 json += "\n    }"sv;

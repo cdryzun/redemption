@@ -1,21 +1,7 @@
 /*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-*   Product name: redemption, a FLOSS RDP proxy
-*   Copyright (C) Wallix 2010-2016
-*   Author(s): Jonathan Poelen
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #pragma once
@@ -26,6 +12,9 @@ namespace cfg_specs {
 
 inline void config_type_definition(type_enumerations & e)
 {
+    using EDescs = type_enumerations::DescriptionsAndInfo;
+    using Descs = type_enumeration::Descriptions;
+
     using Opt = type_enumerations::DisplayNameOption;
     auto withNameWhenDescription = Opt::WithNameWhenDescription;
     auto withoutNameWhenDescription = Opt::WithoutNameWhenDescription;
@@ -79,20 +68,38 @@ inline void config_type_definition(type_enumerations & e)
 
     e.enumeration_flags("KeyboardLogFlags", withoutNameWhenDescription)
       .value("none")
-      .value("session_log", "keyboard log in session log")
-      .value("wrm", "keyboard log in recorded sessions")
+      .value("session_log", Descs{
+          .regular = "",
+          .disabled = "disable keyboard log in session log",
+        })
+      .value("wrm", Descs{
+          .regular = "",
+          .disabled = "disable keyboard log in recorded sessions",
+        })
     ;
 
     e.enumeration_flags("ClipboardLogFlags", withoutNameWhenDescription)
       .value("none")
-      .value("wrm", "clipboard log in recorded sessions")
-      .value("meta", "clipboard log in recorded meta")
+      .value("wrm", Descs{
+          .regular = "",
+          .disabled = "disable clipboard log in recorded sessions",
+        })
+      .value("meta", Descs{
+          .regular = "",
+          .disabled = "disable clipboard log in recorded meta",
+        })
     ;
 
     e.enumeration_flags("FileSystemLogFlags", withoutNameWhenDescription)
       .value("none")
-      .value("wrm", "(redirected) file system log in recorded sessions")
-      .value("meta", "(redirected) file system log in recorded meta")
+      .value("wrm", Descs{
+          .regular = "",
+          .disabled = "disable (redirected) file system log in recorded sessions",
+        })
+      .value("meta", Descs{
+          .regular = "",
+          .disabled = "disable (redirected) file system log in recorded meta",
+        })
     ;
 
     e.enumeration_set("ColorDepth", withoutNameWhenDescription, "Specifies the maximum color depth for the client connection session:")
@@ -108,14 +115,20 @@ inline void config_type_definition(type_enumerations & e)
       .value("SIEM", "message sent to SIEM")
     ;
 
-    e.enumeration_list("ServerCertCheck", withoutNameWhenDescription, "Behavior of certificates check.", "System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.")
+    e.enumeration_list("ServerCertCheck", withoutNameWhenDescription, EDescs{
+        .desc = "Behavior of certificates check.",
+        .info = "System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection."
+    })
       .value("fails_if_no_match_or_missing", "fails if certificates do not match or are missing.")
       .value("fails_if_no_match_and_succeed_if_no_know", "fails if certificate does not match, succeeds if no known certificate.")
       .value("succeed_if_exists_and_fails_if_missing", "succeeds if certificates exist (not checked), fails if missing.")
       .value("always_succeed", "always succeed.")
     ;
 
-    e.enumeration_list("TraceType", withoutNameWhenDescription, "Session record options.", "When session records are encrypted, they can be read only by the WALLIX Bastion where they have been generated.")
+    e.enumeration_list("TraceType", withoutNameWhenDescription, EDescs{
+        .desc = "Session record options.",
+        .info = "When session records are encrypted, they can be read only by the WALLIX Bastion where they have been generated."
+    })
       .value("localfile", "No encryption (faster).")
       .value("localfile_hashed", "No encryption, with checksum.")
       .value("cryptofile", "Encryption enabled.")
@@ -189,15 +202,39 @@ inline void config_type_definition(type_enumerations & e)
 
     e.enumeration_flags("SessionProbeDisabledFeature", withoutNameWhenDescription)
       .value("none")
-      .value("jab", "Java Access Bridge. General user activity monitoring in the Java applications (including detection of password fields).")
-      .value("msaa", "MS Active Accessbility. General user activity monitoring (including detection of password fields). (legacy API)")
-      .value("msuia", "MS UI Automation. General user activity monitoring (including detection of password fields). (new API)")
+      .value("jab", Descs{
+          .regular = "",
+          .disabled = "disable Java Access Bridge. General user activity monitoring in the Java applications (including detection of password fields)."
+        })
+      .value("msaa", Descs{
+          .regular = "",
+          .disabled = "disable MS Active Accessbility. General user activity monitoring (including detection of password fields). (legacy API)"
+        })
+      .value("msuia", Descs{
+          .regular = "",
+          .disabled = "disable MS UI Automation. General user activity monitoring (including detection of password fields). (new API)"
+        })
       .invalid_value()
-      .value("edge_inspection", "Inspect Edge location URL. Basic web navigation monitoring.")
-      .value("chrome_inspection", "Inspect Chrome Address/Search bar. Basic web navigation monitoring.")
-      .value("firefox_inspection", "Inspect Firefox Address/Search bar. Basic web navigation monitoring.")
-      .value("ie_monitoring", "Monitor Internet Explorer event. Advanced web navigation monitoring.")
-      .value("group_membership", "Inspect group membership of user. User identity monitoring.")
+      .value("edge_inspection", Descs{
+          .regular = "",
+          .disabled = "disable Inspect Edge location URL. Basic web navigation monitoring."
+        })
+      .value("chrome_inspection", Descs{
+          .regular = "",
+          .disabled = "disable Inspect Chrome Address/Search bar. Basic web navigation monitoring."
+        })
+      .value("firefox_inspection", Descs{
+          .regular = "",
+          .disabled = "disable Inspect Firefox Address/Search bar. Basic web navigation monitoring."
+        })
+      .value("ie_monitoring", Descs{
+          .regular = "",
+          .disabled = "disable Monitor Internet Explorer event. Advanced web navigation monitoring."
+        })
+      .value("group_membership", Descs{
+          .regular = "",
+          .disabled = "disable Inspect group membership of user. User identity monitoring."
+        })
     ;
 
     e.enumeration_list("RdpStoreFile", withNameWhenDescription)

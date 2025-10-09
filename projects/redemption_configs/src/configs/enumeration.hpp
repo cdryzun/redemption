@@ -1,21 +1,7 @@
 /*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-*   Product name: redemption, a FLOSS RDP proxy
-*   Copyright (C) Wallix 2010-2016
-*   Author(s): Jonathan Poelen
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #pragma once
@@ -32,15 +18,36 @@
 
 struct type_enumeration
 {
-    enum class Category { autoincrement, flags, set };
-    enum class DisplayNameOption : bool { WithoutNameWhenDescription, WithNameWhenDescription };
+    enum class Category : unsigned char
+    {
+        autoincrement,
+        flags,
+        set,
+    };
 
-    enum class Prop : unsigned char { Value, NoValue, Reserved, };
+    enum class DisplayNameOption : bool
+    {
+        WithoutNameWhenDescription,
+        WithNameWhenDescription,
+    };
+
+    enum class Prop : unsigned char
+    {
+        Value,
+        NoValue,
+        Reserved,
+    };
+
+    struct Descriptions
+    {
+        std::string_view regular;
+        std::string_view disabled;
+    };
 
     struct value_type
     {
         std::string_view name;
-        std::string_view desc;
+        Descriptions desc;
         std::string_view alias;
         uint64_t val;
         // bool is_negative;
@@ -50,7 +57,7 @@ struct type_enumeration
     };
 
     std::string_view name;
-    std::string_view desc;
+    Descriptions desc;
     std::string_view info;
 
     Category cat;
@@ -107,27 +114,51 @@ protected:
     }
 };
 
+// syntactic facilitator
+struct EnumerationDescriptions : type_enumeration::Descriptions
+{
+    EnumerationDescriptions()
+        : type_enumeration::Descriptions{{}, {}}
+    {}
+
+    EnumerationDescriptions(char const * regular_desc)
+        : type_enumeration::Descriptions{regular_desc, {}}
+    {}
+
+    EnumerationDescriptions(std::string_view regular_desc)
+        : type_enumeration::Descriptions{regular_desc, {}}
+    {}
+
+    EnumerationDescriptions(type_enumeration::Descriptions descs)
+        : type_enumeration::Descriptions{descs}
+    {}
+};
+
 struct type_enumeration_inc : type_enumeration
 {
     using type_enumeration::type_enumeration;
 
-    type_enumeration_inc & value(std::string_view name, std::string_view desc = {})
+    type_enumeration_inc & value(
+        std::string_view name,
+        EnumerationDescriptions descriptions = {})
     {
-        _add_value(name, desc);
+        _add_value(name, descriptions);
         return *this;
     }
 
     // not exposed to .spec
-    type_enumeration_inc & reserved(std::string_view name, std::string_view desc = {})
+    type_enumeration_inc & reserved(
+        std::string_view name,
+        EnumerationDescriptions descriptions = {})
     {
-        _add_value(name, desc).prop = Prop::Reserved;
+        _add_value(name, descriptions).prop = Prop::Reserved;
         return *this;
     }
 
     // skip a value
     type_enumeration_inc & invalid_value()
     {
-        _add_value(name, desc).prop = Prop::NoValue;
+        _add_value({}, {}).prop = Prop::NoValue;
         return *this;
     }
 
@@ -138,28 +169,50 @@ struct type_enumeration_inc : type_enumeration
     }
 
 private:
-    value_type& _add_value(std::string_view name, std::string_view desc)
+    value_type& _add_value(std::string_view name, Descriptions descriptions)
     {
         uint64_t value = this->values.size();
         if (cat == Category::flags && value) {
             value = 1ull << (value - 1u);
         }
-        return this->values.emplace_back(value_type{name, desc, std::string_view(), value});
+        return this->values.emplace_back(value_type{
+            .name = name,
+            .desc = descriptions,
+            .alias = std::string_view(),
+            .val = value,
+        });
     }
 };
 
 struct type_enumeration_set : type_enumeration
 {
-    type_enumeration_set & value(std::string_view name, unsigned long long val, std::string_view desc = {})
+    type_enumeration_set & value(
+        std::string_view name,
+        unsigned long long val,
+        EnumerationDescriptions descriptions = {})
     {
-        this->values.push_back({name, desc, std::string_view(), val});
+        this->values.emplace_back(value_type{
+            .name = name,
+            .desc = descriptions,
+            .alias = std::string_view(),
+            .val = val,
+        });
         return *this;
     }
 
     // not exposed to .spec
-    type_enumeration_set & reserved()
+    type_enumeration_set & reserved(
+        std::string_view name,
+        unsigned long long val,
+        EnumerationDescriptions descriptions = {})
     {
-        this->values.back().prop = Prop::Reserved;
+        this->values.emplace_back(value_type{
+            .name = name,
+            .desc = descriptions,
+            .alias = std::string_view(),
+            .val = val,
+            .prop = Prop::Reserved,
+        });
         return *this;
     }
 
@@ -178,27 +231,78 @@ struct type_enumerations
 
     std::vector<type_enumeration> enumerations_;
 
-    type_enumeration_inc & enumeration_flags(
-        std::string_view name, DisplayNameOption display_opt,
-        std::string_view desc = {}, std::string_view info = {})
+    struct DescriptionsAndInfo
     {
-        this->enumerations_.push_back({name, desc, info, Category::flags, display_opt});
+        EnumerationDescriptions desc;
+        std::string_view info;
+    };
+
+    // syntactic facilitator
+    struct DescriptionsAndInfoFacilitator : DescriptionsAndInfo
+    {
+        DescriptionsAndInfoFacilitator()
+            : DescriptionsAndInfo{{}, {}}
+        {}
+
+        DescriptionsAndInfoFacilitator(char const * regular_desc)
+            : DescriptionsAndInfo{regular_desc, {}}
+        {}
+
+        DescriptionsAndInfoFacilitator(std::string_view regular_desc)
+            : DescriptionsAndInfo{regular_desc, {}}
+        {}
+
+        DescriptionsAndInfoFacilitator(EnumerationDescriptions descs)
+            : DescriptionsAndInfo{descs, {}}
+        {}
+
+        DescriptionsAndInfoFacilitator(DescriptionsAndInfo descs_and_info)
+            : DescriptionsAndInfo{descs_and_info}
+        {}
+    };
+
+    type_enumeration_inc & enumeration_flags(
+        std::string_view name,
+        DisplayNameOption display_opt,
+        DescriptionsAndInfoFacilitator descriptions_and_info = {})
+    {
+        this->enumerations_.push_back({
+            .name = name,
+            .desc = descriptions_and_info.desc,
+            .info = descriptions_and_info.info,
+            .cat = Category::flags,
+            .display_name_option = display_opt,
+        });
         return static_cast<type_enumeration_inc&>(this->enumerations_.back());
     }
 
     type_enumeration_inc & enumeration_list(
-        std::string_view name, DisplayNameOption display_opt,
-        std::string_view desc = {}, std::string_view info = {})
+        std::string_view name,
+        DisplayNameOption display_opt,
+        DescriptionsAndInfoFacilitator descriptions_and_info = {})
     {
-        this->enumerations_.push_back({name, desc, info, Category::autoincrement, display_opt});
+        this->enumerations_.push_back({
+            .name = name,
+            .desc = descriptions_and_info.desc,
+            .info = descriptions_and_info.info,
+            .cat = Category::autoincrement,
+            .display_name_option = display_opt,
+        });
         return static_cast<type_enumeration_inc&>(this->enumerations_.back());
     }
 
     type_enumeration_set & enumeration_set(
-        std::string_view name, DisplayNameOption display_opt,
-        std::string_view desc = {}, std::string_view info = {})
+        std::string_view name,
+        DisplayNameOption display_opt,
+        DescriptionsAndInfoFacilitator descriptions_and_info = {})
     {
-        this->enumerations_.push_back({name, desc, info, Category::set, display_opt});
+        this->enumerations_.push_back({
+            .name = name,
+            .desc = descriptions_and_info.desc,
+            .info = descriptions_and_info.info,
+            .cat = Category::set,
+            .display_name_option = display_opt,
+        });
         return static_cast<type_enumeration_set&>(this->enumerations_.back());
     }
 
