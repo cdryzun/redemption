@@ -103,7 +103,7 @@ _.set_sections({
 });
 
 auto enum_as_string = cfg_generators::EnumToValueAsStrings::as_string(tenums);
-auto from_enum = cfg_generators::EnumToValueAsStrings::as_int(tenums);
+auto enum_as_int = cfg_generators::EnumToValueAsStrings::as_int(tenums);
 using cfg_generators::value;
 using cfg_generators::rdp_all_policy_value;
 using cfg_generators::rdp_general_policy_value;
@@ -419,7 +419,7 @@ _.section("globals", [&]
 
     _.member(MemberInfo{
         .name = "trace_type",
-        .value = from_enum(TraceType::localfile_hashed),
+        .value = enum_as_int(TraceType::localfile_hashed),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),
     });
 
@@ -551,14 +551,14 @@ _.section("session_log", [&]
 
     _.member(MemberInfo{
         .name = "enable_syslog_format",
-        .value = from_enum(SessionLogFormat::SIEM),
+        .value = enum_as_int(SessionLogFormat::SIEM),
         .spec = ini_only(no_acl),
         .desc = "Writes session logs to syslog and define its format.",
     });
 
     _.member(MemberInfo{
         .name = "keyboard_input_masking_level",
-        .value = from_enum(KeyboardInputMaskingLevel::password_and_unidentified,
+        .value = enum_as_int(KeyboardInputMaskingLevel::password_and_unidentified,
             // see capture::disable_keyboard_log
             vnc_policy_value(KeyboardInputMaskingLevel::unmasked).always()),
         .spec = connpolicy(rdp | vnc, loggable),
@@ -714,7 +714,7 @@ _.section("client", [&]
 
     _.member(MemberInfo{
         .name = "rdp_compression",
-        .value = from_enum(RdpCompression::rdp6_1),
+        .value = enum_as_int(RdpCompression::rdp6_1),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
         .desc = "Specifies the highest RDP compression support available on the client connection session.",
@@ -723,7 +723,7 @@ _.section("client", [&]
 
     _.member(MemberInfo{
         .name = "max_color_depth",
-        .value = from_enum(ColorDepth::depth24),
+        .value = enum_as_int(ColorDepth::depth24),
         .spec = global_spec(no_acl, spec::advanced),
     });
 
@@ -903,7 +903,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "rdp_compression",
-        .value = from_enum(RdpCompression::rdp6_1),
+        .value = enum_as_int(RdpCompression::rdp6_1),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
         .desc = "Specifies the highest RDP compression support available on the target server connection.",
@@ -1215,7 +1215,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "client_address_sent",
-        .value = from_enum(ClientAddressSent::no_address),
+        .value = enum_as_int(ClientAddressSent::no_address),
         .spec = global_spec(no_acl, spec::advanced),
         .desc = "Client Address to send to target (in InfoPacket).",
     });
@@ -1615,7 +1615,7 @@ _.section("protocol", [&]
 {
     _.member(MemberInfo{
         .name = "save_session_info_pdu",
-        .value = from_enum(RdpSaveSessionInfoPDU::UnsupportedOrUnknown),
+        .value = enum_as_int(RdpSaveSessionInfoPDU::UnsupportedOrUnknown),
         .spec = connpolicy(rdp, loggable, spec::advanced),
     });
 });
@@ -1663,7 +1663,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "on_launch_failure",
-        .value = from_enum(SessionProbeOnLaunchFailure::disconnect_user),
+        .value = enum_as_int(SessionProbeOnLaunchFailure::disconnect_user),
         .spec = connpolicy(rdp, loggable),
         .desc = "It is recommended to use option 1 (disconnect user).",
     });
@@ -1713,7 +1713,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "on_keepalive_timeout",
-        .value = from_enum(SessionProbeOnKeepaliveTimeout::freeze_connection_and_wait),
+        .value = enum_as_int(SessionProbeOnKeepaliveTimeout::freeze_connection_and_wait),
         .spec = connpolicy(rdp, loggable),
         .desc = "This parameter allows us to choose the behavior of the RDP Proxy in case of losing the connection with Session Probe.",
     });
@@ -1758,7 +1758,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "log_level",
-        .value = from_enum(SessionProbeLogLevel::Debug),
+        .value = enum_as_int(SessionProbeLogLevel::Debug),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .tags = Tag::Debug,
         .desc = "Defines logging severity levels.",
@@ -1905,7 +1905,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "cpu_usage_alarm_action",
-        .value = from_enum(SessionProbeCPUUsageAlarmAction::Restart),
+        .value = enum_as_int(SessionProbeCPUUsageAlarmAction::Restart),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc = "Additional behavior when CPU consumption exceeds what is allowed. Refer to the :REF::cpu_usage_alarm_threshold.",
     });
@@ -1975,7 +1975,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "disabled_features",
-        .value = from_enum(
+        .value = enum_as_int(
             SessionProbeDisabledFeature::chrome_inspection
           | SessionProbeDisabledFeature::firefox_inspection
           | SessionProbeDisabledFeature::group_membership),
@@ -2001,7 +2001,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "on_account_manipulation",
-        .value = from_enum(SessionProbeOnAccountManipulation::allow),
+        .value = enum_as_int(SessionProbeOnAccountManipulation::allow),
         .spec = connpolicy(rdp, loggable),
         .desc =
             "This parameter has no effect on the device without BestSafe.\n"
@@ -2102,7 +2102,7 @@ _.section("session_probe", [&]
 
     _.member(MemberInfo{
         .name = "process_command_line_retrieve_method",
-        .value = from_enum(SessionProbeProcessCommandLineRetrieveMethod::both),
+        .value = enum_as_int(SessionProbeProcessCommandLineRetrieveMethod::both),
         .spec = connpolicy(rdp, loggable, spec::advanced),
     });
 
@@ -2146,41 +2146,41 @@ _.section(names{"server_cert"}, [&]
 
     _.member(MemberInfo{
         .name = "server_cert_check",
-        .value = from_enum(ServerCertCheck::fails_if_no_match_and_succeed_if_no_know),
+        .value = enum_as_int(ServerCertCheck::fails_if_no_match_and_succeed_if_no_know),
         .spec = connpolicy(rdp | vnc, loggable),
     });
 
     _.member(MemberInfo{
         .name = "server_access_allowed_message",
-        .value = from_enum(ServerCertNotification::nobody),
+        .value = enum_as_int(ServerCertNotification::nobody),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc = "Warn if check allow connexion to target server.",
     });
 
     _.member(MemberInfo{
         .name = "server_cert_create_message",
-        .value = from_enum(ServerCertNotification::SIEM),
+        .value = enum_as_int(ServerCertNotification::SIEM),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc = "Warn that new target server certificate file was created.",
     });
 
     _.member(MemberInfo{
         .name = "server_cert_success_message",
-        .value = from_enum(ServerCertNotification::nobody),
+        .value = enum_as_int(ServerCertNotification::nobody),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc = "Warn that target server certificate file was successfully checked.",
     });
 
     _.member(MemberInfo{
         .name = "server_cert_failure_message",
-        .value = from_enum(ServerCertNotification::SIEM),
+        .value = enum_as_int(ServerCertNotification::SIEM),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
         .desc = "Warn that target server certificate file checking failed.",
     });
 
     _.member(MemberInfo{
         .name = "error_message",
-        .value = from_enum(ServerCertNotification::SIEM),
+        .value = enum_as_int(ServerCertNotification::SIEM),
         .spec = ini_only(no_acl),
         .desc = "Warn that target server certificate check raised some internal error.",
     });
@@ -2260,7 +2260,7 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
             .all = "bogus_clipboard_infinite_loop",
             .acl = "vnc_bogus_clipboard_infinite_loop"
         },
-        .value = from_enum(VncBogusClipboardInfiniteLoop::delayed),
+        .value = enum_as_int(VncBogusClipboardInfiniteLoop::delayed),
         .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
         .desc =
             "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\n"
@@ -2653,7 +2653,7 @@ _.section("ocr", [&]
 {
     _.member(MemberInfo{
         .name = "version",
-        .value = from_enum(OcrVersion::v2),
+        .value = enum_as_int(OcrVersion::v2),
         .spec = global_spec(no_acl),
         .desc =
             "Selects the OCR (Optical Character Recognition) version used to detect title bars when Session Probe is not running.\n"
@@ -2735,13 +2735,13 @@ _.section("capture", [&]
 
     _.member(MemberInfo{
         .name = "capture_flags",
-        .value = from_enum(CaptureFlags::png | CaptureFlags::wrm | CaptureFlags::ocr),
+        .value = enum_as_int(CaptureFlags::png | CaptureFlags::wrm | CaptureFlags::ocr),
         .spec = global_spec(no_acl, spec::advanced),
     });
 
     _.member(MemberInfo{
         .name = "disable_keyboard_log",
-        .value = from_enum(KeyboardLogFlags::none,
+        .value = enum_as_int(KeyboardLogFlags::none,
             // see session_log::keyboard_input_masking_level
             vnc_policy_value(KeyboardLogFlags::session_log | KeyboardLogFlags::wrm)),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
@@ -2757,14 +2757,14 @@ _.section("capture", [&]
 
     _.member(MemberInfo{
         .name = "disable_clipboard_log",
-        .value = from_enum(ClipboardLogFlags::none),
+        .value = enum_as_int(ClipboardLogFlags::none),
         .spec = global_spec(no_acl, spec::advanced),
         .desc = "Disable clipboard log:",
     });
 
     _.member(MemberInfo{
         .name = "disable_file_system_log",
-        .value = from_enum(FileSystemLogFlags::none),
+        .value = enum_as_int(FileSystemLogFlags::none),
         .spec = global_spec(no_acl, spec::advanced),
         .desc = "Disable (redirected) file system log:",
     });
@@ -2780,13 +2780,13 @@ _.section("capture", [&]
 
     _.member(MemberInfo{
         .name = "wrm_color_depth_selection_strategy",
-        .value = from_enum(ColorDepthSelectionStrategy::depth16),
+        .value = enum_as_int(ColorDepthSelectionStrategy::depth16),
         .spec = global_spec(no_acl, spec::advanced),
     });
 
     _.member(MemberInfo{
         .name = "wrm_compression_algorithm",
-        .value = from_enum(WrmCompressionAlgorithm::gzip),
+        .value = enum_as_int(WrmCompressionAlgorithm::gzip),
         .spec = global_spec(no_acl, spec::advanced),
     });
 
@@ -2851,7 +2851,7 @@ _.section("audit", [&]
 
     _.member(MemberInfo{
         .name = "smart_video_cropping",
-        .value = from_enum(SmartVideoCropping::v2),
+        .value = enum_as_int(SmartVideoCropping::v2),
         .spec = global_spec(no_acl),
     });
 
@@ -3124,7 +3124,7 @@ _.section("debug", [&]
 
     _.member(MemberInfo{
         .name = "mod_rdp_use_failure_simulation_socket_transport",
-        .value = from_enum(ModRdpUseFailureSimulationSocketTransport::Off),
+        .value = enum_as_int(ModRdpUseFailureSimulationSocketTransport::Off),
         .spec = ini_only(no_acl),
     });
 
@@ -3216,7 +3216,7 @@ _.section("context", [&]
             .all = "opt_bpp",
             .acl = "bpp"
         },
-        .value = from_enum(ColorDepth::depth24),
+        .value = enum_as_int(ColorDepth::depth24),
         .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
     });
 
@@ -3758,7 +3758,7 @@ _.section("context", [&]
 
     _.member(MemberInfo{
         .name = "banner_type",
-        .value = from_enum(BannerType::info),
+        .value = enum_as_int(BannerType::info),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),
     });
 
