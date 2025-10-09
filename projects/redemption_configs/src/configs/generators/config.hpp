@@ -1800,37 +1800,20 @@ inline DataAsStrings::ConnectionPolicy make_connpolicy_value(
     };
 }
 
-struct EnumAsString
+struct EnumToValueAsStrings
 {
     type_enumerations const& tenums;
+    cfg_generators::ValueAsStrings(*as_f)(uint64_t value, const type_enumeration& e);
 
-    template<class Enum, class... TConnPolicy>
-    ValueAsStrings operator()(Enum value, TConnPolicy&&... conn_policy_value)
+    static EnumToValueAsStrings as_string(type_enumerations const& tenums)
     {
-        static_assert(std::is_enum_v<Enum>);
-
-        check_policy({conn_policy_value.policy_types...});
-
-        auto& e = tenums.get_enum<Enum>();
-        auto ret = compute_string_enum_as_strings(safe_int(underlying_cast(value)), e);
-
-        (..., (ret.values.connection_policies.push_back(make_connpolicy_value(
-            conn_policy_value.policy_types,
-            compute_string_enum_as_strings(
-                safe_int(underlying_cast(Enum{conn_policy_value.value})),
-                e
-            ),
-            conn_policy_value.forced
-        ))));
-
-        ret.align_of = alignof(Enum);
-        return ret;
+        return {tenums, compute_string_enum_as_strings};
     }
-};
 
-struct ValueFromEnum
-{
-    type_enumerations const& tenums;
+    static EnumToValueAsStrings as_int(type_enumerations const& tenums)
+    {
+        return {tenums, compute_integer_enum_as_strings};
+    }
 
     template<class Enum, class... TConnPolicy>
     ValueAsStrings operator()(Enum value, TConnPolicy&&... conn_policy_value)
@@ -1840,14 +1823,11 @@ struct ValueFromEnum
         check_policy({conn_policy_value.policy_types...});
 
         auto& e = tenums.get_enum<Enum>();
-        auto ret = compute_integer_enum_as_strings(safe_int(underlying_cast(value)), e);
+        auto ret = as_f(safe_int(underlying_cast(value)), e);
 
         (..., (ret.values.connection_policies.push_back(make_connpolicy_value(
             conn_policy_value.policy_types,
-            compute_integer_enum_as_strings(
-                safe_int(underlying_cast(Enum{conn_policy_value.value})),
-                e
-            ),
+            as_f(safe_int(underlying_cast(Enum{conn_policy_value.value})), e),
             conn_policy_value.forced
         ))));
 

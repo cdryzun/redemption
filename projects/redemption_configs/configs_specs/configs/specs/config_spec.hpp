@@ -102,8 +102,8 @@ _.set_sections({
     "debug",
 });
 
-cfg_generators::EnumAsString enum_as_string{tenums};
-cfg_generators::ValueFromEnum from_enum{tenums};
+auto enum_as_string = cfg_generators::EnumToValueAsStrings::as_string(tenums);
+auto from_enum = cfg_generators::EnumToValueAsStrings::as_int(tenums);
 using cfg_generators::value;
 using cfg_generators::rdp_all_policy_value;
 using cfg_generators::rdp_general_policy_value;
