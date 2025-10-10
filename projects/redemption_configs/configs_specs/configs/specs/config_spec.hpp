@@ -147,10 +147,10 @@ constexpr auto default_key =
 ;
 
 std::string_view disabled_orders_desc =
-    "This option should only be used if the target server or client is showing graphical issues.\n"
-    "In general, disabling RDP orders has a negative impact on performance.\n"
+    "⚠ Only use this option if the target server or client is experiencing graphical issues.\n"
+    "Disabling RDP orders generally reduces performance.\n"
     "\n"
-    "Drawing orders that can be disabled:\n"
+    "The following drawing orders can be disabled:\n"
     "   0: DstBlt\n"
     "   1: PatBlt\n"
     "   2: ScrBlt\n"
@@ -167,23 +167,23 @@ std::string_view disabled_orders_desc =
 ;
 
 std::string_view tls_1_3_ciphersuites_desc =
-    "Configure the available TLSv1.3 ciphersuites.\n"
+    "Configure the available TLSv1.3 cipher suites.\n"
     "Empty to apply system-wide configuration.\n"
-    "The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION"
+    "For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION"
 ;
 
 std::string_view tls_key_exchange_groups =
     "Configure the supported key exchange groups.\n"
     "Empty to apply system-wide configuration.\n"
-    "The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups"
+    "For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups"
 ;
 
 std::string_view tls_signature_algorithms_desc_base =
     "Empty to apply system-wide configuration.\n"
-    "The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.\n"
-    "algorithm is one of RSA, RSA-PSS or ECDSA.\n"
-    "hash is one of SHA224, SHA256, SHA384 or SHA512.\n"
-    "signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256."
+    "The format should be a colon-separated list of signature algorithms, ordered by decreasing preference. Each entry should follow one of these forms: algorithm+hash or signature_scheme.\n"
+    "algorithm options: RSA, RSA-PSS or ECDSA.\n"
+    "hash options: SHA224, SHA256, SHA384 or SHA512.\n"
+    "signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256)."
 ;
 
 _.display_name_word_replacement_table = {
@@ -379,7 +379,7 @@ _.section("globals", [&]
         .value = value<std::chrono::seconds>(10),
         .spec = global_spec(no_acl),
         .desc = "Timeout during RDP connection initialization.\n"
-        "Increase this value if the connection between workstations and Bastion is slow.",
+        "Increase this value if the connection between workstations and WALLIX Bastion is slow.",
     });
 
     _.member(MemberInfo{
@@ -387,9 +387,9 @@ _.section("globals", [&]
         .value = value<std::chrono::seconds>(900),
         .spec = global_spec(no_acl),
         .desc =
-            "No automatic disconnection due to inactivity, timer is set on primary authentication.\n"
-            "If the value is between 1 and 30, then 30 is used.\n"
-            "If the value is set to 0, then inactivity timeout value is unlimited.",
+            "No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.\n"
+            "Values between 1 and 30 default to a 30-second timeout.\n"
+            "If set to 0, the inactivity timeout is unlimited.",
     });
 
     _.member(MemberInfo{
@@ -398,9 +398,9 @@ _.section("globals", [&]
         .value = value<std::chrono::seconds>(),
         .spec = connpolicy(rdp | vnc, loggable),
         .desc =
-            "No automatic disconnection due to inactivity, timer is set on target session.\n"
-            "If the value is between 1 and 30, then 30 is used.\n"
-            "If the value is set to 0, then the value set in :REF:[globals]:base_inactivity_timeout is used."
+            "No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.\n"
+            "Values between 1 and 30 default to a 30-second timeout.\n"
+            "If set to 0, the timeout value from :REF:[globals]:base_inactivity_timeout is used."
     });
 
     _.member(MemberInfo{
@@ -414,7 +414,8 @@ _.section("globals", [&]
         .name = "authentication_timeout",
         .value = value<std::chrono::seconds>(120),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Specifies how long the RDP proxy login screen should be displayed before the client window closes (use 0 to deactivate).",
+        .desc = "Specifies how long the RDP proxy login screen should be displayed before the client window closes.\n"
+        "Set to 0 to disable this feature.",
     });
 
     _.member(MemberInfo{
@@ -464,14 +465,14 @@ _.section("globals", [&]
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
             "Displays a reminder box at the top of the session when a session has a time limit (timeframe or approval).\n"
-            "Reminders appear at 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends."
+            "Reminders appear 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends."
     });
 
     _.member(MemberInfo{
         .name = "enable_osd_display_remote_target",
         .value = value(true),
         .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
-        .desc = "Allows showing the target device name with F12 during the session.",
+        .desc = "Displays the target device name during the session when F12 is pressed.",
     });
 
     _.member(MemberInfo{
@@ -479,7 +480,7 @@ _.section("globals", [&]
         .value = value(false),
         .spec = global_spec(no_acl),
         .desc =
-            "Displays the target username in the session when F12 is pressed.\n"
+            "Displays the target username during the session when F12 is pressed.\n"
             "This option needs :REF:[globals]:enable_osd_display_remote_target."
     });
 
@@ -562,8 +563,7 @@ _.section("session_log", [&]
             // see capture::disable_keyboard_log
             vnc_policy_value(KeyboardInputMaskingLevel::unmasked).always()),
         .spec = connpolicy(rdp | vnc, loggable),
-        .desc = "Classification of input data is performed using Session Probe.\n"
-        "Without Session Probe, all the texts entered are considered unidentified.",
+        .desc = "Determines how keyboard input is logged. Session Probe is required for input identification and masking.",
     });
 });
 
@@ -573,7 +573,7 @@ _.section("client", [&]
         .name = "ignore_logon_password",
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "If true, ignore the password provided by the RDP client. The user needs to manually log in.",
+        .desc = "If true, ignore the password provided by the RDP client. The user must log in manually.",
     });
 
     _.member(MemberInfo{
@@ -658,7 +658,7 @@ _.section("client", [&]
             "HIGH:!ADH:!3DES: Compatible only with MS Windows 7 client or more recent (moderately secure)\n"
             "HIGH:!ADH:!3DES:!SHA: Compatible only with MS Server Windows 2008 R2 client or more recent (more secure)"
             "\n"
-            "The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT"
+            "For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT"
     });
 
     _.member(MemberInfo{
@@ -702,14 +702,14 @@ _.section("client", [&]
         .name = "enable_nla",
         .value = value(false),
         .spec = ini_only(no_acl),
-        .desc = "Needed for primary NTLM or Kerberos connections over NLA.",
+        .desc = "Required for primary Kerberos connections over NLA.",
     });
 
     _.member(MemberInfo{
         .name = "disable_tsk_switch_shortcuts",
         .value = value(false),
         .spec = acl_to_proxy(no_reset_back_to_selector, loggable),
-        .desc = "If enabled, ignore Ctrl+Alt+Del, Ctrl+Shift+Esc and Windows+Tab keyboard sequences.",
+        .desc = "When enabled, ignores Ctrl+Alt+Del, Ctrl+Shift+Esc and Windows+Tab keyboard sequences.",
     });
 
     _.member(MemberInfo{
@@ -748,7 +748,7 @@ _.section("client", [&]
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
         .desc =
-            "If enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if :REF:[client]:persistent_disk_bitmap_cache is disabled).",
+            "When enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if :REF:[client]:persistent_disk_bitmap_cache is disabled).",
     });
 
     _.member(MemberInfo{
@@ -814,9 +814,9 @@ _.section("client", [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf | Tag::Compatibility,
-        .desc = "Enable RemoteFX on the client connection.\n"
-        "Needs - :REF:[client]:max_color_depth set to 32 (32-bit RGB mask + alpha)\n"
-        "      - :REF:[mod_rdp]:enable_remotefx set to on",
+        .desc = "Enable RemoteFX on the client connection. Requires:\n"
+        "- :REF:[client]:max_color_depth set to 32 (32-bit RGB mask + alpha)\n"
+        "- :REF:[mod_rdp]:enable_remotefx set to on",
     });
 
     _.member(MemberInfo{
@@ -852,7 +852,7 @@ _.section("all_target_mod", [&]
         .name = "tcp_user_timeout",
         .value = value<types::range<std::chrono::milliseconds, 0, 3'600'000>>(),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
-        .desc = "This parameter allows you to specify max timeout before a TCP connection is aborted. If the option value is specified as 0, TCP will use the system default.",
+        .desc = "Specify max timeout before a TCP connection is aborted. If set to 0, the system default TCP timeout is used.",
     });
 });
 
@@ -896,9 +896,9 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "If enabled, the font smoothing desktop feature is automatically disabled in recorded session.\n"
+            "When enabled, the font smoothing desktop feature is automatically disabled in recorded session.\n"
             "This allows OCR (when session probe is disabled) to better detect window titles.\n"
-            "If disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.",
+            "When disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.",
     });
 
     _.member(MemberInfo{
@@ -1021,7 +1021,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .desc =
             "TLSv1.2 and below additional ciphers supported.\n"
             "Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.\n"
-            "The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
+            "For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
     });
 
     _.member(MemberInfo{
@@ -1127,7 +1127,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
         .tags = Tag::Perf,
-        .desc = "If enabled, the contents of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if :REF:[mod_rdp]:persistent_disk_bitmap_cache is disabled).",
+        .desc = "When enabled, the content of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if :REF:[mod_rdp]:persistent_disk_bitmap_cache is disabled).",
     });
 
     _.member(MemberInfo{
@@ -1369,7 +1369,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "Adds RDPDR channel metadata to session logs. Disabling this option makes shared disks more responsive, but metadata will no longer be collected."
-            "if at least one authorization of RDPDR is missing (Printer, ComPort, SmartCard, Drive), then this option is considered enabled."
+            "If at least one authorization of RDPDR is missing (Printer, ComPort, SmartCard, Drive), then this option is considered enabled."
     });
 
     _.member(MemberInfo{
@@ -1394,7 +1394,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "log_only_relevant_clipboard_activities",
         .value = value(true),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "Some events such as 'Preferred DropEffect' have no particular meaning. This option allows you to exclude these types of events from the logs.",
+        .desc = "Excludes certain types of events from the logs. For example, 'Preferred DropEffect' has no particular meaning.",
     });
 
     _.member(MemberInfo{
@@ -1419,7 +1419,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "Actives conversion of RemoteApp target session to desktop session.\n"
+            "Activates conversion of RemoteApp target session to desktop session.\n"
             "Otherwise, Alternate Shell will be used.\n"
             "Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently."
     });
@@ -1505,7 +1505,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .name = "session_reconnection_delay",
         .value = value<types::range<std::chrono::milliseconds, 0, 15000>>(0),
         .spec = connpolicy(rdp, loggable, spec::advanced),
-        .desc = "The delay between a session disconnection and the automatic reconnection that follows.",
+        .desc = "Delay between a session disconnection and the automatic reconnection that follows.",
     });
 
     _.member(MemberInfo{
@@ -1532,7 +1532,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
             "Account to be used for armoring Kerberos tickets. "
             "Must be in the form 'account_name@domain_name[@device_name]'. "
             "If account resolution succeeds the username and password associated with this account will be used; "
-            "otherwise the below fallback username and password will be used instead."
+            "otherwise the fallback username and password will be used instead."
     });
 
     _.member(MemberInfo{
@@ -1583,7 +1583,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
         .spec = connpolicy(rdp, loggable),
         .desc =
             "This option only has an effect in RemoteApp sessions (RDS meaning).\n"
-            "If enabled, the RDP Proxy relies on the Session Probe to launch the remote programs.\n"
+            "When enabled, the RDP Proxy relies on the Session Probe to launch the remote programs.\n"
             "Otherwise, remote programs will be launched according to Remote Programs Virtual Channel Extension of Remote Desktop Protocol. This latter is the native method.\n"
             "The difference is that Session Probe does not start a new application when its host session is resumed. Conversely, launching applications according to Remote Programs Virtual Channel Extension of Remote Desktop Protocol is not affected by this behavior. However, launching applications via the native method requires them to be published in Remote Desktop Services, which is unnecessary if launched by the Session Probe."
     });
@@ -1646,8 +1646,8 @@ _.section("session_probe", [&]
         .value = value(true),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "This parameter only has an effect in Desktop sessions.\n"
-            "It allows you to choose between Smart launcher and Legacy launcher to launch the Session Probe.\n"
+            "This parameter only has an effect on Desktop sessions.\n"
+            "Choose between Smart launcher and Legacy launcher to launch the Session Probe.\n"
             "The Smart launcher and the Legacy launcher do not have the same technical prerequisites. Detailed information can be found in the Administration guide."
     });
 
@@ -1656,8 +1656,8 @@ _.section("session_probe", [&]
         .value = value(true),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "This parameter enables or disables the Session Probe’s launch mask.\n"
-            "The Launch mask hides the Session Probe launch steps from the end-users.\n"
+            "Enable or disable the Session Probe’s launch mask.\n"
+            "The launch mask hides the Session Probe launch steps from the end-users.\n"
             "Disabling the mask makes it easier to diagnose Session Probe launch issues. It is recommended to enable the mask for normal operation."
     });
 
@@ -1665,7 +1665,7 @@ _.section("session_probe", [&]
         .name = "on_launch_failure",
         .value = enum_as_int(SessionProbeOnLaunchFailure::disconnect_user),
         .spec = connpolicy(rdp, loggable),
-        .desc = "It is recommended to use option 1 (disconnect user).",
+        .desc = "Select how the system should behave if the Session Probe fails to launch. Recommended setting: Option 1 (Disconnect user).",
     });
 
     _.member(MemberInfo{
@@ -1690,14 +1690,14 @@ _.section("session_probe", [&]
         .name = "ensure_launch_sequence_only_starts_after_logon",
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
-        .desc = "If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.",
+        .desc = "When enabled, a special mechanism prevents the launch sequence from starting until the user has logged into Windows.",
     });
 
     _.member(MemberInfo{
         .name = "start_launch_timeout_timer_only_after_logon",
         .value = value(true),
         .spec = connpolicy(rdp, loggable),
-        .desc = "If enabled, the :REF::launch_timeout countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.",
+        .desc = "When enabled, the :REF::launch_timeout countdown begins only after the user logs into Windows. When disabled, the countdown starts immediately upon RDP connection.",
     });
 
     _.member(MemberInfo{
@@ -1705,17 +1705,17 @@ _.section("session_probe", [&]
         .value = value<types::range<std::chrono::milliseconds, 0, 60000>>(5000),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "The amount of time that RDP Proxy waits for a reply from the Session Probe to the KeepAlive message before adopting the behavior defined by :REF::on_keepalive_timeout.\n"
-            "If our local network is subject to congestion, or if the Windows lacks responsiveness, it is possible to increase the value of the timeout to minimize disturbances related to the behavior defined by :REF::on_keepalive_timeout.\n"
-            "The KeepAlive message is used to detect Session Probe unavailability. Without Session Probe, session monitoring will be minimal. No metadata will be collected.\n"
-            "During the delay between sending a KeepAlive request and receiving the corresponding reply, Session Probe availability is indeterminate."
+            "Specifies how long the RDP Proxy waits for a reply to the KeepAlive message from the Session Probe before applying the behavior defined by :REF::on_keepalive_timeout.\n"
+            "If the local network experiences congestion or Windows responsiveness is slow, increasing this timeout can help reduce disruptions caused by :REF::on_keepalive_timeout.\n"
+            "The KeepAlive message is used to detect Session Probe unavailability. Without Session Probe, session monitoring is minimal. No metadata is collected.\n"
+            "Session Probe status remains indeterminate while awaiting the KeepAlive reply."
     });
 
     _.member(MemberInfo{
         .name = "on_keepalive_timeout",
         .value = enum_as_int(SessionProbeOnKeepaliveTimeout::freeze_connection_and_wait),
         .spec = connpolicy(rdp, loggable),
-        .desc = "This parameter allows us to choose the behavior of the RDP Proxy in case of losing the connection with Session Probe.",
+        .desc = "Select how the RDP Proxy should behave if the connection to Session Probe is lost. Recommended setting: Option 2 (Freeze connection and wait).",
     });
 
     _.member(MemberInfo{
@@ -1724,7 +1724,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable),
         .desc =
             "The behavior of this parameter is different between the Desktop session and the RemoteApp session (RDS meaning). But in each case, the purpose of enabling this parameter is to not leave disconnected sessions in a state unusable by the RDP proxy.\n"
-            "If enabled, Session Probe will automatically end the disconnected Desktop session. Otherwise, the RDP session and the applications it contains will remain active after user disconnection (unless a parameter defined at the RDS-level decides otherwise).\n"
+            "When enabled, Session Probe will automatically end the disconnected Desktop session. Otherwise, the RDP session and the applications it contains will remain active after user disconnection (unless a parameter defined at the RDS-level decides otherwise).\n"
             "The parameter in RemoteApp session (RDS meaning) does not cause the latter to be closed but a simple cleanup. However, this makes the session suitable for reuse.\n"
             "This parameter must be enabled for Web applications because an existing session with a running browser cannot be reused.\n"
             "It is also recommended to enable this parameter for connections in RemoteApp mode (RDS meaning) when :REF:[mod_rdp]:use_session_probe_to_launch_remote_program is enabled. Because an existing Session Probe does not launch a startup program (a new Bastion application) when the RemoteApp session resumes."
@@ -1734,7 +1734,7 @@ _.section("session_probe", [&]
         .name = "enable_autodeployed_appdriver_affinity",
         .value = value(true),
         .spec = connpolicy(rdp, loggable),
-        .desc = "If enabled, disconnected auto-deployed Application Driver session will automatically terminate by Session Probe."
+        .desc = "When enabled, disconnected auto-deployed Application Driver sessions are automatically terminated by Session Probe."
     });
 
     _.member(MemberInfo{
@@ -1742,7 +1742,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "This parameter allows you to enable the Windows-side logging of Session Probe.\n"
+            "Enable or disable the Windows-side logging of Session Probe.\n"
             "The generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team.\n"
             "This log does not help diagnose a launch problem. For this, you should instead use the debugging settings in the Configuration options."
     });
@@ -1752,8 +1752,8 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "This parameter enables or disables the Log files rotation for Windows-side logging of Session Probe.\n"
-            "The Log files rotation helps reduce disk space consumption caused by logging. But the interesting information may be lost if the corresponding file is not retrieved in time."
+            "Enable or disable log file rotation for Windows-side logging of Session Probe.\n"
+            "Log rotation helps limit disk space usage but may cause loss of important information if log files are not retrieved before rotation occurs."
     });
 
     _.member(MemberInfo{
@@ -1770,7 +1770,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "(Deprecated!)\n"
-            "The period above which the disconnected Application session will be automatically closed by the Session Probe.\n"
+            "Delay before the Session Probe automatically closes a disconnected Application session.\n"
             "0 to disable timeout."
     });
 
@@ -1779,7 +1779,8 @@ _.section("session_probe", [&]
         .value = value<types::range<std::chrono::milliseconds, 0, 172'800'000>>(),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "The period above which the disconnected Desktop session will be automatically closed by the Session Probe.\n"
+            "(Deprecated!)\n"
+            "Delay before the Session Probe automatically closes a disconnected Desktop session.\n"
             "0 to disable timeout."
     });
 
@@ -1788,7 +1789,7 @@ _.section("session_probe", [&]
         .value = value<types::range<std::chrono::milliseconds, 0, 172'800'000>>(),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "The period of user inactivity above which the session will be locked by the Session Probe.\n"
+            "Delay before the Session Probe locks the session due to user inactivity.\n"
             "0 to disable timeout."
     });
 
@@ -1799,7 +1800,7 @@ _.section("session_probe", [&]
         .desc =
             "The additional period given to the device to make Clipboard redirection available.\n"
             "This parameter is effective only if :REF::use_smart_launcher is enabled.\n"
-            "If we see the message \"Clipboard Virtual Channel is unavailable\" in the Bastion’s syslog and we are sure that this virtual channel is allowed on the device (confirmed by a direct connection test for example), we probably need to use this parameter."
+            "If the message \"Clipboard Virtual Channel is unavailable\" appears in the Bastion’s syslog, that means this virtual channel is allowed on the device (confirmed by a direct connection test for example) and this parameter is necessary."
     });
 
     _.member(MemberInfo{
@@ -1818,7 +1819,7 @@ _.section("session_probe", [&]
         .value = value<std::chrono::milliseconds>(500),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "The delay between two simulated keystrokes during the Session Probe launch sequence execution.\n"
+            "Delay between two simulated keystrokes during the Session Probe launch sequence execution.\n"
             "This parameter is effective only if :REF::use_smart_launcher is enabled.\n"
             "This parameter may help if the Session Probe launch failure is caused by network slowness or device under-performance.\n"
             "This parameter is usually used together with the :REF::smart_launcher_short_delay."
@@ -1829,7 +1830,7 @@ _.section("session_probe", [&]
         .value = value<std::chrono::milliseconds>(50),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "The delay between two steps of the same simulated keystrokes during the Session Probe launch sequence execution.\n"
+            "Delay between two steps of the same simulated keystrokes during the Session Probe launch sequence execution.\n"
             "This parameter is effective only if :REF::use_smart_launcher is enabled.\n"
             "This parameter may help if the Session Probe launch failure is caused by network slowness or device under-performance.\n"
             "This parameter is usually used together with the :REF::smart_launcher_long_delay."
@@ -1852,7 +1853,7 @@ _.section("session_probe", [&]
         .value = value<types::range<std::chrono::milliseconds, 0, 300000>>(2000),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "The time interval between the detection of an error (example: a refusal by the target of the redirected drive) and the actual abandonment of the Session Probe launch.\n"
+            "Delay between the detection of an error (example: a refusal by the target of the redirected drive) and the actual abandonment of the Session Probe launch.\n"
             "The purpose of this parameter is to give the target time to gracefully stop some ongoing processing.\n"
             "It is strongly recommended to keep the default value of this parameter."
     });
@@ -1863,7 +1864,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .tags = Tag::Debug,
         .desc =
-            "This parameter enables or disables the crash dump generation when the Session Probe encounters a fatal error.\n"
+            "Enable or disable the crash dump generation when the Session Probe encounters a fatal error.\n"
             "The crash dump file is useful for post-modem debugging. It is not designed for normal use.\n"
             "The generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team.\n"
             "There is no rotation mechanism to limit the number of dump files produced. Extended activation of this parameter can quickly exhaust disk space."
@@ -1874,8 +1875,8 @@ _.section("session_probe", [&]
         .value = value<types::range<types::u32, 0, 1000>>(),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "Use only if you see unusually high consumption of system object handles by the Session Probe.\n"
-            "The Session Probe will sabotage and then restart it-self if it consumes more handles than what is defined by this parameter.\n"
+            "Use only if there is unusually high consumption of system object handles by Session Probe.\n"
+            "The Session Probe will sabotage and then restart itself if it consumes more handles than what is defined by this parameter.\n"
             "A value of 0 disables this feature.\n"
             "This feature can cause the session to be disconnected if the value of the :REF::on_keepalive_timeout is set to 1 (Disconnect user).\n"
             "If :REF::allow_multiple_handshake is disabled, restarting the Session Probe will cause the session to disconnect."
@@ -1886,8 +1887,8 @@ _.section("session_probe", [&]
         .value = value<types::range<types::u32, 0, 200'000'000>>(),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "Use only if you see unusually high consumption of memory by the Session Probe.\n"
-            "The Session Probe will sabotage and then restart it-self if it consumes more memory than what is defined by this parameter.\n"
+            "Use only if there is unusually high consumption of memory by Session Probe.\n"
+            "The Session Probe will sabotage and then restart itself if it consumes more memory than what is defined by this parameter.\n"
             "A value of 0 disables this feature.\n"
             "This feature can cause the session to be disconnected if the value of the :REF::on_keepalive_timeout is set to 1 (Disconnect user).\n"
             "If :REF::allow_multiple_handshake is disabled, restarting the Session Probe will cause the session to disconnect."
@@ -1916,7 +1917,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "For application session only.\n"
-            "The delay between the launch of the application and the start of End of session check.\n"
+            "Delay between the launch of the application and the start of End of session check.\n"
             "Sometimes an application takes a long time to create its window. If the End of session check is start too early, the Session Probe may mistakenly conclude that there is no longer any active process in the session. And without active processes, the application session will be logged off by the Session Probe.\n"
             "'End of session check delay time' allow you to delay the start of End of session check in order to give the application the time to create its window."
     });
@@ -1927,7 +1928,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "For application session only.\n"
-            "If enabled, during the End of session check, the processes that do not have a visible window will not be counted as active processes of the session. Without active processes, the application session will be logged off by the Session Probe."
+            "When enabled, during the End of session check, the processes that do not have a visible window will not be counted as active processes of the session. Without active processes, the application session will be logged off by the Session Probe."
     });
 
     _.member(MemberInfo{
@@ -1935,7 +1936,7 @@ _.section("session_probe", [&]
         .value = value<std::string>(),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "This parameter is used to provide the list of (comma-separated) system processes that can be run in the session.\n"
+            "Provides the list of (comma-separated) system processes that can be run in the session.\n"
             "Ex.: dllhos.exe,TSTheme.exe\n"
             "Unlike user processes, system processes do not keep the session open. A session with no user process will be automatically closed by Session Probe after starting the End of session check."
     });
@@ -1946,7 +1947,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).\n"
-            "Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.\n"
+            "Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, the windows of these applications will be treated as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.\n"
             "One of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash.\n"
             "Refer to the :REF:[session_log]:keyboard_input_masking_level."
     });
@@ -1958,7 +1959,7 @@ _.section("session_probe", [&]
         .desc =
             "Comma-separated process names. (Ex.: chrome.exe,ngf.exe)\n"
             "This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).\n"
-            "Unfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.\n"
+            "Unfortunately, the detection is not infallible. In order to work around the problem, the windows of these applications will be treated as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.\n"
             "This parameter is used to provide the list of processes whose windows are considered as input fields of unknown type.\n"
             "Refer to the :REF:[session_log]:keyboard_input_masking_level."
     });
@@ -1969,7 +1970,7 @@ _.section("session_probe", [&]
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
             "This parameter is used when resuming a session hosting a existing Session Probe.\n"
-            "If enabled, the Session Probe will activate or deactivate features according to the value of :REF::disabled_features received when resuming its host session. Otherwise, the Session Probe will keep the same set of features that were used during the previous connection.\n"
+            "When enabled, the Session Probe will activate or deactivate features according to the value of :REF::disabled_features received when resuming its host session. Otherwise, the Session Probe will keep the same set of features that were used during the previous connection.\n"
             "It is recommended to keep the default value of this parameter."
     });
 
@@ -2006,7 +2007,7 @@ _.section("session_probe", [&]
         .desc =
             "This parameter has no effect on the device without BestSafe.\n"
             "BestSafe interaction must be enabled. Refer to :REF::enable_bestsafe_interaction.\n"
-            "This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.\n"
+            "Select the behavior of the RDP Proxy in case of detection of Windows account manipulation.\n"
             "Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group."
     });
 
@@ -2015,7 +2016,7 @@ _.section("session_probe", [&]
         .value = value<types::fixed_string<3>>(),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "This parameter is used to indicate the name of an environment variable, to be set on the Windows device, and pointed to a directory (on the device) that can be used to store and start the Session Probe. The environment variable must be available in the Windows user session.\n"
+            "Indicate the name of an environment variable, to be set on the Windows device, and pointed to a directory (on the device) that can be used to store and start the Session Probe. The environment variable must be available in the Windows user session.\n"
             "The environment variable name is limited to 3 characters or less.\n"
             "By default, the Session Probe will be stored and started from the temporary directory of Windows user.\n"
             "This parameter is useful if a GPO prevents Session Probe from starting from the Windows user's temporary directory."
@@ -2026,7 +2027,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "If enabled, the session, once disconnected, can be resumed by another Bastion user.\n"
+            "When enabled, a disconnected session can be resumed by a different Bastion user.\n"
             "Except in special cases, this is usually a security problem.\n"
             "By default, a session can only be resumed by the Bastion user who created it."
     });
@@ -2036,7 +2037,7 @@ _.section("session_probe", [&]
         .value = value<std::string>(),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "This parameter is used to provide the list of (comma-separated) rules used to monitor outgoing connections created in the session.\n"
+            "List of (comma-separated) rules used to monitor outgoing connections created in the session.\n"
             "(Ex. IPv4 addresses: $deny:192.168.0.0/24:5900,$allow:192.168.0.110:21)\n"
             "(Ex. IPv6 addresses: $deny:2001:0db8:85a3:0000:0000:8a2e:0370:7334:3389,$allow:[20D1:0:3238:DFE1:63::FEFB]:21)\n"
             "(Ex. hostname can be used to resolve to both IPv4 and IPv6 addresses: $allow:host.domain.net:3389)\n"
@@ -2051,7 +2052,7 @@ _.section("session_probe", [&]
         .value = value<std::string>(),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session.\n"
+            "List of (comma-separated) rules used to monitor the execution of processes in the session.\n"
             "(Ex.: $deny:taskmgr.exe)\n"
             "@ = All child processes of (Bastion) application (Ex.: $deny:@)\n"
             "BestSafe can be used to perform detection of process launched in the session. Refer to :REF::enable_bestsafe_interaction."
@@ -2062,7 +2063,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "If enabled, a string of random characters will be added to the name of the Session Probe executable.\n"
+            "When enabled, a string of random characters will be added to the name of the Session Probe executable.\n"
             "The result could be: SesProbe-5420.exe\n"
             "Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example."
     });
@@ -2075,7 +2076,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "If enabled, the RDP Proxy accepts to perform the handshake several times during the same RDP session. "
+            "When enabled, the RDP Proxy accepts to perform the handshake several times during the same RDP session. "
             "Otherwise, any new handshake attempt will interrupt the current session with the display of an alert message."
     });
 
@@ -2084,7 +2085,7 @@ _.section("session_probe", [&]
         .value = value(true),
         .spec = ini_only(no_acl),
         .desc =
-            "If disabled, the RDP proxy disconnects from the session when the Session Probe reports that the session is about to close (old behavior).\n"
+            "When disabled, the RDP proxy disconnects from the session when Session Probe reports that the session is about to close (old behavior).\n"
             "The new session end procedure (freeze and wait) prevents another connection from resuming a session that is close to end-of-life."
     });
 
@@ -2111,7 +2112,7 @@ _.section("session_probe", [&]
         .value = value<types::range<std::chrono::milliseconds, 300, 2000>>(500),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "Time between two polling performed by Session Probe.\n"
+            "Delay between two polling performed by Session Probe.\n"
             "The parameter is created to adapt the CPU consumption to the performance of the Windows device.\n"
             "The longer this interval, the less detailed the session metadata collection and the lower the CPU consumption."
     });
@@ -2121,7 +2122,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "If enabled, Session Probe activity will be minimized when the user is disconnected from the session. No metadata will be collected during this time.\n"
+            "When enabled, Session Probe activity will be minimized when the user is disconnected from the session. No metadata will be collected during this time.\n"
             "The purpose of this behavior is to optimize CPU consumption."
     });
 
@@ -2130,7 +2131,7 @@ _.section("session_probe", [&]
         .value = value(false),
         .spec = connpolicy(rdp, loggable, spec::advanced),
         .desc =
-            "If enabled, Session Probe will monitor its own system resource consumption.\n"
+            "When enabled, Session Probe monitors its own system resource consumption.\n"
             "This feature increases CPU consumption."
     });
 });
@@ -2154,7 +2155,7 @@ _.section(names{"server_cert"}, [&]
         .name = "server_access_allowed_message",
         .value = enum_as_int(ServerCertNotification::nobody),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
-        .desc = "Warn if check allow connexion to target server.",
+        .desc = "Warn if check allow connection to target server.",
     });
 
     _.member(MemberInfo{
@@ -2319,7 +2320,7 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .desc =
             "TLSv1.2 and below additional ciphers supported.\n"
             "Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.\n"
-            "The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
+            "For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT",
     });
 
     _.member(MemberInfo{
@@ -2379,8 +2380,7 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .spec = connpolicy(vnc, loggable, spec::advanced),
         .tags = Tag::Workaround,
         .desc =
-            "When specified, force the proxy to use a specific authentication method. "
-            "If this method is not supported by the target server, the connection will not be made.\n"
+            "When specified, forces the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.\n"
             "  - noauth\n"
             "  - vncauth\n"
             "  - mslogon\n"
@@ -2536,7 +2536,7 @@ _.section("file_verification", [&]
         .name = "log_if_accepted",
         .value = value(true),
         .spec = connpolicy(rdp, loggable, spec::advanced),
-        .desc = "Log the files and clipboard texts that are verified and accepted. By default, only those rejected are logged.",
+        .desc = "Log the files and clipboard texts that are verified and accepted. If deactivated, only those rejected are logged.",
     });
 
     _.member(MemberInfo{
@@ -2688,7 +2688,7 @@ _.section("ocr", [&]
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
             "Expressed in percentage,\n"
-            "  0   - all of characters need be recognized\n"
+            "  0   - all of characters must be recognized\n"
             "  100 - accept all results"
     });
 });
@@ -2750,8 +2750,8 @@ _.section("capture", [&]
             "(See also :REF:[session_log]:keyboard_input_masking_level)",
             Description::ConnPolicy{vnc,
                 "⚠ Logs may contain passwords.\n\n"
-                "Disable keyboard log:"
-            },
+                "Configure how keyboard inputs are logged:"
+                           },
         }
     });
 
@@ -2845,8 +2845,8 @@ _.section("audit", [&]
         .value = value<std::string>("crf=35 preset=superfast"),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
-            "FFmpeg options for video codec. See https://trac.ffmpeg.org/wiki/Encode/H.264\n"
-            "⚠ Some browsers and video decoders don't support crf=0"
+            "FFmpeg options for video codec. For details, visit https://trac.ffmpeg.org/wiki/Encode/H.264\n"
+            "⚠ Some browsers and video decoders don't support crf=0",
     });
 
     _.member(MemberInfo{
@@ -3112,7 +3112,8 @@ _.section("debug", [&]
         .name = "ffmpeg",
         .value = value<types::u32>(),
         .spec = global_spec(no_acl, spec::advanced | spec::hex),
-        .desc = "Value passed to function av_log_set_level()\nSee https://www.ffmpeg.org/doxygen/2.3/group__lavu__log__constants.html",
+        .desc = "Value passed to function av_log_set_level()\n"
+        "For details, visit https://www.ffmpeg.org/doxygen/2.3/group__lavu__log__constants.html",
     });
 
     _.member(MemberInfo{
@@ -3148,7 +3149,7 @@ _.section("translation", [&]
         .name = "login_language",
         .value = enum_as_string(LoginLanguage::Auto),
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "The login page shows this language to all users. Once logged in, users see their preferred language.",
+        .desc = "The login page displays this language for all users. After logging in, users experience the interface in their selected language.",
     });
 });
 

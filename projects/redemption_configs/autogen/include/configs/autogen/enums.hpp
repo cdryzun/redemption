@@ -112,10 +112,11 @@ template<> struct is_valid_enum_value<ClipboardEncodingType>
 
 enum class KeyboardLogFlags : uint8_t
 {
+    // Log all keyboard inputs
     none = 0,
-    // keyboard log in session log
+    // Exclude keyboard inputs from session logs (including SIEM)
     session_log = 1,
-    // keyboard log in recorded sessions
+    // Exclude keyboard inputs from recorded sessions
     wrm = 2,
 };
 
@@ -292,17 +293,17 @@ inline ServerCertNotification operator ~ (ServerCertNotification x)
 inline ServerCertNotification & operator |= (ServerCertNotification & x, ServerCertNotification y) { return x = x | y; }
 inline ServerCertNotification & operator &= (ServerCertNotification & x, ServerCertNotification y) { return x = x & y; }
 
-// Behavior of certificates check.
-// System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
+// Configure server certificate verification behavior.
+// Internal errors, such as failure to access a known certificate or decode it, always result in connection rejection.
 enum class ServerCertCheck : uint8_t
 {
-    // fails if certificates do not match or are missing.
+    // Fails if the certificate is missing or does not match the known certificate.
     fails_if_no_match_or_missing = 0,
-    // fails if certificate does not match, succeeds if no known certificate.
+    // Fails if the certificate does not match the known certificate; succeeds if no certificate exists.
     fails_if_no_match_and_succeed_if_no_know = 1,
-    // succeeds if certificates exist (not checked), fails if missing.
+    // Succeeds if a certificate exists (verification skipped); fails if no certificate exists.
     succeed_if_exists_and_fails_if_missing = 2,
-    // always succeed.
+    // Always succeeds without performing certificate validation.
     always_succeed = 3,
 };
 
@@ -330,13 +331,13 @@ template<> struct is_valid_enum_value<TraceType>
 
 enum class KeyboardInputMaskingLevel : uint8_t
 {
-    // Keyboard inputs are not masked.
+    // Log all input in plain text.
     unmasked = 0,
-    // Only passwords are masked.
+    // Log all input but mask passwords (without Session Probe, input is not logged).
     password_only = 1,
-    // Passwords and unidentified texts are masked.
+    // Log all input but mask passwords and unidentified input (without Session Probe, input is not logged).
     password_and_unidentified = 2,
-    // Keyboard inputs are not logged.
+    // Do not log input.
     fully_masked = 3,
 };
 
@@ -348,11 +349,11 @@ template<> struct is_valid_enum_value<KeyboardInputMaskingLevel>
 // Behavior on failure to launch Session Probe.
 enum class SessionProbeOnLaunchFailure : uint8_t
 {
-    // The metadata collected is not essential for us. Instead, we prefer to minimize the impact on the user experience. The Session Probe launch will be in best-effort mode. The prevailing duration is defined by the 'Launch fallback timeout' instead of the 'Launch timeout'.
+    // Proceed without Session Probe. Metadata collection is considered non-essential, and user experience is prioritized. The session will start in best-effort using 'Launch fallback timeout' instead of 'Launch timeout'.
     ignore_and_continue = 0,
-    // This is the recommended setting. If the target meets all the technical prerequisites, there is no reason for the Session Probe not to launch. All that remains is to adapt the value of 'Launch timeout' to the performance of the target.
+    // (recommended) End the session. A successful launch is expected when all technical prerequisites are met, reliability is prioritized. Adapt 'Launch timeout' value to the target performance.
     disconnect_user = 1,
-    // We wish to be able to recover the behavior of Bastion 5 when the Session Probe does not launch. The prevailing duration is defined by the 'Launch fallback timeout' instead of the 'Launch timeout'.
+    // Attempt to reconnect without Session Probe. This restores legacy behavior. The session will start using 'Launch fallback timeout' instead of 'Launch timeout'.
     retry_without_session_probe = 2,
 };
 
@@ -460,11 +461,11 @@ template<> struct is_valid_enum_value<OcrLocale>
 
 enum class SessionProbeOnKeepaliveTimeout : uint8_t
 {
-    // Designed to minimize the impact on the user experience if the Session Probe is unstable. It should not be used when Session Probe is working well. An attacker can take advantage of this setting by simulating a Session Probe crash in order to bypass the surveillance.
+    // Proceed without Session Probe. Minimizes impact on user experience if Session Probe is unstable. Not recommended when Session Probe is working well. May be exploited by attackers simulating Session Probe failure to bypass surveillance.
     ignore_and_continue = 0,
-    // Legacy behavior. It’s a choice that gives more security, but the impact on the user experience seems disproportionate. The RDP session can be closed (resulting in the permanent loss of all its unsaved elements) if the 'End disconnected session' parameter (or an equivalent setting at the RDS-level) is enabled.
+    // Legacy behavior. Prioritizes security but impacts user experience. RDP session may close (resulting in the permanent loss of all its unsaved elements) if the 'End disconnected session' parameter (or an equivalent setting at the RDS-level) is enabled.
     disconnect_user = 1,
-    // This is the recommended setting. User actions will be blocked until contact with the Session Probe (reply to KeepAlive message or something else) is resumed.
+    // (recommended) Block user actions until contact with the Session Probe is restored (e.g., reply to KeepAlive). Ensures session integrity during Session Probe outages.
     freeze_connection_and_wait = 2,
 };
 
@@ -559,7 +560,7 @@ enum class RdpStoreFile : uint8_t
     never = 0,
     // Always store transferred files.
     always = 1,
-    // Transferred files are stored only if file verification is invalid. File verification by ICAP service must be enabled (in section file_verification).
+    // Store transferred files only if file verification fails. Requires ICAP file verification (in section file_verification).
     on_invalid_verification = 2,
 };
 
@@ -589,9 +590,9 @@ enum class ClientAddressSent : uint8_t
 {
     // Send 0.0.0.0
     no_address = 0,
-    // Send proxy client address or target connexion.
+    // Send proxy client address or target connection.
     proxy = 1,
-    // Send user client address of front connexion.
+    // Send user client address of front connection.
     front = 2,
 };
 
@@ -603,17 +604,17 @@ template<> struct is_valid_enum_value<ClientAddressSent>
 enum class SessionProbeLogLevel : uint8_t
 {
     Off = 0,
-    // Designates very severe error events that will presumably lead the application to abort.
+    // Severe error events that will likely cause the application to abort.
     Fatal = 1,
-    // Designates error events that might still allow the application to continue running.
+    // Error events that may allow the application to continue running.
     Error = 2,
-    // Designates informational messages that highlight the progress of the application at coarse-grained level.
+    // General informational messages about application progress.
     Info = 3,
-    // Designates potentially harmful situations.
+    // Potentially harmful situations that require attention.
     Warning = 4,
-    // Designates fine-grained informational events that are mostly useful to debug an application.
+    // Detailed informational events intended for debugging.
     Debug = 5,
-    // Designates finer-grained informational events than Debug.
+    // More detailed informational events than Debug for in-depth analysis.
     Detail = 6,
 };
 
@@ -684,9 +685,9 @@ template<> struct is_valid_enum_value<BannerType>
 
 enum class SessionProbeCPUUsageAlarmAction : uint8_t
 {
-    // Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
+    // Restart Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
     Restart = 0,
-    // Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
+    // Stop Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
     Stop = 1,
 };
 
@@ -714,7 +715,7 @@ enum class RdpSaveSessionInfoPDU : uint8_t
 {
     // Windows
     Supported = 0,
-    // Bastion, xrdp or others
+    // Bastion, xrdp, or others
     UnsupportedOrUnknown = 1,
 };
 

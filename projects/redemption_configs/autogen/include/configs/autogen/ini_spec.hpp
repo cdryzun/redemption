@@ -14,17 +14,18 @@ R"gen_config_ini(## Python spec file for RDP proxy.
 port = integer(min=0, default=3389)
 
 # Timeout during RDP connection initialization.
-# Increase this value if the connection between workstations and Bastion is slow.<br/>
+# Increase this value if the connection between workstations and WALLIX Bastion is slow.<br/>
 # (in seconds)
 handshake_timeout = integer(min=0, default=10)
 
-# No automatic disconnection due to inactivity, timer is set on primary authentication.
-# If the value is between 1 and 30, then 30 is used.
-# If the value is set to 0, then inactivity timeout value is unlimited.<br/>
+# No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.
+# Values between 1 and 30 default to a 30-second timeout.
+# If set to 0, the inactivity timeout is unlimited.<br/>
 # (in seconds)
 base_inactivity_timeout = integer(min=0, default=900)
 
-# Specifies how long the RDP proxy login screen should be displayed before the client window closes (use 0 to deactivate).<br/>
+# Specifies how long the RDP proxy login screen should be displayed before the client window closes.
+# Set to 0 to disable this feature.<br/>
 # (in seconds)
 #_advanced
 authentication_timeout = integer(min=0, default=120)
@@ -34,17 +35,17 @@ authentication_timeout = integer(min=0, default=120)
 enable_transparent_mode = boolean(default=False)
 
 # Displays a reminder box at the top of the session when a session has a time limit (timeframe or approval).
-# Reminders appear at 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends.
+# Reminders appear 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends.
 #_advanced
 #_display_name=Enable end time warning OSD
 enable_end_time_warning_osd = boolean(default=True)
 
-# Allows showing the target device name with F12 during the session.
+# Displays the target device name during the session when F12 is pressed.
 #_advanced
 #_display_name=Enable OSD display remote target
 enable_osd_display_remote_target = boolean(default=True)
 
-# Displays the target username in the session when F12 is pressed.
+# Displays the target username during the session when F12 is pressed.
 # This option needs "Enable OSD display remote target" option.
 show_target_user_in_f12_message = boolean(default=False)
 
@@ -62,7 +63,7 @@ enable_ipv6 = boolean(default=True)
 
 [client]
 
-# If true, ignore the password provided by the RDP client. The user needs to manually log in.
+# If true, ignore the password provided by the RDP client. The user must log in manually.
 #_advanced
 ignore_logon_password = boolean(default=False)
 
@@ -93,28 +94,28 @@ tls_max_level = integer(min=0, default=0)
 # [Not configured]: Compatible with more RDP clients (less secure)
 # HIGH:!ADH:!3DES: Compatible only with MS Windows 7 client or more recent (moderately secure)
 # HIGH:!ADH:!3DES:!SHA: Compatible only with MS Server Windows 2008 R2 client or more recent (more secure)
-# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 #_display_name=SSL cipher list
 ssl_cipher_list = string(default="HIGH:!ADH:!3DES:!SHA")
 
-# Configure the available TLSv1.3 ciphersuites.
+# Configure the available TLSv1.3 cipher suites.
 # Empty to apply system-wide configuration.
-# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+# For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
 #_display_name=TLS 1.3 cipher suites
 tls_1_3_ciphersuites = string(default="")
 
 # Configure the supported key exchange groups.
 # Empty to apply system-wide configuration.
-# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="")
 
 # Configure the supported server signature algorithms.
 # Empty to apply system-wide configuration.
-# The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.
-# algorithm is one of RSA, RSA-PSS or ECDSA.
-# hash is one of SHA224, SHA256, SHA384 or SHA512.
-# signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
+# The format should be a colon-separated list of signature algorithms, ordered by decreasing preference. Each entry should follow one of these forms: algorithm+hash or signature_scheme.
+# algorithm options: RSA, RSA-PSS or ECDSA.
+# hash options: SHA224, SHA256, SHA384 or SHA512.
+# signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256).
 # This list needs at least one signature algorithm compatible with the RDP Proxy certificate.
 #_display_name=TLS signature algorithms
 tls_signature_algorithms = string(default="RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512")
@@ -147,7 +148,7 @@ max_color_depth = option(8, 15, 16, 24, 32, default=24)
 #_advanced
 persistent_disk_bitmap_cache = boolean(default=True)
 
-# If enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if "Persistent disk bitmap cache" option is disabled).
+# When enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if "Persistent disk bitmap cache" option is disabled).
 #_advanced
 persist_bitmap_cache_on_disk = boolean(default=False)
 
@@ -172,16 +173,16 @@ transform_glyph_to_bitmap = boolean(default=False)
 #_display_name=Enable OSD 4 eyes
 enable_osd_4_eyes = boolean(default=True)
 
-# Enable RemoteFX on the client connection.
-# Needs - "Max color depth" option set to 32 (32-bit RGB mask + alpha)
-# &nbsp; &nbsp;       - "Enable RemoteFX" option (in "rdp" section of "Connection Policy" configuration) set to on
+# Enable RemoteFX on the client connection. Requires:
+# - "Max color depth" option set to 32 (32-bit RGB mask + alpha)
+# - "Enable RemoteFX" option (in "rdp" section of "Connection Policy" configuration) set to on
 #_advanced
 #_display_name=Enable RemoteFX
 enable_remotefx = boolean(default=True)
 
-# This option should only be used if the target server or client is showing graphical issues.
-# In general, disabling RDP orders has a negative impact on performance.<br/>
-# Drawing orders that can be disabled:
+# ⚠ Only use this option if the target server or client is experiencing graphical issues.
+# Disabling RDP orders generally reduces performance.<br/>
+# The following drawing orders can be disabled:
 # &nbsp; &nbsp;    0: DstBlt
 # &nbsp; &nbsp;    1: PatBlt
 # &nbsp; &nbsp;    2: ScrBlt
@@ -235,9 +236,9 @@ allow_resize_hosted_desktop = boolean(default=True)
 #_advanced
 force_performance_flags = string(default="-mouse_cursor_shadows,-theme,-menu_animations")
 
-# If enabled, the font smoothing desktop feature is automatically disabled in recorded session.
+# When enabled, the font smoothing desktop feature is automatically disabled in recorded session.
 # This allows OCR (when session probe is disabled) to better detect window titles.
-# If disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
+# When disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
 #_advanced
 auto_adjust_performance_flags = boolean(default=True)
 
@@ -268,14 +269,14 @@ persistent_disk_bitmap_cache = boolean(default=True)
 #_advanced
 cache_waiting_list = boolean(default=True)
 
-# If enabled, the contents of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if "Persistent disk bitmap cache" option is disabled).
+# When enabled, the content of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if "Persistent disk bitmap cache" option is disabled).
 #_advanced
 persist_bitmap_cache_on_disk = boolean(default=False)
 
 # Client Address to send to target (in InfoPacket).
 # &nbsp; &nbsp;   0: Send 0.0.0.0
-# &nbsp; &nbsp;   1: Send proxy client address or target connexion.
-# &nbsp; &nbsp;   2: Send user client address of front connexion.
+# &nbsp; &nbsp;   1: Send proxy client address or target connection.
+# &nbsp; &nbsp;   2: Send user client address of front connection.
 #_advanced
 client_address_sent = option(0, 1, 2, default=0)
 
@@ -322,7 +323,7 @@ remoteapp_bypass_legal_notice_delay = integer(min=0, default=0)
 #_display_name=RemoteApp bypass legal notice timeout
 remoteapp_bypass_legal_notice_timeout = integer(min=0, default=20000)
 
-# Some events such as 'Preferred DropEffect' have no particular meaning. This option allows you to exclude these types of events from the logs.
+# Excludes certain types of events from the logs. For example, 'Preferred DropEffect' has no particular meaning.
 #_advanced
 log_only_relevant_clipboard_activities = boolean(default=True)
 
@@ -343,13 +344,13 @@ session_shadowing_support = boolean(default=True)
 
 [session_probe]
 
-# If enabled, a string of random characters will be added to the name of the Session Probe executable.
+# When enabled, a string of random characters will be added to the name of the Session Probe executable.
 # The result could be: SesProbe-5420.exe
 # Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example.
 #_advanced
 customize_executable_name = boolean(default=False)
 
-# If enabled, the RDP Proxy accepts to perform the handshake several times during the same RDP session. Otherwise, any new handshake attempt will interrupt the current session with the display of an alert message.
+# When enabled, the RDP Proxy accepts to perform the handshake several times during the same RDP session. Otherwise, any new handshake attempt will interrupt the current session with the display of an alert message.
 #_advanced
 #_display_name=Allow multiple handshakes
 allow_multiple_handshake = boolean(default=False)
@@ -407,7 +408,7 @@ interval = integer(min=0, default=100)
 on_title_bar_only = boolean(default=True)
 
 # Expressed in percentage,
-# &nbsp; &nbsp;   0   - all of characters need be recognized
+# &nbsp; &nbsp;   0   - all of characters must be recognized
 # &nbsp; &nbsp;   100 - accept all results
 #_advanced
 max_unrecog_char_rate = integer(min=0, max=100, default=40)
@@ -483,7 +484,7 @@ video_frame_rate = integer(min=1, max=120, default=5)
 #_advanced
 video_notimestamp = boolean(default=False)
 
-# FFmpeg options for video codec. See https://trac.ffmpeg.org/wiki/Encode/H.264
+# FFmpeg options for video codec. For details, visit https://trac.ffmpeg.org/wiki/Encode/H.264
 # ⚠ Some browsers and video decoders don't support crf=0
 #_advanced
 #_display_name=FFmpeg options
@@ -569,7 +570,7 @@ close_box_timeout = integer(min=0, default=600)
 
 [translation]
 
-# The login page shows this language to all users. Once logged in, users see their preferred language.
+# The login page displays this language for all users. After logging in, users experience the interface in their selected language.
 # &nbsp; &nbsp;   Auto: The language is determined based on the keyboard layout specified by the client.
 # &nbsp; &nbsp;   EN: 
 # &nbsp; &nbsp;   FR: 
@@ -847,7 +848,7 @@ cache = integer(min=0, default=0)
 ocr = integer(min=0, default=0)
 
 # Value passed to function av_log_set_level()
-# See https://www.ffmpeg.org/doxygen/2.3/group__lavu__log__constants.html
+# For details, visit https://www.ffmpeg.org/doxygen/2.3/group__lavu__log__constants.html
 #_advanced
 #_hex
 #_display_name=FFmpeg

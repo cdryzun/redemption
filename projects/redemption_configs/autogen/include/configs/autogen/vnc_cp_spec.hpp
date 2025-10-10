@@ -24,15 +24,15 @@ vault_transformation_rule = string(default="")
 
 [session]
 
-# No automatic disconnection due to inactivity, timer is set on target session.
-# If the value is between 1 and 30, then 30 is used.
-# If the value is set to 0, then the value set in "Base inactivity timeout" option (in "globals" section of "RDP Proxy" configuration option) is used.<br/>
+# No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.
+# Values between 1 and 30 default to a 30-second timeout.
+# If set to 0, the timeout value from "Base inactivity timeout" option (in "globals" section of "RDP Proxy" configuration option) is used.<br/>
 # (in seconds)
 inactivity_timeout = integer(min=0, default=0)
 
 [all_target_mod]
 
-# This parameter allows you to specify max timeout before a TCP connection is aborted. If the option value is specified as 0, TCP will use the system default.<br/>
+# Specify max timeout before a TCP connection is aborted. If set to 0, the system default TCP timeout is used.<br/>
 # (in milliseconds)
 #_advanced
 #_display_name=TCP user timeout
@@ -43,15 +43,15 @@ tcp_user_timeout = integer(min=0, max=3600000, default=0)
 # Keep known target server certificates on Bastion
 server_cert_store = boolean(default=True)
 
-# Behavior of certificates check.
-# &nbsp; &nbsp;   0: fails if certificates do not match or are missing.
-# &nbsp; &nbsp;   1: fails if certificate does not match, succeeds if no known certificate.
-# &nbsp; &nbsp;   2: succeeds if certificates exist (not checked), fails if missing.
-# &nbsp; &nbsp;   3: always succeed.
-# System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
+# Configure server certificate verification behavior.
+# &nbsp; &nbsp;   0: Fails if the certificate is missing or does not match the known certificate.
+# &nbsp; &nbsp;   1: Fails if the certificate does not match the known certificate; succeeds if no certificate exists.
+# &nbsp; &nbsp;   2: Succeeds if a certificate exists (verification skipped); fails if no certificate exists.
+# &nbsp; &nbsp;   3: Always succeeds without performing certificate validation.
+# Internal errors, such as failure to access a known certificate or decode it, always result in connection rejection.
 server_cert_check = option(0, 1, 2, 3, default=1)
 
-# Warn if check allow connexion to target server.
+# Warn if check allow connection to target server.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>
 # Note: values can be added (enable all: 0x1 = 0x1)
@@ -108,7 +108,7 @@ tls_max_level = integer(min=0, default=0)
 
 # TLSv1.2 and below additional ciphers supported.
 # Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
-# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 cipher_string = string(default="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256")
 
 # Allow TLS legacy insecure renegotiation to unpatched target servers.
@@ -116,24 +116,24 @@ cipher_string = string(default="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-G
 #_display_name=TLS enable legacy server
 tls_enable_legacy_server = boolean(default=False)
 
-# Configure the available TLSv1.3 ciphersuites.
+# Configure the available TLSv1.3 cipher suites.
 # Empty to apply system-wide configuration.
-# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+# For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
 #_display_name=TLS 1.3 cipher suites
 tls_1_3_ciphersuites = string(default="")
 
 # Configure the supported key exchange groups.
 # Empty to apply system-wide configuration.
-# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192")
 
 # Configure the supported client signature algorithms.
 # Empty to apply system-wide configuration.
-# The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.
-# algorithm is one of RSA, RSA-PSS or ECDSA.
-# hash is one of SHA224, SHA256, SHA384 or SHA512.
-# signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
+# The format should be a colon-separated list of signature algorithms, ordered by decreasing preference. Each entry should follow one of these forms: algorithm+hash or signature_scheme.
+# algorithm options: RSA, RSA-PSS or ECDSA.
+# hash options: SHA224, SHA256, SHA384 or SHA512.
+# signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256).
 #_display_name=TLS signature algorithms
 tls_signature_algorithms = string(default="")
 
@@ -143,7 +143,7 @@ tls_signature_algorithms = string(default="")
 show_common_cipher_list = boolean(default=False)
 
 # ⚠ The use of this feature is not recommended!<br/>
-# When specified, force the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
+# When specified, forces the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
 # &nbsp; &nbsp;   - noauth
 # &nbsp; &nbsp;   - vncauth
 # &nbsp; &nbsp;   - mslogon
@@ -162,10 +162,10 @@ force_authentication_method = string(default="")
 [capture]
 
 # ⚠ Logs may contain passwords.<br/>
-# Disable keyboard log:
-# &nbsp; &nbsp;   0x0: none
-# &nbsp; &nbsp;   0x1: disable keyboard log in session log
-# &nbsp; &nbsp;   0x2: disable keyboard log in recorded sessions<br/>
+# Configure how keyboard inputs are logged:
+# &nbsp; &nbsp;   0x0: Log all keyboard inputs
+# &nbsp; &nbsp;   0x1: Exclude keyboard inputs from session logs (including SIEM)
+# &nbsp; &nbsp;   0x2: Exclude keyboard inputs from recorded sessions<br/>
 # Note: values can be added (disable all: 0x1 + 0x2 = 0x3)
 #_advanced
 #_hex

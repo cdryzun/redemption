@@ -17,19 +17,19 @@ R"gen_config_ini(## Config file for RDP proxy.
 #authfile = )gen_config_ini" << (REDEMPTION_CONFIG_AUTHFILE) << R"gen_config_ini(
 
 # Timeout during RDP connection initialization.
-# Increase this value if the connection between workstations and Bastion is slow.
+# Increase this value if the connection between workstations and WALLIX Bastion is slow.
 # (in seconds)
 #handshake_timeout = 10
 
-# No automatic disconnection due to inactivity, timer is set on primary authentication.
-# If the value is between 1 and 30, then 30 is used.
-# If the value is set to 0, then inactivity timeout value is unlimited.
+# No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.
+# Values between 1 and 30 default to a 30-second timeout.
+# If set to 0, the inactivity timeout is unlimited.
 # (in seconds)
 #base_inactivity_timeout = 900
 
-# No automatic disconnection due to inactivity, timer is set on target session.
-# If the value is between 1 and 30, then 30 is used.
-# If the value is set to 0, then the value set in [globals]base_inactivity_timeout is used.
+# No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.
+# Values between 1 and 30 default to a 30-second timeout.
+# If set to 0, the timeout value from [globals]base_inactivity_timeout is used.
 # (in seconds)
 # (acl config: proxy ⇐ globals:inactivity_timeout)
 #inactivity_timeout = 0
@@ -38,7 +38,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (in seconds)
 #keepalive_grace_delay = 30
 
-# Specifies how long the RDP proxy login screen should be displayed before the client window closes (use 0 to deactivate).
+# Specifies how long the RDP proxy login screen should be displayed before the client window closes.
+# Set to 0 to disable this feature.
 # (in seconds)
 #_advanced
 #authentication_timeout = 120
@@ -59,20 +60,20 @@ R"gen_config_ini(## Config file for RDP proxy.
 #enable_bitmap_update = 1
 
 # Displays a reminder box at the top of the session when a session has a time limit (timeframe or approval).
-# Reminders appear at 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends.
+# Reminders appear 30 minutes, 10 minutes, 5 minutes, and 1 minute before the session ends.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable end time warning OSD
 #enable_end_time_warning_osd = 1
 
-# Allows showing the target device name with F12 during the session.
+# Displays the target device name during the session when F12 is pressed.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable OSD display remote target
 # (acl config: proxy ⇐ enable_osd_display_remote_target)
 #enable_osd_display_remote_target = 1
 
-# Displays the target username in the session when F12 is pressed.
+# Displays the target username during the session when F12 is pressed.
 # This option needs [globals]enable_osd_display_remote_target.
 # (type: boolean (0/no/false or 1/yes/true))
 #show_target_user_in_f12_message = 0
@@ -111,7 +112,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [client]
 
-# If true, ignore the password provided by the RDP client. The user needs to manually log in.
+# If true, ignore the password provided by the RDP client. The user must log in manually.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #ignore_logon_password = 0
@@ -162,28 +163,28 @@ R"gen_config_ini(## Config file for RDP proxy.
 # [Not configured]: Compatible with more RDP clients (less secure)
 # HIGH:!ADH:!3DES: Compatible only with MS Windows 7 client or more recent (moderately secure)
 # HIGH:!ADH:!3DES:!SHA: Compatible only with MS Server Windows 2008 R2 client or more recent (more secure)
-# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 #_display_name=SSL cipher list
 #ssl_cipher_list = HIGH:!ADH:!3DES:!SHA
 
-# Configure the available TLSv1.3 ciphersuites.
+# Configure the available TLSv1.3 cipher suites.
 # Empty to apply system-wide configuration.
-# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+# For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
 #_display_name=TLS 1.3 cipher suites
 #tls_1_3_ciphersuites = 
 
 # Configure the supported key exchange groups.
 # Empty to apply system-wide configuration.
-# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 #_display_name=TLS key exchange groups
 #tls_key_exchange_groups = 
 
 # Configure the supported server signature algorithms.
 # Empty to apply system-wide configuration.
-# The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.
-# algorithm is one of RSA, RSA-PSS or ECDSA.
-# hash is one of SHA224, SHA256, SHA384 or SHA512.
-# signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
+# The format should be a colon-separated list of signature algorithms, ordered by decreasing preference. Each entry should follow one of these forms: algorithm+hash or signature_scheme.
+# algorithm options: RSA, RSA-PSS or ECDSA.
+# hash options: SHA224, SHA256, SHA384 or SHA512.
+# signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256).
 # This list needs at least one signature algorithm compatible with the RDP Proxy certificate.
 #_display_name=TLS signature algorithms
 #tls_signature_algorithms = RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512
@@ -194,7 +195,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #show_common_cipher_list = 0
 
-# Needed for primary NTLM or Kerberos connections over NLA.
+# Required for primary Kerberos connections over NLA.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable NLA
 #enable_nla = 0
@@ -227,7 +228,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #cache_waiting_list = 0
 
-# If enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if [client]persistent_disk_bitmap_cache is disabled).
+# When enabled, the content of Persistent Bitmap Caches are stored on the disk to reuse later (this value is ignored if [client]persistent_disk_bitmap_cache is disabled).
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persist_bitmap_cache_on_disk = 0
@@ -265,18 +266,18 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=Enable OSD 4 eyes
 #enable_osd_4_eyes = 1
 
-# Enable RemoteFX on the client connection.
-# Needs - [client]max_color_depth set to 32 (32-bit RGB mask + alpha)
-#       - [mod_rdp]enable_remotefx set to on
+# Enable RemoteFX on the client connection. Requires:
+# - [client]max_color_depth set to 32 (32-bit RGB mask + alpha)
+# - [mod_rdp]enable_remotefx set to on
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable RemoteFX
 #enable_remotefx = 1
 
-# This option should only be used if the target server or client is showing graphical issues.
-# In general, disabling RDP orders has a negative impact on performance.
+# ⚠ Only use this option if the target server or client is experiencing graphical issues.
+# Disabling RDP orders generally reduces performance.
 # 
-# Drawing orders that can be disabled:
+# The following drawing orders can be disabled:
 #    0: DstBlt
 #    1: PatBlt
 #    2: ScrBlt
@@ -309,7 +310,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #connection_establishment_timeout = 3000
 
-# This parameter allows you to specify max timeout before a TCP connection is aborted. If the option value is specified as 0, TCP will use the system default.
+# Specify max timeout before a TCP connection is aborted. If set to 0, the system default TCP timeout is used.
 # (in milliseconds | min = 0, max = 3600000)
 #_advanced
 #_display_name=TCP user timeout
@@ -341,9 +342,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #force_performance_flags = -mouse_cursor_shadows,-theme,-menu_animations
 
-# If enabled, the font smoothing desktop feature is automatically disabled in recorded session.
+# When enabled, the font smoothing desktop feature is automatically disabled in recorded session.
 # This allows OCR (when session probe is disabled) to better detect window titles.
-# If disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
+# When disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #auto_adjust_performance_flags = 1
@@ -368,10 +369,10 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #open_session_timeout = 0
 
-# This option should only be used if the target server or client is showing graphical issues.
-# In general, disabling RDP orders has a negative impact on performance.
+# ⚠ Only use this option if the target server or client is experiencing graphical issues.
+# Disabling RDP orders generally reduces performance.
 # 
-# Drawing orders that can be disabled:
+# The following drawing orders can be disabled:
 #    0: DstBlt
 #    1: PatBlt
 #    2: ScrBlt
@@ -439,7 +440,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # TLSv1.2 and below additional ciphers supported.
 # Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
-# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 # (acl config: proxy ⇐ mod_rdp:cipher_string)
 #cipher_string = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256
 
@@ -451,26 +452,26 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:tls_enable_legacy_server)
 #tls_enable_legacy_server = 0
 
-# Configure the available TLSv1.3 ciphersuites.
+# Configure the available TLSv1.3 cipher suites.
 # Empty to apply system-wide configuration.
-# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+# For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
 #_display_name=TLS 1.3 cipher suites
 # (acl config: proxy ⇐ mod_rdp:tls_1_3_ciphersuites)
 #tls_1_3_ciphersuites = 
 
 # Configure the supported key exchange groups.
 # Empty to apply system-wide configuration.
-# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 #_display_name=TLS key exchange groups
 # (acl config: proxy ⇐ mod_rdp:tls_key_exchange_groups)
 #tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
 
 # Configure the supported client signature algorithms.
 # Empty to apply system-wide configuration.
-# The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.
-# algorithm is one of RSA, RSA-PSS or ECDSA.
-# hash is one of SHA224, SHA256, SHA384 or SHA512.
-# signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
+# The format should be a colon-separated list of signature algorithms, ordered by decreasing preference. Each entry should follow one of these forms: algorithm+hash or signature_scheme.
+# algorithm options: RSA, RSA-PSS or ECDSA.
+# hash options: SHA224, SHA256, SHA384 or SHA512.
+# signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256).
 #_display_name=TLS signature algorithms
 # (acl config: proxy ⇐ mod_rdp:tls_signature_algorithms)
 #tls_signature_algorithms = RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512
@@ -492,7 +493,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #cache_waiting_list = 1
 
-# If enabled, the contents of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if [mod_rdp]persistent_disk_bitmap_cache is disabled).
+# When enabled, the content of Persistent Bitmap Caches are stored on disk for reusing them later (this value is ignored if [mod_rdp]persistent_disk_bitmap_cache is disabled).
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #persist_bitmap_cache_on_disk = 0
@@ -552,8 +553,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Client Address to send to target (in InfoPacket).
 #   0: Send 0.0.0.0
-#   1: Send proxy client address or target connexion.
-#   2: Send user client address of front connexion.
+#   1: Send proxy client address or target connection.
+#   2: Send user client address of front connection.
 #_advanced
 #client_address_sent = 0
 
@@ -647,7 +648,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #bogus_refresh_rect = 1
 
-# Adds RDPDR channel metadata to session logs. Disabling this option makes shared disks more responsive, but metadata will no longer be collected.if at least one authorization of RDPDR is missing (Printer, ComPort, SmartCard, Drive), then this option is considered enabled.
+# Adds RDPDR channel metadata to session logs. Disabling this option makes shared disks more responsive, but metadata will no longer be collected.If at least one authorization of RDPDR is missing (Printer, ComPort, SmartCard, Drive), then this option is considered enabled.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Enable RDPDR data analysis
@@ -668,7 +669,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_display_name=RemoteApp bypass legal notice timeout
 #remoteapp_bypass_legal_notice_timeout = 20000
 
-# Some events such as 'Preferred DropEffect' have no particular meaning. This option allows you to exclude these types of events from the logs.
+# Excludes certain types of events from the logs. For example, 'Preferred DropEffect' has no particular meaning.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #log_only_relevant_clipboard_activities = 1
@@ -683,7 +684,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #split_domain = 0
 
-# Actives conversion of RemoteApp target session to desktop session.
+# Activates conversion of RemoteApp target session to desktop session.
 # Otherwise, Alternate Shell will be used.
 # Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -751,7 +752,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_rdp:allow_session_reconnection_by_shortcut)
 #allow_session_reconnection_by_shortcut = 0
 
-# The delay between a session disconnection and the automatic reconnection that follows.
+# Delay between a session disconnection and the automatic reconnection that follows.
 # (in milliseconds | min = 0, max = 15000)
 #_advanced
 # (acl config: proxy ⇐ mod_rdp:session_reconnection_delay)
@@ -775,7 +776,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #remote_programs_disconnect_message_delay = 3000
 
 # This option only has an effect in RemoteApp sessions (RDS meaning).
-# If enabled, the RDP Proxy relies on the Session Probe to launch the remote programs.
+# When enabled, the RDP Proxy relies on the Session Probe to launch the remote programs.
 # Otherwise, remote programs will be launched according to Remote Programs Virtual Channel Extension of Remote Desktop Protocol. This latter is the native method.
 # The difference is that Session Probe does not start a new application when its host session is resumed. Conversely, launching applications according to Remote Programs Virtual Channel Extension of Remote Desktop Protocol is not affected by this behavior. However, launching applications via the native method requires them to be published in Remote Desktop Services, which is unnecessary if launched by the Session Probe.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -805,7 +806,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 [protocol]
 
 #   0: Windows
-#   1: Bastion, xrdp or others
+#   1: Bastion, xrdp, or others
 #_advanced
 # (acl config: proxy ⇐ protocol:save_session_info_pdu)
 #save_session_info_pdu = 1
@@ -823,25 +824,25 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (maxlen = 511)
 #arguments = )gen_config_ini" << (REDEMPTION_CONFIG_SESSION_PROBE_ARGUMENTS) << R"gen_config_ini(
 
-# This parameter only has an effect in Desktop sessions.
-# It allows you to choose between Smart launcher and Legacy launcher to launch the Session Probe.
+# This parameter only has an effect on Desktop sessions.
+# Choose between Smart launcher and Legacy launcher to launch the Session Probe.
 # The Smart launcher and the Legacy launcher do not have the same technical prerequisites. Detailed information can be found in the Administration guide.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ session_probe:use_smart_launcher)
 #use_smart_launcher = 1
 
-# This parameter enables or disables the Session Probe’s launch mask.
-# The Launch mask hides the Session Probe launch steps from the end-users.
+# Enable or disable the Session Probe’s launch mask.
+# The launch mask hides the Session Probe launch steps from the end-users.
 # Disabling the mask makes it easier to diagnose Session Probe launch issues. It is recommended to enable the mask for normal operation.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ session_probe:enable_launch_mask)
 #enable_launch_mask = 1
 
-# It is recommended to use option 1 (disconnect user).
-#   0: ignore and continue: The metadata collected is not essential for us. Instead, we prefer to minimize the impact on the user experience. The Session Probe launch will be in best-effort mode. The prevailing duration is defined by the 'Launch fallback timeout' instead of the 'Launch timeout'.
-#   1: disconnect user: This is the recommended setting. If the target meets all the technical prerequisites, there is no reason for the Session Probe not to launch. All that remains is to adapt the value of 'Launch timeout' to the performance of the target.
-#   2: retry without session probe: We wish to be able to recover the behavior of Bastion 5 when the Session Probe does not launch. The prevailing duration is defined by the 'Launch fallback timeout' instead of the 'Launch timeout'.
+# Select how the system should behave if the Session Probe fails to launch. Recommended setting: Option 1 (Disconnect user).
+#   0: ignore and continue: Proceed without Session Probe. Metadata collection is considered non-essential, and user experience is prioritized. The session will start in best-effort using 'Launch fallback timeout' instead of 'Launch timeout'.
+#   1: disconnect user: (recommended) End the session. A successful launch is expected when all technical prerequisites are met, reliability is prioritized. Adapt 'Launch timeout' value to the target performance.
+#   2: retry without session probe: Attempt to reconnect without Session Probe. This restores legacy behavior. The session will start using 'Launch fallback timeout' instead of 'Launch timeout'.
 # (acl config: proxy ⇐ session_probe:on_launch_failure)
 #on_launch_failure = 1
 
@@ -859,34 +860,34 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:launch_fallback_timeout)
 #launch_fallback_timeout = 40000
 
-# If enabled, a special mechanism will be used to ensure that the launch sequence will not be started before the user logs into Windows.
+# When enabled, a special mechanism prevents the launch sequence from starting until the user has logged into Windows.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ session_probe:ensure_launch_sequence_only_starts_after_logon)
 #ensure_launch_sequence_only_starts_after_logon = 0
 
-# If enabled, the [session_probe]launch_timeout countdown timer will start only after the user logs into Windows. Otherwise, the countdown timer will be started immediately after RDP protocol connexion.
+# When enabled, the [session_probe]launch_timeout countdown begins only after the user logs into Windows. When disabled, the countdown starts immediately upon RDP connection.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ session_probe:start_launch_timeout_timer_only_after_logon)
 #start_launch_timeout_timer_only_after_logon = 1
 
-# The amount of time that RDP Proxy waits for a reply from the Session Probe to the KeepAlive message before adopting the behavior defined by [session_probe]on_keepalive_timeout.
-# If our local network is subject to congestion, or if the Windows lacks responsiveness, it is possible to increase the value of the timeout to minimize disturbances related to the behavior defined by [session_probe]on_keepalive_timeout.
-# The KeepAlive message is used to detect Session Probe unavailability. Without Session Probe, session monitoring will be minimal. No metadata will be collected.
-# During the delay between sending a KeepAlive request and receiving the corresponding reply, Session Probe availability is indeterminate.
+# Specifies how long the RDP Proxy waits for a reply to the KeepAlive message from the Session Probe before applying the behavior defined by [session_probe]on_keepalive_timeout.
+# If the local network experiences congestion or Windows responsiveness is slow, increasing this timeout can help reduce disruptions caused by [session_probe]on_keepalive_timeout.
+# The KeepAlive message is used to detect Session Probe unavailability. Without Session Probe, session monitoring is minimal. No metadata is collected.
+# Session Probe status remains indeterminate while awaiting the KeepAlive reply.
 # (in milliseconds | min = 0, max = 60000)
 #_advanced
 # (acl config: proxy ⇐ session_probe:keepalive_timeout)
 #keepalive_timeout = 5000
 
-# This parameter allows us to choose the behavior of the RDP Proxy in case of losing the connection with Session Probe.
-#   0: ignore and continue: Designed to minimize the impact on the user experience if the Session Probe is unstable. It should not be used when Session Probe is working well. An attacker can take advantage of this setting by simulating a Session Probe crash in order to bypass the surveillance.
-#   1: disconnect user: Legacy behavior. It’s a choice that gives more security, but the impact on the user experience seems disproportionate. The RDP session can be closed (resulting in the permanent loss of all its unsaved elements) if the 'End disconnected session' parameter (or an equivalent setting at the RDS-level) is enabled.
-#   2: freeze connection and wait: This is the recommended setting. User actions will be blocked until contact with the Session Probe (reply to KeepAlive message or something else) is resumed.
+# Select how the RDP Proxy should behave if the connection to Session Probe is lost. Recommended setting: Option 2 (Freeze connection and wait).
+#   0: ignore and continue: Proceed without Session Probe. Minimizes impact on user experience if Session Probe is unstable. Not recommended when Session Probe is working well. May be exploited by attackers simulating Session Probe failure to bypass surveillance.
+#   1: disconnect user: Legacy behavior. Prioritizes security but impacts user experience. RDP session may close (resulting in the permanent loss of all its unsaved elements) if the 'End disconnected session' parameter (or an equivalent setting at the RDS-level) is enabled.
+#   2: freeze connection and wait: (recommended) Block user actions until contact with the Session Probe is restored (e.g., reply to KeepAlive). Ensures session integrity during Session Probe outages.
 # (acl config: proxy ⇐ session_probe:on_keepalive_timeout)
 #on_keepalive_timeout = 2
 
 # The behavior of this parameter is different between the Desktop session and the RemoteApp session (RDS meaning). But in each case, the purpose of enabling this parameter is to not leave disconnected sessions in a state unusable by the RDP proxy.
-# If enabled, Session Probe will automatically end the disconnected Desktop session. Otherwise, the RDP session and the applications it contains will remain active after user disconnection (unless a parameter defined at the RDS-level decides otherwise).
+# When enabled, Session Probe will automatically end the disconnected Desktop session. Otherwise, the RDP session and the applications it contains will remain active after user disconnection (unless a parameter defined at the RDS-level decides otherwise).
 # The parameter in RemoteApp session (RDS meaning) does not cause the latter to be closed but a simple cleanup. However, this makes the session suitable for reuse.
 # This parameter must be enabled for Web applications because an existing session with a running browser cannot be reused.
 # It is also recommended to enable this parameter for connections in RemoteApp mode (RDS meaning) when [mod_rdp]use_session_probe_to_launch_remote_program is enabled. Because an existing Session Probe does not launch a startup program (a new Bastion application) when the RemoteApp session resumes.
@@ -894,13 +895,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:end_disconnected_session)
 #end_disconnected_session = 0
 
-# If enabled, disconnected auto-deployed Application Driver session will automatically terminate by Session Probe.
+# When enabled, disconnected auto-deployed Application Driver sessions are automatically terminated by Session Probe.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable autodeployed Application Driver affinity
 # (acl config: proxy ⇐ session_probe:enable_autodeployed_appdriver_affinity)
 #enable_autodeployed_appdriver_affinity = 1
 
-# This parameter allows you to enable the Windows-side logging of Session Probe.
+# Enable or disable the Windows-side logging of Session Probe.
 # The generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team.
 # This log does not help diagnose a launch problem. For this, you should instead use the debugging settings in the Configuration options.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -908,40 +909,41 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:enable_log)
 #enable_log = 0
 
-# This parameter enables or disables the Log files rotation for Windows-side logging of Session Probe.
-# The Log files rotation helps reduce disk space consumption caused by logging. But the interesting information may be lost if the corresponding file is not retrieved in time.
+# Enable or disable log file rotation for Windows-side logging of Session Probe.
+# Log rotation helps limit disk space usage but may cause loss of important information if log files are not retrieved before rotation occurs.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ session_probe:enable_log_rotation)
 #enable_log_rotation = 0
 
 # Defines logging severity levels.
-#   1: Fatal: Designates very severe error events that will presumably lead the application to abort.
-#   2: Error: Designates error events that might still allow the application to continue running.
-#   3: Info: Designates informational messages that highlight the progress of the application at coarse-grained level.
-#   4: Warning: Designates potentially harmful situations.
-#   5: Debug: Designates fine-grained informational events that are mostly useful to debug an application.
-#   6: Detail: Designates finer-grained informational events than Debug.
+#   1: Fatal: Severe error events that will likely cause the application to abort.
+#   2: Error: Error events that may allow the application to continue running.
+#   3: Info: General informational messages about application progress.
+#   4: Warning: Potentially harmful situations that require attention.
+#   5: Debug: Detailed informational events intended for debugging.
+#   6: Detail: More detailed informational events than Debug for in-depth analysis.
 #_advanced
 # (acl config: proxy ⇐ session_probe:log_level)
 #log_level = 5
 
 # (Deprecated!)
-# The period above which the disconnected Application session will be automatically closed by the Session Probe.
+# Delay before the Session Probe automatically closes a disconnected Application session.
 # 0 to disable timeout.
 # (in milliseconds | min = 0, max = 172800000)
 #_advanced
 # (acl config: proxy ⇐ session_probe:disconnected_application_limit)
 #disconnected_application_limit = 0
 
-# The period above which the disconnected Desktop session will be automatically closed by the Session Probe.
+# (Deprecated!)
+# Delay before the Session Probe automatically closes a disconnected Desktop session.
 # 0 to disable timeout.
 # (in milliseconds | min = 0, max = 172800000)
 #_advanced
 # (acl config: proxy ⇐ session_probe:disconnected_session_limit)
 #disconnected_session_limit = 0
 
-# The period of user inactivity above which the session will be locked by the Session Probe.
+# Delay before the Session Probe locks the session due to user inactivity.
 # 0 to disable timeout.
 # (in milliseconds | min = 0, max = 172800000)
 #_advanced
@@ -950,7 +952,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # The additional period given to the device to make Clipboard redirection available.
 # This parameter is effective only if [session_probe]use_smart_launcher is enabled.
-# If we see the message "Clipboard Virtual Channel is unavailable" in the Bastion’s syslog and we are sure that this virtual channel is allowed on the device (confirmed by a direct connection test for example), we probably need to use this parameter.
+# If the message "Clipboard Virtual Channel is unavailable" appears in the Bastion’s syslog, that means this virtual channel is allowed on the device (confirmed by a direct connection test for example) and this parameter is necessary.
 # (in milliseconds)
 #_advanced
 # (acl config: proxy ⇐ session_probe:smart_launcher_clipboard_initialization_delay)
@@ -965,7 +967,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:smart_launcher_start_delay)
 #smart_launcher_start_delay = 0
 
-# The delay between two simulated keystrokes during the Session Probe launch sequence execution.
+# Delay between two simulated keystrokes during the Session Probe launch sequence execution.
 # This parameter is effective only if [session_probe]use_smart_launcher is enabled.
 # This parameter may help if the Session Probe launch failure is caused by network slowness or device under-performance.
 # This parameter is usually used together with the [session_probe]smart_launcher_short_delay.
@@ -974,7 +976,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:smart_launcher_long_delay)
 #smart_launcher_long_delay = 500
 
-# The delay between two steps of the same simulated keystrokes during the Session Probe launch sequence execution.
+# Delay between two steps of the same simulated keystrokes during the Session Probe launch sequence execution.
 # This parameter is effective only if [session_probe]use_smart_launcher is enabled.
 # This parameter may help if the Session Probe launch failure is caused by network slowness or device under-performance.
 # This parameter is usually used together with the [session_probe]smart_launcher_long_delay.
@@ -991,7 +993,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:smart_launcher_enable_wabam_affinity)
 #smart_launcher_enable_wabam_affinity = 1
 
-# The time interval between the detection of an error (example: a refusal by the target of the redirected drive) and the actual abandonment of the Session Probe launch.
+# Delay between the detection of an error (example: a refusal by the target of the redirected drive) and the actual abandonment of the Session Probe launch.
 # The purpose of this parameter is to give the target time to gracefully stop some ongoing processing.
 # It is strongly recommended to keep the default value of this parameter.
 # (in milliseconds | min = 0, max = 300000)
@@ -999,7 +1001,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:launcher_abort_delay)
 #launcher_abort_delay = 2000
 
-# This parameter enables or disables the crash dump generation when the Session Probe encounters a fatal error.
+# Enable or disable the crash dump generation when the Session Probe encounters a fatal error.
 # The crash dump file is useful for post-modem debugging. It is not designed for normal use.
 # The generated files are located in the Windows user's temporary directory. These files can only be analyzed by the WALLIX team.
 # There is no rotation mechanism to limit the number of dump files produced. Extended activation of this parameter can quickly exhaust disk space.
@@ -1008,8 +1010,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:enable_crash_dump)
 #enable_crash_dump = 0
 
-# Use only if you see unusually high consumption of system object handles by the Session Probe.
-# The Session Probe will sabotage and then restart it-self if it consumes more handles than what is defined by this parameter.
+# Use only if there is unusually high consumption of system object handles by Session Probe.
+# The Session Probe will sabotage and then restart itself if it consumes more handles than what is defined by this parameter.
 # A value of 0 disables this feature.
 # This feature can cause the session to be disconnected if the value of the [session_probe]on_keepalive_timeout is set to 1 (Disconnect user).
 # If [session_probe]allow_multiple_handshake is disabled, restarting the Session Probe will cause the session to disconnect.
@@ -1018,8 +1020,8 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:handle_usage_limit)
 #handle_usage_limit = 0
 
-# Use only if you see unusually high consumption of memory by the Session Probe.
-# The Session Probe will sabotage and then restart it-self if it consumes more memory than what is defined by this parameter.
+# Use only if there is unusually high consumption of memory by Session Probe.
+# The Session Probe will sabotage and then restart itself if it consumes more memory than what is defined by this parameter.
 # A value of 0 disables this feature.
 # This feature can cause the session to be disconnected if the value of the [session_probe]on_keepalive_timeout is set to 1 (Disconnect user).
 # If [session_probe]allow_multiple_handshake is disabled, restarting the Session Probe will cause the session to disconnect.
@@ -1038,15 +1040,15 @@ R"gen_config_ini(## Config file for RDP proxy.
 #cpu_usage_alarm_threshold = 0
 
 # Additional behavior when CPU consumption exceeds what is allowed. Refer to the [session_probe]cpu_usage_alarm_threshold.
-#   0: Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
-#   1: Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
+#   0: Restart Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.
+#   1: Stop Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.
 #_advanced
 #_display_name=CPU usage alarm action
 # (acl config: proxy ⇐ session_probe:cpu_usage_alarm_action)
 #cpu_usage_alarm_action = 0
 
 # For application session only.
-# The delay between the launch of the application and the start of End of session check.
+# Delay between the launch of the application and the start of End of session check.
 # Sometimes an application takes a long time to create its window. If the End of session check is start too early, the Session Probe may mistakenly conclude that there is no longer any active process in the session. And without active processes, the application session will be logged off by the Session Probe.
 # 'End of session check delay time' allow you to delay the start of End of session check in order to give the application the time to create its window.
 # (in milliseconds | min = 0, max = 60000)
@@ -1055,21 +1057,21 @@ R"gen_config_ini(## Config file for RDP proxy.
 #end_of_session_check_delay_time = 0
 
 # For application session only.
-# If enabled, during the End of session check, the processes that do not have a visible window will not be counted as active processes of the session. Without active processes, the application session will be logged off by the Session Probe.
+# When enabled, during the End of session check, the processes that do not have a visible window will not be counted as active processes of the session. Without active processes, the application session will be logged off by the Session Probe.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Ignore UI less processes during end of session check
 # (acl config: proxy ⇐ session_probe:ignore_ui_less_processes_during_end_of_session_check)
 #ignore_ui_less_processes_during_end_of_session_check = 1
 
-# This parameter is used to provide the list of (comma-separated) system processes that can be run in the session.
+# Provides the list of (comma-separated) system processes that can be run in the session.
 # Ex.: dllhos.exe,TSTheme.exe
 # Unlike user processes, system processes do not keep the session open. A session with no user process will be automatically closed by Session Probe after starting the End of session check.
 # (acl config: proxy ⇐ session_probe:extra_system_processes)
 #extra_system_processes = 
 
 # This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
-# Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
+# Unfortunately, the detection does not work with applications developed in Java, Flash, etc. In order to work around the problem, the windows of these applications will be treated as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
 # One of the specifics of these applications is that their main windows do not have any child window from point of view of WIN32 API. Activating this parameter allows this property to be used to detect applications developed in Java or Flash.
 # Refer to the [session_log]keyboard_input_masking_level.
 # (type: boolean (0/no/false or 1/yes/true))
@@ -1079,14 +1081,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Comma-separated process names. (Ex.: chrome.exe,ngf.exe)
 # This parameter concerns the functionality of the Password field detection performed by the Session Probe. This detection is necessary to avoid logging the text entered in the password fields as metadata of session (also known as Session log).
-# Unfortunately, the detection is not infallible. In order to work around the problem, we will treat the windows of these applications as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
+# Unfortunately, the detection is not infallible. In order to work around the problem, the windows of these applications will be treated as input fields of unknown type. Therefore, the text entered in these will not be included in the session’s metadata.
 # This parameter is used to provide the list of processes whose windows are considered as input fields of unknown type.
 # Refer to the [session_log]keyboard_input_masking_level.
 # (acl config: proxy ⇐ session_probe:windows_of_these_applications_as_unidentified_input_field)
 #windows_of_these_applications_as_unidentified_input_field = 
 
 # This parameter is used when resuming a session hosting a existing Session Probe.
-# If enabled, the Session Probe will activate or deactivate features according to the value of [session_probe]disabled_features received when resuming its host session. Otherwise, the Session Probe will keep the same set of features that were used during the previous connection.
+# When enabled, the Session Probe will activate or deactivate features according to the value of [session_probe]disabled_features received when resuming its host session. Otherwise, the Session Probe will keep the same set of features that were used during the previous connection.
 # It is recommended to keep the default value of this parameter.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
@@ -1123,7 +1125,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # This parameter has no effect on the device without BestSafe.
 # BestSafe interaction must be enabled. Refer to [session_probe]enable_bestsafe_interaction.
-# This parameter allows you to choose the behavior of the RDP Proxy in case of detection of Windows account manipulation.
+# Select the behavior of the RDP Proxy in case of detection of Windows account manipulation.
 # Detectable account manipulations are the creation, deletion of a Windows account, and the addition and deletion of an account from a Windows user group.
 #   0: allow: User action will be accepted.
 #   1: notify: (Same thing as 'allow'.)
@@ -1131,7 +1133,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:on_account_manipulation)
 #on_account_manipulation = 0
 
-# This parameter is used to indicate the name of an environment variable, to be set on the Windows device, and pointed to a directory (on the device) that can be used to store and start the Session Probe. The environment variable must be available in the Windows user session.
+# Indicate the name of an environment variable, to be set on the Windows device, and pointed to a directory (on the device) that can be used to store and start the Session Probe. The environment variable must be available in the Windows user session.
 # The environment variable name is limited to 3 characters or less.
 # By default, the Session Probe will be stored and started from the temporary directory of Windows user.
 # This parameter is useful if a GPO prevents Session Probe from starting from the Windows user's temporary directory.
@@ -1140,14 +1142,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:alternate_directory_environment_variable)
 #alternate_directory_environment_variable = 
 
-# If enabled, the session, once disconnected, can be resumed by another Bastion user.
+# When enabled, a disconnected session can be resumed by a different Bastion user.
 # Except in special cases, this is usually a security problem.
 # By default, a session can only be resumed by the Bastion user who created it.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ session_probe:public_session)
 #public_session = 0
 
-# This parameter is used to provide the list of (comma-separated) rules used to monitor outgoing connections created in the session.
+# List of (comma-separated) rules used to monitor outgoing connections created in the session.
 # (Ex. IPv4 addresses: $deny:192.168.0.0/24:5900,$allow:192.168.0.110:21)
 # (Ex. IPv6 addresses: $deny:2001:0db8:85a3:0000:0000:8a2e:0370:7334:3389,$allow:[20D1:0:3238:DFE1:63::FEFB]:21)
 # (Ex. hostname can be used to resolve to both IPv4 and IPv6 addresses: $allow:host.domain.net:3389)
@@ -1158,27 +1160,27 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:outbound_connection_monitoring_rules)
 #outbound_connection_monitoring_rules = 
 
-# This parameter is used to provide the list of (comma-separated) rules used to monitor the execution of processes in the session.
+# List of (comma-separated) rules used to monitor the execution of processes in the session.
 # (Ex.: $deny:taskmgr.exe)
 # @ = All child processes of (Bastion) application (Ex.: $deny:@)
 # BestSafe can be used to perform detection of process launched in the session. Refer to [session_probe]enable_bestsafe_interaction.
 # (acl config: proxy ⇐ session_probe:process_monitoring_rules)
 #process_monitoring_rules = 
 
-# If enabled, a string of random characters will be added to the name of the Session Probe executable.
+# When enabled, a string of random characters will be added to the name of the Session Probe executable.
 # The result could be: SesProbe-5420.exe
 # Some other features automatically enable customization of the Session Probe executable name. Application Driver auto-deployment for example.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #customize_executable_name = 0
 
-# If enabled, the RDP Proxy accepts to perform the handshake several times during the same RDP session. Otherwise, any new handshake attempt will interrupt the current session with the display of an alert message.
+# When enabled, the RDP Proxy accepts to perform the handshake several times during the same RDP session. Otherwise, any new handshake attempt will interrupt the current session with the display of an alert message.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 #_display_name=Allow multiple handshakes
 #allow_multiple_handshake = 0
 
-# If disabled, the RDP proxy disconnects from the session when the Session Probe reports that the session is about to close (old behavior).
+# When disabled, the RDP proxy disconnects from the session when Session Probe reports that the session is about to close (old behavior).
 # The new session end procedure (freeze and wait) prevents another connection from resuming a session that is close to end-of-life.
 # (type: boolean (0/no/false or 1/yes/true))
 #at_end_of_session_freeze_connection_and_wait = 1
@@ -1196,7 +1198,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:process_command_line_retrieve_method)
 #process_command_line_retrieve_method = 2
 
-# Time between two polling performed by Session Probe.
+# Delay between two polling performed by Session Probe.
 # The parameter is created to adapt the CPU consumption to the performance of the Windows device.
 # The longer this interval, the less detailed the session metadata collection and the lower the CPU consumption.
 # (in milliseconds | min = 300, max = 2000)
@@ -1204,14 +1206,14 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ session_probe:periodic_task_run_interval)
 #periodic_task_run_interval = 500
 
-# If enabled, Session Probe activity will be minimized when the user is disconnected from the session. No metadata will be collected during this time.
+# When enabled, Session Probe activity will be minimized when the user is disconnected from the session. No metadata will be collected during this time.
 # The purpose of this behavior is to optimize CPU consumption.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ session_probe:pause_if_session_is_disconnected)
 #pause_if_session_is_disconnected = 0
 
-# If enabled, Session Probe will monitor its own system resource consumption.
+# When enabled, Session Probe monitors its own system resource consumption.
 # This feature increases CPU consumption.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
@@ -1225,16 +1227,16 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ server_cert:server_cert_store)
 #server_cert_store = 1
 
-# Behavior of certificates check.
-#   0: fails if certificates do not match or are missing.
-#   1: fails if certificate does not match, succeeds if no known certificate.
-#   2: succeeds if certificates exist (not checked), fails if missing.
-#   3: always succeed.
-# System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection.
+# Configure server certificate verification behavior.
+#   0: Fails if the certificate is missing or does not match the known certificate.
+#   1: Fails if the certificate does not match the known certificate; succeeds if no certificate exists.
+#   2: Succeeds if a certificate exists (verification skipped); fails if no certificate exists.
+#   3: Always succeeds without performing certificate validation.
+# Internal errors, such as failure to access a known certificate or decode it, always result in connection rejection.
 # (acl config: proxy ⇐ server_cert:server_cert_check)
 #server_cert_check = 1
 
-# Warn if check allow connexion to target server.
+# Warn if check allow connection to target server.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM
 # 
@@ -1349,7 +1351,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # TLSv1.2 and below additional ciphers supported.
 # Empty to apply system-wide configuration (SSL security level 2), ALL for support of all ciphers to ensure highest compatibility with target servers.
-# The format used is described on this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
 # (acl config: proxy ⇐ mod_vnc:cipher_string)
 #cipher_string = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256
 
@@ -1360,26 +1362,26 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ mod_vnc:tls_enable_legacy_server)
 #tls_enable_legacy_server = 0
 
-# Configure the available TLSv1.3 ciphersuites.
+# Configure the available TLSv1.3 cipher suites.
 # Empty to apply system-wide configuration.
-# The format used is described in the third paragraph of this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+# For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
 #_display_name=TLS 1.3 cipher suites
 # (acl config: proxy ⇐ mod_vnc:tls_1_3_ciphersuites)
 #tls_1_3_ciphersuites = 
 
 # Configure the supported key exchange groups.
 # Empty to apply system-wide configuration.
-# The format used is described in this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+# For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
 #_display_name=TLS key exchange groups
 # (acl config: proxy ⇐ mod_vnc:tls_key_exchange_groups)
 #tls_key_exchange_groups = P-256:P-384:P-521:ffdhe3072:ffdhe4096:ffdhe6144:ffdhe8192
 
 # Configure the supported client signature algorithms.
 # Empty to apply system-wide configuration.
-# The format should be a colon separated list of signature algorithms in order of decreasing preference of the form algorithm+hash or signature_scheme.
-# algorithm is one of RSA, RSA-PSS or ECDSA.
-# hash is one of SHA224, SHA256, SHA384 or SHA512.
-# signature_scheme is one of the signature schemes defined in TLSv1.3 (rfc8446#section-4.2.3), specified using the IETF name, e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256.
+# The format should be a colon-separated list of signature algorithms, ordered by decreasing preference. Each entry should follow one of these forms: algorithm+hash or signature_scheme.
+# algorithm options: RSA, RSA-PSS or ECDSA.
+# hash options: SHA224, SHA256, SHA384 or SHA512.
+# signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256).
 #_display_name=TLS signature algorithms
 # (acl config: proxy ⇐ mod_vnc:tls_signature_algorithms)
 #tls_signature_algorithms = 
@@ -1393,7 +1395,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # ⚠ The use of this feature is not recommended!
 # 
-# When specified, force the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
+# When specified, forces the proxy to use a specific authentication method. If this method is not supported by the target server, the connection will not be made.
 #   - noauth
 #   - vncauth
 #   - mslogon
@@ -1426,12 +1428,11 @@ R"gen_config_ini(## Config file for RDP proxy.
 # Note: values can be added (enable all: 0x1 + 0x2 = 0x3)
 #enable_syslog_format = 1
 
-# Classification of input data is performed using Session Probe.
-# Without Session Probe, all the texts entered are considered unidentified.
-#   0: Keyboard inputs are not masked.
-#   1: Only passwords are masked.
-#   2: Passwords and unidentified texts are masked.
-#   3: Keyboard inputs are not logged.
+# Determines how keyboard input is logged. Session Probe is required for input identification and masking.
+#   0: Log all input in plain text.
+#   1: Log all input but mask passwords (without Session Probe, input is not logged).
+#   2: Log all input but mask passwords and unidentified input (without Session Probe, input is not logged).
+#   3: Do not log input.
 # (acl config: proxy ⇐ session_log:keyboard_input_masking_level)
 #keyboard_input_masking_level = 2
 
@@ -1459,7 +1460,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #on_title_bar_only = 1
 
 # Expressed in percentage,
-#   0   - all of characters need be recognized
+#   0   - all of characters must be recognized
 #   100 - accept all results
 # (min = 0, max = 100)
 #_advanced
@@ -1491,9 +1492,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 # Disable keyboard log:
 # (See also [session_log]keyboard_input_masking_level)
-#   0x0: none
-#   0x1: disable keyboard log in session log
-#   0x2: disable keyboard log in recorded sessions
+#   0x0: Log all keyboard inputs
+#   0x1: Exclude keyboard inputs from session logs (including SIEM)
+#   0x2: Exclude keyboard inputs from recorded sessions
 # 
 # Note: values can be added (disable all: 0x1 + 0x2 = 0x3)
 #_advanced
@@ -1569,7 +1570,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # Video codec used for video generation.
 #video_codec = mp4
 
-# FFmpeg options for video codec. See https://trac.ffmpeg.org/wiki/Encode/H.264
+# FFmpeg options for video codec. For details, visit https://trac.ffmpeg.org/wiki/Encode/H.264
 # ⚠ Some browsers and video decoders don't support crf=0
 #_advanced
 #_display_name=FFmpeg options
@@ -1657,7 +1658,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 #block_invalid_clipboard_text_down = 0
 
-# Log the files and clipboard texts that are verified and accepted. By default, only those rejected are logged.
+# Log the files and clipboard texts that are verified and accepted. If deactivated, only those rejected are logged.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
 # (acl config: proxy ⇐ file_verification:log_if_accepted)
@@ -1681,7 +1682,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # ⚠ Saving files can take up a lot of disk space.
 #   never: Never store transferred files.
 #   always: Always store transferred files.
-#   on_invalid_verification: Transferred files are stored only if file verification is invalid. File verification by ICAP service must be enabled (in section file_verification).
+#   on_invalid_verification: Store transferred files only if file verification fails. Requires ICAP file verification (in section file_verification).
 # (acl config: proxy ⇐ file_storage:store_file)
 #store_file = never
 
@@ -1741,7 +1742,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [translation]
 
-# The login page shows this language to all users. Once logged in, users see their preferred language.
+# The login page displays this language for all users. After logging in, users experience the interface in their selected language.
 #   Auto: The language is determined based on the keyboard layout specified by the client.
 #   EN: 
 #   FR: 
@@ -2027,7 +2028,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 #ocr = 0
 
 # Value passed to function av_log_set_level()
-# See https://www.ffmpeg.org/doxygen/2.3/group__lavu__log__constants.html
+# For details, visit https://www.ffmpeg.org/doxygen/2.3/group__lavu__log__constants.html
 # (min = 0)
 #_advanced
 #_display_name=FFmpeg

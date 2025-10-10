@@ -67,14 +67,17 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_flags("KeyboardLogFlags", withoutNameWhenDescription)
-      .value("none")
+      .value("none", Descs{
+          .regular = "",
+          .disabled = "Log all keyboard inputs",
+        })
       .value("session_log", Descs{
           .regular = "",
-          .disabled = "disable keyboard log in session log",
+          .disabled = "Exclude keyboard inputs from session logs (including SIEM)",
         })
       .value("wrm", Descs{
           .regular = "",
-          .disabled = "disable keyboard log in recorded sessions",
+          .disabled = "Exclude keyboard inputs from recorded sessions",
         })
     ;
 
@@ -116,13 +119,13 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("ServerCertCheck", withoutNameWhenDescription, EDescs{
-        .desc = "Behavior of certificates check.",
-        .info = "System errors like FS access rights issues or certificate decode are always check errors leading to connection rejection."
+        .desc = "Configure server certificate verification behavior.",
+        .info = "Internal errors, such as failure to access a known certificate or decode it, always result in connection rejection."
     })
-      .value("fails_if_no_match_or_missing", "fails if certificates do not match or are missing.")
-      .value("fails_if_no_match_and_succeed_if_no_know", "fails if certificate does not match, succeeds if no known certificate.")
-      .value("succeed_if_exists_and_fails_if_missing", "succeeds if certificates exist (not checked), fails if missing.")
-      .value("always_succeed", "always succeed.")
+      .value("fails_if_no_match_or_missing", "Fails if the certificate is missing or does not match the known certificate.")
+      .value("fails_if_no_match_and_succeed_if_no_know", "Fails if the certificate does not match the known certificate; succeeds if no certificate exists.")
+      .value("succeed_if_exists_and_fails_if_missing", "Succeeds if a certificate exists (verification skipped); fails if no certificate exists.")
+      .value("always_succeed", "Always succeeds without performing certificate validation.")
     ;
 
     e.enumeration_list("TraceType", withoutNameWhenDescription, EDescs{
@@ -135,16 +138,16 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("KeyboardInputMaskingLevel", withoutNameWhenDescription)
-      .value("unmasked", "Keyboard inputs are not masked.")
-      .value("password_only", "Only passwords are masked.")
-      .value("password_and_unidentified", "Passwords and unidentified texts are masked.")
-      .value("fully_masked", "Keyboard inputs are not logged.")
+      .value("unmasked", "Log all input in plain text.")
+      .value("password_only", "Log all input but mask passwords (without Session Probe, input is not logged).")
+      .value("password_and_unidentified", "Log all input but mask passwords and unidentified input (without Session Probe, input is not logged).")
+      .value("fully_masked", "Do not log input.")
     ;
 
     e.enumeration_list("SessionProbeOnLaunchFailure", withNameWhenDescription, "Behavior on failure to launch Session Probe.")
-      .value("ignore_and_continue", "The metadata collected is not essential for us. Instead, we prefer to minimize the impact on the user experience. The Session Probe launch will be in best-effort mode. The prevailing duration is defined by the 'Launch fallback timeout' instead of the 'Launch timeout'.")
-      .value("disconnect_user", "This is the recommended setting. If the target meets all the technical prerequisites, there is no reason for the Session Probe not to launch. All that remains is to adapt the value of 'Launch timeout' to the performance of the target.")
-      .value("retry_without_session_probe", "We wish to be able to recover the behavior of Bastion 5 when the Session Probe does not launch. The prevailing duration is defined by the 'Launch fallback timeout' instead of the 'Launch timeout'.")
+      .value("ignore_and_continue", "Proceed without Session Probe. Metadata collection is considered non-essential, and user experience is prioritized. The session will start in best-effort using 'Launch fallback timeout' instead of 'Launch timeout'.")
+      .value("disconnect_user", "(recommended) End the session. A successful launch is expected when all technical prerequisites are met, reliability is prioritized. Adapt 'Launch timeout' value to the target performance.")
+      .value("retry_without_session_probe", "Attempt to reconnect without Session Probe. This restores legacy behavior. The session will start using 'Launch fallback timeout' instead of 'Launch timeout'.")
     ;
 
     e.enumeration_list("VncBogusClipboardInfiniteLoop", withNameWhenDescription)
@@ -183,9 +186,9 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("SessionProbeOnKeepaliveTimeout", withNameWhenDescription)
-      .value("ignore_and_continue", "Designed to minimize the impact on the user experience if the Session Probe is unstable. It should not be used when Session Probe is working well. An attacker can take advantage of this setting by simulating a Session Probe crash in order to bypass the surveillance.")
-      .value("disconnect_user", "Legacy behavior. It’s a choice that gives more security, but the impact on the user experience seems disproportionate. The RDP session can be closed (resulting in the permanent loss of all its unsaved elements) if the 'End disconnected session' parameter (or an equivalent setting at the RDS-level) is enabled.")
-      .value("freeze_connection_and_wait", "This is the recommended setting. User actions will be blocked until contact with the Session Probe (reply to KeepAlive message or something else) is resumed.")
+      .value("ignore_and_continue", "Proceed without Session Probe. Minimizes impact on user experience if Session Probe is unstable. Not recommended when Session Probe is working well. May be exploited by attackers simulating Session Probe failure to bypass surveillance.")
+      .value("disconnect_user", "Legacy behavior. Prioritizes security but impacts user experience. RDP session may close (resulting in the permanent loss of all its unsaved elements) if the 'End disconnected session' parameter (or an equivalent setting at the RDS-level) is enabled.")
+      .value("freeze_connection_and_wait", "(recommended) Block user actions until contact with the Session Probe is restored (e.g., reply to KeepAlive). Ensures session integrity during Session Probe outages.")
     ;
 
     e.enumeration_list("SmartVideoCropping", withNameWhenDescription)
@@ -240,7 +243,7 @@ inline void config_type_definition(type_enumerations & e)
     e.enumeration_list("RdpStoreFile", withNameWhenDescription)
       .value("never", "Never store transferred files.")
       .value("always", "Always store transferred files.")
-      .value("on_invalid_verification", "Transferred files are stored only if file verification is invalid. File verification by ICAP service must be enabled (in section file_verification).")
+      .value("on_invalid_verification", "Store transferred files only if file verification fails. Requires ICAP file verification (in section file_verification).")
     ;
 
     e.enumeration_list("SessionProbeOnAccountManipulation", withNameWhenDescription, "For targets running WALLIX BestSafe only.")
@@ -251,18 +254,18 @@ inline void config_type_definition(type_enumerations & e)
 
     e.enumeration_list("ClientAddressSent", withoutNameWhenDescription, "Client Address to send to target(in InfoPacket)")
       .value("no_address", "Send 0.0.0.0")
-      .value("proxy", "Send proxy client address or target connexion.")
-      .value("front", "Send user client address of front connexion.")
+      .value("proxy", "Send proxy client address or target connection.")
+      .value("front", "Send user client address of front connection.")
     ;
 
     e.enumeration_list("SessionProbeLogLevel", withNameWhenDescription)
       .reserved("Off")
-      .value("Fatal", "Designates very severe error events that will presumably lead the application to abort.")
-      .value("Error", "Designates error events that might still allow the application to continue running.")
-      .value("Info", "Designates informational messages that highlight the progress of the application at coarse-grained level.")
-      .value("Warning", "Designates potentially harmful situations.")
-      .value("Debug", "Designates fine-grained informational events that are mostly useful to debug an application.")
-      .value("Detail", "Designates finer-grained informational events than Debug.")
+      .value("Fatal", "Severe error events that will likely cause the application to abort.")
+      .value("Error", "Error events that may allow the application to continue running.")
+      .value("Info", "General informational messages about application progress.")
+      .value("Warning", "Potentially harmful situations that require attention.")
+      .value("Debug", "Detailed informational events intended for debugging.")
+      .value("Detail", "More detailed informational events than Debug for in-depth analysis.")
     ;
 
     e.enumeration_list("ModRdpUseFailureSimulationSocketTransport", withNameWhenDescription)
@@ -295,8 +298,8 @@ inline void config_type_definition(type_enumerations & e)
     ;
 
     e.enumeration_list("SessionProbeCPUUsageAlarmAction", withoutNameWhenDescription)
-      .value("Restart", "Restart the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.")
-      .value("Stop", "Stop the Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.")
+      .value("Restart", "Restart Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section and 'Allow multiple handshakes' parameter of 'Configuration options'.")
+      .value("Stop", "Stop Session Probe. May result in session disconnection due to loss of KeepAlive messages! Refer to 'On keepalive timeout' parameter of current section.")
     ;
 
     e.enumeration_list("SessionProbeProcessCommandLineRetrieveMethod", withNameWhenDescription)
@@ -307,7 +310,7 @@ inline void config_type_definition(type_enumerations & e)
 
     e.enumeration_list("RdpSaveSessionInfoPDU", withoutNameWhenDescription)
         .value("Supported", "Windows")
-        .value("UnsupportedOrUnknown", "Bastion, xrdp or others")
+        .value("UnsupportedOrUnknown", "Bastion, xrdp, or others")
     ;
 
     e.enumeration_flags("SessionLogFormat", withNameWhenDescription)
