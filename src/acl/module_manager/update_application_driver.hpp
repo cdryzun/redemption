@@ -23,6 +23,10 @@ inline void update_application_driver(ModRDPParams & mod_rdp_params, Inifile & i
         application_driver_exe_or_file           = ini.get<cfg::mod_rdp::application_driver_exe_or_file>();
         application_driver_script                = ini.get<cfg::mod_rdp::application_driver_ie_script>();
     }
+    if (upper == "__APP_DRIVER_IE_UIA__"_ascii_upper) {
+        application_driver_exe_or_file           = ini.get<cfg::mod_rdp::application_driver_exe_or_file>();
+        application_driver_script                = ini.get<cfg::mod_rdp::application_driver_ie_uia_script>();
+    }
     else if (upper == "__APP_DRIVER_CHROME_DT__"_ascii_upper) {
         application_driver_exe_or_file           = ini.get<cfg::mod_rdp::application_driver_exe_or_file>();
         application_driver_script                = ini.get<cfg::mod_rdp::application_driver_chrome_dt_script>();

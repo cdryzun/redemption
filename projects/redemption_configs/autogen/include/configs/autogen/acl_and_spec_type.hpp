@@ -125,6 +125,7 @@ template<> struct acl_and_spec_type<cfg::mod_rdp::application_driver_chrome_dt_s
 template<> struct acl_and_spec_type<cfg::mod_rdp::application_driver_chrome_uia_script> { using type = ::configs::spec_types::fixed_string; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::application_driver_firefox_uia_script> { using type = ::configs::spec_types::fixed_string; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::application_driver_ie_script> { using type = ::configs::spec_types::fixed_string; };
+template<> struct acl_and_spec_type<cfg::mod_rdp::application_driver_ie_uia_script> { using type = ::configs::spec_types::fixed_string; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::hide_client_name> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::use_license_store> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::bogus_freerdp_clipboard> { using type = bool; };

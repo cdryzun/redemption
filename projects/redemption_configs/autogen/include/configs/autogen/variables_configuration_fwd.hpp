@@ -135,6 +135,7 @@ namespace cfg
         struct application_driver_chrome_uia_script;
         struct application_driver_firefox_uia_script;
         struct application_driver_ie_script;
+        struct application_driver_ie_uia_script;
         struct hide_client_name;
         struct use_license_store;
         struct bogus_freerdp_clipboard;

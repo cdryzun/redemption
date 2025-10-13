@@ -1323,6 +1323,12 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     });
 
     _.member(MemberInfo{
+        .name = "application_driver_ie_uia_script",
+        .value = value<types::fixed_string<256>>(CPP_EXPR(REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_UIA_SCRIPT)),
+        .spec = ini_only(no_acl),
+    });
+
+    _.member(MemberInfo{
         .name = "hide_client_name",
         .value = value(false),
         .spec = global_spec(no_acl),

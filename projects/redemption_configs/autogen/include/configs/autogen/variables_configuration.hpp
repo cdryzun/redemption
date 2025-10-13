@@ -1465,6 +1465,14 @@ namespace cfg
         using mapped_type = ::configs::spec_types::fixed_string;
         type value { REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_SCRIPT };
     };
+    /// type: char[256+1] <br/>
+    /// default: REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_UIA_SCRIPT <br/>
+    struct mod_rdp::application_driver_ie_uia_script {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = char[256+1];
+        using mapped_type = ::configs::spec_types::fixed_string;
+        type value { REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_UIA_SCRIPT };
+    };
     /// Do not transmit the client machine name to the RDP server. <br/>
     /// If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host. <br/>
     /// type: bool <br/>
@@ -5657,6 +5665,7 @@ struct mod_rdp
 , cfg::mod_rdp::application_driver_chrome_uia_script
 , cfg::mod_rdp::application_driver_firefox_uia_script
 , cfg::mod_rdp::application_driver_ie_script
+, cfg::mod_rdp::application_driver_ie_uia_script
 , cfg::mod_rdp::hide_client_name
 , cfg::mod_rdp::use_license_store
 , cfg::mod_rdp::bogus_freerdp_clipboard

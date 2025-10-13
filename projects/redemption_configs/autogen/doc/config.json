@@ -1314,6 +1314,15 @@
     },
     {
       "section": "mod_rdp",
+      "name": "application_driver_ie_uia_script",
+      "type": "str",
+      "value": "REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_UIA_SCRIPT", "cppExpr": true,
+      "description": "",
+      "iniOnly": true,
+      "minlen": 256, "maxlen": 256
+    },
+    {
+      "section": "mod_rdp",
       "name": "hide_client_name",
       "type": "bool",
       "value": false,

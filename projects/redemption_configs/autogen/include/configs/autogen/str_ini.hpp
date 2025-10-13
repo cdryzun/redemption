@@ -620,6 +620,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (maxlen = 256)
 #application_driver_ie_script = )gen_config_ini" << (REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_SCRIPT) << R"gen_config_ini(
 
+# (maxlen = 256)
+#application_driver_ie_uia_script = )gen_config_ini" << (REDEMPTION_CONFIG_APPLICATION_DRIVER_IE_UIA_SCRIPT) << R"gen_config_ini(
+
 # Do not transmit the client machine name to the RDP server.
 # If Per-Device licensing mode is configured on the RD host, this Bastion will consume a CAL for all of these connections to the RD host.
 # (type: boolean (0/no/false or 1/yes/true))
