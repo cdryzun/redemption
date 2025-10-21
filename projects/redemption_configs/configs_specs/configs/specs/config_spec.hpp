@@ -2616,6 +2616,14 @@ for (char const* section_name : {"icap_server_down", "icap_server_up"}) {
         });
 
         _.member(MemberInfo{
+            .name = "timeout",
+            .value = value<std::chrono::seconds>(20),
+            .spec = spec::external(spec::advanced),
+            .desc = "ICAP server response timeout.\n"
+            "If this limit is reached during a file analysis, the file is considered invalid.",
+        });
+
+        _.member(MemberInfo{
             .name = "filename_percent_encoding",
             .value = value(false),
             .spec = spec::external(spec::advanced),

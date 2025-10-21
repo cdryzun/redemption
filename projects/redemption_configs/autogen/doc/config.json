@@ -3357,6 +3357,16 @@
     },
     {
       "section": "icap_server_down",
+      "name": "timeout",
+      "type": "seconds",
+      "value": 20,
+      "description": "ICAP server response timeout.\nIf this limit is reached during a file analysis, the file is considered invalid.",
+      "globalSpec": true,
+      "advanced": true,
+      "external": true
+    },
+    {
+      "section": "icap_server_down",
       "name": "filename_percent_encoding",
       "type": "bool",
       "value": false,
@@ -3407,6 +3417,16 @@
       "type": "bool",
       "value": true,
       "description": "Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.",
+      "globalSpec": true,
+      "advanced": true,
+      "external": true
+    },
+    {
+      "section": "icap_server_up",
+      "name": "timeout",
+      "type": "seconds",
+      "value": 20,
+      "description": "ICAP server response timeout.\nIf this limit is reached during a file analysis, the file is considered invalid.",
       "globalSpec": true,
       "advanced": true,
       "external": true

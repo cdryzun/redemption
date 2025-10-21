@@ -520,6 +520,12 @@ tls = boolean(default=False)
 #_advanced
 enable_x_context = boolean(default=True)
 
+# ICAP server response timeout.
+# If this limit is reached during a file analysis, the file is considered invalid.<br/>
+# (in seconds)
+#_advanced
+timeout = integer(min=0, default=20)
+
 # Filename sent to ICAP as percent encoding.
 #_advanced
 filename_percent_encoding = boolean(default=False)
@@ -541,6 +547,12 @@ tls = boolean(default=False)
 # Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.
 #_advanced
 enable_x_context = boolean(default=True)
+
+# ICAP server response timeout.
+# If this limit is reached during a file analysis, the file is considered invalid.<br/>
+# (in seconds)
+#_advanced
+timeout = integer(min=0, default=20)
 
 # Filename sent to ICAP as percent encoding.
 #_advanced
