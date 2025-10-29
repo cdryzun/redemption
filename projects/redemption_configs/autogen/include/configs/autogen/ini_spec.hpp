@@ -520,6 +520,11 @@ tls = boolean(default=False)
 #_advanced
 enable_x_context = boolean(default=True)
 
+# Reject file on X-Infection-Found header in ICAP server response.
+# ⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).
+#_advanced
+enable_x_infection = boolean(default=False)
+
 # ICAP server response timeout.
 # If this limit is reached during a file analysis, the file is considered invalid.<br/>
 # (in seconds)
@@ -547,6 +552,11 @@ tls = boolean(default=False)
 # Send X Context (Client-IP, Server-IP, Authenticated-User) to ICAP server.
 #_advanced
 enable_x_context = boolean(default=True)
+
+# Reject file on X-Infection-Found header in ICAP server response.
+# ⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).
+#_advanced
+enable_x_infection = boolean(default=False)
 
 # ICAP server response timeout.
 # If this limit is reached during a file analysis, the file is considered invalid.<br/>

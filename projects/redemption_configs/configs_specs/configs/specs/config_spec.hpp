@@ -2616,6 +2616,14 @@ for (char const* section_name : {"icap_server_down", "icap_server_up"}) {
         });
 
         _.member(MemberInfo{
+            .name = "enable_x_infection",
+            .value = value(false),
+            .spec = spec::external(spec::advanced),
+            .desc = "Reject file on X-Infection-Found header in ICAP server response.\n"
+            "⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).",
+        });
+
+        _.member(MemberInfo{
             .name = "timeout",
             .value = value<std::chrono::seconds>(20),
             .spec = spec::external(spec::advanced),
