@@ -1054,7 +1054,7 @@ class Sesman():
 
         except ForceCloseException as fce:
             self.interactive_force_close()
-            raise
+            return False, "Internal Error"
         except Exception:
             if DEBUG:
                 Logger().info(f"<<<{traceback.format_exc()}>>>")
