@@ -44,10 +44,10 @@ private:
     enum class InitializationState : uint8_t
     {
         WaitingServerMonitorReadyPDU                               = 1,
-        WaitingClientClipboardCapabilitiesPDU                      = 2,
-        WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU = 4,
-        WaitingClientFormatListPDUOrLockPDU                        = 8,
-        WaitingServerFormatListResponsePDUOrLockPDU                = 16,
+        WaitingClientCapsOrTempDirOrFormatListOrLockPDU            = 2,
+        WaitingClientTempDirOrFormatListOrLockPDU                  = 4,
+        WaitingClientFormatListOrLockPDU                           = 8,
+        WaitingServerFormatListResponseOrLockPDU                   = 16,
         Ready                                                      = 32,
     } initialization_state = InitializationState::WaitingServerMonitorReadyPDU;
 
@@ -56,17 +56,17 @@ private:
             case InitializationState::WaitingServerMonitorReadyPDU:
                 return "WaitingServerMonitorReadyPDU";
 
-            case InitializationState::WaitingClientClipboardCapabilitiesPDU:
-                return "WaitingClientClipboardCapabilitiesPDU";
+            case InitializationState::WaitingClientCapsOrTempDirOrFormatListOrLockPDU:
+                return "WaitingClientCapsOrTempDirOrFormatListOrLockPDU";
 
-            case InitializationState::WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU:
-                return "WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU";
+            case InitializationState::WaitingClientTempDirOrFormatListOrLockPDU:
+                return "WaitingClientTempDirOrFormatListOrLockPDU";
 
-            case InitializationState::WaitingClientFormatListPDUOrLockPDU:
-                return "WaitingClientFormatListPDUOrLockPDU";
+            case InitializationState::WaitingClientFormatListOrLockPDU:
+                return "WaitingClientFormatListOrLockPDU";
 
-            case InitializationState::WaitingServerFormatListResponsePDUOrLockPDU:
-                return "WaitingServerFormatListResponsePDUOrLockPDU";
+            case InitializationState::WaitingServerFormatListResponseOrLockPDU:
+                return "WaitingServerFormatListResponseOrLockPDU";
 
             case InitializationState::Ready:
                 return "Ready";
@@ -103,25 +103,26 @@ public:
             const uint16_t msgType = s.in_uint16_le();
             switch (msgType) {
                 case RDPECLIP::CB_CLIP_CAPS: {
-                    IGNORE_OUT_OF_SEQUENCE(InitializationState::WaitingClientClipboardCapabilitiesPDU);
+                    IGNORE_OUT_OF_SEQUENCE(InitializationState::WaitingClientCapsOrTempDirOrFormatListOrLockPDU);
 
                     this->initialization_state
                         =   this->bogus_freerdp_clipboard
                           ? InitializationState::Ready
-                          : InitializationState::WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU
+                          : InitializationState::WaitingClientTempDirOrFormatListOrLockPDU
                           ;
                 }
                 break;
 
                 case RDPECLIP::CB_FORMAT_LIST: {
                     IGNORE_OUT_OF_SEQUENCE(
-                        unsigned(InitializationState::WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU)
-                      | unsigned(InitializationState::WaitingClientFormatListPDUOrLockPDU)
+                        unsigned(InitializationState::WaitingClientCapsOrTempDirOrFormatListOrLockPDU)
+                      | unsigned(InitializationState::WaitingClientTempDirOrFormatListOrLockPDU)
+                      | unsigned(InitializationState::WaitingClientFormatListOrLockPDU)
                       | unsigned(InitializationState::Ready));
 
                     if (REDEMPTION_UNLIKELY(InitializationState::Ready != this->initialization_state))
                     {
-                        this->initialization_state = InitializationState::WaitingServerFormatListResponsePDUOrLockPDU;
+                        this->initialization_state = InitializationState::WaitingServerFormatListResponseOrLockPDU;
                     }
                 }
                 break;
@@ -138,17 +139,17 @@ public:
                 case RDPECLIP::CB_LOCK_CLIPDATA:
                 case RDPECLIP::CB_UNLOCK_CLIPDATA: {
                     IGNORE_OUT_OF_SEQUENCE(
-                        unsigned(InitializationState::WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU)
-                      | unsigned(InitializationState::WaitingServerFormatListResponsePDUOrLockPDU)
-                      | unsigned(InitializationState::WaitingClientFormatListPDUOrLockPDU)
+                        unsigned(InitializationState::WaitingClientTempDirOrFormatListOrLockPDU)
+                      | unsigned(InitializationState::WaitingServerFormatListResponseOrLockPDU)
+                      | unsigned(InitializationState::WaitingClientFormatListOrLockPDU)
                       | unsigned(InitializationState::Ready));
                 }
                 break;
 
                 case RDPECLIP::CB_TEMP_DIRECTORY: {
-                    IGNORE_OUT_OF_SEQUENCE(InitializationState::WaitingClientTemporaryDirectoryPDUOrFormatListPDUOrLockPDU);
+                    IGNORE_OUT_OF_SEQUENCE(InitializationState::WaitingClientTempDirOrFormatListOrLockPDU);
 
-                    this->initialization_state = InitializationState::WaitingClientFormatListPDUOrLockPDU;
+                    this->initialization_state = InitializationState::WaitingClientFormatListOrLockPDU;
                 }
                 break;
             }
@@ -170,7 +171,7 @@ public:
             switch (msgType) {
                 case RDPECLIP::CB_FORMAT_LIST_RESPONSE: {
                     if (REDEMPTION_UNLIKELY(
-                        InitializationState::WaitingServerFormatListResponsePDUOrLockPDU
+                        InitializationState::WaitingServerFormatListResponseOrLockPDU
                         == this->initialization_state
                     )) {
                         this->initialization_state = InitializationState::Ready;
@@ -179,7 +180,7 @@ public:
                 break;
 
                 case RDPECLIP::CB_MONITOR_READY: {
-                    this->initialization_state = InitializationState::WaitingClientClipboardCapabilitiesPDU;
+                    this->initialization_state = InitializationState::WaitingClientCapsOrTempDirOrFormatListOrLockPDU;
                 }
                 break;
             }
