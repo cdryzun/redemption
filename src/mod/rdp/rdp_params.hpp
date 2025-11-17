@@ -247,7 +247,7 @@ struct ModRDPParams
     {
         auto yes_or_no = [](bool x) -> char const * { return x ? "yes" : "no"; };
         auto hidden_or_null = [](bool x) -> char const * { return x ? "<hidden>" : "<null>"; };
-        auto av_hidden_or_null = [](chars_view s) -> char const * { return s.empty() ? "<hidden>" : "<null>"; };
+        auto av_hidden_or_null = [](chars_view s) -> char const * { return !s.empty() ? "<hidden>" : "<null>"; };
         auto s_or_null = [](char const * s) -> char const * { return s ? s : "<null>"; };
         auto s_or_none = [](char const * s) -> char const * { return s ? s : "<none>"; };
         auto from_sec = [](std::chrono::seconds sec) { return static_cast<unsigned>(sec.count()); };
