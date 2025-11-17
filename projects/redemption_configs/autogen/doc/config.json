@@ -526,9 +526,9 @@
       "name": "enable_nla",
       "type": "bool",
       "value": false,
-      "description": "Required for primary Kerberos connections over NLA.",
+      "description": "Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication).\n⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed.\n⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only.",
       "displayName": "Enable NLA",
-      "iniOnly": true
+      "globalSpec": true
     },
     {
       "section": "client",

@@ -195,7 +195,9 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #show_common_cipher_list = 0
 
-# Required for primary Kerberos connections over NLA.
+# Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication).
+# ⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed.
+# ⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only.
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Enable NLA
 #enable_nla = 0

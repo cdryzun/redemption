@@ -125,6 +125,12 @@ tls_signature_algorithms = string(default="RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-
 #_advanced
 show_common_cipher_list = boolean(default=False)
 
+# Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication).
+# ⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed.
+# ⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only.
+#_display_name=Enable NLA
+enable_nla = boolean(default=False)
+
 # Specifies the highest RDP compression support available on the client connection session.
 # &nbsp; &nbsp;   0: The RDP bulk compression is disabled
 # &nbsp; &nbsp;   1: RDP 4.0 bulk compression

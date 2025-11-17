@@ -701,8 +701,10 @@ _.section("client", [&]
     _.member(MemberInfo{
         .name = "enable_nla",
         .value = value(false),
-        .spec = ini_only(no_acl),
-        .desc = "Required for primary Kerberos connections over NLA.",
+        .spec = global_spec(no_acl),
+        .desc = "Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication).\n"
+        "⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed.\n"
+        "⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only.",
     });
 
     _.member(MemberInfo{

@@ -605,7 +605,9 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Required for primary Kerberos connections over NLA. <br/>
+    /// Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication). <br/>
+    /// ⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed. <br/>
+    /// ⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only. <br/>
     /// type: bool <br/>
     /// displayName: Enable NLA <br/>
     /// default: false <br/>
