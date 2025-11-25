@@ -35,7 +35,6 @@
 #include "utils/drawable_pointer.hpp"
 
 #include <chrono>
-#include <optional>
 
 class CaptureParams;
 class FullVideoParams;
@@ -271,7 +270,7 @@ private:
 
     VideoCaptureCtx video_cap_ctx;
     FilenameGenerator vc_filename_generator;
-    std::optional<video_recorder> recorder;
+    video_recorder::optional_wrapper recorder;
     FilenameGenerator ic_filename_generator;
 
     ScaledPng24 ic_scaled_png;

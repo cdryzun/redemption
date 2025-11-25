@@ -262,13 +262,15 @@ static void throw_if(bool test, char const* msg, char const* extra_msg = "")
     }
 }
 
-static void check_errnum(int errnum, char const* msg)
+static void check_errnum(int errnum, char const* msg, bool throw_error = true)
 {
     if (REDEMPTION_UNLIKELY(errnum < 0)) {
         char errbuf[AV_ERROR_MAX_STRING_SIZE]{};
         LOG(LOG_ERR, "video recorder: %s: %s",
             msg, av_make_error_string(errbuf, AV_ERROR_MAX_STRING_SIZE, errnum));
-        throw Error(ERR_VIDEO_RECORDER);
+        if (throw_error) {
+            throw Error(ERR_VIDEO_RECORDER);
+        }
     }
 }
 
@@ -490,14 +492,22 @@ static std::pair<int, char const*> encode_frame(
     return {errnum, "Failed while writing video frame"};
 }
 
-video_recorder::~video_recorder() /*NOLINT*/
+video_recorder::~video_recorder()
+{
+    if (this->d)
+    {
+        write_trailer();
+    }
+}
+
+void video_recorder::write_trailer()
 {
     // flush the encoder
     auto [errnum, errmsg] = encode_frame(
         nullptr, this->d->oc, this->d->codec_ctx,
         this->d->video_st, this->d->pkt);
 
-    check_errnum(errnum, errmsg);
+    check_errnum(errnum, errmsg, false);
 
     /* write the trailer, if any.  the trailer must be written
      * before you close the CodecContexts open when you wrote the
@@ -558,6 +568,41 @@ void video_recorder::encoding_video_frame(int64_t frame_index)
     check_errnum(errnum, errmsg);
 }
 
+
+video_recorder::optional_wrapper::operator bool () const noexcept
+{
+    return bool{recorder.d};
+}
+
+video_recorder & video_recorder::optional_wrapper::operator*() noexcept
+{
+    assert(recorder.d);
+    return recorder;
+}
+
+void video_recorder::optional_wrapper::emplace(
+    const char* filename, FilePermissions file_permissions, AclReportApi* acl_report,
+    const ImageView& image_view, int frame_rate,
+    const char* codec_name, const char* codec_options, int log_level)
+{
+    reset();
+
+    video_recorder new_recorder(
+        filename, file_permissions, acl_report, image_view,
+        frame_rate, codec_name, codec_options, log_level
+    );
+    recorder.d = std::move(new_recorder.d);
+}
+
+void video_recorder::optional_wrapper::reset() noexcept
+{
+    if (recorder.d)
+    {
+        recorder.write_trailer();
+        recorder.d.reset();
+    }
+}
+
 #else
 
 struct video_recorder::D {};
@@ -579,4 +624,21 @@ void video_recorder::preparing_timestamp_video_frame() { }
 
 void video_recorder::encoding_video_frame(int64_t /*frame_index*/) { }
 
+
+video_recorder::optional_wrapper::operator bool () const noexcept { return false; }
+
+video_recorder & video_recorder::optional_wrapper::operator*() noexcept { return recorder; }
+
+void video_recorder::optional_wrapper::emplace(
+    char const* /*filename*/, FilePermissions /*file_permissions*/, AclReportApi * /*acl_report*/,
+    ImageView const & /*image_view*/, int /*frame_rate*/,
+    const char * /*codec_name*/, char const* /*codec_options*/, int /*log_level*/
+)
+{}
+
+void video_recorder::optional_wrapper::reset() noexcept { }
+
 #endif
+
+video_recorder::video_recorder() noexcept
+{}

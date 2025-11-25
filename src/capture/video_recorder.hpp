@@ -34,6 +34,8 @@ class AclReportApi;
 class video_recorder
 {
 public:
+    struct optional_wrapper;
+
     video_recorder(
         char const* filename, FilePermissions file_permissions, AclReportApi * acl_report,
         ImageView const& image_view, int frame_rate,
@@ -51,6 +53,31 @@ public:
     void encoding_video_frame(int64_t frame_index);
 
 private:
+    video_recorder() noexcept;
+
+    void write_trailer();
+
     class D;
     std::unique_ptr<D> d;
+};
+
+
+struct video_recorder::optional_wrapper
+{
+    optional_wrapper() = default;
+
+    video_recorder & operator*() noexcept;
+
+    explicit operator bool () const noexcept;
+
+    void emplace(
+        char const* filename, FilePermissions file_permissions, AclReportApi * acl_report,
+        ImageView const& image_view, int frame_rate,
+        const char * codec_name, char const* codec_options, int log_level
+    );
+
+    void reset() noexcept;
+
+private:
+    video_recorder recorder;
 };
