@@ -1237,10 +1237,14 @@ static inline int replay(
 
                     if (update_progress_data.is_valid()) {
                         try {
-                            player.play(std::ref(update_progress_data),
-                                        program_requested_to_shutdown,
-                                        video_start_time,
-                                        video_stop_time);
+                            player.play(
+                                [&](MonotonicTimePoint now){
+                                    update_progress_data.update(now);
+                                },
+                                program_requested_to_shutdown,
+                                video_start_time,
+                                video_stop_time
+                            );
 
                             if (program_requested_to_shutdown) {
                                 update_progress_data.raise_error(

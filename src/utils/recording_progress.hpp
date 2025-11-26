@@ -109,6 +109,11 @@ public:
 
     void operator()(MonotonicTimePoint record_now)
     {
+        update(record_now);
+    }
+
+    void update(MonotonicTimePoint record_now)
+    {
         if (record_now <= this->start_record) {
             this->time_percentage = 0;
         }
