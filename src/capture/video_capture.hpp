@@ -36,6 +36,8 @@
 
 #include <chrono>
 
+#include <cstdio>
+
 class CaptureParams;
 class FullVideoParams;
 class SequencedVideoParams;
@@ -43,6 +45,36 @@ class Drawable;
 
 struct VideoCaptureCtx : noncopyable
 {
+    struct FilenameGenerator
+    {
+        FilenameGenerator(
+            std::string_view prefix,
+            std::string_view filename,
+            std::string_view extension
+        );
+
+        class NoNameWithOneCounter {};
+
+        FilenameGenerator(NoNameWithOneCounter);
+
+        int counter() const noexcept
+        {
+            return num;
+        }
+
+        std::string const& current_filename() const
+        {
+            return filename;
+        }
+
+        void next();
+
+    private:
+        std::string filename;
+        int const num_pos = 0;
+        int num = 0;
+    };
+
     enum class ImageByInterval : bool
     {
         ZeroOrOneWithTimestamp,
@@ -50,14 +82,11 @@ struct VideoCaptureCtx : noncopyable
     };
 
     VideoCaptureCtx(
-        MonotonicTimePoint monotonic_now,
-        RealTimePoint real_now,
-        ImageByInterval image_by_interval,
-        unsigned frame_rate,
+        CaptureParams const & capture_params,
         Drawable & drawable,
         LazyDrawablePointer & lazy_drawable_pointer,
         Rect crop_rect,
-        array_view<BitsetInStream::underlying_type> updatable_frame_marker_end_bitset_view
+        VideoParams const & video_params
     );
 
     gdi::GraphicApi& graphics_api() noexcept
@@ -93,7 +122,29 @@ struct VideoCaptureCtx : noncopyable
 
     tm get_tm() const;
 
+    MonotonicTimeToRealTime const & get_monotonic_to_real() const noexcept
+    {
+        return monotonic_to_real;
+    }
+
     void update_fullscreen();
+
+    bool has_thumbnail_feature() const noexcept
+    {
+        return image_capture.enabled;
+    }
+
+    int thumbnail_counter() const noexcept
+    {
+        return image_capture.filename_generator.counter();
+    }
+
+    std::string const& current_thumbnail_filename() const noexcept
+    {
+        return image_capture.filename_generator.current_filename();
+    }
+
+    void generate_thumbnail(tm const& now);
 
 private:
     void preparing_video_frame(video_recorder & recorder);
@@ -123,6 +174,13 @@ private:
         std::unique_ptr<uint8_t[]> out_bmpdata;
     };
 
+    struct ImageCapture
+    {
+        bool enabled;
+        FilenameGenerator filename_generator;
+        ScaledPng24 scaled_png;
+    };
+
     Drawable & drawable;
     LazyDrawablePointer & lazy_drawable_pointer;
     MonotonicTimePoint monotonic_last_time_capture;
@@ -143,9 +201,11 @@ private:
     BitsetInStream updatable_frame_marker_end_bitset_stream;
     BitsetInStream::underlying_type const* updatable_frame_marker_end_bitset_end;
 
-public:
+    ImageCapture image_capture;
+
     TimestampTracer timestamp_tracer;
 };
+
 
 class FullVideoCaptureImpl final : public gdi::CaptureApi
 {
@@ -173,13 +233,22 @@ public:
 
     void frame_marker_event(
         MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y
-    ) override;
+    ) override
+    {
+        this->video_cap_ctx.frame_marker_event(
+            this->recorder, now, cursor_x, cursor_y);
+    }
+
+    void next_thumbnail(MonotonicTimePoint now);
 
     WaitingTimeBeforeNextSnapshot periodic_snapshot(
         MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y
     ) override;
 
-    void synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time);
+    void synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time)
+    {
+        this->video_cap_ctx.synchronize_times(monotonic_time, real_time);
+    }
 
     void update_fullscreen()
     {
@@ -187,8 +256,12 @@ public:
     }
 
 private:
-    VideoCaptureCtx video_cap_ctx;
+    MonotonicTimePoint start_time;
+    MonotonicTimePoint last_time_thumbnail;
+    MonotonicTimePoint::duration thumbnail_interval;
     video_recorder recorder;
+    FILE * thumbnail_file;
+    VideoCaptureCtx video_cap_ctx;
 };
 
 
@@ -197,7 +270,6 @@ class SequencedVideoCaptureImpl final : public gdi::CaptureApi
 public:
     SequencedVideoCaptureImpl(
         CaptureParams const & capture_params,
-        unsigned png_width, unsigned png_height,
         Drawable & drawable,
         LazyDrawablePointer & lazy_drawable_pointer,
         Rect crop_rect,
@@ -219,7 +291,11 @@ public:
 
     void frame_marker_event(
         MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y
-    ) override;
+    ) override
+    {
+        this->video_cap_ctx.frame_marker_event(
+            *this->recorder, now, cursor_x, cursor_y);
+    }
 
     WaitingTimeBeforeNextSnapshot periodic_snapshot(
         MonotonicTimePoint now,
@@ -228,7 +304,10 @@ public:
 
     void next_video(MonotonicTimePoint now);
 
-    void synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time);
+    void synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time)
+    {
+        this->video_cap_ctx.synchronize_times(monotonic_time, real_time);
+    }
 
     void update_fullscreen()
     {
@@ -236,8 +315,6 @@ public:
     }
 
 private:
-    void ic_flush(const tm& now);
-
     void next_video_impl(MonotonicTimePoint now, NotifyNextVideo::Reason reason);
 
     // first next_video is ignored
@@ -246,37 +323,13 @@ private:
 
     void init_recorder();
 
-    struct FilenameGenerator
-    {
-        FilenameGenerator(
-            std::string_view prefix,
-            std::string_view filename,
-            std::string_view extension
-        );
-
-        void next();
-        char const* current_filename() const;
-
-    private:
-        std::string filename;
-        int const num_pos;
-        int num = 0;
-    };
-
-    bool ic_has_first_img = false;
-
     const MonotonicTimePoint monotonic_start_capture;
-    MonotonicTimeToRealTime monotonic_to_real;
 
-    VideoCaptureCtx video_cap_ctx;
-    FilenameGenerator vc_filename_generator;
+    VideoCaptureCtx::FilenameGenerator vc_filename_generator;
     video_recorder::optional_wrapper recorder;
-    FilenameGenerator ic_filename_generator;
-
-    ScaledPng24 ic_scaled_png;
 
     MonotonicTimePoint start_break;
-    const std::chrono::microseconds break_interval;
+    const MonotonicTimePoint::duration break_interval;
 
     NotifyNextVideo & next_video_notifier;
 
@@ -291,4 +344,6 @@ private:
     };
 
     const RecorderParams recorder_params;
+
+    VideoCaptureCtx video_cap_ctx;
 };

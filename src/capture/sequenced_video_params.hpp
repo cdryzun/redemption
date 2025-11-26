@@ -24,5 +24,5 @@
 
 struct SequencedVideoParams
 {
-    std::chrono::microseconds break_interval;
+    std::chrono::seconds break_interval;
 };

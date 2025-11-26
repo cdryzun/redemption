@@ -100,7 +100,7 @@ namespace ut
         RED_##lvl1(::ut::append_file_contents(filename_,                             \
             file_contents_) == FileContentsError::None);                             \
         if (current_count_error == ::redemption_unit_test_::current_count_error()) { \
-            RED_##lvl1(file_contents_ == expected_);                                 \
+            RED_##lvl1(chars_view{file_contents_} == expected_);                     \
         }                                                                            \
     }                                                                                \
 }(filename, content)

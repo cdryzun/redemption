@@ -25,6 +25,7 @@
 #include "capture/video_capture.hpp"
 #include "capture/video_recorder.hpp"
 #include "utils/drawable.hpp"
+#include "utils/sugar/byte_copy.hpp"
 
 #include "core/RDP/RDPDrawable.hpp"
 
@@ -157,28 +158,37 @@ WritableImageView VideoCaptureCtx::VideoCropper::get_image(Drawable& drawable) n
 }
 
 VideoCaptureCtx::VideoCaptureCtx(
-    MonotonicTimePoint monotonic_now,
-    RealTimePoint real_now,
-    ImageByInterval image_by_interval,
-    unsigned frame_rate,
+    CaptureParams const & capture_params,
     Drawable & drawable,
     LazyDrawablePointer & lazy_drawable_pointer,
     Rect crop_rect,
-    array_view<BitsetInStream::underlying_type> updatable_frame_marker_end_bitset_view
+    VideoParams const & video_params
 )
 : drawable(drawable)
 , lazy_drawable_pointer(lazy_drawable_pointer)
-, monotonic_last_time_capture(monotonic_now)
-, monotonic_to_real(monotonic_now, real_now)
-, frame_interval(std::chrono::microseconds(1000000L / frame_rate)) // `1000000L % frame_rate ` should be equal to 0
-, next_trace_time(monotonic_now)
-, image_by_interval(image_by_interval)
+, monotonic_last_time_capture(capture_params.now)
+, monotonic_to_real(capture_params.now, capture_params.real_now)
+// `1000000L % frame_rate` should be equal to 0
+, frame_interval(std::chrono::microseconds(1000000L / video_params.frame_rate))
+, next_trace_time(capture_params.now)
+, image_by_interval(video_params_to_image_by_interval(video_params.no_timestamp))
 , has_timestamp(image_by_interval == ImageByInterval::ZeroOrOneWithTimestamp)
 , video_cropper(drawable, crop_rect)
 , rect_tracker(drawable.width(), drawable.height())
-, updatable_frame_marker_end_bitset_stream(updatable_frame_marker_end_bitset_view.data())
-, updatable_frame_marker_end_bitset_end(updatable_frame_marker_end_bitset_view.end())
+, updatable_frame_marker_end_bitset_stream(video_params.updatable_frame_marker_end_bitset_view.data())
+, updatable_frame_marker_end_bitset_end(video_params.updatable_frame_marker_end_bitset_view.end())
+, image_capture {
+    .enabled = video_params.thumbnail.enabled,
+    .filename_generator = video_params.thumbnail.enabled
+        ? FilenameGenerator{ capture_params.record_path, capture_params.basename, "png" }
+        : FilenameGenerator::NoNameWithOneCounter{},
+    .scaled_png { video_params.thumbnail.width, video_params.thumbnail.height },
+}
 {
+    if (video_params.verbosity) {
+        LOG(LOG_INFO, "Video recording: codec: %s, frame_rate: %u, options: %s",
+            video_params.codec, video_params.frame_rate, video_params.codec_options);
+    }
 }
 
 void VideoCaptureCtx::preparing_video_frame(video_recorder & recorder)
@@ -434,16 +444,21 @@ WaitingTimeBeforeNextSnapshot VideoCaptureCtx::snapshot(
     return WaitingTimeBeforeNextSnapshot(frame_interval - tick);
 }
 
-//@}
-
-
-static void log_video_params(VideoParams const& video_params)
+void VideoCaptureCtx::generate_thumbnail(tm const& now)
 {
-    if (video_params.verbosity) {
-        LOG(LOG_INFO, "Video recording: codec: %s, frame_rate: %u, options: %s",
-            video_params.codec, video_params.frame_rate, video_params.codec_options);
+    if (!has_thumbnail_feature()) {
+        return ;
     }
+
+    DrawablePointer::BufferSaver buffer_saver;
+    auto image = this->acquire_image_for_dump(buffer_saver, now);
+    auto & filename = image_capture.filename_generator.current_filename();
+    image_capture.scaled_png.dump_png24(filename.c_str(), image, true);
+    release_image_for_dump(image, buffer_saver);
+    image_capture.filename_generator.next();
 }
+
+//@}
 
 
 // FullVideoCaptureImpl
@@ -455,19 +470,16 @@ FullVideoCaptureImpl::FullVideoCaptureImpl(
     LazyDrawablePointer & lazy_drawable_pointer,
     Rect crop_rect,
     VideoParams const & video_params,
-    FullVideoParams const & /*full_video_params*/ /*empty struct*/)
-: video_cap_ctx(
-    capture_params.now, capture_params.real_now,
-    video_params_to_image_by_interval(video_params.no_timestamp),
-    video_params.frame_rate, drawable, lazy_drawable_pointer, crop_rect,
-    video_params.updatable_frame_marker_end_bitset_view)
+    FullVideoParams const & full_video_params)
+: start_time(capture_params.now)
+, last_time_thumbnail(capture_params.now)
+, thumbnail_interval(
+    video_params.thumbnail.enabled
+    && full_video_params.thumbnail_interval > MonotonicTimePoint::duration::zero()
+        ? full_video_params.thumbnail_interval
+        : MonotonicTimePoint::duration::zero())
 , recorder(
-    str_concat(
-        std::string_view{capture_params.record_path},
-        std::string_view{capture_params.basename},
-        '.',
-        video_params.codec
-    ).c_str(),
+    str_concat(capture_params.record_path, capture_params.basename, '.', video_params.codec).c_str(),
     capture_params.file_permissions,
     capture_params.session_log,
     drawable,
@@ -475,32 +487,115 @@ FullVideoCaptureImpl::FullVideoCaptureImpl(
     video_params.codec.c_str(),
     video_params.codec_options.c_str(),
     checked_int{video_params.verbosity})
+, thumbnail_file{[&]{
+    FILE * f = nullptr;
+
+    if (!video_params.thumbnail.enabled) {
+        return f;
+    }
+
+    auto fname = str_concat(capture_params.record_path, capture_params.basename, ".thumbnails.json");
+    f = fopen(fname.c_str(), "w");
+    if (!f) {
+        int errnum = errno;
+        LOG(LOG_ERR, "Open .thumbnails file error: %s [%d]", strerror(errnum), errnum);
+        throw Error(ERR_RECORDER_SNAPSHOT_FAILED, errnum);
+    }
+
+    return f;
+}()}
+, video_cap_ctx(
+    capture_params, drawable, lazy_drawable_pointer, crop_rect, video_params)
 {
-    log_video_params(video_params);
 }
 
 FullVideoCaptureImpl::~FullVideoCaptureImpl()
 {
+    if (this->thumbnail_file) {
+        if (this->video_cap_ctx.thumbnail_counter()) {
+            constexpr auto last_part = "\"}]"_av;
+            fwrite(last_part.data(), last_part.size(), 1, this->thumbnail_file);
+        }
+        else {
+            fwrite("[]", 2, 1, this->thumbnail_file);
+        }
+        fclose(this->thumbnail_file);
+    }
     this->video_cap_ctx.encoding_end_frame(this->recorder);
-}
-
-
-void FullVideoCaptureImpl::frame_marker_event(
-    MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y)
-{
-    this->video_cap_ctx.frame_marker_event(
-        this->recorder, now, cursor_x, cursor_y);
 }
 
 WaitingTimeBeforeNextSnapshot FullVideoCaptureImpl::periodic_snapshot(
     MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y)
 {
-    return this->video_cap_ctx.snapshot(this->recorder, now, cursor_x, cursor_y);
+    auto ret = this->video_cap_ctx.snapshot(this->recorder, now, cursor_x, cursor_y);
+
+    if (this->thumbnail_interval > MonotonicTimePoint::duration::zero()
+     && this->last_time_thumbnail + this->thumbnail_interval <= now
+    ) {
+        next_thumbnail(now);
+        ret.set_min(this->thumbnail_interval);
+    }
+
+    return ret;
 }
 
-void FullVideoCaptureImpl::synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time)
+void FullVideoCaptureImpl::next_thumbnail(MonotonicTimePoint now)
 {
-    this->video_cap_ctx.synchronize_times(monotonic_time, real_time);
+    if (!this->thumbnail_file) {
+        return ;
+    }
+
+    constexpr auto part1_first = "[{\"time\":"_av;
+    constexpr auto part1_other = "\"},{\"time\":"_av;
+    constexpr auto part2 = ",\"filename\":\""_av;
+    char buf[
+        buffer_size_of_uint64_to_chars
+      + part1_first.size()
+      + part1_other.size()
+      + part2.size()
+    ];
+
+    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->start_time);
+    auto dur_as_uint = static_cast<uint64_t>(dur.count());
+
+    char * p = buf;
+    if (this->video_cap_ctx.thumbnail_counter()) {
+        p = unchecked_bytes_copy_and_advance(p, part1_other);
+    }
+    else {
+        p = unchecked_bytes_copy_and_advance(p, part1_first);
+    }
+    p = unchecked_bytes_copy_and_advance(p, int_to_decimal_chars(dur_as_uint).sv());
+    p = unchecked_bytes_copy_and_advance(p, part2);
+
+    fwrite(buf, checked_int{p - buf}, 1, this->thumbnail_file);
+
+    auto const & filename = this->video_cap_ctx.current_thumbnail_filename();
+    fwrite(filename.data(), filename.size(), 1, this->thumbnail_file);
+
+    auto monotonic_to_real = this->video_cap_ctx.get_monotonic_to_real();
+    this->video_cap_ctx.generate_thumbnail(to_tm_t(now, monotonic_to_real));
+    this->last_time_thumbnail = now;
+}
+
+
+VideoCaptureCtx::FilenameGenerator::FilenameGenerator(
+    std::string_view prefix,
+    std::string_view filename,
+    std::string_view extension)
+: filename(str_concat(prefix, filename, "-000000."_av, extension))
+, num_pos(int(this->filename.size() - (extension.size() + 1)))
+{}
+
+VideoCaptureCtx::FilenameGenerator::FilenameGenerator(NoNameWithOneCounter)
+: num(1)
+{}
+
+void VideoCaptureCtx::FilenameGenerator::next()
+{
+    ++this->num;
+    auto chars = int_to_decimal_chars(this->num);
+    memcpy(this->filename.data() + this->num_pos - chars.size(), chars.data(), chars.size());
 }
 
 //@}
@@ -509,42 +604,16 @@ void FullVideoCaptureImpl::synchronize_times(MonotonicTimePoint monotonic_time, 
 // SequencedVideoCaptureImpl
 //@{
 
-SequencedVideoCaptureImpl::FilenameGenerator::FilenameGenerator(
-    std::string_view prefix,
-    std::string_view filename,
-    std::string_view extension)
-: filename(str_concat(prefix, filename, "-000000."_av, extension))
-, num_pos(int(this->filename.size() - (extension.size() + 1)))
-{}
-
-void SequencedVideoCaptureImpl::FilenameGenerator::next()
-{
-    ++this->num;
-    auto chars = int_to_decimal_chars(this->num);
-    memcpy(this->filename.data() + this->num_pos - chars.size(), chars.data(), chars.size());
-}
-
-char const* SequencedVideoCaptureImpl::FilenameGenerator::current_filename() const
-{
-    return this->filename.c_str();
-}
-
-
 WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::periodic_snapshot(
     MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y)
 {
     this->video_cap_ctx.snapshot(*this->recorder, now, cursor_x, cursor_y);
-    if (!this->ic_has_first_img) {
+    if (this->video_cap_ctx.thumbnail_counter()) {
+        return this->video_sequencer_periodic_snapshot(now);
+    }
+    else {
         return this->first_periodic_snapshot(now);
     }
-    return this->video_sequencer_periodic_snapshot(now);
-}
-
-void SequencedVideoCaptureImpl::frame_marker_event(
-    MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y)
-{
-    this->video_cap_ctx.frame_marker_event(
-        *this->recorder, now, cursor_x, cursor_y);
 }
 
 WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::first_periodic_snapshot(MonotonicTimePoint now)
@@ -559,8 +628,8 @@ WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::first_periodic_snapshot
          || duration > 2s
          || duration >= video_interval
         ) {
-            this->ic_flush(to_tm_t(now, this->monotonic_to_real));
-            this->ic_has_first_img = true;
+            auto monotonic_to_real = this->video_cap_ctx.get_monotonic_to_real();
+            this->video_cap_ctx.generate_thumbnail(to_tm_t(now, monotonic_to_real));
             ret = WaitingTimeBeforeNextSnapshot(video_interval);
         }
         else {
@@ -571,7 +640,8 @@ WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::first_periodic_snapshot
         ret = WaitingTimeBeforeNextSnapshot(interval - duration);
     }
 
-    return std::min(ret.duration(), this->video_sequencer_periodic_snapshot(now).duration());
+    ret.set_min(this->video_sequencer_periodic_snapshot(now).duration());
+    return ret;
 }
 
 
@@ -581,7 +651,7 @@ void SequencedVideoCaptureImpl::init_recorder()
     const auto now = this->video_cap_ctx.get_tm();
     auto image = this->video_cap_ctx.acquire_image_for_dump(buffer_saver, now);
     this->recorder.emplace(
-        this->vc_filename_generator.current_filename(),
+        this->vc_filename_generator.current_filename().c_str(),
         this->recorder_params.file_permissions,
         this->recorder_params.acl_report,
         image,
@@ -593,15 +663,6 @@ void SequencedVideoCaptureImpl::init_recorder()
     this->video_cap_ctx.release_image_for_dump(image, buffer_saver);
 }
 
-void SequencedVideoCaptureImpl::ic_flush(const tm& now)
-{
-    DrawablePointer::BufferSaver buffer_saver;
-    auto image = this->video_cap_ctx.acquire_image_for_dump(buffer_saver, now);
-    this->ic_scaled_png.dump_png24(this->ic_filename_generator.current_filename(), image, true);
-    this->video_cap_ctx.release_image_for_dump(image, buffer_saver);
-    this->ic_filename_generator.next();
-}
-
 WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::video_sequencer_periodic_snapshot(
     MonotonicTimePoint now)
 {
@@ -609,14 +670,14 @@ WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::video_sequencer_periodi
     auto const interval = now - this->start_break;
     if (interval >= this->break_interval) {
         this->next_video_impl(now, NotifyNextVideo::Reason::sequenced);
+        return WaitingTimeBeforeNextSnapshot(this->break_interval);
     }
-    return WaitingTimeBeforeNextSnapshot(this->break_interval);
+    return WaitingTimeBeforeNextSnapshot(this->break_interval - interval);
 }
 
 
 SequencedVideoCaptureImpl::SequencedVideoCaptureImpl(
     CaptureParams const & capture_params,
-    unsigned png_width, unsigned png_height,
     Drawable & drawable,
     LazyDrawablePointer & lazy_drawable_pointer,
     Rect crop_rect,
@@ -624,15 +685,7 @@ SequencedVideoCaptureImpl::SequencedVideoCaptureImpl(
     SequencedVideoParams const& sequenced_video_params,
     NotifyNextVideo & next_video_notifier)
 : monotonic_start_capture(capture_params.now)
-, monotonic_to_real(capture_params.now, capture_params.real_now)
-, video_cap_ctx(
-    capture_params.now, capture_params.real_now,
-    video_params_to_image_by_interval(video_params.no_timestamp),
-    video_params.frame_rate, drawable, lazy_drawable_pointer, crop_rect,
-    video_params.updatable_frame_marker_end_bitset_view)
 , vc_filename_generator(capture_params.record_path, capture_params.basename, video_params.codec)
-, ic_filename_generator(capture_params.record_path, capture_params.basename, "png")
-, ic_scaled_png(png_width, png_height)
 , start_break(capture_params.now)
 , break_interval((sequenced_video_params.break_interval > std::chrono::microseconds::zero())
     ? sequenced_video_params.break_interval
@@ -646,8 +699,8 @@ SequencedVideoCaptureImpl::SequencedVideoCaptureImpl(
     int(video_params.verbosity),
     capture_params.file_permissions,
 }
+, video_cap_ctx(capture_params, drawable, lazy_drawable_pointer, crop_rect, video_params)
 {
-    log_video_params(video_params);
     this->init_recorder();
 }
 
@@ -658,16 +711,14 @@ SequencedVideoCaptureImpl::~SequencedVideoCaptureImpl()
     }
 }
 
-
 void SequencedVideoCaptureImpl::next_video_impl(MonotonicTimePoint now, NotifyNextVideo::Reason reason)
 {
     this->start_break = now;
 
-    tm ptm = to_tm_t(now, this->monotonic_to_real);
+    tm ptm = to_tm_t(now, this->video_cap_ctx.get_monotonic_to_real());
 
-    if (!this->ic_has_first_img) {
-        this->ic_has_first_img = true;
-        this->ic_flush(ptm);
+    if (!this->video_cap_ctx.thumbnail_counter()) {
+        this->video_cap_ctx.generate_thumbnail(ptm);
     }
 
     this->video_cap_ctx.encoding_end_frame(*this->recorder);
@@ -677,7 +728,7 @@ void SequencedVideoCaptureImpl::next_video_impl(MonotonicTimePoint now, NotifyNe
     this->init_recorder();
     this->video_cap_ctx.next_video(*this->recorder);
 
-    this->ic_flush(ptm);
+    this->video_cap_ctx.generate_thumbnail(ptm);
 
     this->next_video_notifier.notify_next_video(now, reason);
 }
@@ -685,12 +736,6 @@ void SequencedVideoCaptureImpl::next_video_impl(MonotonicTimePoint now, NotifyNe
 void SequencedVideoCaptureImpl::next_video(MonotonicTimePoint now)
 {
     this->next_video_impl(now, NotifyNextVideo::Reason::external);
-}
-
-void SequencedVideoCaptureImpl::synchronize_times(MonotonicTimePoint monotonic_time, RealTimePoint real_time)
-{
-    this->monotonic_to_real = MonotonicTimeToRealTime(monotonic_time, real_time);
-    this->video_cap_ctx.synchronize_times(monotonic_time, real_time);
 }
 
 //@}

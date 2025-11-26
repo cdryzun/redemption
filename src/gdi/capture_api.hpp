@@ -52,6 +52,14 @@ struct CaptureApi : private noncopyable
             assert(duration_.count() >= 0);
         }
 
+        void set_min(WaitingTimeBeforeNextSnapshot other)
+        {
+            if (other.duration_ < duration_)
+            {
+                duration_ = other.duration_;
+            }
+        }
+
         MonotonicTimePoint::duration const& duration() const noexcept { return duration_; }
 
     private:

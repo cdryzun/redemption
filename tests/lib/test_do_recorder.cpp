@@ -910,6 +910,82 @@ RED_AUTO_TEST_CASE_WD(TestMetaCaptureDisableKbdInput, wd)
         "{\"percentage\":100,\"eta\":0,\"videos\":1}"_av);
 }
 
+RED_AUTO_TEST_CASE_WD(TestFullVideoWithThumbnail, wd)
+{
+    auto const & outdir = wd.dirname().string();
+    auto output = outdir + "test_capture.mwrm";
+    char const * argv[] {
+        "recorder.py",
+        "redrec",
+        "-i",
+            FIXTURES_PATH "/sample.mwrm", // NOLINT
+        "--mwrm-path",
+            FIXTURES_PATH,
+        "--config-file",
+            FIXTURES_PATH "/disable_kbd_input_in_meta.ini", // NOLINT
+        "-o", output.c_str(),
+        "--full",
+        "--ocr",
+        "--thumbnails",
+        "--ignore-file-size",
+        "--video-codec", "mp4",
+        "--video-codec-options", "crf=0 preset=superfast",
+    };
+
+    TEST_DO_MAIN(argv, 0, hmac_key, trace_fn,
+        str_concat("Output file is \"", output, "\".\n\n"), ""_av);
+
+    RED_CHECK_FILE_CONTENTS(wd.add_file("test_capture.meta"),
+        "2012-11-07 17:13:31 + type=\"TITLE_BAR\" data=\"*local - Check Point SmartView Monitor\"\n"
+        "2012-11-07 17:13:43 + type=\"TITLE_BAR\" data=\"View Monitor\"\n"
+        "2012-11-07 17:13:51 + type=\"TITLE_BAR\" data=\"Magnifique paint - Paint\"\n"
+        "2012-11-07 17:13:58 + type=\"TITLE_BAR\" data=\"'int\"\n"
+        "2012-11-07 17:14:01 + type=\"TITLE_BAR\" data=\"Magnifique paint deux - Paint\"\n"
+        "2012-11-07 17:14:03 + type=\"TITLE_BAR\" data=\"View Monitor\"\n"
+        "2012-11-07 17:14:34 + type=\"TITLE_BAR\" data=\"problèmes\"\n"
+        "2012-11-07 17:15:03 + type=\"TITLE_BAR\" data=\"*local - Check Point SmartView Monitor\"\n"
+        "2012-11-07 17:15:04 + type=\"TITLE_BAR\" data=\"View Monitor\"\n"
+        "2012-11-07 17:15:11 + type=\"TITLE_BAR\" data=\"Select Community\"\n"
+        "2012-11-07 17:15:12 + type=\"TITLE_BAR\" data=\"View Monitor\"\n"
+        "2012-11-07 17:15:13 + type=\"TITLE_BAR\" data=\"Select Gateway\"\n"
+        "2012-11-07 17:15:15 + type=\"TITLE_BAR\" data=\"View Monitor\"\n"
+        ""_av);
+
+    RED_CHECK_FILE_CONTENTS(wd.add_file("test_capture.thumbnails.json"), str_concat("["
+        "{\"time\":1078,\"filename\":\""_av, outdir, "test_capture-000000.png\"},"
+        "{\"time\":12599,\"filename\":\""_av, outdir, "test_capture-000001.png\"},"
+        "{\"time\":20839,\"filename\":\""_av, outdir, "test_capture-000002.png\"},"
+        "{\"time\":28527,\"filename\":\""_av, outdir, "test_capture-000003.png\"},"
+        "{\"time\":31015,\"filename\":\""_av, outdir, "test_capture-000004.png\"},"
+        "{\"time\":32847,\"filename\":\""_av, outdir, "test_capture-000005.png\"},"
+        "{\"time\":64472,\"filename\":\""_av, outdir, "test_capture-000006.png\"},"
+        "{\"time\":93087,\"filename\":\""_av, outdir, "test_capture-000007.png\"},"
+        "{\"time\":94103,\"filename\":\""_av, outdir, "test_capture-000008.png\"},"
+        "{\"time\":100559,\"filename\":\""_av, outdir, "test_capture-000009.png\"},"
+        "{\"time\":101639,\"filename\":\""_av, outdir, "test_capture-000010.png\"},"
+        "{\"time\":103343,\"filename\":\""_av, outdir, "test_capture-000011.png\"},"
+        "{\"time\":105479,\"filename\":\""_av, outdir, "test_capture-000012.png\"}"
+        "]"_av));
+
+    RED_TEST_FILE_CONTENTS(wd.add_file("test_capture.pgs"),
+        "{\"percentage\":100,\"eta\":0,\"videos\":1}"_av);
+
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000000.png"), 42090);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000001.png"), 47510);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000002.png"), 185202);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000003.png"), 20300);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000004.png"), 54989);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000005.png"), 48234);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000006.png"), 21309);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000007.png"), 48634);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000008.png"), 48644);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000009.png"), 44956);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000010.png"), 47720);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000011.png"), 46964);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000012.png"), 47707);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture.mp4"), 5794671 +- 10000_v);
+}
+
 RED_AUTO_TEST_CASE_WD(TestVideoCroppedV1, wd)
 {
     auto output = wd.dirname().string() + "test_capture.mwrm";
@@ -923,7 +999,7 @@ RED_AUTO_TEST_CASE_WD(TestVideoCroppedV1, wd)
         "--config-file",
             FIXTURES_PATH "/smart_video_cropping_v1.ini", // NOLINT
         "-o", output.c_str(),
-        "-f",
+        "-fj",
         "-S",
     };
 
@@ -949,7 +1025,7 @@ RED_AUTO_TEST_CASE_WD(TestVideoCroppedV2, wd)
         "--config-file",
             FIXTURES_PATH "/smart_video_cropping_v2.ini", // NOLINT
         "-o", output.c_str(),
-        "-f",
+        "-fj",
         "-S",
     };
 

@@ -38,3 +38,10 @@ inline uint8_t* byte_move(uint8_t* p, bytes_view av)
     std::memmove(p, av.data(), av.size());
     return p + av.size();
 }
+
+/// \return dest + src.size()
+inline char* unchecked_bytes_copy_and_advance(char* dest, bytes_view src) noexcept
+{
+    std::memcpy(dest, src.data(), src.size());
+    return dest + src.size();
+}

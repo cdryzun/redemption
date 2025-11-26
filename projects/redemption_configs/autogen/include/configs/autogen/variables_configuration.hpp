@@ -3356,7 +3356,16 @@ namespace cfg
         using mapped_type = bool;
         type value { true };
     };
-    /// The maximum time between two videos when no title bar is detected. <br/>
+    /// The maximum duration between two thumbnails when no title bar is detected.Set to 0 to disable this feature. <br/>
+    /// type: std::chrono::seconds <br/>
+    /// default: 0 <br/>
+    struct audit::maximum_thumbnail_interval {
+        static constexpr unsigned acl_proxy_communication_flags = 0b00;
+        using type = std::chrono::seconds;
+        using mapped_type = std::chrono::seconds;
+        type value { 0 };
+    };
+    /// The maximum duration between two videos when no title bar is detected. <br/>
     /// type: std::chrono::seconds <br/>
     /// default: 604800 <br/>
     struct audit::video_break_interval {
@@ -5822,7 +5831,8 @@ struct capture
 { static constexpr bool is_section = true; };
 
 struct audit
-: cfg::audit::video_break_interval
+: cfg::audit::maximum_thumbnail_interval
+, cfg::audit::video_break_interval
 , cfg::audit::video_codec
 , cfg::audit::ffmpeg_options
 , cfg::audit::rt_png_interval

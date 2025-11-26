@@ -23,15 +23,22 @@
 #include <string>
 #include <chrono>
 
-#include "configs/autogen/enums.hpp"
 #include "utils/sugar/array_view.hpp"
 
 struct VideoParams
 {
+    struct Thumbnail
+    {
+        bool enabled;
+        unsigned width;
+        unsigned height;
+    };
+
     unsigned frame_rate;
     std::string codec;
     std::string codec_options;
     bool no_timestamp;
+    Thumbnail thumbnail;
     unsigned verbosity;
     array_view<unsigned long long> updatable_frame_marker_end_bitset_view {};
 };

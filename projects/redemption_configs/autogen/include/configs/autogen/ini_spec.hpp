@@ -475,7 +475,12 @@ wrm_compression_algorithm = option(0, 1, 2, default=1)
 #_advanced
 enable_keyboard_log = boolean(default=True)
 
-# The maximum time between two videos when no title bar is detected.<br/>
+# The maximum duration between two thumbnails when no title bar is detected.Set to 0 to disable this feature.<br/>
+# (in seconds)
+#_advanced
+maximum_thumbnail_interval = integer(min=0, default=0)
+
+# The maximum duration between two videos when no title bar is detected.<br/>
 # (in seconds)
 #_advanced
 video_break_interval = integer(min=0, default=604800)

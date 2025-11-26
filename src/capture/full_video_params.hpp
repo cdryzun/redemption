@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include <chrono>
+
 struct FullVideoParams
 {
+    std::chrono::seconds thumbnail_interval;
 };

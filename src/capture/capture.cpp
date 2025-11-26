@@ -1225,6 +1225,9 @@ void Capture::NotifyTitleChanged::notify_title_changed(
         this->capture.meta_capture_obj->meta.title_changed(now, title);
     }
 #ifndef REDEMPTION_NO_FFMPEG
+    if (this->capture.full_video_capture_obj) {
+        this->capture.full_video_capture_obj->next_thumbnail(now);
+    }
     if (this->capture.sequenced_video_capture_obj) {
         this->capture.sequenced_video_capture_obj->next_video(now);
     }
@@ -1251,8 +1254,8 @@ Capture::Capture(
     bool capture_png, const PngParams& png_params,
     bool capture_pattern_checker, const PatternParams& pattern_params,
     bool capture_ocr, const OcrParams& ocr_params,
-    bool capture_video, const SequencedVideoParams& sequenced_video_params,
-    bool capture_video_full, const FullVideoParams& full_video_params,
+    bool capture_sequenced_video, const SequencedVideoParams& sequenced_video_params,
+    bool capture_full_video, const FullVideoParams& full_video_params,
     bool capture_meta, const MetaParams& meta_params,
     bool capture_kbd, const KbdLogParams& kbd_log_params,
     const VideoParams& video_params,
@@ -1265,7 +1268,11 @@ Capture::Capture(
     capture_params.now,
     static_cast<uint16_t>(drawable_params.rdp_drawable.width() / 2),
     static_cast<uint16_t>(drawable_params.rdp_drawable.height() / 2)}
-, capture_drawable(capture_wrm || capture_video || capture_ocr || capture_png || capture_video_full)
+, capture_drawable(capture_wrm
+                || capture_sequenced_video
+                || capture_full_video
+                || capture_ocr
+                || capture_png)
 , smart_video_cropping(capture_params.smart_video_cropping)
 , rail_screen_offset{
     checked_int(-cropper_info.screen_position.x),
@@ -1278,14 +1285,14 @@ Capture::Capture(
         capture_wrm ? "yes" : "no",
         capture_png ? "yes" : "no",
         capture_kbd ? "yes" : "no",
-        capture_video ? "yes" : "no",
-        capture_video_full ? "yes" : "no",
+        capture_sequenced_video ? "yes" : "no",
+        capture_full_video ? "yes" : "no",
         capture_pattern_checker ? "yes" : "no",
         capture_ocr ? (ocr_params.ocr_version == OcrVersion::v2 ? "v2 " : "v1 ") : "no",
         capture_meta ? "yes" : "no"
     );
 
-    if (capture_png || (capture_params.session_log && (capture_video || capture_ocr))) {
+    if (capture_png || (capture_params.session_log && (capture_sequenced_video || capture_ocr))) {
         if (recursive_create_directory(capture_params.record_tmp_path,
                 S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP) != 0) {
             LOG(LOG_INFO, "Failed to create directory: \"%s\"", capture_params.record_tmp_path);
@@ -1293,7 +1300,7 @@ Capture::Capture(
     }
 
     if (!(capture_png && png_params.real_time_image_capture) &&
-        (cropper_info.crop_rect.isempty() || !(capture_png || capture_video || capture_video_full))) {
+        (cropper_info.crop_rect.isempty() || !(capture_png || capture_sequenced_video || capture_full_video))) {
         smart_video_cropping = SmartVideoCropping::disable;
     }
 
@@ -1380,25 +1387,24 @@ Capture::Capture(
         }
 
 #ifndef REDEMPTION_NO_FFMPEG
-        if (capture_video) {
+        if (capture_sequenced_video) {
             Ref<NotifyNextVideo> notifier = this->null_notifier_next_video;
             if (this->meta_capture_obj) {
                 this->notifier_next_video.session_meta = &this->meta_capture_obj->meta;
                 notifier = this->notifier_next_video;
             }
             this->sequenced_video_capture_obj = std::make_unique<SequencedVideoCaptureImpl>(
-                capture_params, png_params.png_width, png_params.png_height,
-                this->gd_drawable.impl(), *this->lazy_drawable_pointer,
+                capture_params, this->gd_drawable.impl(), *this->lazy_drawable_pointer,
                 real_crop_rect, video_params, sequenced_video_params, notifier);
         }
 
-        if (capture_video_full) {
+        if (capture_full_video) {
             this->full_video_capture_obj = std::make_unique<FullVideoCaptureImpl>(
                 capture_params, this->gd_drawable.impl(), *this->lazy_drawable_pointer,
                 real_crop_rect, video_params, full_video_params);
         }
 #else
-        if (capture_video || capture_video_full) {
+        if (capture_sequenced_video || capture_full_video) {
             (void)sequenced_video_params;
             (void)full_video_params;
             (void)video_params;

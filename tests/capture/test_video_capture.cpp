@@ -120,17 +120,27 @@ namespace
         RDPDrawable drawable(800, 600);
         PointerCache ptr_cache(15);
         LazyDrawablePointer lazy_drawable_pointer(ptr_cache.source_pointers_view());
-        VideoParams video_params{
-            25, codec.name, codec.options, false, 0};
+        VideoParams video_params {
+            .frame_rate = 25,
+            .codec = codec.name,
+            .codec_options = codec.options,
+            .no_timestamp = false,
+            .thumbnail {
+                .enabled = true,
+                .width = 0,
+                .height = 0,
+            },
+            .verbosity = 0,
+        };
         SequencedVideoParams sequenced_video_params { video_interval };
         CaptureParams capture_params{
             monotonic_time, real_time, "video", nullptr, dirname,
             FilePermissions::user_permissions(BitPermissions::read),
             nullptr, SmartVideoCropping::disable, 0};
         SequencedVideoCaptureImpl video_capture(
-            capture_params, 0 /* png_width */, 0 /* png_height */,
-            drawable.impl(), lazy_drawable_pointer, to_rect(drawable, cropped),
-            video_params, sequenced_video_params, next_video_notifier);
+            capture_params, drawable.impl(), lazy_drawable_pointer,
+            to_rect(drawable, cropped), video_params,
+            sequenced_video_params, next_video_notifier);
         simple_movie(
             monotonic_time, loop_duration, drawable, lazy_drawable_pointer,
             video_capture, video_capture.graphics_api(), bool(mouse));
@@ -145,15 +155,25 @@ namespace
         RDPDrawable drawable(800, 600);
         PointerCache ptr_cache(15);
         LazyDrawablePointer lazy_drawable_pointer(ptr_cache.source_pointers_view());
-        VideoParams video_params{
-            25, codec.name, codec.options, false, 0};
+        VideoParams video_params {
+            .frame_rate = 25,
+            .codec = codec.name,
+            .codec_options = codec.options,
+            .no_timestamp = false,
+            .thumbnail = {
+                .enabled = false,
+                .width = 0,
+                .height = 0,
+            },
+            .verbosity = 0,
+        };
         CaptureParams capture_params{
             monotonic_time, real_time, "video", nullptr, dirname,
             FilePermissions::user_and_group_permissions(BitPermissions::read),
             nullptr, SmartVideoCropping::disable, 0};
         FullVideoCaptureImpl video_capture(
-            capture_params, drawable.impl(), lazy_drawable_pointer, to_rect(drawable, cropped),
-            video_params, FullVideoParams{});
+            capture_params, drawable.impl(), lazy_drawable_pointer,
+            to_rect(drawable, cropped), video_params, FullVideoParams{});
         simple_movie(
             monotonic_time, loop_duration, drawable, lazy_drawable_pointer,
             video_capture, video_capture.graphics_api(), bool(mouse));

@@ -2834,10 +2834,19 @@ _.section("audit", [&]
     });
 
     _.member(MemberInfo{
+        .name = "maximum_thumbnail_interval",
+        .value = value<std::chrono::seconds>(0),
+        .spec = global_spec(no_acl, spec::advanced),
+        .desc =
+            "The maximum duration between two thumbnails when no title bar is detected."
+            "Set to 0 to disable this feature.",
+    });
+
+    _.member(MemberInfo{
         .name = "video_break_interval",
         .value = value<std::chrono::seconds>(60*60*24*7), // 1 week
         .spec = global_spec(no_acl, spec::advanced),
-        .desc = "The maximum time between two videos when no title bar is detected."
+        .desc = "The maximum duration between two videos when no title bar is detected."
     });
 
     _.member(MemberInfo{

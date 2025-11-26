@@ -1085,23 +1085,23 @@ static inline int replay(
 
                     const bool capture_ocr = bool(rp.capture_flags & CaptureFlags::ocr)
                                             || capture_pattern_checker;
-                    const bool capture_video = bool(rp.capture_flags & CaptureFlags::video);
-                    const bool capture_video_full = rp.full_video;
+                    const bool capture_sequenced_video = bool(rp.capture_flags & CaptureFlags::video);
+                    const bool capture_full_video = rp.full_video;
                     const bool capture_meta = capture_ocr;
                     const bool capture_kbd = false;
 
                     const auto spath = ParsePath(rp.output_filename);
 
                     PngParams png_params{
-                        rp.png_geometry.w,
-                        rp.png_geometry.h,
-                        rp.png_interval,
-                        /*png_limit = */0,
-                        /*real_time_image_capture = */false,
-                        /*remote_program_session = */false,
-                        /*use_redis_with_rt_display = */false,
-                        /*real_basename = */spath.basename.c_str(),
-                        /*redis_key_name = */nullptr,
+                        .png_width = rp.png_geometry.w,
+                        .png_height = rp.png_geometry.h,
+                        .png_interval = rp.png_interval,
+                        .png_limit = 0,
+                        .real_time_image_capture = false,
+                        .remote_program_session = false,
+                        .use_redis_with_rt_display = false,
+                        .real_basename = spath.basename.c_str(),
+                        .redis_key_name = nullptr,
                     };
 
                     RDPDrawable rdp_drawable{max_screen_dim.w, max_screen_dim.h};
@@ -1154,21 +1154,21 @@ static inline int replay(
                         };
 
                         auto* ptr = &retarded_capture.emplace(
-                                capture_params
-                            , drawable_params
-                            , capture_wrm, wrm_params
-                            , capture_png, png_params
-                            , capture_pattern_checker, PatternParams{}
-                            , capture_ocr, rp.ocr_params
-                            , capture_video, rp.sequenced_video_params
-                            , capture_video_full, rp.full_video_params
-                            , capture_meta, meta_params
-                            , capture_kbd, kbd_log_params
-                            , rp.video_params
-                            , &update_progress_data
-                            , Capture::CropperInfo{crop_rect, screen_position}
-                            // TODO rail_window_rect
-                            , Rect()
+                            capture_params
+                          , drawable_params
+                          , capture_wrm, wrm_params
+                          , capture_png, png_params
+                          , capture_pattern_checker, PatternParams{}
+                          , capture_ocr, rp.ocr_params
+                          , capture_sequenced_video, rp.sequenced_video_params
+                          , capture_full_video, rp.full_video_params
+                          , capture_meta, meta_params
+                          , capture_kbd, kbd_log_params
+                          , rp.video_params
+                          , capture_sequenced_video ? &update_progress_data : nullptr
+                          , Capture::CropperInfo{crop_rect, screen_position}
+                          // TODO rail_window_rect
+                          , Rect()
                         );
 
                         player.clear_consumer();
@@ -1338,6 +1338,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
     std::string_view msg_error;
     std::string_view codec_options;
     std::chrono::seconds video_break_interval {};
+    bool has_thumbnail_interval = false;
     bool chunk = false;
 
     auto const options = cli::options(
@@ -1405,6 +1406,9 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
 
         cli::option('u', "full").help("create full video")
             .parser(cli::on_off_location(recorder.full_video)),
+
+        cli::option('j', "thumbnails").help("enable thumbnails with --ocr or --thumbnail-interval when greater that 0)")
+            .parser(cli::on_off_location(recorder.video_params.thumbnail.enabled)),
 
         cli::option('c', "chunk").help("chunk splitting on title bar change detection")
             .parser(cli::on_off_location(chunk)),
@@ -1509,6 +1513,12 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
             .help("number of seconds between splitting video files (by default, the configuration value in [audit] video_break_interval or 1 week)")
             .parser(cli::arg_location(video_break_interval)),
 
+        cli::option('T', "thumbnail-interval")
+            .help("maximum time between two thumbnails when no title bar is detected with full video (by default, the configuration value in [audit] maximum_thumbnail_interval)")
+            .parser(cli::arg_location(recorder.full_video_params.thumbnail_interval, [&](auto const&){
+                has_thumbnail_interval = true;
+            })),
+
         cli::option('D', "video-codec-options")
             .help("FFmpeg codec option, format: key1=value1 key2=value2")
             .parser(cli::arg_location(codec_options)).argname("<ffmpeg-option>"),
@@ -1571,14 +1581,25 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
 
     recorder.video_params.no_timestamp = ini.get<cfg::audit::video_notimestamp>();
     recorder.video_params.verbosity = ini.get<cfg::debug::ffmpeg>();
+    recorder.video_params.thumbnail.width = recorder.png_geometry.w;
+    recorder.video_params.thumbnail.height = recorder.png_geometry.h;
     //@}
 
 
-    // SequencedVideoParams and FullVideoParams
+    // SequencedVideoParams
     //@{
     recorder.sequenced_video_params.break_interval = video_break_interval.count()
         ? video_break_interval
         : ini.get<cfg::audit::video_break_interval>();
+    //@}
+
+
+    // FullVideoParams
+    //@{
+    if (!has_thumbnail_interval) {
+        recorder.full_video_params.thumbnail_interval
+          = ini.get<cfg::audit::maximum_thumbnail_interval>();
+    }
     //@}
 
 
@@ -1598,12 +1619,12 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
     // OcrParams
     //@{
     recorder.ocr_params = OcrParams{
-        ini.get<cfg::ocr::version>(),
-        ocr::locale::LocaleId(ini.get<cfg::ocr::locale>()),
-        ini.get<cfg::ocr::on_title_bar_only>(),
-        ini.get<cfg::ocr::max_unrecog_char_rate>(),
-        chunk ? 1s : ini.get<cfg::ocr::interval>(),
-        ini.get<cfg::debug::ocr>()
+        .ocr_version = ini.get<cfg::ocr::version>(),
+        .ocr_locale = ocr::locale::LocaleId(ini.get<cfg::ocr::locale>()),
+        .on_title_bar_only = ini.get<cfg::ocr::on_title_bar_only>(),
+        .max_unrecog_char_rate = ini.get<cfg::ocr::max_unrecog_char_rate>(),
+        .interval = ini.get<cfg::ocr::interval>(),
+        .verbosity = ini.get<cfg::debug::ocr>(),
     };
     //@}
 
@@ -1624,6 +1645,8 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
     if (chunk) {
         recorder.capture_flags |= CaptureFlags::video | CaptureFlags::ocr;
         recorder.capture_flags &= ~CaptureFlags::png;
+        recorder.video_params.thumbnail.enabled = true;
+        recorder.ocr_params.interval = 1s;
     }
 
     if (recorder.png_geometry.w) {

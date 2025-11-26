@@ -1555,7 +1555,12 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #enable_keyboard_log = 1
 
-# The maximum time between two videos when no title bar is detected.
+# The maximum duration between two thumbnails when no title bar is detected.Set to 0 to disable this feature.
+# (in seconds)
+#_advanced
+#maximum_thumbnail_interval = 0
+
+# The maximum duration between two videos when no title bar is detected.
 # (in seconds)
 #_advanced
 #video_break_interval = 604800

@@ -2973,10 +2973,19 @@
     },
     {
       "section": "audit",
+      "name": "maximum_thumbnail_interval",
+      "type": "seconds",
+      "value": 0,
+      "description": "The maximum duration between two thumbnails when no title bar is detected.Set to 0 to disable this feature.",
+      "globalSpec": true,
+      "advanced": true
+    },
+    {
+      "section": "audit",
       "name": "video_break_interval",
       "type": "seconds",
       "value": 604800,
-      "description": "The maximum time between two videos when no title bar is detected.",
+      "description": "The maximum duration between two videos when no title bar is detected.",
       "globalSpec": true,
       "advanced": true
     },

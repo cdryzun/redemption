@@ -261,6 +261,7 @@ template<> struct acl_and_spec_type<cfg::capture::wrm_color_depth_selection_stra
 template<> struct acl_and_spec_type<cfg::capture::wrm_compression_algorithm> { using type = WrmCompressionAlgorithm; };
 template<> struct acl_and_spec_type<cfg::capture::file_permissions> { using type = FilePermissions; };
 template<> struct acl_and_spec_type<cfg::audit::enable_keyboard_log> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::audit::maximum_thumbnail_interval> { using type = std::chrono::seconds; };
 template<> struct acl_and_spec_type<cfg::audit::video_break_interval> { using type = std::chrono::seconds; };
 template<> struct acl_and_spec_type<cfg::audit::video_frame_rate> { using type = ::configs::spec_types::range<unsigned, 1, 120>; };
 template<> struct acl_and_spec_type<cfg::audit::video_notimestamp> { using type = bool; };

@@ -295,6 +295,7 @@ namespace cfg
 
     struct audit {
         struct enable_keyboard_log;
+        struct maximum_thumbnail_interval;
         struct video_break_interval;
         struct video_frame_rate;
         struct video_notimestamp;
