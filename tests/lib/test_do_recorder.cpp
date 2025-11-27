@@ -924,7 +924,7 @@ RED_AUTO_TEST_CASE_WD(TestFullVideoWithThumbnail, wd)
         "--config-file",
             FIXTURES_PATH "/disable_kbd_input_in_meta.ini", // NOLINT
         "-o", output.c_str(),
-        "--full",
+        "--video",
         "--ocr",
         "--thumbnails",
         "--png-geometry", "160x160",

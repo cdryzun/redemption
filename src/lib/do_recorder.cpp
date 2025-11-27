@@ -1422,10 +1422,12 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
         cli::option('t', "ocr").help("enable ocr title bar detection")
             .parser(cli::on_off_bit_location<TargetFormats::TitleBar>(recorder.target_formats)),
 
-        cli::option('u', "full").help("enable video capture")
+        cli::option('u', "video").help("enable video capture")
+            .parser(cli::on_off_bit_location<TargetFormats::FullVideo>(recorder.target_formats)),
+        cli::option("full").help("alias of --video")
             .parser(cli::on_off_bit_location<TargetFormats::FullVideo>(recorder.target_formats)),
 
-        cli::option('f', "video").help("enable sequenced video capture")
+        cli::option('f', "sequenced-video").help("enable sequenced video capture")
             .parser(cli::on_off_bit_location<TargetFormats::SequencedVideo>(recorder.target_formats)),
 
         cli::option('j', "thumbnails")
@@ -1885,7 +1887,7 @@ int do_main(int argc, char const ** argv,
         }
 
         if (!rp.output_filename.empty() && !bool(rp.target_formats)) {
-            std::cerr << "Missing target format : need --png, --ocr, --video, --report-bmp-cache, --full, --wrm, --meta, --statistics or --chunk" << std::endl;
+            std::cerr << "Missing target format : need --png, --ocr, --video, --sequenced-video, --report-bmp-cache, --wrm, --meta, --statistics or --chunk" << std::endl;
             return 1;
         }
 
