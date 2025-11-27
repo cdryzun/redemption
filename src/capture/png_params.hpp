@@ -29,6 +29,7 @@ struct PngParams
 {
     unsigned png_width;
     unsigned png_height;
+    bool png_keep_aspect_ratio;
     std::chrono::milliseconds png_interval;
     uint32_t png_limit;
     bool real_time_image_capture;

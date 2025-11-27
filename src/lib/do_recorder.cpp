@@ -917,6 +917,7 @@ struct RecorderParams
 
     // png output options
     Dimension png_geometry {};
+    bool png_keep_aspect_ratio {};
     std::chrono::seconds png_interval = 60s;
 
     // video output options
@@ -1095,6 +1096,7 @@ static inline int replay(
                     PngParams png_params{
                         .png_width = rp.png_geometry.w,
                         .png_height = rp.png_geometry.h,
+                        .png_keep_aspect_ratio = rp.png_keep_aspect_ratio,
                         .png_interval = rp.png_interval,
                         .png_limit = 0,
                         .real_time_image_capture = false,
@@ -1438,6 +1440,10 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                 return cli::Res::BadValueFormat;
             })).argname("<geometry>"),
 
+        cli::option('G', "png-keep-aspect-ratio")
+            .help("use a proportional scaling with --png-geometry")
+            .parser(cli::on_off_location(recorder.png_keep_aspect_ratio)),
+
         cli::option('m', "meta").help("show file metadata")
             .parser(cli::on_off_location(recorder.show_file_metadata)),
 
@@ -1587,6 +1593,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
     recorder.video_params.verbosity = ini.get<cfg::debug::ffmpeg>();
     recorder.video_params.thumbnail.width = recorder.png_geometry.w;
     recorder.video_params.thumbnail.height = recorder.png_geometry.h;
+    recorder.video_params.thumbnail.use_proportional_geometry = recorder.png_keep_aspect_ratio;
     //@}
 
 
@@ -1651,10 +1658,6 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
         recorder.capture_flags &= ~CaptureFlags::png;
         recorder.video_params.thumbnail.enabled = true;
         recorder.ocr_params.interval = 1s;
-    }
-
-    if (recorder.png_geometry.w) {
-        std::cout << "png-geometry: " << recorder.png_geometry.w << "x" << recorder.png_geometry.h << std::endl;
     }
 
     if (recorder.hash_path.empty()) {

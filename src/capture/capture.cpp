@@ -479,7 +479,7 @@ struct PngCaptureData
     , last_time_capture(capture_params.now)
     , frame_interval(png_params.png_interval)
     , monotonic_to_real(capture_params.now, capture_params.real_now)
-    , scaled_png{png_params.png_width, png_params.png_height}
+    , scaled_png{png_params.png_width, png_params.png_height, png_params.png_keep_aspect_ratio}
     , cropping(cropping)
     {}
 

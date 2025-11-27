@@ -32,6 +32,7 @@ struct VideoParams
         bool enabled;
         unsigned width;
         unsigned height;
+        bool use_proportional_geometry;
     };
 
     unsigned frame_rate;

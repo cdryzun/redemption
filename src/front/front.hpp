@@ -1266,6 +1266,7 @@ public:
         PngParams const png_params = {
             .png_width = 0,
             .png_height = 0,
+            .png_keep_aspect_ratio = false,
             .png_interval = ini.get<cfg::audit::rt_png_interval>(),
             .png_limit = enable_4eyes ? ini.get<cfg::audit::rt_png_limit>() : 0,
             .real_time_image_capture = true,

@@ -927,6 +927,8 @@ RED_AUTO_TEST_CASE_WD(TestFullVideoWithThumbnail, wd)
         "--full",
         "--ocr",
         "--thumbnails",
+        "--png-geometry", "160x160",
+        "--png-keep-aspect-ratio",
         "--ignore-file-size",
         "--video-codec", "mp4",
         "--video-codec-options", "crf=0 preset=superfast",
@@ -970,19 +972,19 @@ RED_AUTO_TEST_CASE_WD(TestFullVideoWithThumbnail, wd)
     RED_TEST_FILE_CONTENTS(wd.add_file("test_capture.pgs"),
         "{\"percentage\":100,\"eta\":0,\"videos\":1}"_av);
 
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000000.png"), 42090);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000001.png"), 47510);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000002.png"), 185202);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000003.png"), 20300);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000004.png"), 54989);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000005.png"), 48234);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000006.png"), 21309);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000007.png"), 48634);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000008.png"), 48644);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000009.png"), 44956);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000010.png"), 47720);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000011.png"), 46964);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000012.png"), 47707);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000000.png"), 4341);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000001.png"), 4822);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000002.png"), 11684);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000003.png"), 2748);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000004.png"), 5338);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000005.png"), 4968);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000006.png"), 1779);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000007.png"), 5014);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000008.png"), 5012);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000009.png"), 4961);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000010.png"), 5049);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000011.png"), 5071);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture-000012.png"), 5041);
     RED_TEST_FILE_SIZE(wd.add_file("test_capture.mp4"), 5794671 +- 10000_v);
 }
 

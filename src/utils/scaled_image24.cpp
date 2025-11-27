@@ -23,9 +23,10 @@ Author(s): Proxies Team
 #include "utils/png.hpp"
 
 
-ScaledPng24::ScaledPng24(unsigned width, unsigned height)
+ScaledPng24::ScaledPng24(unsigned width, unsigned height, bool proportional_geometry)
 : scaled_width{(width && height) ? (width + 3) & 0xFFCu : 0u}
 , scaled_height{height}
+, proportional_geometry{proportional_geometry}
 , scaled_buffer(this->scaled_width
     ? std::make_unique<uint8_t[]>(this->scaled_width * this->scaled_height * 3)
     : std::unique_ptr<uint8_t[]>())
@@ -34,15 +35,36 @@ ScaledPng24::ScaledPng24(unsigned width, unsigned height)
 
 template<class Out>
 static void ScaledPng24_dump_png24_impl(
-    Out& out, const ImageView& image_view, bool bgr,
-    uint8_t* scaled_buffer, unsigned scaled_width, unsigned scaled_height
+    Out& out, const ImageView& image_view, bool bgr, uint8_t* scaled_buffer,
+    unsigned scaled_width, unsigned scaled_height, bool use_proportional_geometry
 )
 {
-    if (!scaled_buffer) {
+    if (!scaled_buffer
+     || (use_proportional_geometry
+        && scaled_width >= image_view.width()
+        && scaled_height >= image_view.height())
+    ) {
         ::dump_png24(out, image_view, bgr);
     }
     else {
         assert(image_view.bits_per_pixel() == ImageView::BitsPerPixel::BitsPP24);
+        if (use_proportional_geometry) {
+            auto w_factor = static_cast<double>(image_view.width()) / scaled_width;
+            auto h_factor = static_cast<double>(image_view.height()) / scaled_height;
+
+            auto update = [](unsigned & scaled_size, uint16_t size, double factor) {
+                scaled_size = std::min(scaled_size, static_cast<unsigned>(size / factor));
+                scaled_size = std::max(scaled_size, 1u);
+            };
+
+            if (w_factor > h_factor) {
+                update(scaled_height, image_view.height(), w_factor);
+            }
+            else if (w_factor < h_factor) {
+                update(scaled_width, image_view.width(), h_factor);
+            }
+        }
+
         ::scale_image24(
             scaled_buffer, image_view.data(),
             scaled_width, image_view.width(),
@@ -58,16 +80,16 @@ static void ScaledPng24_dump_png24_impl(
 void ScaledPng24::dump_png24(Transport& trans, const ImageView& image_view, bool bgr) const
 {
     ScaledPng24_dump_png24_impl(
-        trans, image_view, bgr,
-        this->scaled_buffer.get(), this->scaled_width, this->scaled_height
+        trans, image_view, bgr, this->scaled_buffer.get(),
+        this->scaled_width, this->scaled_height, this->proportional_geometry
     );
 }
 
 void ScaledPng24::dump_png24(char const* filename, const ImageView& image_view, bool bgr) const
 {
     ScaledPng24_dump_png24_impl(
-        filename, image_view, bgr,
-        this->scaled_buffer.get(), this->scaled_width, this->scaled_height
+        filename, image_view, bgr, this->scaled_buffer.get(),
+        this->scaled_width, this->scaled_height, this->proportional_geometry
     );
 }
 

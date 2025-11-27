@@ -93,7 +93,10 @@ namespace
             OcrVersion::v1, ocr::locale::LocaleId::latin,
             false, 0, std::chrono::seconds::zero(), 0};
 
-        PngParams png_params = {0, 0, std::chrono::milliseconds{60}, 0, false, false, false, nullptr, {}};
+        PngParams png_params = {
+            0, 0, false, std::chrono::milliseconds{60}, 0,
+            false, false, false, nullptr, {},
+        };
 
         const char * record_tmp_path;
         const char * record_path;

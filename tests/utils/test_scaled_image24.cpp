@@ -108,24 +108,29 @@ RED_AUTO_TEST_CASE(TestSimpleShrink)
 
 RED_AUTO_TEST_CASE_WF(TestScaleImage, wf)
 {
-    RED_CHECK(!ScaledPng24(0, 0).is_scaled());
-    RED_CHECK(!ScaledPng24(10, 0).is_scaled());
-    RED_CHECK(!ScaledPng24(0, 10).is_scaled());
+    RED_CHECK(!ScaledPng24(0, 0, false).is_scallable());
+    RED_CHECK(!ScaledPng24(10, 0, false).is_scallable());
+    RED_CHECK(!ScaledPng24(0, 10, false).is_scallable());
 
     auto bmp = bitmap_from_file(FIXTURES_PATH "/win2008capture10.png", BGRColor());
     RED_REQUIRE(bmp.cx() == 800);
     RED_REQUIRE(bmp.cy() == 600);
     RED_REQUIRE(bmp.bpp() == BitsPerPixel::BitsPP24);
 
-    // Zoom 50
-    const uint16_t width = 400;
-    const uint16_t height = 300;
+    for (int is_proportional = 0; is_proportional <= 1; ++is_proportional) {
+        const uint16_t width = 400;
+        const uint16_t height = is_proportional ? 1000 : 300;
 
-    ScaledPng24 scaled_png(width, height);
-    RED_CHECK(scaled_png.is_scaled());
+        RED_TEST_CONTEXT(
+            "width=" << width << "  height=" << height << "  proportional=" << is_proportional)
+        {
+            ScaledPng24 scaled_png(width, height, is_proportional);
+            RED_CHECK(scaled_png.is_scallable());
 
-    scaled_png.dump_png24(wf.c_str(), bmp, true);
+            scaled_png.dump_png24(wf.c_str(), bmp, true);
 
-    auto img = bitmap_from_file(wf.c_str(), BGRColor());
-    RED_CHECK_IMG(img, FIXTURES_PATH "/scaled_image24/win2008capture10_50_percent.png");
+            auto img = bitmap_from_file(wf.c_str(), BGRColor());
+            RED_CHECK_IMG(img, FIXTURES_PATH "/scaled_image24/win2008capture10_50_percent.png");
+        }
+    }
 }

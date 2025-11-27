@@ -129,6 +129,7 @@ namespace
                 .enabled = true,
                 .width = 0,
                 .height = 0,
+                .use_proportional_geometry = false,
             },
             .verbosity = 0,
         };
@@ -164,6 +165,7 @@ namespace
                 .enabled = false,
                 .width = 0,
                 .height = 0,
+                .use_proportional_geometry = false,
             },
             .verbosity = 0,
         };

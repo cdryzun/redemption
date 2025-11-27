@@ -182,7 +182,11 @@ VideoCaptureCtx::VideoCaptureCtx(
     .filename_generator = video_params.thumbnail.enabled
         ? FilenameGenerator{ capture_params.record_path, capture_params.basename, "png" }
         : FilenameGenerator::NoNameWithOneCounter{},
-    .scaled_png { video_params.thumbnail.width, video_params.thumbnail.height },
+    .scaled_png {
+        video_params.thumbnail.width,
+        video_params.thumbnail.height,
+        video_params.thumbnail.use_proportional_geometry,
+    },
 }
 {
     if (video_params.verbosity) {
