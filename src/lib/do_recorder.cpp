@@ -81,6 +81,22 @@ enum {
     USE_ORIGINAL_COLOR_DEPTH           = 0xFFFFFFFF
 };
 
+enum class TargetFormats : uint8_t
+{
+    Png             = 1 << 0,
+    TitleBar        = 1 << 1,
+    FullVideo       = 1 << 2,
+    SequencedVideo  = 1 << 3,
+    Wrm             = 1 << 4,
+    WrmMeta         = 1 << 5,
+    Statistics      = 1 << 6,
+    BmpCacheReport  = 1 << 7,
+};
+
+REDEMPTION_DECLARE_ENUM_OPS(constexpr, TargetFormats)
+
+constexpr auto video_target_formats = TargetFormats::FullVideo | TargetFormats::SequencedVideo;
+
 template<class T>
 struct OriginalOr
 {
@@ -893,8 +909,7 @@ struct RecorderParams
     std::string hash_path;
     std::string full_path;
 
-    bool show_file_metadata = false;
-    bool show_statistics    = false;
+    TargetFormats target_formats {};
 
     bool play_video_with_corrupted_bitmap = false;
 
@@ -925,8 +940,6 @@ struct RecorderParams
     FullVideoParams full_video_params {};
     SequencedVideoParams sequenced_video_params {};
     SmartVideoCropping smart_video_cropping {};
-    bool full_video = false; // create full video
-    bool report_bmp_cache = false; // create report bmp cache file
 
     // ocr output options
     OcrParams ocr_params { OcrVersion::v2, ocr::locale::LocaleId::latin, {}, {}, {}, {}};
@@ -948,7 +961,6 @@ struct RecorderParams
     bool meta_keyboard_log;
 
     // miscellaneous options
-    CaptureFlags capture_flags = CaptureFlags::none; // output control
     bool infile_is_encrypted = false;
 
     // verifier options
@@ -1006,13 +1018,13 @@ static inline int replay(
     int result = -1;
     try {
         bool const test = (
-               bool(rp.capture_flags & CaptureFlags::video)
-            || bool(rp.capture_flags & CaptureFlags::ocr)
-            || bool(rp.capture_flags & CaptureFlags::png)
-            || rp.full_video
+               bool(rp.target_formats & TargetFormats::SequencedVideo)
+            || bool(rp.target_formats & TargetFormats::FullVideo)
+            || bool(rp.target_formats & TargetFormats::TitleBar)
+            || bool(rp.target_formats & TargetFormats::Png)
+            || bool(rp.target_formats & TargetFormats::WrmMeta)
+            || bool(rp.target_formats & TargetFormats::Statistics)
             || !rp.wrm_color_depth.is_original()
-            || rp.show_file_metadata
-            || rp.show_statistics
             || file_count > 1
             || capture_times.begin_cap != begin_record
             || capture_times.end_cap != capture_times.begin_cap);
@@ -1029,12 +1041,15 @@ static inline int replay(
                 rp.play_video_with_corrupted_bitmap,
                 safe_cast<FileToGraphic::Verbose>(rp.verbosity));
 
-            if (rp.show_file_metadata) {
+            if (bool(rp.target_formats & TargetFormats::WrmMeta)) {
                 show_metadata(player);
                 std::cout << "Duration (in seconds) : " << ((end_record - begin_record).count() + 1) << std::endl;
             }
 
-            if (rp.show_file_metadata && !rp.show_statistics && rp.output_filename.empty()) {
+            if (bool(rp.target_formats & TargetFormats::WrmMeta)
+             && !bool(rp.target_formats & TargetFormats::Statistics)
+             && rp.output_filename.empty()
+            ) {
                 result = 0;
             }
             else {
@@ -1080,14 +1095,14 @@ static inline int replay(
                     const char * record_tmp_path = outfile.directory.c_str();
                     const char * record_path = record_tmp_path;
 
-                    const bool capture_wrm = bool(rp.capture_flags & CaptureFlags::wrm);
-                    const bool capture_png = bool(rp.capture_flags & CaptureFlags::png);
+                    const bool capture_wrm = bool(rp.target_formats & TargetFormats::Wrm);
+                    const bool capture_png = bool(rp.target_formats & TargetFormats::Png);
                     const bool capture_pattern_checker = false;
 
-                    const bool capture_ocr = bool(rp.capture_flags & CaptureFlags::ocr)
+                    const bool capture_ocr = bool(rp.target_formats & TargetFormats::TitleBar)
                                             || capture_pattern_checker;
-                    const bool capture_sequenced_video = bool(rp.capture_flags & CaptureFlags::video);
-                    const bool capture_full_video = rp.full_video;
+                    const bool capture_sequenced_video = bool(rp.target_formats & TargetFormats::SequencedVideo);
+                    const bool capture_full_video = bool(rp.target_formats & TargetFormats::FullVideo);
                     const bool capture_meta = capture_ocr;
                     const bool capture_kbd = false;
 
@@ -1286,11 +1301,11 @@ static inline int replay(
                     }
                 }
 
-                if (rp.show_file_metadata) {
+                if (bool(rp.target_formats & TargetFormats::WrmMeta)) {
                     show_metadata2(player);
                 }
 
-                if (rp.show_statistics && return_code == 0) {
+                if (bool(rp.target_formats & TargetFormats::Statistics) && return_code == 0) {
                     ::show_statistics(player.statistics, total_wrm_file_len, count_wrm_file);
                 }
 
@@ -1366,7 +1381,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
             .parser(cli::arg_location(recorder.input_filename)).argname("<path>"),
 
         cli::option('r', "report-bmp-cache").help("generate report bmp cache file")
-            .parser(cli::on_off_location(recorder.report_bmp_cache)),
+            .parser(cli::on_off_bit_location<TargetFormats::BmpCacheReport>(recorder.target_formats)),
 
         cli::option('H', "hash-path")
             .help("output hash dirname (if empty, use hash_path of ini)")
@@ -1399,21 +1414,22 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
             .parser(cli::arg_location(recorder.wrm_break_interval)),
 
         cli::option('p', "png").help("enable png capture")
-            .parser(cli::on_off_bit_location<CaptureFlags::png>(recorder.capture_flags)),
+            .parser(cli::on_off_bit_location<TargetFormats::Png>(recorder.target_formats)),
 
         cli::option('w', "wrm").help("enable wrm capture")
-            .parser(cli::on_off_bit_location<CaptureFlags::wrm>(recorder.capture_flags)),
+            .parser(cli::on_off_bit_location<TargetFormats::Wrm>(recorder.target_formats)),
 
         cli::option('t', "ocr").help("enable ocr title bar detection")
-            .parser(cli::on_off_bit_location<CaptureFlags::ocr>(recorder.capture_flags)),
+            .parser(cli::on_off_bit_location<TargetFormats::TitleBar>(recorder.target_formats)),
 
-        cli::option('f', "video").help("enable video capture")
-            .parser(cli::on_off_bit_location<CaptureFlags::video>(recorder.capture_flags)),
+        cli::option('u', "full").help("enable video capture")
+            .parser(cli::on_off_bit_location<TargetFormats::FullVideo>(recorder.target_formats)),
 
-        cli::option('u', "full").help("create full video")
-            .parser(cli::on_off_location(recorder.full_video)),
+        cli::option('f', "video").help("enable sequenced video capture")
+            .parser(cli::on_off_bit_location<TargetFormats::SequencedVideo>(recorder.target_formats)),
 
-        cli::option('j', "thumbnails").help("enable thumbnails with --ocr or --thumbnail-interval when greater that 0)")
+        cli::option('j', "thumbnails")
+            .help("enable thumbnails with --ocr or --thumbnail-interval when greater that 0)")
             .parser(cli::on_off_location(recorder.video_params.thumbnail.enabled)),
 
         cli::option('c', "chunk").help("chunk splitting on title bar change detection")
@@ -1445,10 +1461,10 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
             .parser(cli::on_off_location(recorder.png_keep_aspect_ratio)),
 
         cli::option('m', "meta").help("show file metadata")
-            .parser(cli::on_off_location(recorder.show_file_metadata)),
+            .parser(cli::on_off_bit_location<TargetFormats::WrmMeta>(recorder.target_formats)),
 
         cli::option('s', "statistics").help("show statistics")
-            .parser(cli::on_off_location(recorder.show_statistics)),
+            .parser(cli::on_off_bit_location<TargetFormats::Statistics>(recorder.target_formats)),
 
         cli::option('z', "compression")
             .help("wrm compression algorithm (default=original, none, gzip, snappy)")
@@ -1654,8 +1670,8 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
 
 
     if (chunk) {
-        recorder.capture_flags |= CaptureFlags::video | CaptureFlags::ocr;
-        recorder.capture_flags &= ~CaptureFlags::png;
+        recorder.target_formats |= TargetFormats::SequencedVideo | TargetFormats::TitleBar;
+        recorder.target_formats &= ~TargetFormats::Png;
         recorder.video_params.thumbnail.enabled = true;
         recorder.ocr_params.interval = 1s;
     }
@@ -1752,9 +1768,15 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                 output.extension.empty() ? ".mwrm"_av : ""_av);
         }
         else if (output.extension.empty()){
-            if(recorder.full_video) recorder.output_filename += ".mp4";
-            else if(recorder.report_bmp_cache) recorder.output_filename += ".csv";
-            else recorder.output_filename += ".mwrm";
+            if (bool(recorder.target_formats & video_target_formats)) {
+                recorder.output_filename += ".mp4";
+            }
+            else if (bool(recorder.target_formats & TargetFormats::BmpCacheReport)) {
+                recorder.output_filename += ".csv";
+            }
+            else {
+                recorder.output_filename += ".mwrm";
+            }
         }
         std::cout << "Output file is \"" << recorder.output_filename << "\".\n";
     }
@@ -1854,21 +1876,15 @@ int do_main(int argc, char const ** argv,
             return -1;
         }
 
-        if (!rp.show_file_metadata
-         && !rp.show_statistics
-         && rp.output_filename.empty()
+        if (rp.output_filename.empty()
+         && !bool(rp.target_formats & TargetFormats::WrmMeta)
+         && !bool(rp.target_formats & TargetFormats::Statistics)
         ) {
             std::cerr << "Missing output filename : use -o filename\n\n";
             return -1;
         }
 
-        if (!rp.output_filename.empty()
-         && !rp.full_video
-         && !bool(rp.capture_flags)
-         && !rp.show_file_metadata
-         && !rp.show_statistics
-         && !rp.report_bmp_cache
-        ) {
+        if (!rp.output_filename.empty() && !bool(rp.target_formats)) {
             std::cerr << "Missing target format : need --png, --ocr, --video, --report-bmp-cache, --full, --wrm, --meta, --statistics or --chunk" << std::endl;
             return 1;
         }
@@ -1932,7 +1948,7 @@ int do_main(int argc, char const ** argv,
             auto r = RegionsCapture::compute_regions(
                 trans,
                 rp.smart_video_cropping,
-                (rp.full_video || bool(rp.capture_flags & CaptureFlags::video))
+                bool(rp.target_formats & video_target_formats)
                     ? std::chrono::microseconds(1000000L / rp.video_params.frame_rate)
                     : MonotonicTimePoint::duration(),
                 MonotonicTimePoint(capture_times.begin_cap),
@@ -1961,7 +1977,7 @@ int do_main(int argc, char const ** argv,
             cctx,
             mwrm_infos.encryption_mode);
 
-        if (rp.report_bmp_cache) {
+        if (bool(rp.target_formats & TargetFormats::BmpCacheReport)) {
             ReportBmpCache report_bmp_cache{in_wrm_trans};
             return report_bmp_cache.process(rp.output_filename);
         }
