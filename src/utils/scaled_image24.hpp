@@ -45,7 +45,7 @@ private:
 
 void scale_image24(
     uint8_t *dest, const uint8_t *src,
-    unsigned int dest_width, unsigned int src_width,
-    unsigned int dest_height, unsigned int src_height,
-    unsigned int src_rowsize
+    std::size_t dest_width, std::size_t src_width,
+    std::size_t dest_height, std::size_t src_height,
+    std::size_t src_rowsize
 );

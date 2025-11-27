@@ -74,22 +74,22 @@ void ScaledPng24::dump_png24(char const* filename, const ImageView& image_view, 
 
 void scale_image24(
     uint8_t *dest, const uint8_t *src,
-    unsigned int dest_width, unsigned int src_width,
-    unsigned int dest_height, unsigned int src_height,
-    unsigned int src_rowsize
+    std::size_t dest_width, std::size_t src_width,
+    std::size_t dest_height, std::size_t src_height,
+    std::size_t src_rowsize
 ) {
     const uint32_t Bpp = 3;
-    unsigned int y_pixels = dest_height;
-    unsigned int y_int_part = (src_height / dest_height) * src_rowsize;
-    unsigned int y_fract_part = src_height % dest_height;
-    unsigned int yE = 0;
-    unsigned int x_int_part = src_width / dest_width * Bpp;
-    unsigned int x_fract_part = src_width % dest_width;
+    std::size_t y_pixels = dest_height;
+    std::size_t y_int_part = (src_height / dest_height) * src_rowsize;
+    std::size_t y_fract_part = src_height % dest_height;
+    std::size_t yE = 0;
+    std::size_t x_int_part = src_width / dest_width * Bpp;
+    std::size_t x_fract_part = src_width % dest_width;
 
     while (y_pixels-- > 0) {
-        unsigned int xE = 0;
+        std::size_t xE = 0;
         const uint8_t * x_src = src;
-        unsigned int x_pixels = dest_width;
+        std::size_t x_pixels = dest_width;
         while (x_pixels-- > 0) {
             dest[0] = x_src[2];
             dest[1] = x_src[1];
