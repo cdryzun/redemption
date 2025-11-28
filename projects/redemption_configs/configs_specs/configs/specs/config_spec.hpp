@@ -702,9 +702,9 @@ _.section("client", [&]
         .name = "enable_nla",
         .value = value(false),
         .spec = global_spec(no_acl),
-        .desc = "Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication).\n"
-        "⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed.\n"
-        "⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only.",
+        .desc = "Enables Kerberos authentication via NLA on RDP proxies (Primary authentication).\n"
+        "⚠ Kerberos authentication does not allow shortcuts to the target, the target selector will be displayed during connection.\n"
+        "⚠ Some RDP clients, such as MSTSC or FreeRDP, will not switch to the TLS protocol alone. Users of these clients must use the Bastion RDP configuration file or add certain parameters to their own files. Refer to the documentation on Kerberos ticket authentication (LDAP/AD) in the WALLIX Bastion administration guide.",
     });
 
     _.member(MemberInfo{

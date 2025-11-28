@@ -605,9 +605,9 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Enables Kerberos authentication over NLA on RDP Proxy (Primary authentication). <br/>
-    /// ⚠ Kerberos authentication does not allow target shortcut in login, selector will be displayed. <br/>
-    /// ⚠ Some RDP Client, such as MSTSC or FreeRDP, won't fallback to TLS only. <br/>
+    /// Enables Kerberos authentication via NLA on RDP proxies (Primary authentication). <br/>
+    /// ⚠ Kerberos authentication does not allow shortcuts to the target, the target selector will be displayed during connection. <br/>
+    /// ⚠ Some RDP clients, such as MSTSC or FreeRDP, will not switch to the TLS protocol alone. Users of these clients must use the Bastion RDP configuration file or add certain parameters to their own files. Refer to the documentation on Kerberos ticket authentication (LDAP/AD) in the WALLIX Bastion administration guide. <br/>
     /// type: bool <br/>
     /// displayName: Enable NLA <br/>
     /// default: false <br/>
