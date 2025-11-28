@@ -536,14 +536,20 @@ WaitingTimeBeforeNextSnapshot FullVideoCaptureImpl::periodic_snapshot(
     if (this->thumbnail_interval > MonotonicTimePoint::duration::zero()
      && this->last_time_thumbnail + this->thumbnail_interval <= now
     ) {
-        next_thumbnail(now);
+        write_thumbnail(now);
         ret.set_min(this->thumbnail_interval);
     }
 
     return ret;
 }
 
-void FullVideoCaptureImpl::next_thumbnail(MonotonicTimePoint now)
+void FullVideoCaptureImpl::next_thumbnail(MonotonicTimePoint now, chars_view title)
+{
+    write_thumbnail(now);
+    this->recorder.add_chapter(now - this->start_time, title);
+}
+
+void FullVideoCaptureImpl::write_thumbnail(MonotonicTimePoint now)
 {
     if (!this->thumbnail_file) {
         return ;

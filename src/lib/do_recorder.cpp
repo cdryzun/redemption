@@ -1678,6 +1678,11 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
         recorder.ocr_params.interval = 1s;
     }
 
+    recorder.video_params.thumbnail.enabled
+      = recorder.video_params.thumbnail.enabled
+     && (bool(recorder.target_formats & TargetFormats::TitleBar)
+        || recorder.full_video_params.thumbnail_interval.count() > 0);
+
     if (recorder.hash_path.empty()) {
         recorder.hash_path = ini.get<cfg::capture::hash_path>().as_string();
     }

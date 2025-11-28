@@ -57,6 +57,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <fcntl.h>
 
+
 namespace
 {
     constexpr int original_timestamp_height = 12;
@@ -234,6 +235,17 @@ struct video_recorder::D
     /* custom IO */
     std::unique_ptr<uint8_t, default_av_free> custom_io_buffer;
     AVIOContext* custom_io_context = nullptr;
+
+    // chapters
+    struct Chapter
+    {
+        using Duration = MonotonicTimePoint::duration;
+
+        Duration start_time;
+        std::size_t title_len;
+    };
+    std::vector<Chapter> chapters;
+    std::vector<char> chapter_titles;
 
     D(char const* filename, FilePermissions file_permissions, AclReportApi * acl_report)
     : out_file(filename, file_permissions, acl_report)
@@ -509,11 +521,89 @@ void video_recorder::write_trailer()
 
     check_errnum(errnum, errmsg, false);
 
-    /* write the trailer, if any.  the trailer must be written
-     * before you close the CodecContexts open when you wrote the
-     * header; otherwise write_trailer may try to use memory that
-     * was freed on av_codec_close() */
-    av_write_trailer(this->d->oc);
+    if (d->chapters.empty()) {
+        av_write_trailer(this->d->oc);
+    }
+    else {
+        struct Chapter
+        {
+            // private AVDictionnary for efficient API...
+            struct Dict
+            {
+                int count;
+                AVDictionaryEntry* elems;
+            };
+
+            AVChapter av_chap;
+            AVDictionaryEntry entry;
+            Dict metadata;
+        };
+
+        auto nb_chapters = d->chapters.size() + 1u;
+        static_assert(alignof(Chapter) == alignof(AVChapter*));
+        auto allocated_bytes = (sizeof(Chapter) + sizeof(AVChapter*)) * nb_chapters;
+        auto * storage = static_cast<char*>(std::aligned_alloc(alignof(Chapter), allocated_bytes));
+        SCOPE_EXIT(free(storage));
+
+        auto chapters = reinterpret_cast<Chapter*>(storage);
+        auto av_chapters = reinterpret_cast<AVChapter**>(chapters + nb_chapters);
+
+        constexpr AVRational time_base {
+            .num = D::Chapter::Duration::period::num,
+            .den = D::Chapter::Duration::period::den,
+        };
+        auto * chapter_it = chapters;
+        auto * av_chapter_it = av_chapters;
+        auto * title_it = d->chapter_titles.data();
+        int id = 0;
+
+        // first chapter have no title
+        chapter_it->av_chap = AVChapter{
+            .id = id,
+            .time_base = time_base,
+            .start = 0,
+            .end = INT64_MAX,
+            .metadata = nullptr,
+        };
+        *av_chapter_it++ = &chapter_it->av_chap;
+
+        for (auto const & chap : d->chapters) {
+            auto start = chap.start_time.count();
+            chapter_it->av_chap.end = start;
+
+            ++id;
+            ++chapter_it;
+
+            *chapter_it = {
+                .av_chap {
+                    .id = id,
+                    .time_base = time_base,
+                    .start = start,
+                    .end = INT64_MAX,
+                    .metadata = reinterpret_cast<AVDictionary*>(&chapter_it->metadata),
+                },
+                .entry {
+                    .key = const_cast<char*>("title"),
+                    .value = title_it,
+                },
+                .metadata {
+                    .count = 1,
+                    .elems = &chapter_it->entry,
+                },
+            };
+            *av_chapter_it++ = &chapter_it->av_chap;
+
+            title_it += chap.title_len + 1;
+        }
+
+        this->d->oc->nb_chapters = checked_int{nb_chapters};
+        this->d->oc->chapters = av_chapters;
+
+        av_write_trailer(this->d->oc);
+
+        this->d->oc->nb_chapters = 0;
+        this->d->oc->chapters = nullptr;
+    }
 }
 
 void video_recorder::preparing_video_frame(int bottom)
@@ -566,6 +656,13 @@ void video_recorder::encoding_video_frame(int64_t frame_index)
         this->d->video_st, this->d->pkt);
 
     check_errnum(errnum, errmsg);
+}
+
+void video_recorder::add_chapter(MonotonicTimePoint::duration start_time, chars_view title)
+{
+    d->chapter_titles.insert(d->chapter_titles.end(), title.begin(), title.end());
+    d->chapter_titles.push_back('\0');
+    d->chapters.push_back({start_time, title.size()});
 }
 
 
@@ -623,6 +720,8 @@ void video_recorder::preparing_video_frame() { }
 void video_recorder::preparing_timestamp_video_frame() { }
 
 void video_recorder::encoding_video_frame(int64_t /*frame_index*/) { }
+
+void video_recorder::add_chapter(MonotonicTimePoint::duration /*start_time*/, chars_view /*title*/) { }
 
 
 video_recorder::optional_wrapper::operator bool () const noexcept { return false; }

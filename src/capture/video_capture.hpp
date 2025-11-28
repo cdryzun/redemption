@@ -239,7 +239,7 @@ public:
             this->recorder, now, cursor_x, cursor_y);
     }
 
-    void next_thumbnail(MonotonicTimePoint now);
+    void next_thumbnail(MonotonicTimePoint now, chars_view title);
 
     WaitingTimeBeforeNextSnapshot periodic_snapshot(
         MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y
@@ -256,6 +256,8 @@ public:
     }
 
 private:
+    void write_thumbnail(MonotonicTimePoint now);
+
     MonotonicTimePoint start_time;
     MonotonicTimePoint last_time_thumbnail;
     MonotonicTimePoint::duration thumbnail_interval;

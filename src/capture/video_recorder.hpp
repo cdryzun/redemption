@@ -24,6 +24,8 @@
 
 #include "utils/image_view.hpp"
 #include "utils/file_permissions.hpp"
+#include "utils/sugar/array_view.hpp"
+#include "utils/monotonic_clock.hpp"
 
 #include <memory>
 #include <cstdint>
@@ -51,6 +53,8 @@ public:
     void preparing_timestamp_video_frame();
 
     void encoding_video_frame(int64_t frame_index);
+
+    void add_chapter(MonotonicTimePoint::duration start_time, chars_view title);
 
 private:
     video_recorder() noexcept;

@@ -1226,7 +1226,7 @@ void Capture::NotifyTitleChanged::notify_title_changed(
     }
 #ifndef REDEMPTION_NO_FFMPEG
     if (this->capture.full_video_capture_obj) {
-        this->capture.full_video_capture_obj->next_thumbnail(now);
+        this->capture.full_video_capture_obj->next_thumbnail(now, title);
     }
     if (this->capture.sequenced_video_capture_obj) {
         this->capture.sequenced_video_capture_obj->next_video(now);
