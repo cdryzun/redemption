@@ -1419,7 +1419,9 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
         cli::option('w', "wrm").help("enable wrm capture")
             .parser(cli::on_off_bit_location<TargetFormats::Wrm>(recorder.target_formats)),
 
-        cli::option('t', "ocr").help("enable ocr title bar detection")
+        cli::option('t', "title-bar").help("enable title bar detection")
+            .parser(cli::on_off_bit_location<TargetFormats::TitleBar>(recorder.target_formats)),
+        cli::option("ocr").help("alias of --title-bar")
             .parser(cli::on_off_bit_location<TargetFormats::TitleBar>(recorder.target_formats)),
 
         cli::option('u', "video").help("enable video capture")
