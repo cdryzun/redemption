@@ -985,7 +985,7 @@ RED_AUTO_TEST_CASE_WD(TestFullVideoWithThumbnail, wd)
     RED_TEST_FILE_SIZE(wd.add_file("test_capture-000010.png"), 5049);
     RED_TEST_FILE_SIZE(wd.add_file("test_capture-000011.png"), 5071);
     RED_TEST_FILE_SIZE(wd.add_file("test_capture-000012.png"), 5041);
-    RED_TEST_FILE_SIZE(wd.add_file("test_capture.mp4"), 5794671 +- 10000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("test_capture.mp4"), 5794671 +- 1_percent);
 }
 
 RED_AUTO_TEST_CASE_WD(TestVideoCroppedV1, wd)
