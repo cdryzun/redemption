@@ -3384,6 +3384,7 @@ private:
                 order_caps.pad4octetsB = 0x0f4240;
                 order_caps.desktopSaveSize = 0x0f4240;
                 order_caps.pad2octetsC = 1;
+                order_caps.orderSupportExFlags = ORDERFLAGS_EX_ALTSEC_FRAME_MARKER_SUPPORT;
                 if (bool(this->verbose & Verbose::basic_trace3)) {
                     order_caps.log("Front::send_demand_active: Sending to client");
                 }
