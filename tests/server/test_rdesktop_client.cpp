@@ -31,24 +31,25 @@
 #include "mod/internal/test_card_mod.hpp"
 #include "core/events.hpp"
 #include "utils/timebase.hpp"
+#include "utils/sugar/unique_fd.hpp"
 #include "configs/config.hpp"
 
 #include "test_only/lcg_random.hpp"
 #include "test_only/core/font.hpp"
 
 // Uncomment the code block below to generate testing data.
-//include <netinet/tcp.h>
-//include "core/listen.hpp"
-//include "core/session.hpp"
-//include "transport/socket_transport.hpp"
+// #include <netinet/tcp.h>
+// #include "core/listen.hpp"
+// #include "core/session.hpp"
+// #include "transport/socket_transport.hpp"
 
 RED_AUTO_TEST_CASE(TestIncomingConnection)
 {
-    // // Uncomment the code block below to generate testing data.
-    //int port = 3389;
-    //unique_fd sck_server = create_server(0, port);
-    //unique_server_loop(std::move(sck_server), [&](int sck)
-    //{
+    // Uncomment the code block below to generate testing data.
+    // int port = 3389;
+    // unique_fd sck_server = create_server(0, port, EnableTransparentMode::No);
+    // unique_server_loop(std::move(sck_server), [&](int sck)
+    // {
     //    union {
     //        struct sockaddr s;
     //        struct sockaddr_storage ss;
@@ -59,13 +60,14 @@ RED_AUTO_TEST_CASE(TestIncomingConnection)
     //    memset(&u, 0, sin_size);
     //    int one_shot_server_sck = accept(sck, nullptr, nullptr);
 
-    //int nodelay = 1;
-    //if (-1 == setsockopt( one_shot_server_sck, IPPROTO_TCP, TCP_NODELAY
-    //                   , (char *)&nodelay, sizeof(nodelay))) {
+    // int nodelay = 1;
+    // if (-1 == setsockopt( one_shot_server_sck, IPPROTO_TCP, TCP_NODELAY
+    //                     , reinterpret_cast<char *>(&nodelay), sizeof(nodelay))) {
     //    LOG(LOG_INFO, "Failed to set socket TCP_NODELAY option on client socket");
-    //}
-    //SocketTransport front_trans( "RDP Client", unique_fd{one_shot_server_sck}, "0.0.0.0", 0
-    //                           , std::chrono::seconds(1), SocketTransport::Verbose::dump);
+    // }
+    // SocketTransport front_trans( "RDP Client"_sck_name, unique_fd{one_shot_server_sck}, "0.0.0.0"_av, 0
+    //                            , std::chrono::seconds(1), std::chrono::seconds(0)
+    //                            , std::chrono::seconds(1), SocketTransport::Verbose::dump);
 
     // Comment the code block below to generate testing data.
     #include "fixtures/trace_rdesktop_client.hpp"
@@ -98,16 +100,13 @@ RED_AUTO_TEST_CASE(TestIncomingConnection)
         front.incoming(no_mod);
     }
 
-    // // Uncomment the code block below to generate testing data.
-    // LOG(LOG_INFO, "hostname=%s", front.client_info.hostname);
+    TestCardMod mod(front, front.screen_info().width, front.screen_info().height, global_font());
 
-    // TestCardMod mod(front, front.screen_info().width, front.screen_info().height, global_font());
-    // mod.init();
+    // Uncomment the code block below to generate testing data.
+    // sleep(5);
 
-    //sleep(5);
-
-    //LOG(LOG_INFO, "Listener closed\n");
+    // LOG(LOG_INFO, "Listener closed\n");
 
     //    return true;
-    //});
+    // });
 }
