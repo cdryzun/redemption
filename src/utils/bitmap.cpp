@@ -181,9 +181,11 @@ Bitmap::Bitmap(const uint8_t *data, size_t stride, const Dimension dimension)
     }
 }
 
-Bitmap::Bitmap(const Bitmap & src_bmp, const Rect r)
+Bitmap::Bitmap(const Bitmap & src_bmp, Rect r)
 : data_bitmap(src_bmp.data_bitmap)
 {
+    r = r.intersect(src_bmp.cx(), src_bmp.cy());
+
     //LOG(LOG_INFO, "Creating bitmap (%p) extracting part cx=%u cy=%u size=%u bpp=%u", this, cx, cy, bmp_size, bpp);
     if (0 == r.x && 0 == r.y && r.cx == src_bmp.cx() && r.cy == src_bmp.cy()) {
         this->data_bitmap->inc();

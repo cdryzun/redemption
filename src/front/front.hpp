@@ -4684,7 +4684,6 @@ private:
             this->priv_draw_memblt(cmd, clip, bitmap);
         }
         else {
-            Rect dest_rect = clip.intersect(cmd.rect);
             auto drew_bitmap = [this](Bitmap const &bitmap, Rect const & rect) {
                 RDPBitmapData bitmap_data;
 
@@ -4702,17 +4701,28 @@ private:
 
                 this->draw_impl(bitmap_data, bitmap);
             };
-            if (!dest_rect.isempty()) {
-                if (dest_rect == cmd.rect) {
-                    Bitmap new_bitmap(bitmap, Rect(cmd.srcx, cmd.srcy, cmd.rect.cx, cmd.rect.cy));
-                    drew_bitmap(new_bitmap, cmd.rect);
-                }
-                else {
-                    Bitmap new_bitmap(bitmap, Rect(cmd.srcx + dest_rect.x - cmd.rect.x,
-                        cmd.srcy + dest_rect.y - cmd.rect.y, dest_rect.cx, dest_rect.cy));
-                    drew_bitmap(new_bitmap, dest_rect);
-                }
+
+            Rect dest_rect = clip.intersect(cmd.rect);
+
+            if (dest_rect.isempty()) {
+                return;
             }
+
+            auto bmp_rect = (dest_rect == cmd.rect)
+                ? Rect(cmd.srcx, cmd.srcy, cmd.rect.cx, cmd.rect.cy)
+                : Rect(
+                    cmd.srcx + dest_rect.x - cmd.rect.x,
+                    cmd.srcy + dest_rect.y - cmd.rect.y,
+                    dest_rect.cx,
+                    dest_rect.cy
+                );
+            bmp_rect = bmp_rect.intersect(bitmap.cx(), bitmap.cy());
+
+            if (bmp_rect.isempty()) {
+                return;
+            }
+
+            drew_bitmap(Bitmap(bitmap, bmp_rect), dest_rect);
         }
     }
 

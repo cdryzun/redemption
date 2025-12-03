@@ -5444,7 +5444,7 @@ RED_AUTO_TEST_CASE(TestBitmapConv)
 
     Bitmap bitmap_2(bitmap_1, Rect(0, 0, align4(bitmap_1.cx()), bitmap_1.cy()));
 
-    RED_CHECK_EQUAL(200, bitmap_2.cx());
+    RED_CHECK_EQUAL(198, bitmap_2.cx());
 
     Drawable gd(1024, 768);
 
