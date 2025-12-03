@@ -1456,7 +1456,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                     }
                 }
 
-                msg_error = "Invalide png geometry";
+                msg_error = "Invalid png geometry.";
                 return cli::Res::BadValueFormat;
             })).argname("<geometry>"),
 
@@ -1489,7 +1489,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                     recorder.wrm_compression_algorithm.reset();
                 }
                 else {
-                    msg_error = "Unknown wrm compression algorithm";
+                    msg_error = "Unknown wrm compression algorithm.";
                     return cli::Res::BadValueFormat;
                 }
 
@@ -1509,7 +1509,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                     recorder.wrm_color_depth.reset();
                 }
                 else {
-                    msg_error = "Unknown wrm color depth";
+                    msg_error = "Unknown wrm color depth.";
                     return cli::Res::BadValueFormat;
                 }
 
@@ -1529,7 +1529,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
                     wrm_encryption.reset();
                 }
                 else {
-                    msg_error = "Unknown wrm encryption parameter";
+                    msg_error = "Unknown wrm encryption parameter.";
                     return cli::Res::BadValueFormat;
                 }
 
@@ -1581,7 +1581,7 @@ ClRes parse_command_line_options(int argc, char const ** argv, RecorderParams & 
         case cli::Res::StopParsing:
             cli::print_error(cli_result, std::cerr);
             if (msg_error.data()) {
-                std::cerr << "\n" << msg_error;
+                std::cerr << "\n";
                 cl_error(msg_error);
             }
             std::cerr << "\n";
