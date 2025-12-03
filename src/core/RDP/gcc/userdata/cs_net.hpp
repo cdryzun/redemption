@@ -133,8 +133,6 @@ struct CSNet {
         uint32_t options;
     } channelDefArray[32];
 
-    bool permissive = false;
-
     void emit(OutStream & stream) /* TODO const*/
     {
         stream.out_uint16_le(this->userDataType);
@@ -167,19 +165,11 @@ struct CSNet {
         if (this->channelCount >= 31) {
             LOG(LOG_ERR, "cs_net::recv channel count out of range (%u)", this->channelCount);
             this->channelCount = 0;
-            if (this->permissive) {
-                stream.in_skip_bytes(this->length - 8);
-                return;
-            }
             throw Error(ERR_CHANNEL_OUT_OF_RANGE);
         }
         if ((12 * this->channelCount + 8) != (this->length)) {
             LOG(LOG_ERR, "CSNet::recv length=%u and 12 * channelcount=%u not matching, ",
                 this->length - 8u, this->channelCount);
-            if (this->permissive) {
-                stream.in_skip_bytes(this->length - 8);
-                return;
-            }
             throw Error(ERR_GCC);
         }
 
