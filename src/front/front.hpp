@@ -312,7 +312,8 @@ private:
             using GraphicsUpdatePDU::draw;
 
             void draw(const RDP::FrameMarker & order) override {
-                if (this->client_order_caps.orderSupportExFlags & ORDERFLAGS_EX_ALTSEC_FRAME_MARKER_SUPPORT) {
+                if ((this->client_order_caps.orderFlags & ORDERFLAGS_EXTRA_FLAGS) &&
+                    (this->client_order_caps.orderSupportExFlags & ORDERFLAGS_EX_ALTSEC_FRAME_MARKER_SUPPORT)) {
                     GraphicsUpdatePDU::draw(order);
                 }
             }
@@ -3374,7 +3375,7 @@ private:
                 OrderCaps order_caps;
                 order_caps.pad4octetsA = 0x40420f00;
                 order_caps.numberFonts = 0x2f;
-                order_caps.orderFlags = NEGOTIATEORDERSUPPORT | COLORINDEXSUPPORT;
+                order_caps.orderFlags = NEGOTIATEORDERSUPPORT | COLORINDEXSUPPORT | ORDERFLAGS_EXTRA_FLAGS;
 
                 for (size_t i = 0; i < std::size(order_caps.orderSupport); ++i) {
                      order_caps.orderSupport[i] = this->supported_orders.test(OrdersIndexes(i)) ? 1 : 0;
