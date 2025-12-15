@@ -95,18 +95,21 @@ tls_max_level = integer(min=0, default=0)
 # HIGH:!ADH:!3DES: Compatible only with MS Windows 7 client or more recent (moderately secure)
 # HIGH:!ADH:!3DES:!SHA: Compatible only with MS Server Windows 2008 R2 client or more recent (more secure)
 # For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT
+# This list is preconfigured based on the service's security profile and can be modified either by specifying custom algorithms or by adjusting the security profile.
 #_display_name=SSL cipher list
 ssl_cipher_list = string(default="HIGH:!ADH:!3DES:!SHA")
 
 # Configure the available TLSv1.3 cipher suites.
 # Empty to apply system-wide configuration.
 # For details on the format, refer to the third paragraph on this page: https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html#DESCRIPTION
+# This list is preconfigured based on the service's security profile and can be modified either by specifying custom algorithms or by adjusting the security profile.
 #_display_name=TLS 1.3 cipher suites
 tls_1_3_ciphersuites = string(default="")
 
 # Configure the supported key exchange groups.
 # Empty to apply system-wide configuration.
 # For details on the format, refer to this page: https://www.openssl.org/docs/man3.2/man3/SSL_CONF_cmd.html#groups-groups
+# This list is preconfigured based on the service's security profile and can be modified either by specifying custom algorithms or by adjusting the security profile.
 #_display_name=TLS key exchange groups
 tls_key_exchange_groups = string(default="")
 
@@ -117,6 +120,7 @@ tls_key_exchange_groups = string(default="")
 # hash options: SHA224, SHA256, SHA384 or SHA512.
 # signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256).
 # This list needs at least one signature algorithm compatible with the RDP Proxy certificate.
+# This list is preconfigured based on the service's security profile and can be modified either by specifying custom algorithms or by adjusting the security profile.
 #_display_name=TLS signature algorithms
 tls_signature_algorithms = string(default="RSA+SHA256:RSA+SHA384:RSA+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512")
 

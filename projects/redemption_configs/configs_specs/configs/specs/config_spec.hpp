@@ -186,6 +186,10 @@ std::string_view tls_signature_algorithms_desc_base =
     "signature_scheme options: TLSv1.3 signature schemes (rfc8446#section-4.2.3) identified by their IETF names (e.g., ecdsa_secp384r1_sha384 or rsa_pss_rsae_sha256)."
 ;
 
+std::string_view can_be_modified_by_security_profile = "This list is preconfigured based on the service's security profile and can be modified either by specifying custom algorithms or by adjusting the security profile."
+;
+
+
 _.display_name_word_replacement_table = {
     {"rdp", "RDP"},
     {"vnc", "VNC"},
@@ -653,12 +657,14 @@ _.section("client", [&]
         .name = "ssl_cipher_list",
         .value = value<std::string>("HIGH:!ADH:!3DES:!SHA"),
         .spec = global_spec(no_acl),
-        .desc =
+        .desc = str_concat(
             "[Not configured]: Compatible with more RDP clients (less secure)\n"
             "HIGH:!ADH:!3DES: Compatible only with MS Windows 7 client or more recent (moderately secure)\n"
             "HIGH:!ADH:!3DES:!SHA: Compatible only with MS Server Windows 2008 R2 client or more recent (more secure)"
             "\n"
-            "For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT"
+            "For details on the format, refer to this page: https://www.openssl.org/docs/man3.1/man1/openssl-ciphers.html#CIPHER-LIST-FORMAT\n",
+            can_be_modified_by_security_profile
+        ),
     });
 
     _.member(MemberInfo{
@@ -668,14 +674,20 @@ _.section("client", [&]
         },
         .value = value<std::string>(""),
         .spec = global_spec(no_acl),
-        .desc = tls_1_3_ciphersuites_desc,
+        .desc = str_concat(
+            tls_1_3_ciphersuites_desc, "\n",
+            can_be_modified_by_security_profile
+        ),
     });
 
     _.member(MemberInfo{
         .name = "tls_key_exchange_groups",
         .value = value<std::string>(""),
         .spec = global_spec(no_acl),
-        .desc = tls_key_exchange_groups,
+        .desc = str_concat(
+            tls_key_exchange_groups, "\n",
+            can_be_modified_by_security_profile
+        ),
     });
 
     _.member(MemberInfo{
@@ -685,7 +697,8 @@ _.section("client", [&]
         .desc = str_concat(
             "Configure the supported server signature algorithms.\n",
             tls_signature_algorithms_desc_base,
-            "\nThis list needs at least one signature algorithm compatible with the RDP Proxy certificate."
+            "\nThis list needs at least one signature algorithm compatible with the RDP Proxy certificate.\n",
+            can_be_modified_by_security_profile
         ),
     });
 
