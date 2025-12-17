@@ -223,22 +223,7 @@ const char outdata[] = /* NOLINT */
 /* 0000 */ "\x72\x44\x4e\x43\x01\x00\x00\x00\x00\x00\x00\x00\x0a\x00\x00\x00" //rDNC............ |
 /* 0010 */ "\x72\x00\x7a\x00\x68\x00\x00\x00\x00\x00"                         //r.z.h..... |
 // Sent dumped on channel (-1) n bytes |
-// FileSystemVirtualChannel::process_server_message: total_length=12 flags=0x00000003 chunk_data_length=12 |
-// Recv done on rdpdr (-1) n bytes |
-// /* 0000 */ "\x01\x00\x00\x00"                                                 //.... |
-// /* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
-// /* 0000 */ "\x03\x00\x00\x00"                                                 //.... |
-// /* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
-// /* 0000 */ "\x72\x44\x43\x43\x01\x00\x0c\x00\x02\x00\x00\x00"                 //rDCC........ |
-// Dump done on rdpdr (-1) n bytes |
-// FileSystemVirtualChannel::process_server_message: Server Client ID Confirm |
-// Sending on channel (-1) n bytes |
-/* 0000 */ "\x00\x00\x00\x00"                                                 //.... |
-/* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
-/* 0000 */ "\x03\x00\x00\x00"                                                 //.... |
-/* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
-/* 0000 */ "\x72\x44\x43\x43\x01\x00\x0c\x00\x02\x00\x00\x00"                 //rDCC........ |
-// Sent dumped on channel (-1) n bytes |
+
 // FileSystemVirtualChannel::process_server_message: total_length=84 flags=0x00000003 chunk_data_length=84 |
 // Recv done on rdpdr (-1) n bytes |
 // /* 0000 */ "\x01\x00\x00\x00"                                                 //.... |
@@ -265,6 +250,24 @@ const char outdata[] = /* NOLINT */
 /* 0040 */ "\x01\x00\x00\x00\x04\x00\x08\x00\x02\x00\x00\x00\x05\x00\x08\x00" //................ |
 /* 0050 */ "\x01\x00\x00\x00"                                                 //.... |
 // Sent dumped on channel (-1) n bytes |
+
+// FileSystemVirtualChannel::process_server_message: total_length=12 flags=0x00000003 chunk_data_length=12 |
+// Recv done on rdpdr (-1) n bytes |
+// /* 0000 */ "\x01\x00\x00\x00"                                                 //.... |
+// /* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
+// /* 0000 */ "\x03\x00\x00\x00"                                                 //.... |
+// /* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
+// /* 0000 */ "\x72\x44\x43\x43\x01\x00\x0c\x00\x02\x00\x00\x00"                 //rDCC........ |
+// Dump done on rdpdr (-1) n bytes |
+// FileSystemVirtualChannel::process_server_message: Server Client ID Confirm |
+// Sending on channel (-1) n bytes |
+/* 0000 */ "\x00\x00\x00\x00"                                                 //.... |
+/* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
+/* 0000 */ "\x03\x00\x00\x00"                                                 //.... |
+/* 0000 */ "\x0c\x00\x00\x00"                                                 //.... |
+/* 0000 */ "\x72\x44\x43\x43\x01\x00\x0c\x00\x02\x00\x00\x00"                 //rDCC........ |
+// Sent dumped on channel (-1) n bytes |
+
 // FileSystemVirtualChannel::process_client_message: total_length=8 flags=0x00000003 chunk_data_length=8 |
 // Recv done on rdpdr (-1) n bytes |
 // /* 0000 */ "\x00\x00\x00\x00"                                                 //.... |

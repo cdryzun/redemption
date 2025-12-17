@@ -893,6 +893,13 @@ class FileSystemVirtualChannel final : public BaseVirtualChannel
     };
     NullVirtualChannelDataSender null_virtual_channel_data_sender;
 
+    bool server_core_capability_request_received = false;
+    bool server_client_id_confirm_received = false;
+
+    uint32_t saved_server_client_id_confirm_total_length = 0;
+    uint32_t saved_server_client_id_confirm_flags = 0;
+    std::vector<uint8_t> saved_server_client_id_confirm_chunk_data;
+
 public:
     bool channel_filter_on;
     const std::string channel_files_directory;
@@ -2671,9 +2678,31 @@ public:
                     "FileSystemVirtualChannel::process_server_message: "
                         "Server Client ID Confirm");
 
-                send_message_to_client =
-                    this->process_server_client_id_confirm(total_length,
-                        flags, chunk);
+                this->server_client_id_confirm_received = true;
+
+                if (this->server_core_capability_request_received) {
+                    send_message_to_client =
+                        this->process_server_client_id_confirm(total_length,
+                            flags, chunk);
+
+                    this->server_core_capability_request_received = false;
+                    this->server_client_id_confirm_received = false;
+                }
+                else {
+                    LOG(LOG_WARNING,
+                        "FileSystemVirtualChannel::process_server_message: "
+                            "The Server Core Capability Request message has "
+                                "not yet been received! "
+                            "Delays the processing of the Server Client ID "
+                                "Confirm message.");
+
+                    this->saved_server_client_id_confirm_total_length = total_length;
+                    this->saved_server_client_id_confirm_flags = flags;
+                    this->saved_server_client_id_confirm_chunk_data.assign(
+                        chunk_data.data(), chunk_data.data() + chunk_data.size());
+
+                    send_message_to_client = false;
+                }
             break;
 
             case rdpdr::PacketId::PAKID_CORE_DEVICE_REPLY:
@@ -2704,6 +2733,34 @@ public:
                 LOG_IF(bool(this->verbose & RDPVerbose::rdpdr), LOG_INFO,
                     "FileSystemVirtualChannel::process_server_message: "
                         "Server Core Capability Request");
+
+                this->server_core_capability_request_received = true;
+
+                if (this->server_client_id_confirm_received) {
+                    if (send_message_to_client) {
+                        this->send_message_to_client(total_length, flags, chunk_data);
+                    }
+
+                    InStream saved_server_client_id_confirm_chunk(
+                            { this->saved_server_client_id_confirm_chunk_data.data(),
+                              this->saved_server_client_id_confirm_chunk_data.size() }
+                        );
+
+                    if (this->process_server_client_id_confirm(
+                                this->saved_server_client_id_confirm_total_length,
+                                this->saved_server_client_id_confirm_flags,
+                                saved_server_client_id_confirm_chunk
+                            )) {
+                            this->send_message_to_client(
+                                    this->saved_server_client_id_confirm_total_length,
+                                    this->saved_server_client_id_confirm_flags,
+                                    { this->saved_server_client_id_confirm_chunk_data.data(),
+                                      this->saved_server_client_id_confirm_chunk_data.size() }
+                                );
+                        }
+
+                    send_message_to_client = false;
+                }
             break;
 
             case rdpdr::PacketId::PAKID_CORE_USER_LOGGEDON:
