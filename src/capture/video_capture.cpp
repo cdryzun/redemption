@@ -65,6 +65,34 @@ namespace
             : ImageByInterval::ZeroOrOneWithTimestamp
             ;
     }
+
+    bool capture_first_image(
+        VideoCaptureCtx const & video_ctx, MonotonicTimePoint now,
+        MonotonicTimePoint::duration video_interval,
+        gdi::CaptureApi::WaitingTimeBeforeNextSnapshot & waiting_time)
+    {
+        constexpr auto first_image_min_time = std::chrono::microseconds(3s) / 2;
+
+        using WaitingTimeBeforeNextSnapshot = gdi::CaptureApi::WaitingTimeBeforeNextSnapshot;
+        auto const duration = now - video_ctx.start_time();
+
+        if (duration >= first_image_min_time) {
+            if (video_ctx.logical_frame_ended()
+             || duration > 2s
+             || duration >= video_interval
+            ) {
+                return true;
+            }
+            else {
+                waiting_time.set_min(WaitingTimeBeforeNextSnapshot(first_image_min_time / 3));
+            }
+        }
+        else {
+            waiting_time.set_min(WaitingTimeBeforeNextSnapshot(first_image_min_time - duration));
+        }
+
+        return false;
+    }
 } // anonymous namespace
 
 
@@ -166,6 +194,7 @@ VideoCaptureCtx::VideoCaptureCtx(
 )
 : drawable(drawable)
 , lazy_drawable_pointer(lazy_drawable_pointer)
+, monotonic_start_time(capture_params.now)
 , monotonic_last_time_capture(capture_params.now)
 , monotonic_to_real(capture_params.now, capture_params.real_now)
 // `1000000L % frame_rate` should be equal to 0
@@ -475,8 +504,7 @@ FullVideoCaptureImpl::FullVideoCaptureImpl(
     Rect crop_rect,
     VideoParams const & video_params,
     FullVideoParams const & full_video_params)
-: start_time(capture_params.now)
-, last_time_thumbnail(capture_params.now)
+: last_time_thumbnail(capture_params.now)
 , thumbnail_interval(
     video_params.thumbnail.enabled
     && full_video_params.thumbnail_interval > MonotonicTimePoint::duration::zero()
@@ -533,11 +561,20 @@ WaitingTimeBeforeNextSnapshot FullVideoCaptureImpl::periodic_snapshot(
 {
     auto ret = this->video_cap_ctx.snapshot(this->recorder, now, cursor_x, cursor_y);
 
-    if (this->thumbnail_interval > MonotonicTimePoint::duration::zero()
-     && this->last_time_thumbnail + this->thumbnail_interval <= now
-    ) {
-        write_thumbnail(now);
-        ret.set_min(this->thumbnail_interval);
+    if (this->thumbnail_file) {
+        if (this->thumbnail_interval > MonotonicTimePoint::duration::zero()) {
+            if (this->last_time_thumbnail + this->thumbnail_interval <= now) {
+                write_thumbnail(now, ForceTimeToZero(false));
+                ret.set_min(this->thumbnail_interval);
+            }
+        }
+        // first image
+        else if (!this->video_cap_ctx.thumbnail_counter()
+              && capture_first_image(video_cap_ctx, now, MonotonicTimePoint::duration::max(), ret)
+        ) {
+            write_thumbnail(now, ForceTimeToZero(true));
+            ret.set_min(this->thumbnail_interval);
+        }
     }
 
     return ret;
@@ -545,11 +582,11 @@ WaitingTimeBeforeNextSnapshot FullVideoCaptureImpl::periodic_snapshot(
 
 void FullVideoCaptureImpl::next_thumbnail(MonotonicTimePoint now, chars_view title)
 {
-    write_thumbnail(now);
-    this->recorder.add_chapter(now - this->start_time, title);
+    write_thumbnail(now, ForceTimeToZero(false));
+    this->recorder.add_chapter(now - this->video_cap_ctx.start_time(), title);
 }
 
-void FullVideoCaptureImpl::write_thumbnail(MonotonicTimePoint now)
+void FullVideoCaptureImpl::write_thumbnail(MonotonicTimePoint now, ForceTimeToZero force_time_to_zero)
 {
     if (!this->thumbnail_file) {
         return ;
@@ -565,7 +602,8 @@ void FullVideoCaptureImpl::write_thumbnail(MonotonicTimePoint now)
       + part2.size()
     ];
 
-    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->start_time);
+    auto start_time = this->video_cap_ctx.start_time();
+    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time);
     auto dur_as_uint = static_cast<uint64_t>(dur.count());
 
     char * p = buf;
@@ -575,7 +613,9 @@ void FullVideoCaptureImpl::write_thumbnail(MonotonicTimePoint now)
     else {
         p = unchecked_bytes_copy_and_advance(p, part1_first);
     }
-    p = unchecked_bytes_copy_and_advance(p, int_to_decimal_chars(dur_as_uint).sv());
+    p = unchecked_bytes_copy_and_advance(p,
+        bool(force_time_to_zero) ? "0"_av : int_to_decimal_chars(dur_as_uint).sv()
+    );
     p = unchecked_bytes_copy_and_advance(p, part2);
 
     fwrite(buf, checked_int{p - buf}, 1, this->thumbnail_file);
@@ -618,6 +658,7 @@ WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::periodic_snapshot(
     MonotonicTimePoint now, uint16_t cursor_x, uint16_t cursor_y)
 {
     this->video_cap_ctx.snapshot(*this->recorder, now, cursor_x, cursor_y);
+
     if (this->video_cap_ctx.thumbnail_counter()) {
         return this->video_sequencer_periodic_snapshot(now);
     }
@@ -628,26 +669,12 @@ WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::periodic_snapshot(
 
 WaitingTimeBeforeNextSnapshot SequencedVideoCaptureImpl::first_periodic_snapshot(MonotonicTimePoint now)
 {
-    WaitingTimeBeforeNextSnapshot ret;
+    WaitingTimeBeforeNextSnapshot ret { MonotonicTimePoint::duration::max() };
 
-    auto constexpr interval = std::chrono::microseconds(3s) / 2;
-    auto const duration = now - this->monotonic_start_capture;
-    if (duration >= interval) {
-        auto video_interval = this->break_interval;
-        if (this->video_cap_ctx.logical_frame_ended()
-         || duration > 2s
-         || duration >= video_interval
-        ) {
-            auto monotonic_to_real = this->video_cap_ctx.get_monotonic_to_real();
-            this->video_cap_ctx.generate_thumbnail(to_tm_t(now, monotonic_to_real));
-            ret = WaitingTimeBeforeNextSnapshot(video_interval);
-        }
-        else {
-            ret = WaitingTimeBeforeNextSnapshot(interval / 3);
-        }
-    }
-    else {
-        ret = WaitingTimeBeforeNextSnapshot(interval - duration);
+    if (capture_first_image(video_cap_ctx, now, break_interval, ret)) {
+        auto monotonic_to_real = this->video_cap_ctx.get_monotonic_to_real();
+        this->video_cap_ctx.generate_thumbnail(to_tm_t(now, monotonic_to_real));
+        ret = WaitingTimeBeforeNextSnapshot(this->break_interval);
     }
 
     ret.set_min(this->video_sequencer_periodic_snapshot(now).duration());
@@ -694,8 +721,7 @@ SequencedVideoCaptureImpl::SequencedVideoCaptureImpl(
     VideoParams const & video_params,
     SequencedVideoParams const& sequenced_video_params,
     NotifyNextVideo & next_video_notifier)
-: monotonic_start_capture(capture_params.now)
-, vc_filename_generator(capture_params.record_path, capture_params.basename, video_params.codec)
+: vc_filename_generator(capture_params.record_path, capture_params.basename, video_params.codec)
 , start_break(capture_params.now)
 , break_interval((sequenced_video_params.break_interval > std::chrono::microseconds::zero())
     ? sequenced_video_params.break_interval

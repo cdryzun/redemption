@@ -146,6 +146,11 @@ struct VideoCaptureCtx : noncopyable
 
     void generate_thumbnail(tm const& now);
 
+    MonotonicTimePoint start_time() const noexcept
+    {
+        return monotonic_start_time;
+    }
+
 private:
     void preparing_video_frame(video_recorder & recorder);
 
@@ -183,6 +188,7 @@ private:
 
     Drawable & drawable;
     LazyDrawablePointer & lazy_drawable_pointer;
+    const MonotonicTimePoint monotonic_start_time;
     MonotonicTimePoint monotonic_last_time_capture;
     MonotonicTimeToRealTime monotonic_to_real;
     MonotonicTimePoint::duration frame_interval;
@@ -256,9 +262,10 @@ public:
     }
 
 private:
-    void write_thumbnail(MonotonicTimePoint now);
+    enum class ForceTimeToZero : bool;
 
-    MonotonicTimePoint start_time;
+    void write_thumbnail(MonotonicTimePoint now, ForceTimeToZero force_time_to_zero);
+
     MonotonicTimePoint last_time_thumbnail;
     MonotonicTimePoint::duration thumbnail_interval;
     video_recorder recorder;
@@ -324,8 +331,6 @@ private:
     WaitingTimeBeforeNextSnapshot video_sequencer_periodic_snapshot(MonotonicTimePoint now);
 
     void init_recorder();
-
-    const MonotonicTimePoint monotonic_start_capture;
 
     VideoCaptureCtx::FilenameGenerator vc_filename_generator;
     video_recorder::optional_wrapper recorder;

@@ -27,16 +27,16 @@
 #include "test_only/test_framework/file.hpp"
 #include "test_only/force_paris_timezone.hpp"
 
-#include "capture/video_capture.hpp"
-
 #include "core/RDP/orders/RDPOrdersPrimaryOpaqueRect.hpp"
 #include "core/RDP/caches/pointercache.hpp"
+#include "core/RDP/RDPDrawable.hpp"
+#include "capture/video_capture.hpp"
 #include "capture/full_video_params.hpp"
 #include "capture/sequenced_video_params.hpp"
 #include "capture/capture_params.hpp"
-#include "core/RDP/RDPDrawable.hpp"
-#include "utils/fileutils.hpp"
 #include "capture/lazy_drawable_pointer.hpp"
+#include "utils/fileutils.hpp"
+#include "utils/strutils.hpp"
 
 #include <chrono>
 
@@ -93,6 +93,7 @@ namespace
         }
     } next_video_notifier;
 
+    enum class Thumbnail : bool;
     enum class Cropped : bool;
     enum class Mouse : bool;
 
@@ -114,7 +115,7 @@ namespace
         CaptureParams capture_params;
         VideoParams video_params;
 
-        VideoCtx(char const * dirname, bool enable_thumbnail)
+        VideoCtx(char const * dirname, Thumbnail enable_thumbnail)
             : capture_params{
                 monotonic_time, real_time, "video", nullptr, dirname,
                 FilePermissions::user_and_group_permissions(BitPermissions::read),
@@ -126,7 +127,7 @@ namespace
                 .codec_options = "profile=baseline preset=ultrafast b=100000",
                 .no_timestamp = false,
                 .thumbnail = {
-                    .enabled = enable_thumbnail,
+                    .enabled = bool(enable_thumbnail),
                     .width = 0,
                     .height = 0,
                     .use_proportional_geometry = false,
@@ -140,7 +141,7 @@ namespace
         char const* dirname, std::chrono::seconds video_interval,
         unsigned loop_duration, Mouse mouse, Cropped cropped)
     {
-        VideoCtx ctx { dirname, true };
+        VideoCtx ctx { dirname, Thumbnail(true) };
         SequencedVideoParams sequenced_video_params { video_interval };
         SequencedVideoCaptureImpl video_capture(
             ctx.capture_params, ctx.drawable.impl(), ctx.lazy_drawable_pointer,
@@ -151,9 +152,11 @@ namespace
             video_capture, video_capture.graphics_api(), bool(mouse));
     }
 
-    void simple_full_video(char const* dirname, unsigned loop_duration, Mouse mouse, Cropped cropped)
+    void simple_full_video(
+        char const* dirname, unsigned loop_duration,
+        Mouse mouse, Cropped cropped, Thumbnail thumbnail)
     {
-        VideoCtx ctx { dirname, false };
+        VideoCtx ctx { dirname, thumbnail };
         FullVideoCaptureImpl video_capture(
             ctx.capture_params, ctx.drawable.impl(), ctx.lazy_drawable_pointer,
             to_rect(ctx.drawable, cropped), ctx.video_params, FullVideoParams{});
@@ -224,16 +227,30 @@ RED_AUTO_TEST_CASE_WD(TestSequencedVideo_interval_5s, wd)
 
 RED_AUTO_TEST_CASE_WD(TestFullVideoCapture_move_mouse, wd)
 {
-    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(false));
+    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(false), Thumbnail(false));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 106930 +- 10000_v);
 }
 
 RED_AUTO_TEST_CASE_WD(TestFullVideoCapture_static_mouse, wd)
 {
-    simple_full_video(wd.dirname(), 250, Mouse(false), Cropped(false));
+    simple_full_video(wd.dirname(), 250, Mouse(false), Cropped(false), Thumbnail(false));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 92693 +- 10000_v);
+}
+
+
+RED_AUTO_TEST_CASE_WD(TestFullVideoCapture_with_thumbnail, wd)
+{
+    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(false), Thumbnail(true));
+
+    RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 106930 +- 10000_v);
+
+    RED_CHECK_FILE_CONTENTS(wd.add_file("video.thumbnails.json"), str_concat("["
+        "{\"time\":0,\"filename\":\""_av, wd.dirname().string(), "video-000000.png\"}"
+        "]"_av));
+
+    RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "2bis.png");
 }
 
 
@@ -297,14 +314,14 @@ RED_AUTO_TEST_CASE_WD(TestSequencedVideoCropped_interval_5s, wd)
 
 RED_AUTO_TEST_CASE_WD(TestFullVideoCropped_move_mouse, wd)
 {
-    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(true));
+    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(true), Thumbnail(false));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 86930 +- 10000_v);
 }
 
 RED_AUTO_TEST_CASE_WD(TestFullVideoCropped_static_mouse, wd)
 {
-    simple_full_video(wd.dirname(), 250, Mouse(false), Cropped(true));
+    simple_full_video(wd.dirname(), 250, Mouse(false), Cropped(true), Thumbnail(false));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 65693 +- 10000_v);
 }
