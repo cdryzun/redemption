@@ -93,17 +93,10 @@ namespace
         }
     } next_video_notifier;
 
-    struct Codec
-    {
-        char const* name;
-        char const* options;
-    };
-    constexpr Codec mp4{"mp4", "profile=baseline preset=ultrafast b=100000"};
-
     enum class Cropped : bool;
     enum class Mouse : bool;
 
-    Rect to_rect(RDPDrawable& drawable, Cropped cropped)
+    Rect to_rect(RDPDrawable const & drawable, Cropped cropped)
     {
         return bool(cropped)
             ? Rect(drawable.width() / 4, drawable.height() / 4,
@@ -111,98 +104,69 @@ namespace
             : Rect(0, 0, drawable.width(), drawable.height());
     }
 
+    struct VideoCtx
+    {
+        MonotonicTimePoint monotonic_time { 12s + 653432us };
+        RealTimePoint real_time { 1353055788s + monotonic_time.time_since_epoch() };
+        RDPDrawable drawable { 800, 600 };
+        PointerCache ptr_cache { 15 };
+        LazyDrawablePointer lazy_drawable_pointer{ptr_cache.source_pointers_view() };
+        CaptureParams capture_params;
+        VideoParams video_params;
+
+        VideoCtx(char const * dirname, bool enable_thumbnail)
+            : capture_params{
+                monotonic_time, real_time, "video", nullptr, dirname,
+                FilePermissions::user_and_group_permissions(BitPermissions::read),
+                nullptr, SmartVideoCropping::disable, 0
+            }
+            , video_params {
+                .frame_rate = 25,
+                .codec = "mp4",
+                .codec_options = "profile=baseline preset=ultrafast b=100000",
+                .no_timestamp = false,
+                .thumbnail = {
+                    .enabled = enable_thumbnail,
+                    .width = 0,
+                    .height = 0,
+                    .use_proportional_geometry = false,
+                },
+                .verbosity = 0,
+            }
+        {}
+    };
+
     void simple_sequenced_video(
-        char const* dirname, Codec const& codec, std::chrono::seconds video_interval,
+        char const* dirname, std::chrono::seconds video_interval,
         unsigned loop_duration, Mouse mouse, Cropped cropped)
     {
-        MonotonicTimePoint monotonic_time{12s + 653432us};
-        RealTimePoint real_time{1353055788s + monotonic_time.time_since_epoch()};
-        RDPDrawable drawable(800, 600);
-        PointerCache ptr_cache(15);
-        LazyDrawablePointer lazy_drawable_pointer(ptr_cache.source_pointers_view());
-        VideoParams video_params {
-            .frame_rate = 25,
-            .codec = codec.name,
-            .codec_options = codec.options,
-            .no_timestamp = false,
-            .thumbnail {
-                .enabled = true,
-                .width = 0,
-                .height = 0,
-                .use_proportional_geometry = false,
-            },
-            .verbosity = 0,
-        };
+        VideoCtx ctx { dirname, true };
         SequencedVideoParams sequenced_video_params { video_interval };
-        CaptureParams capture_params{
-            monotonic_time, real_time, "video", nullptr, dirname,
-            FilePermissions::user_permissions(BitPermissions::read),
-            nullptr, SmartVideoCropping::disable, 0};
         SequencedVideoCaptureImpl video_capture(
-            capture_params, drawable.impl(), lazy_drawable_pointer,
-            to_rect(drawable, cropped), video_params,
+            ctx.capture_params, ctx.drawable.impl(), ctx.lazy_drawable_pointer,
+            to_rect(ctx.drawable, cropped), ctx.video_params,
             sequenced_video_params, next_video_notifier);
         simple_movie(
-            monotonic_time, loop_duration, drawable, lazy_drawable_pointer,
+            ctx.monotonic_time, loop_duration, ctx.drawable, ctx.lazy_drawable_pointer,
             video_capture, video_capture.graphics_api(), bool(mouse));
     }
 
-    void simple_full_video(
-        char const* dirname, Codec const& codec,
-        unsigned loop_duration, Mouse mouse, Cropped cropped)
+    void simple_full_video(char const* dirname, unsigned loop_duration, Mouse mouse, Cropped cropped)
     {
-        MonotonicTimePoint monotonic_time{12s + 653432us};
-        RealTimePoint real_time{1353055788s + monotonic_time.time_since_epoch()};
-        RDPDrawable drawable(800, 600);
-        PointerCache ptr_cache(15);
-        LazyDrawablePointer lazy_drawable_pointer(ptr_cache.source_pointers_view());
-        VideoParams video_params {
-            .frame_rate = 25,
-            .codec = codec.name,
-            .codec_options = codec.options,
-            .no_timestamp = false,
-            .thumbnail = {
-                .enabled = false,
-                .width = 0,
-                .height = 0,
-                .use_proportional_geometry = false,
-            },
-            .verbosity = 0,
-        };
-        CaptureParams capture_params{
-            monotonic_time, real_time, "video", nullptr, dirname,
-            FilePermissions::user_and_group_permissions(BitPermissions::read),
-            nullptr, SmartVideoCropping::disable, 0};
+        VideoCtx ctx { dirname, false };
         FullVideoCaptureImpl video_capture(
-            capture_params, drawable.impl(), lazy_drawable_pointer,
-            to_rect(drawable, cropped), video_params, FullVideoParams{});
+            ctx.capture_params, ctx.drawable.impl(), ctx.lazy_drawable_pointer,
+            to_rect(ctx.drawable, cropped), ctx.video_params, FullVideoParams{});
         simple_movie(
-            monotonic_time, loop_duration, drawable, lazy_drawable_pointer,
+            ctx.monotonic_time, loop_duration, ctx.drawable, ctx.lazy_drawable_pointer,
             video_capture, video_capture.graphics_api(), bool(mouse));
     }
 } // namespace
 
-RED_AUTO_TEST_CASE_WD(TestSequencedVideoCaptureMP4, wd)
-{
-    simple_sequenced_video(wd.dirname(), mp4, 2s, 250, Mouse(true), Cropped(false));
 
-    RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "2bis.png");
-    RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "2s.png");
-    RED_CHECK_IMG(wd.add_file("video-000002.png"), IMG_TEST_PATH "4s.png");
-    RED_CHECK_IMG(wd.add_file("video-000003.png"), IMG_TEST_PATH "6s.png");
-    RED_CHECK_IMG(wd.add_file("video-000004.png"), IMG_TEST_PATH "8s.png");
-    RED_CHECK_IMG(wd.add_file("video-000005.png"), IMG_TEST_PATH "10s.png");
-    RED_TEST_FILE_SIZE(wd.add_file("video-000000.mp4"), 23021 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000001.mp4"), 23000 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000002.mp4"), 23267 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000003.mp4"), 23767 +- 2500_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000004.mp4"), 23044 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000005.mp4"), 5315 +- 2000_v);
-}
-
-RED_AUTO_TEST_CASE_WD(SequencedVideoCaptureX264, wd)
+RED_AUTO_TEST_CASE_WD(TestSequencedVideo_interval_1s, wd)
 {
-    simple_sequenced_video(wd.dirname(), mp4, 1s, 250, Mouse(true), Cropped(false));
+    simple_sequenced_video(wd.dirname(), 1s, 250, Mouse(true), Cropped(false));
 
     RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "1s.png");
     RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "1s.png");
@@ -228,9 +192,27 @@ RED_AUTO_TEST_CASE_WD(SequencedVideoCaptureX264, wd)
     RED_TEST_FILE_SIZE(wd.add_file("video-000010.mp4"), 6080 +- 200_v);
 }
 
-RED_AUTO_TEST_CASE_WD(TestSequencedVideoCaptureMP4_3, wd)
+RED_AUTO_TEST_CASE_WD(TestSequencedVideo_interval_2s, wd)
 {
-    simple_sequenced_video(wd.dirname(), mp4, 5s, 250, Mouse(true), Cropped(false));
+    simple_sequenced_video(wd.dirname(), 2s, 250, Mouse(true), Cropped(false));
+
+    RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "2bis.png");
+    RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "2s.png");
+    RED_CHECK_IMG(wd.add_file("video-000002.png"), IMG_TEST_PATH "4s.png");
+    RED_CHECK_IMG(wd.add_file("video-000003.png"), IMG_TEST_PATH "6s.png");
+    RED_CHECK_IMG(wd.add_file("video-000004.png"), IMG_TEST_PATH "8s.png");
+    RED_CHECK_IMG(wd.add_file("video-000005.png"), IMG_TEST_PATH "10s.png");
+    RED_TEST_FILE_SIZE(wd.add_file("video-000000.mp4"), 23021 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000001.mp4"), 23000 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000002.mp4"), 23267 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000003.mp4"), 23767 +- 2500_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000004.mp4"), 23044 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000005.mp4"), 5315 +- 2000_v);
+}
+
+RED_AUTO_TEST_CASE_WD(TestSequencedVideo_interval_5s, wd)
+{
+    simple_sequenced_video(wd.dirname(), 5s, 250, Mouse(true), Cropped(false));
 
     RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "2bis.png");
     RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "5s.png");
@@ -240,42 +222,24 @@ RED_AUTO_TEST_CASE_WD(TestSequencedVideoCaptureMP4_3, wd)
     RED_TEST_FILE_SIZE(wd.add_file("video-000002.mp4"), 6080 +- 200_v);
 }
 
-RED_AUTO_TEST_CASE_WD(TestFullVideoCaptureX264, wd)
+RED_AUTO_TEST_CASE_WD(TestFullVideoCapture_move_mouse, wd)
 {
-    simple_full_video(wd.dirname(), mp4, 250, Mouse(true), Cropped(false));
+    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(false));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 106930 +- 10000_v);
 }
 
-RED_AUTO_TEST_CASE_WD(TestFullVideoCaptureX264_2, wd)
+RED_AUTO_TEST_CASE_WD(TestFullVideoCapture_static_mouse, wd)
 {
-    simple_full_video(wd.dirname(), mp4, 250, Mouse(false), Cropped(false));
+    simple_full_video(wd.dirname(), 250, Mouse(false), Cropped(false));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 92693 +- 10000_v);
 }
 
 
-RED_AUTO_TEST_CASE_WD(TestSequencedVideoCaptureCroppedMP4, wd)
+RED_AUTO_TEST_CASE_WD(TestSequencedVideoCropped_interval_1s, wd)
 {
-    simple_sequenced_video(wd.dirname(), mp4, 2s, 250, Mouse(true), Cropped(true));
-
-    RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "cropped_2bis.png");
-    RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "cropped_2s.png");
-    RED_CHECK_IMG(wd.add_file("video-000002.png"), IMG_TEST_PATH "cropped_4s.png");
-    RED_CHECK_IMG(wd.add_file("video-000003.png"), IMG_TEST_PATH "cropped_6s.png");
-    RED_CHECK_IMG(wd.add_file("video-000004.png"), IMG_TEST_PATH "cropped_8s.png");
-    RED_CHECK_IMG(wd.add_file("video-000005.png"), IMG_TEST_PATH "cropped_10s.png");
-    RED_TEST_FILE_SIZE(wd.add_file("video-000000.mp4"), 20021 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000001.mp4"), 27338 +- 2500_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000002.mp4"), 15267 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000003.mp4"), 19767 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000004.mp4"), 28044 +- 2000_v);
-    RED_TEST_FILE_SIZE(wd.add_file("video-000005.mp4"), 5315 +- 2000_v);
-}
-
-RED_AUTO_TEST_CASE_WD(SequencedVideoCaptureCroppedX264, wd)
-{
-    simple_sequenced_video(wd.dirname(), mp4, 1s, 250, Mouse(true), Cropped(true));
+    simple_sequenced_video(wd.dirname(), 1s, 250, Mouse(true), Cropped(true));
 
     RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "cropped_1s.png");
     RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "cropped_1s.png");
@@ -301,9 +265,27 @@ RED_AUTO_TEST_CASE_WD(SequencedVideoCaptureCroppedX264, wd)
     RED_TEST_FILE_SIZE(wd.add_file("video-000010.mp4"), 4980 +- 300_v);
 }
 
-RED_AUTO_TEST_CASE_WD(TestSequencedVideoCaptureCroppedMP4_3, wd)
+RED_AUTO_TEST_CASE_WD(TestSequencedVideoCropped_interval_2s, wd)
 {
-    simple_sequenced_video(wd.dirname(), mp4, 5s, 250, Mouse(true), Cropped(true));
+    simple_sequenced_video(wd.dirname(), 2s, 250, Mouse(true), Cropped(true));
+
+    RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "cropped_2bis.png");
+    RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "cropped_2s.png");
+    RED_CHECK_IMG(wd.add_file("video-000002.png"), IMG_TEST_PATH "cropped_4s.png");
+    RED_CHECK_IMG(wd.add_file("video-000003.png"), IMG_TEST_PATH "cropped_6s.png");
+    RED_CHECK_IMG(wd.add_file("video-000004.png"), IMG_TEST_PATH "cropped_8s.png");
+    RED_CHECK_IMG(wd.add_file("video-000005.png"), IMG_TEST_PATH "cropped_10s.png");
+    RED_TEST_FILE_SIZE(wd.add_file("video-000000.mp4"), 20021 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000001.mp4"), 27338 +- 2500_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000002.mp4"), 15267 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000003.mp4"), 19767 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000004.mp4"), 28044 +- 2000_v);
+    RED_TEST_FILE_SIZE(wd.add_file("video-000005.mp4"), 5315 +- 2000_v);
+}
+
+RED_AUTO_TEST_CASE_WD(TestSequencedVideoCropped_interval_5s, wd)
+{
+    simple_sequenced_video(wd.dirname(), 5s, 250, Mouse(true), Cropped(true));
 
     RED_CHECK_IMG(wd.add_file("video-000000.png"), IMG_TEST_PATH "cropped_2bis.png");
     RED_CHECK_IMG(wd.add_file("video-000001.png"), IMG_TEST_PATH "cropped_5s.png");
@@ -313,16 +295,16 @@ RED_AUTO_TEST_CASE_WD(TestSequencedVideoCaptureCroppedMP4_3, wd)
     RED_TEST_FILE_SIZE(wd.add_file("video-000002.mp4"), 4980 +- 300_v);
 }
 
-RED_AUTO_TEST_CASE_WD(TestFullVideoCaptureCroppedX264, wd)
+RED_AUTO_TEST_CASE_WD(TestFullVideoCropped_move_mouse, wd)
 {
-    simple_full_video(wd.dirname(), mp4, 250, Mouse(true), Cropped(true));
+    simple_full_video(wd.dirname(), 250, Mouse(true), Cropped(true));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 86930 +- 10000_v);
 }
 
-RED_AUTO_TEST_CASE_WD(TestFullVideoCaptureCroppedX264_2, wd)
+RED_AUTO_TEST_CASE_WD(TestFullVideoCropped_static_mouse, wd)
 {
-    simple_full_video(wd.dirname(), mp4, 250, Mouse(false), Cropped(true));
+    simple_full_video(wd.dirname(), 250, Mouse(false), Cropped(true));
 
     RED_TEST_FILE_SIZE(wd.add_file("video.mp4"), 65693 +- 10000_v);
 }
