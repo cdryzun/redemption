@@ -223,10 +223,11 @@ Widget::NextFocusResult WidgetComposite::next_focus(FocusDirection dir, FocusStr
 
     auto result = NextFocusResult::Unfocusable;
 
-    if (current_focus() && strategy == Widget::FocusStrategy::Next)
+    auto * widget_with_focus = current_focus();
+
+    if (widget_with_focus && strategy == FocusStrategy::Next)
     {
-        auto * w = current_focus();
-        switch (w->next_focus(dir, strategy))
+        switch (widget_with_focus->next_focus(dir, strategy))
         {
             case NextFocusResult::Unfocusable:
                 break;
@@ -247,7 +248,7 @@ Widget::NextFocusResult WidgetComposite::next_focus(FocusDirection dir, FocusStr
     }
     else if (dir == FocusDirection::Backward)
     {
-        first = widgets.end();
+        first = last;
     }
 
     auto inc = 1;
@@ -262,9 +263,9 @@ Widget::NextFocusResult WidgetComposite::next_focus(FocusDirection dir, FocusStr
     for (; first != last; first += inc)
     {
         Widget* w = *(first + adjust);
-        if (w->focusable == Widget::Focusable::Yes)
+        if (w->focusable == Focusable::Yes)
         {
-            switch (w->next_focus(dir, Widget::FocusStrategy::Restart))
+            switch (w->next_focus(dir, FocusStrategy::Restart))
             {
                 case NextFocusResult::Unfocusable:
                     break;
@@ -273,9 +274,9 @@ Widget::NextFocusResult WidgetComposite::next_focus(FocusDirection dir, FocusStr
                     auto new_idx = checked_cast<FocusIndex>(first + adjust - widgets.begin());
                     if (current_focus_index != new_idx)
                     {
-                        if (auto * old_w = current_focus())
+                        if (widget_with_focus)
                         {
-                            old_w->blur();
+                            widget_with_focus->blur();
                         }
                         current_focus_index = new_idx;
                         w->focus();
@@ -392,23 +393,30 @@ void WidgetComposite::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_
 
     if (w) {
         // get focus when mouse clic
-        auto activate_focus
+        bool takeable_focus
             = (device_flags == (MOUSE_FLAG_BUTTON1 | MOUSE_FLAG_DOWN))
            && (w->focusable == Focusable::Yes);
-        if (activate_focus) {
+        if (takeable_focus) {
             pressed = w;
             if (auto * curr = current_focus()) {
-                curr->blur();
+                if (curr == w)
+                {
+                    takeable_focus = false;
+                }
+                else
+                {
+                    curr->blur();
+                }
             }
             current_focus_index = idx;
         }
 
         w->rdp_input_mouse(device_flags, x, y);
 
-        // when not done in rdp_input_mouse
-        if (activate_focus) {
+        if (takeable_focus) {
             has_focus = true;
-            if (!w->has_focus) {
+            // call focus() when not done in w->rdp_input_mouse()
+            if (takeable_focus && !w->has_focus) {
                 w->focus();
             }
         }

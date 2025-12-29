@@ -123,6 +123,24 @@ struct DrawTextPadding
     uint16_t bottom;
     uint16_t left;
 
+    DrawTextPadding gap_xy(int xy) const noexcept
+    {
+        auto copy = *this;
+        copy.top += xy;
+        copy.right -= xy;
+        copy.bottom -= xy;
+        copy.left += xy;
+        return copy;
+    }
+
+    DrawTextPadding xy(int xy) const noexcept
+    {
+        auto copy = *this;
+        copy.top += xy;
+        copy.left += xy;
+        return copy;
+    }
+
     struct Padding
     {
         uint16_t top_right_bottom_left;

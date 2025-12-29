@@ -132,9 +132,17 @@
     REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wstring-conversion") \
     assert((condition) && "Unreachable code reached.")        \
     REDEMPTION_DIAGNOSTIC_POP()
-#else
+
+# define REDEMPTION_ASSUME(condition) assert(condition)
+#else // vvv ifdef NDEBUG
 # define REDEMPTION_UNREACHABLE_IF(condition) \
   do { if (condition) REDEMPTION_UNREACHABLE(); } while (0)
+
+# if REDEMPTION_CXX_HAS_ATTRIBUTE(assume)
+#  define REDEMPTION_ASSUME(condition) [[assume(condition)]]
+# else
+#  define REDEMPTION_ASSUME(condition) void()
+# endif
 #endif
 
 #ifdef REDEMPTION_UNREACHABLE

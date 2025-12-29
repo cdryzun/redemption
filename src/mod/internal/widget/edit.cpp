@@ -281,6 +281,11 @@ public:
         return w;
     }
 
+    void remove_to_end() noexcept
+    {
+        end_fc_it = current_fc_it;
+    }
+
     void remove_right(FontCharPtr const * to) noexcept
     {
         assert(current_fc_it <= to);
@@ -312,7 +317,7 @@ public:
 
 
 WidgetEdit::WidgetEdit(
-    gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+    gdi::GraphicApi & gd, Font const & font,
     Colors colors, WidgetEventNotifier onsubmit
 )
     : Widget(gd, Focusable::Yes)
@@ -322,12 +327,21 @@ WidgetEdit::WidgetEdit(
     , font(&font)
     , h_text(font.max_height())
     , onsubmit(onsubmit)
-    , copy_paste(copy_paste)
+    , copy_paste(nullptr)
 {
     buffer().init();
     pointer_flag = PointerType::Edit;
     // set a "random" width
     Widget::set_wh(D::compute_optimal_dim(h_text * 10, h_text));
+}
+
+WidgetEdit::WidgetEdit(
+    gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
+    Colors colors, WidgetEventNotifier onsubmit
+)
+    : WidgetEdit(gd, font, colors, onsubmit)
+{
+    this->copy_paste = &copy_paste;
 }
 
 WidgetEdit::WidgetEdit(
@@ -343,7 +357,9 @@ WidgetEdit::WidgetEdit(
 
 WidgetEdit::~WidgetEdit()
 {
-    this->copy_paste.stop_paste_for(*this);
+    if (this->copy_paste) {
+        this->copy_paste->stop_paste_for(*this);
+    }
 }
 
 uint16_t WidgetEdit::x_padding() noexcept
@@ -510,21 +526,25 @@ void WidgetEdit::rdp_input_scancode(
         break;
 
     case Keymap::KEvent::Paste:
-        copy_paste.paste(*this);
+        if (copy_paste) {
+            copy_paste->paste(*this);
+        }
         break;
 
     case Keymap::KEvent::Copy:
-        if (copy_paste) {
-            copy_paste.copy(get_text());
+        if (copy_paste && *copy_paste) {
+            copy_paste->copy(get_text());
         }
         break;
 
     case Keymap::KEvent::Cut:
         if (copy_paste) {
-            copy_paste.copy(get_text());
-        }
-        if (has_text()) {
-            set_text(""_av, {Redraw::Yes});
+            if (*copy_paste) {
+                copy_paste->copy(get_text());
+            }
+            if (has_text()) {
+                set_text(""_av, {Redraw::Yes});
+            }
         }
         break;
 
@@ -805,6 +825,7 @@ bool WidgetEdit::action_remove_left(Redraw redraw)
 bool WidgetEdit::action_remove_right(Redraw redraw)
 {
     if (buffer().is_movable_to_right()) {
+        buffer().remove_to_end();
         auto const old_position = buffer().current();
 
         int shift = 0;

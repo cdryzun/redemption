@@ -75,4 +75,9 @@ RED_AUTO_TEST_CASE(WidgetNumberEditEventPushChar)
 
     RED_CHECK(wnumber_edit.get_text() == "1234562"_av);
     RED_CHECK(wnumber_edit.get_text_as_uint() == 1234562);
+
+    keymap.event(KFlags(), Scancode::Backspace);
+    wnumber_edit.rdp_input_scancode(KFlags(), Scancode::Backspace, 0, keymap);
+    RED_CHECK_IMG(drawable, IMG_TEST_PATH "number_edit_1.png");
+    RED_CHECK(onsubmit.get_and_reset() == 0);
 }

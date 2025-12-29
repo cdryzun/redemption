@@ -49,6 +49,24 @@ Font::FontCharElement Font::get_higher_item(uint32_t unicode) const noexcept
     return {unknown_item, false};
 }
 
+REDEMPTION_NOINLINE
+uint16_t Font::compute_max_digit_width() const noexcept
+{
+    uint32_t d9 = '9' - 32;
+    if (d9 < nb_contiguous_item) {
+        uint32_t i = '0' - 32;
+        int w = font_items[i].boxed_width();
+        for (; i <= d9; ++i)
+        {
+            int dw = font_items[i].boxed_width();
+            w = dw < w ? w : dw;
+        }
+        return static_cast<uint16_t>(w);
+    }
+
+    return static_cast<uint16_t>(unknown_item.boxed_width());
+}
+
 /*
 - the RBF2 file always begins by the label "RBF2"
 - Police global informations are :
@@ -80,6 +98,7 @@ Font::FontCharElement Font::get_higher_item(uint32_t unicode) const noexcept
 */
 FontData::FontData(char const * file_path)
   : max_height_(default_unknown.offsety + default_unknown.height + 1)
+  , baseline_(default_unknown.offsety + default_unknown.height / 2)
   , unknown_item(default_unknown)
 {
     LOG(LOG_INFO, "Reading font file %s", file_path);
@@ -150,6 +169,7 @@ FontData::FontData(char const * file_path)
         unicode_max = stream.in_uint32_le();
         total_data_len = stream.in_uint32_le();
 
+        this->baseline_ = max_ascent;
         this->max_height_ = max_ascent + max_descent;
 
         LOG(LOG_INFO, "Font: version: %u  name: '%.*s'  size: %u  style: %u  max_ascent: %u  max_descent: %u  nbglyph: %u  unicode_max = %u  total_data: %u",

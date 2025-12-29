@@ -27,7 +27,7 @@
 #include "utils/utf.hpp"
 
 WidgetPasswordFont::WidgetPasswordFont(Font const& font)
-    : shadow_font(nullptr, 0, 0, font.max_height(), nullptr, font.item('*').view)
+    : shadow_font(nullptr, 0, 0, font.max_height(), font.baseline(), nullptr, font.item('*').view)
 {}
 
 WidgetPassword::WidgetPassword(
@@ -109,7 +109,9 @@ void WidgetPassword::rdp_input_scancode(
         break;
 
     case Keymap::KEvent::Paste:
-        copy_paste.paste(*this);
+        if (copy_paste) {
+            copy_paste->paste(*this);
+        }
         break;
 
     case Keymap::KEvent::Copy:

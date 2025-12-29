@@ -3307,6 +3307,43 @@ test-run tests/mod/internal/widget/test_number_edit :
 :
   $(BOOST_STACKTRACE_LINKFLAGS)
 ;
+test-run tests/mod/internal/widget/test_pagination :
+  $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_pagination.cpp
+:
+  crypto
+  png
+  app_path_test.o
+  src/core/RDP/RDPDrawable.o
+  src/core/error.o
+  src/core/font.o
+  src/gdi/clip_from_cmd.o
+  src/gdi/draw_utils.o
+  src/gdi/graphic_api.o
+  src/gdi/text.o
+  src/keyboard/keylayouts.o
+  src/keyboard/keymap.o
+  src/mod/internal/copy_paste.o
+  src/mod/internal/widget/button.o
+  src/mod/internal/widget/edit.o
+  src/mod/internal/widget/label.o
+  src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
+  src/utils/bitmap.o
+  src/utils/bitmap_data_allocator.o
+  src/utils/bitmap_from_file.o
+  src/utils/drawable.o
+  src/utils/hexdump.o
+  src/utils/png.o
+  src/utils/rle.o
+  src/utils/stacktrace.o
+  src/utils/strutils.o
+  src/utils/utf.o
+  tests/includes/test_only/core/font.o
+  tests/includes/test_only/gdi/test_graphic.o
+  tests/includes/test_only/test_framework/check_img.o
+:
+  $(BOOST_STACKTRACE_LINKFLAGS)
+;
 test-run tests/mod/internal/widget/test_password :
   $(REDEMPTION_TEST_PATH)/mod/internal/widget/test_password.cpp
 :
@@ -4796,6 +4833,10 @@ test-run tests/utils/test_log_siem :
   src/utils/strutils.o
 :
 ;
+test-run tests/utils/test_mathutils :
+  $(REDEMPTION_TEST_PATH)/utils/test_mathutils.cpp
+:
+;
 test-run tests/utils/test_meminfo :
   $(REDEMPTION_TEST_PATH)/utils/test_meminfo.cpp
 :
@@ -5068,6 +5109,7 @@ obj src/mod/internal/widget/login.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget
 obj src/mod/internal/widget/module_host.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/module_host.cpp ;
 obj src/mod/internal/widget/multiline.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/multiline.cpp ;
 obj src/mod/internal/widget/number_edit.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/number_edit.cpp ;
+obj src/mod/internal/widget/pagination.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/pagination.cpp ;
 obj src/mod/internal/widget/password.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/password.cpp ;
 obj src/mod/internal/widget/screen.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/screen.cpp ;
 obj src/mod/internal/widget/scroll.o : $(REDEMPTION_SRC_PATH)/mod/internal/widget/scroll.cpp ;
@@ -5326,6 +5368,7 @@ alias test_label : tests/mod/internal/widget/test_label ;
 alias test_login : tests/mod/internal/widget/test_login ;
 alias test_multiline : tests/mod/internal/widget/test_multiline ;
 alias test_number_edit : tests/mod/internal/widget/test_number_edit ;
+alias test_pagination : tests/mod/internal/widget/test_pagination ;
 alias test_password : tests/mod/internal/widget/test_password ;
 alias test_screen : tests/mod/internal/widget/test_screen ;
 alias test_scroll : tests/mod/internal/widget/test_scroll ;
@@ -5435,6 +5478,7 @@ alias test_line_equation : tests/utils/test_line_equation ;
 alias test_load_theme : tests/utils/test_load_theme ;
 alias test_log : tests/utils/test_log ;
 alias test_log_siem : tests/utils/test_log_siem ;
+alias test_mathutils : tests/utils/test_mathutils ;
 alias test_meminfo : tests/utils/test_meminfo ;
 alias test_move_remaining_data : tests/utils/test_move_remaining_data ;
 alias test_netutils : tests/utils/test_netutils ;
@@ -5695,6 +5739,7 @@ alias tests/mod/internal/widget.norec :
   tests/mod/internal/widget/test_login
   tests/mod/internal/widget/test_multiline
   tests/mod/internal/widget/test_number_edit
+  tests/mod/internal/widget/test_pagination
   tests/mod/internal/widget/test_password
   tests/mod/internal/widget/test_screen
   tests/mod/internal/widget/test_scroll
@@ -5836,6 +5881,7 @@ alias tests/utils.norec :
   tests/utils/test_load_theme
   tests/utils/test_log
   tests/utils/test_log_siem
+  tests/utils/test_mathutils
   tests/utils/test_meminfo
   tests/utils/test_move_remaining_data
   tests/utils/test_netutils
@@ -6177,6 +6223,7 @@ explicit
   src/mod/internal/widget/module_host.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
@@ -6437,6 +6484,7 @@ explicit
   test_login
   test_multiline
   test_number_edit
+  test_pagination
   test_password
   test_screen
   test_scroll
@@ -6546,6 +6594,7 @@ explicit
   test_load_theme
   test_log
   test_log_siem
+  test_mathutils
   test_meminfo
   test_move_remaining_data
   test_netutils

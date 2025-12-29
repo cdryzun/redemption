@@ -56,6 +56,11 @@ struct FontCharView
     {
         return offsetx + incby;
     }
+
+    int boxed_height() const noexcept
+    {
+        return offsety + height;
+    }
 };
 
 
@@ -187,12 +192,14 @@ struct Font
          uint32_t nb_contiguous_item,
          uint32_t nb_random_item,
          uint16_t max_height,
+         uint16_t baseline,
          uint32_t const* unicode_values,
          FontCharView unknown_item)
     : font_items(font_items)
     , nb_contiguous_item(nb_contiguous_item)
     , nb_random_item(nb_random_item)
     , max_height_(max_height)
+    , baseline_(baseline)
     , unicode_values(unicode_values)
     , unknown_item(unknown_item)
     {}
@@ -200,6 +207,11 @@ struct Font
     uint16_t max_height() const noexcept
     {
         return this->max_height_;
+    }
+
+    uint16_t baseline() const noexcept
+    {
+        return this->baseline_;
     }
 
     FontCharView const & unknown_glyph() const noexcept
@@ -224,13 +236,25 @@ struct Font
         return {this->unknown_item, false};
     }
 
+    uint16_t max_digit_width() const noexcept
+    {
+        if (!max_digit_w) [[unlikely]]
+        {
+            max_digit_w = compute_max_digit_width();
+        }
+        return max_digit_w;
+    }
+
 private:
     FontCharElement get_higher_item(uint32_t unicode) const noexcept;
+    uint16_t compute_max_digit_width() const noexcept;
 
     FontCharView const* font_items {};
     uint32_t nb_contiguous_item {};
     uint32_t nb_random_item {};
     uint16_t max_height_ {};
+    uint16_t baseline_ {};
+    mutable uint16_t max_digit_w {};
     uint32_t const* unicode_values {};
     FontCharView unknown_item {};
 };
@@ -255,6 +279,7 @@ struct FontData
             nb_contiguous_item,
             nb_random_item,
             max_height_,
+            baseline_,
             unicode_values.get(),
             unknown_item
         );
@@ -265,6 +290,7 @@ private:
     uint32_t nb_contiguous_item = 0;
     uint32_t nb_random_item = 0;
     uint16_t max_height_ = 0;
+    uint16_t baseline_ = 0;
     std::unique_ptr<uint32_t[]> unicode_values;
     std::unique_ptr<uint8_t[]> data_glyphs;
     FontCharView unknown_item;

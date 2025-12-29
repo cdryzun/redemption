@@ -66,6 +66,11 @@ public:
     using Text = static_string<max_capacity * 4>;
 
     WidgetEdit(
+        gdi::GraphicApi & gd, Font const & font, Colors colors,
+        WidgetEventNotifier onsubmit
+    );
+
+    WidgetEdit(
         gdi::GraphicApi & gd, Font const & font, CopyPaste & copy_paste,
         Colors colors, WidgetEventNotifier onsubmit
     );
@@ -210,5 +215,5 @@ private:
     BufferData editable_buffer;
 
 protected:
-    CopyPaste & copy_paste;
+    CopyPaste * copy_paste;
 };

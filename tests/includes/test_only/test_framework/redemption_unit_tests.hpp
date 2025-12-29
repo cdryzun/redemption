@@ -477,6 +477,15 @@ namespace redemption_unit_test_
     }
 } // namespace redemption_unit_test_
 
+/*
+    RED_TEST_DATAS(
+        (IMG_TEST_PATH "focus_next.png", true)
+        (IMG_TEST_PATH "focus_last.png", true)
+    ) >>= [&](char const* img_path, bool focused)
+    {
+        // tests
+    };
+*/
 #define RED_TEST_DATAS(datas) ::redemption_unit_test_ \
     ::make_datas_ctx([](auto f) { return f datas; })
 
@@ -544,6 +553,19 @@ namespace redemption_unit_test_
 #define RED_TEST_CONTEXT_DATA_I(cont, i, n, type_value, iocontext, ...) \
     RED_TEST_CONTEXT_DATA_II(cont, i, n, type_value, iocontext, __VA_ARGS__)
 
+/*
+    RED_TEST_CONTEXT_DATA(
+        UnicodeData d,
+        "unicode: " << d.ch << " | final text: " << d.final_text,
+        {
+            UnicodeData{'c', "2", IMG_TEST_PATH "focus_edit.png"},
+            UnicodeData{'1', "21", IMG_TEST_PATH "edit_text_21.png"},
+        }
+    )
+    {
+        // tests on d
+    }
+*/
 #define RED_TEST_CONTEXT_DATA(type_value, iocontext, ...) \
     RED_TEST_CONTEXT_DATA_I(                              \
         BOOST_PP_CAT(ctx_cont_, __LINE__),                \
@@ -552,6 +574,20 @@ namespace redemption_unit_test_
         type_value, iocontext, __VA_ARGS__)
 #endif
 
+/*
+    RED_AUTO_TEST_CONTEXT_DATA(
+        "test name"
+        UnicodeData d,
+        "unicode: " << d.ch << " | final text: " << d.final_text,
+        {
+            UnicodeData{'c', "2", IMG_TEST_PATH "focus_edit.png"},
+            UnicodeData{'1', "21", IMG_TEST_PATH "edit_text_21.png"},
+        }
+    )
+    {
+        // tests on d
+    }
+*/
 #define RED_AUTO_TEST_CONTEXT_DATA(test_name, type_value, iocontext, ...) \
     struct test_name##_case : ::redemption_unit_test_::MaxError           \
     { void _exec(type_value); };                                          \

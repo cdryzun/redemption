@@ -117,7 +117,7 @@ public:
     bool has_focus;
 
 public:
-    Widget(gdi::GraphicApi & drawable, Focusable focusable)
+    Widget(gdi::GraphicApi & drawable, Focusable focusable) noexcept
     : drawable(drawable)
     , focusable(focusable)
     , pointer_flag(PointerType::Normal)

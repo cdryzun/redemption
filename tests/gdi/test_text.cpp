@@ -124,7 +124,7 @@ RED_TEST_DISPATCH_COMPARISON_EQ((), (LinesForTest), (LinesForTest), ::test_comp_
 #endif
 
 #define TEST_LINES(font, s, preferred_max_width, real_max_width, ...) do { \
-    gdi::MultiLineText metrics(font, preferred_max_width, s ""_av); \
+    gdi::MultiLineText metrics(font, preferred_max_width, s ""_av);        \
     std::string_view expected_[] __VA_ARGS__;                              \
     LinesForTest expected{{}, make_array_view(expected_), font};           \
     LinesForTest lines = {metrics.lines(), {}, font};                      \

@@ -382,24 +382,23 @@ int draw_text(
     }
 
     if (!(it < end)) {
-        if (int w = fcs.empty() ? padding.left + padding.right : padding.right) {
-            int px = x;
-            if (fcs.empty()) {
-                px -= padding.left;
-            }
-            else {
-                w += fcs.back()->incby - fcs.back()->width;
-            }
-            Rect rect(
-                checked_int{px},
-                checked_int{y},
-                checked_int{w},
-                checked_int{max_height_text + padding.top + padding.bottom}
-            );
-            drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
-            return rect.intersect(clip).eright();
+        int w = fcs.empty() ? padding.left + padding.right : padding.right;
+        w += 1;
+        int px = x;
+        if (fcs.empty()) {
+            px -= padding.left;
         }
-        return x - padding.left;
+        else {
+            w += fcs.back()->incby - fcs.back()->width;
+        }
+        Rect rect(
+            checked_int{px},
+            checked_int{y},
+            checked_int{w},
+            checked_int{max_height_text + padding.top + padding.bottom}
+        );
+        drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
+        return rect.intersect(clip).eright();
     }
 
     y += padding.top;
