@@ -1153,13 +1153,20 @@ private:
                     }
 
                     if (has_field(cfg::context::end_date_cnx())) {
-                        auto time_base = TimeBase::now();
-                        event_manager.set_time_base(time_base);
-                        const auto sys_date = time_base.real_time.time_since_epoch();
-                        auto const elapsed = ini.get<cfg::context::end_date_cnx>() - sys_date;
-                        auto const new_end_date = time_base.monotonic_time + elapsed;
-                        end_session_warning.set_time(new_end_date);
-                        mod_factory.set_time_close(new_end_date);
+                        auto end_date_cnx = ini.get<cfg::context::end_date_cnx>();
+                        if (end_date_cnx == end_date_cnx.zero()) {
+                            end_session_warning.reset();
+                            mod_factory.set_time_close(MonotonicTimePoint{});
+                        }
+                        else {
+                            auto time_base = TimeBase::now();
+                            event_manager.set_time_base(time_base);
+                            const auto sys_date = time_base.real_time.time_since_epoch();
+                            auto const elapsed = end_date_cnx - sys_date;
+                            auto const new_end_date = time_base.monotonic_time + elapsed;
+                            end_session_warning.set_time(new_end_date);
+                            mod_factory.set_time_close(new_end_date);
+                        }
                     }
 
                     if (has_field(cfg::globals::inactivity_timeout())) {

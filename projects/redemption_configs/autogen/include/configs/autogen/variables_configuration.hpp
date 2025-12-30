@@ -4195,6 +4195,7 @@ namespace cfg
         using mapped_type = std::string;
         type value {  };
     };
+    /// Set to 0 to disable this feature. <br/>
     /// type: std::chrono::seconds <br/>
     /// acl ⇒ proxy <br/>
     /// acl::name: timeclose <br/>

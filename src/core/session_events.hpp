@@ -87,11 +87,11 @@ public:
     /// add delay (can be negative)
     void add_delay(MonotonicTimePoint::duration delay);
 
-    // void reset()
-    // {
-    //     this->timer_event.garbage();
-    //     this->last_delay = this->last_delay.zero();
-    // }
+    void reset()
+    {
+        this->timer_event.garbage();
+        this->last_delay = this->last_delay.zero();
+    }
 
     template<class Fn>
     void update_warning(Fn&& fn)

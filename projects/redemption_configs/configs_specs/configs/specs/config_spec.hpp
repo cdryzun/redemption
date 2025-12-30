@@ -3451,6 +3451,7 @@ _.section("context", [&]
         },
         .value = value<std::chrono::seconds>(0),
         .spec = acl_to_proxy(reset_back_to_selector, loggable),
+        .desc = "Set to 0 to disable this feature.",
     });
 
     _.member(MemberInfo{

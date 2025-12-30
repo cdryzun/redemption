@@ -3883,7 +3883,7 @@
       "name": "end_date_cnx",
       "type": "seconds",
       "value": 0,
-      "description": "",
+      "description": "Set to 0 to disable this feature.",
       "aclName": "timeclose",
       "aclToProxy": true,
       "resetBackToSelector": true,
