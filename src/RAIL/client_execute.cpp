@@ -630,8 +630,8 @@ void draw_text_region(
             font->max_height(),
             gdi::DrawTextPadding{},
             fcs,
-            fg_color,
-            bg_color,
+            decode_color24()(fg_color),
+            decode_color24()(bg_color),
             clip
         );
     }

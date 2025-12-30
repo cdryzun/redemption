@@ -171,8 +171,7 @@ private:
     std::string osd_message;
     uint16_t osd_message_last_width = 0;
 
-    RDPColor color;
-    RDPColor background_color;
+    BGRColor color;
     Font const& glyphs;
 
     not_null_ptr<mod_api> modi;

@@ -127,7 +127,7 @@ void TestCardMod::draw_event()
         gdi::draw_text(
             gd, x, y, font.max_height(), gdi::DrawTextPadding{},
             WidgetText<32>(this->font, str).fcs(),
-            encode_color24()(fg), encode_color24()(bg),
+            fg, bg,
             clip
         );
     };

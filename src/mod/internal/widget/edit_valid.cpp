@@ -350,7 +350,7 @@ void WidgetEditValid::draw_button_zone(Rect clip)
 
         auto draw_button = [this, y_button, cy_button, clip](
             int x_button, bool is_pressed, FontCharView const* fc,
-            RDPColor fg, RDPColor bg, int pad, int adjust_border
+            Color fg, Color bg, int pad, int adjust_border
         ) {
             uint16_t h_text = edit_or_text.edit.get_font().max_height();
             int top_pad = (cy_button - h_text) / 2 + is_pressed;

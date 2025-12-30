@@ -30,7 +30,7 @@ private:
     gdi::GraphicApi & drawable;
     Rect widget_rect;
     uint16_t font_height;
-    RDPColor fgcolor;
-    RDPColor bgcolor;
-    RDPColor border_color;
+    Widget::Color fgcolor;
+    Widget::Color bgcolor;
+    Widget::Color border_color;
 };

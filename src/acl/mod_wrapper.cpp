@@ -43,26 +43,25 @@ void ModWrapper::display_osd_message(std::string_view message, gdi::OsdMsgUrgenc
 
     if (!message.empty()) {
         std::string_view prefix = "";
-        BitsPerPixel bpp = this->client_info.screen_info.bpp;
 
         switch (omu)
         {
         case gdi::OsdMsgUrgency::NORMAL:
-            this->color = RDPColor::from(0);
+            this->color = NamedBGRColor::BLACK;
             break;
 
         case gdi::OsdMsgUrgency::INFO:
-            this->color = color_encode(NamedBGRColor::BLUE, bpp);
+            this->color = NamedBGRColor::BLUE;
             prefix = "INFO: ";
             break;
 
         case gdi::OsdMsgUrgency::WARNING:
-            this->color = color_encode(NamedBGRColor::ORANGE, bpp);
+            this->color = NamedBGRColor::ORANGE;
             prefix = "WARNING: ";
             break;
 
         case gdi::OsdMsgUrgency::ALERT:
-            this->color = color_encode(NamedBGRColor::RED, bpp);
+            this->color = NamedBGRColor::RED;
             prefix = "ALERT: ";
             break;
         }
@@ -158,7 +157,7 @@ void ModWrapper::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t 
                 this->osd_multi_line.set_text(this->glyphs, msg);
                 this->osd_message = std::move(msg);
                 this->osd_message_last_width = 0;
-                this->color = RDPColor::from(0);
+                this->color = NamedBGRColor::BLACK;
                 this->draw_osd_message(false);
                 this->target_info_is_shown = true;
             }
@@ -253,15 +252,15 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
     auto const bpp = this->client_info.screen_info.bpp;
     auto const color_ctx = gdi::ColorCtx::from_bpp(bpp, this->palette);
     auto const black = RDPColor::from(0);
-    auto const background_color = color_encode(NamedBGRColor::LIGHT_YELLOW, bpp);
+    auto const background_color = NamedBGRColor::LIGHT_YELLOW;
 
-    drawable.draw(RDPOpaqueRect(clip, background_color), clip, color_ctx);
+    drawable.draw(RDPOpaqueRect(clip, color_encode(background_color, bpp)), clip, color_ctx);
 
     gdi_draw_border(drawable, black, clip, 1, clip, color_ctx);
 
     const auto fc_height = glyphs.max_height();
 
-    auto draw_text = [&](int16_t y, RDPColor fgcolor, gdi::MultiLineText::Line str) {
+    auto draw_text = [&](int16_t y, BGRColor fgcolor, gdi::MultiLineText::Line str) {
         gdi::draw_text(
             drawable,
             clip.x + padw,
@@ -288,7 +287,7 @@ void ModWrapper::draw_osd_message(bool disable_by_input)
     }
 
     if (this->is_disable_by_input) {
-        draw_text(dy + 4, black, this->osd_multi_line.lines().back());
+        draw_text(dy + 4, NamedBGRColor::BLACK, this->osd_multi_line.lines().back());
     }
 }
 

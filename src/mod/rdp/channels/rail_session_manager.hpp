@@ -631,8 +631,8 @@ private:
             line_height,
             gdi::DrawTextPadding{},
             msg.fcs(),
-            encode_color24()(this->theme.global.fgcolor),
-            encode_color24()(this->theme.global.bgcolor),
+            this->theme.global.fgcolor,
+            this->theme.global.bgcolor,
             this->protected_rect
         );
     }
@@ -683,8 +683,8 @@ private:
             line_height,
             gdi::DrawTextPadding{},
             tm_msg.fcs(),
-            encode_color24()(this->theme.global.fgcolor),
-            encode_color24()(this->theme.global.bgcolor),
+            this->theme.global.fgcolor,
+            this->theme.global.bgcolor,
             this->protected_rect
         );
 
@@ -718,8 +718,8 @@ private:
                 .left = checked_int(xtext + is_pressed),
             },
             text.fcs(),
-            encode_color24()(this->theme.global.fgcolor),
-            encode_color24()(this->theme.global.focus_color),
+            this->theme.global.fgcolor,
+            this->theme.global.focus_color,
             this->disconnect_now_button_rect.shrink(border_width)
         );
     }

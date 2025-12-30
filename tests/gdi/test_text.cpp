@@ -305,12 +305,11 @@ RED_AUTO_TEST_CASE(TestServerDrawText)
         ""_av
     ;
 
-    using color_encoder = encode_color24;
     gdi::draw_text(
         gd, 0, 0, font.max_height(), gdi::DrawTextPadding{},
         WidgetText<text.size()>(font, text).fcs(),
-        color_encoder()(NamedBGRColor::CYAN),
-        color_encoder()(NamedBGRColor::BLUE),
+        NamedBGRColor::CYAN,
+        NamedBGRColor::BLUE,
         Rect(0, 0, w, h)
     );
 

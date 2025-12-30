@@ -94,8 +94,8 @@ public:
         int16_t x;
         int16_t y;
         Rect clip;
-        RDPColor fgcolor;
-        RDPColor bgcolor;
+        BGRColor fgcolor;
+        BGRColor bgcolor;
         bool draw_bg_rect;
     };
 
@@ -228,8 +228,8 @@ int draw_text(
     uint16_t max_height_text,
     DrawTextPadding padding,
     array_view<FontCharView const *> fcs,
-    RDPColor fgcolor,
-    RDPColor bgcolor,
+    BGRColor fgcolor,
+    BGRColor bgcolor,
     Rect clip
 );
 

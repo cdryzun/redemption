@@ -309,7 +309,7 @@ void MultiLineText::draw(gdi::GraphicApi& drawable, DrawingData data)
     if (!rect_intersect.isempty()) {
         if (data.draw_bg_rect) {
             drawable.draw(
-                RDPOpaqueRect(rect_intersect, data.bgcolor),
+                RDPOpaqueRect(rect_intersect, encode_color24()(data.bgcolor)),
                 rect, gdi::ColorCtx::depth24()
             );
         }
@@ -358,8 +358,8 @@ int draw_text(
     uint16_t max_height_text,
     DrawTextPadding padding,
     array_view<FontCharView const *> fcs,
-    RDPColor fgcolor,
-    RDPColor bgcolor,
+    BGRColor fgcolor,
+    BGRColor bgcolor,
     Rect clip)
 {
     auto it = fcs.begin();
@@ -397,7 +397,7 @@ int draw_text(
             checked_int{w},
             checked_int{max_height_text + padding.top + padding.bottom}
         );
-        drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
+        drawable.draw(RDPOpaqueRect(rect, encode_color24()(bgcolor)), clip, gdi::ColorCtx::depth24());
         return rect.intersect(clip).eright();
     }
 
@@ -445,8 +445,8 @@ int draw_text(
             0x03,     // fl_accel
             0x0,      // ui_charinc
             0,        // f_op_redundant,
-            fgcolor,  // BackColor (text color)
-            bgcolor,  // ForeColor (color of the opaque rectangle)
+            encode_color24()(fgcolor),  // BackColor (text color)
+            encode_color24()(bgcolor),  // ForeColor (color of the opaque rectangle)
             bk,       // bk
             bk,       // op
             RDPBrush(0, 0, 0, 0),

@@ -21,9 +21,9 @@ TransitionMod::TransitionMod(
     , drawable(drawable)
     , widget_rect(widget_rect)
     , font_height(font.max_height())
-    , fgcolor(Widget::Color(theme.tooltip.fgcolor))
-    , bgcolor(Widget::Color(theme.tooltip.bgcolor))
-    , border_color(Widget::Color(theme.tooltip.border_color))
+    , fgcolor(theme.tooltip.fgcolor)
+    , bgcolor(theme.tooltip.bgcolor)
+    , border_color(theme.tooltip.border_color)
 {
     this->set_mod_signal(BACK_EVENT_NONE);
     this->rdp_input_invalidate(widget_rect);
