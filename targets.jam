@@ -97,6 +97,7 @@ exe rdpproxy :
   src/mod/internal/widget/module_host.o
   src/mod/internal/widget/multiline.o
   src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
   src/mod/internal/widget/password.o
   src/mod/internal/widget/screen.o
   src/mod/internal/widget/scroll.o
@@ -3471,6 +3472,7 @@ test-run tests/mod/internal/widget/test_selector :
   src/mod/internal/widget/help_icon.o
   src/mod/internal/widget/label.o
   src/mod/internal/widget/number_edit.o
+  src/mod/internal/widget/pagination.o
   src/mod/internal/widget/selector.o
   src/translation/gettext.o
   src/translation/translation.o

@@ -33,13 +33,19 @@ struct WidgetPagination final : Widget
         uint32_t total_page;
     };
 
-    enum Cycle
+    enum class Cycle : bool
     {
         No,
         Yes,
     };
 
-    enum class RedrawAfterEvent : uint8_t
+    enum class RedrawAfterEvent : bool
+    {
+        No,
+        Yes,
+    };
+
+    enum class TriggerUpdatePageEvent : bool
     {
         No,
         Yes,
@@ -64,9 +70,9 @@ struct WidgetPagination final : Widget
         return m_total;
     }
 
-    void set_page(uint32_t page);
-    void set_prev_page(Cycle enable_cycle);
-    void set_next_page(Cycle enable_cycle);
+    bool set_page(uint32_t page, TriggerUpdatePageEvent trigger_event);
+    bool prev_page(Cycle enable_cycle, TriggerUpdatePageEvent trigger_event);
+    bool next_page(Cycle enable_cycle, TriggerUpdatePageEvent trigger_event);
 
     void update(Data data);
 

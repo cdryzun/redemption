@@ -11,6 +11,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include "mod/internal/widget/help_icon.hpp"
 #include "mod/internal/widget/number_edit.hpp"
 #include "mod/internal/widget/button.hpp"
+#include "mod/internal/widget/pagination.hpp"
 #include "translation/translation.hpp"
 #include "utils/monotonic_clock.hpp"
 
@@ -43,14 +44,7 @@ public:
 
         WidgetEventNotifier onfilter;
 
-        WidgetEventNotifier onfirst_page;
-        WidgetEventNotifier onprev_page;
-        WidgetEventNotifier oncurrent_page;
-        WidgetEventNotifier onnext_page;
-        WidgetEventNotifier onlast_page;
-
-        WidgetEventNotifier onprev_page_on_grid;
-        WidgetEventNotifier onnext_page_on_grid;
+        WidgetPagination::UpdatePageEvent update_page;
 
         WidgetEventNotifier onctrl_shift;
     };
@@ -115,8 +109,6 @@ private:
 
     void rearrange_grid();
     void move_and_resize_navigation_buttons();
-
-    Font const& font() noexcept;
 
     using FontChars = array_view<FontCharView const*>;
 
@@ -278,6 +270,7 @@ private:
     };
 
 
+    Font const & font;
     Widget * extra_button;
     bool less_than_800;
     bool has_devices = false;
@@ -299,13 +292,7 @@ private:
     std::array<WidgetEdit, nb_columns> edit_filters;
 
     WidgetGrid grid;
-
-    WidgetButton first_page;
-    WidgetButton prev_page;
-    WidgetNumberEdit current_page_edit;
-    WidgetLabel number_page;
-    WidgetButton next_page;
-    WidgetButton last_page;
+    WidgetPagination pagination;
     WidgetButton logout;
     WidgetButton apply;
     WidgetButton connect;

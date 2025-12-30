@@ -51,13 +51,7 @@ struct TestWidgetSelectorCtx
             .onconnect = WidgetEventNotifier(),
             .oncancel = WidgetEventNotifier(),
             .onfilter = WidgetEventNotifier(),
-            .onfirst_page = WidgetEventNotifier(),
-            .onprev_page = WidgetEventNotifier(),
-            .oncurrent_page = WidgetEventNotifier(),
-            .onnext_page = WidgetEventNotifier(),
-            .onlast_page = WidgetEventNotifier(),
-            .onprev_page_on_grid = WidgetEventNotifier(),
-            .onnext_page_on_grid = WidgetEventNotifier(),
+            .update_page = [](uint32_t /*page*/) {},
             .onctrl_shift = WidgetEventNotifier(),
         }
     )

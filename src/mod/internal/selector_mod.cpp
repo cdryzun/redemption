@@ -83,62 +83,9 @@ SelectorMod::SelectorMod(
 
             .onfilter = [this]{ this->ask_page(); },
 
-            .onfirst_page = [this]{
-                if (this->current_page > 1) {
-                    this->current_page = 1;
-                    this->ask_page();
-                }
-            },
-
-            .onprev_page = [this]{
-                if (this->current_page > 1) {
-                    --this->current_page;
-                    this->ask_page();
-                }
-            },
-
-            .oncurrent_page = [this]{
-                unsigned page = this->selector.current_page();
-                if (page != this->current_page) {
-                    this->current_page = page;
-                    this->ask_page();
-                }
-            },
-
-            .onnext_page = [this]{
-                if (this->current_page < this->number_page) {
-                    ++this->current_page;
-                    this->ask_page();
-                }
-            },
-
-            .onlast_page = [this]{
-                if (this->current_page < this->number_page) {
-                    this->current_page = this->number_page;
-                    this->ask_page();
-                }
-            },
-
-            .onprev_page_on_grid = [this] {
-                if (this->current_page > 1) {
-                    --this->current_page;
-                    this->ask_page();
-                }
-                else if (this->current_page == 1 && this->number_page > 1) {
-                    this->current_page = this->number_page;
-                    this->ask_page();
-                }
-            },
-
-            .onnext_page_on_grid = [this] {
-                if (this->current_page < this->number_page) {
-                    ++this->current_page;
-                    this->ask_page();
-                }
-                else if (this->current_page == this->number_page && this->number_page > 1) {
-                    this->current_page = 1;
-                    this->ask_page();
-                }
+            .update_page = [this](uint32_t page) {
+                this->current_page = page;
+                this->ask_page();
             },
 
             .onctrl_shift = [this]{ this->language_button.next_layout(); },

@@ -408,25 +408,31 @@ void WidgetPagination::update(Data data)
     set_wh(checked_int{cx() + diff_label_and_edit_w}, cy());
 }
 
-void WidgetPagination::set_page(uint32_t page)
+bool WidgetPagination::set_page(uint32_t page, TriggerUpdatePageEvent trigger_event)
 {
-    if (m_current != page && D::is_valid_page(*this, page))
+    if (D::is_valid_page(*this, page))
     {
         m_current = page;
-        m_edit.set_text(int_to_decimal_chars(m_current), { WidgetEdit::Redraw::Yes });
+        m_edit.set_text(int_to_decimal_chars(page), { WidgetEdit::Redraw::Yes });
+        if (trigger_event == TriggerUpdatePageEvent::Yes)
+        {
+            m_update_page_event(page);
+        }
+        return true;
     }
+    return false;
 }
 
-void WidgetPagination::set_prev_page(Cycle enable_cycle)
+bool WidgetPagination::prev_page(Cycle enable_cycle, TriggerUpdatePageEvent trigger_event)
 {
-    auto current = (m_current <= 1 && enable_cycle) ? m_total : m_current - 1u;
-    set_page(current);
+    auto current = (m_current <= 1 && enable_cycle == Cycle::Yes) ? m_total : m_current - 1u;
+    return set_page(current, trigger_event);
 }
 
-void WidgetPagination::set_next_page(Cycle enable_cycle)
+bool WidgetPagination::next_page(Cycle enable_cycle, TriggerUpdatePageEvent trigger_event)
 {
-    auto current = (m_current == m_total && enable_cycle) ? 1u : m_current + 1u;
-    set_page(current);
+    auto current = (m_current == m_total && enable_cycle == Cycle::Yes) ? 1u : m_current + 1u;
+    return set_page(current, trigger_event);
 }
 
 Widget::NextFocusResult
@@ -695,7 +701,7 @@ void WidgetPagination::rdp_input_invalidate(Rect r)
                     .left = checked_int{ offset_x + is_pressed }
                 },
                 fcs,
-                (m_focus_item == item)
+                (has_focus && m_focus_item == item)
                     ? m_colors.focus_fg
                     : m_colors.fg,
                 m_colors.bg,

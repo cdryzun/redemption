@@ -677,6 +677,7 @@ WidgetSelector::WidgetSelector(
     Texts texts, Events events
 )
 : WidgetComposite(drawable, Focusable::Yes, theme.global.bgcolor)
+, font(font)
 , extra_button(extra_button)
 , less_than_800(rect.cx < 800)
 , tooltip_shower_parent(tooltip_shower)
@@ -716,23 +717,26 @@ WidgetSelector::WidgetSelector(
     },
     {
         .onsubmit = events.onconnect,
-        .onprev_page = events.onprev_page_on_grid,
-        .onnext_page = events.onnext_page_on_grid,
+        .onprev_page = [this]{
+            pagination.prev_page(
+                WidgetPagination::Cycle::Yes,
+                WidgetPagination::TriggerUpdatePageEvent::Yes
+            );
+        },
+        .onnext_page = [this]{
+            pagination.next_page(
+                WidgetPagination::Cycle::Yes,
+                WidgetPagination::TriggerUpdatePageEvent::Yes
+            );
+        },
     }
 )
-//BEGIN WidgetPager
-, first_page(drawable, font, "◀◂"_av, WidgetButton::Colors::no_border_from_theme(theme),
-             events.onfirst_page)
-, prev_page(drawable, font, "◀"_av, WidgetButton::Colors::no_border_from_theme(theme),
-            events.onprev_page)
-, current_page_edit(drawable, font, copy_paste,
-                    WidgetEdit::Colors::from_theme(theme), events.oncurrent_page)
-, number_page(drawable, font, "/XX"_av, WidgetLabel::Colors::from_theme(theme))
-, next_page(drawable, font, "▶"_av, WidgetButton::Colors::no_border_from_theme(theme),
-            events.onnext_page)
-, last_page(drawable, font, "▸▶"_av, WidgetButton::Colors::no_border_from_theme(theme),
-            events.onlast_page)
-//END WidgetPager
+, pagination(
+    drawable, font,
+    WidgetPagination::Colors::from_theme(theme),
+    WidgetPagination::RedrawAfterEvent::Yes,
+    events.update_page
+)
 , logout(drawable, font, tr(trkeys::logout), WidgetButton::Colors::from_theme(theme),
          events.oncancel)
 , apply(drawable, font, tr(trkeys::filter), WidgetButton::Colors::from_theme(theme),
@@ -751,12 +755,7 @@ WidgetSelector::WidgetSelector(
     this->add_widget(this->apply);
     this->add_widget(this->grid);
 
-    this->add_widget(this->first_page);
-    this->add_widget(this->prev_page);
-    this->add_widget(this->current_page_edit);
-    this->add_widget(this->number_page);
-    this->add_widget(this->next_page);
-    this->add_widget(this->last_page);
+    this->add_widget(this->pagination);
     this->add_widget(this->logout);
     this->add_widget(this->connect);
     this->add_widget(this->target_helpicon);
@@ -766,11 +765,6 @@ WidgetSelector::WidgetSelector(
     }
 
     this->move_size_widget(rect.x, rect.y, rect.cx, rect.cy);
-}
-
-Font const & WidgetSelector::font() noexcept
-{
-    return current_page_edit.get_font();
 }
 
 uint16_t WidgetSelector::max_line_per_page() const
@@ -801,7 +795,7 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
     this->header_labels.set_xy(grid_x, labels_y);
 
     // help icon
-    uint16_t h_text = font().max_height();
+    uint16_t h_text = font.max_height();
     this->target_helpicon.set_xy(
         0,
         checked_int{labels_y + (h_text - this->target_helpicon.cy()) / 2}
@@ -814,9 +808,9 @@ void WidgetSelector::move_size_widget(int16_t left, int16_t top, uint16_t width,
     }
 
     // grid
-    auto line_height = D::grid_line_height(font());
+    auto line_height = D::grid_line_height(font);
     this->grid.set_xy(grid_x, this->edit_filters[0].ebottom() + D::FILTER_VERTICAL_SEPARATOR);
-    nb_max_line = std::max(0, current_page_edit.y() - grid.y() - D::VERTICAL_MARGIN) / line_height;
+    nb_max_line = std::max(0, pagination.y() - grid.y() - D::VERTICAL_MARGIN) / line_height;
     nb_max_line = std::min(D::NB_MAX_LINE, nb_max_line);
     if (nb_max_line == 0) {
         ++nb_max_line;
@@ -838,7 +832,7 @@ void WidgetSelector::move_and_resize_navigation_buttons()
 {
     // Navigation buttons
     int nav_bottom_y = this->cy() - (this->connect.cy() + D::VERTICAL_MARGIN);
-    int nav_top_y = this->y() + nav_bottom_y - (this->last_page.cy() + D::VERTICAL_MARGIN);
+    int nav_top_y = this->y() + nav_bottom_y - (this->pagination.cy() + D::VERTICAL_MARGIN);
     int nav_offset_x = this->eright();
 
     if (extra_button) {
@@ -849,50 +843,20 @@ void WidgetSelector::move_and_resize_navigation_buttons()
         );
     }
 
-    // ">>" button
-    nav_offset_x -= (this->last_page.cx() + D::TEXT_MARGIN);
-    this->last_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
-
-    // ">" button
-    nav_offset_x -= (this->next_page.cx() + D::NAV_SEPARATOR);
-    this->next_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
-
-    // "/ N" button
-    nav_offset_x -= (this->number_page.cx() + D::NAV_SEPARATOR);
-    this->number_page.set_xy(
-        checked_int(nav_offset_x),
-        checked_int(nav_top_y + (this->next_page.cy() - this->number_page.cy()) / 2)
-    );
-
-    // edit page button
-    int edit_cx
-        = checked_cast<int>(number_page.text_label.fcs().size())
-        * this->font().item('0').view.boxed_width()
-        + this->current_page_edit.x_padding();
-    nav_offset_x -= edit_cx;
-    this->current_page_edit.set_xy(
-        checked_int(nav_offset_x),
-        checked_int(nav_top_y + (this->next_page.cy() - this->current_page_edit.cy()) / 2)
-    );
-    this->current_page_edit.update_width(checked_int(edit_cx));
-
-    // "<" button
-    nav_offset_x -= (this->prev_page.cx() + D::NAV_SEPARATOR);
-    this->prev_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
-
-    // "<<" button
-    nav_offset_x -= (this->first_page.cx() + D::NAV_SEPARATOR);
-    this->first_page.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
+    // pagination buttons
+    nav_offset_x -= (this->pagination.cx() + D::TEXT_MARGIN);
+    this->pagination.set_xy(checked_int(nav_offset_x), checked_int(nav_top_y));
 
     // "connect" button
-    int nav_w = this->last_page.eright() - this->first_page.x();
+    int nav_w = this->pagination.cx();
     this->connect.set_xy(
-        checked_int(this->last_page.eright() - nav_w/4 - this->connect.cx()/2),
+        checked_int(this->pagination.eright() - nav_w/4 - this->connect.cx()/2),
         checked_int(this->y() + nav_bottom_y)
     );
+
     // "logout" button
     this->logout.set_xy(
-        checked_int(this->first_page.x() + nav_w/4 - this->logout.cx()/2),
+        checked_int(this->pagination.x() + nav_w/4 - this->logout.cx()/2),
         checked_int(this->y() + nav_bottom_y)
     );
 }
@@ -965,27 +929,22 @@ bool WidgetSelector::has_lines() const noexcept
 
 void WidgetSelector::set_page(Page page)
 {
-    current_page_edit.set_text(
-        int_to_decimal_chars(page.current_page),
-        {WidgetEdit::Redraw::No}
-    );
-
-    number_page.set_text(
-        font(),
-        static_str_concat('/', int_to_decimal_chars(page.number_of_page))
-    );
+    pagination.update({
+        .current_page = page.current_page,
+        .total_page = page.number_of_page,
+    });
 
     has_devices = grid.set_devices(
-        font(), tr,
+        font, tr,
         page.authorizations,
         page.targets,
         page.protocols,
         max_line_per_page()
     );
 
-    grid.set_wh(grid.cx(), checked_int(grid.count_line() * D::grid_line_height(font())));
+    grid.set_wh(grid.cx(), checked_int(grid.count_line() * D::grid_line_height(font)));
 
-    // focus to grid without redraw
+    // focus to grid without redraw (done bellow with redraw())
     if (has_devices) {
         set_widget_focus(grid, Redraw::No);
     }
@@ -1016,7 +975,7 @@ WidgetSelector::FilterTexts WidgetSelector::filter_texts() const noexcept
 
 unsigned WidgetSelector::current_page() const noexcept
 {
-    return current_page_edit.get_text_as_uint();
+    return pagination.current_page();
 }
 
 void WidgetSelector::rdp_input_scancode(KbdFlags flags, Scancode scancode, uint32_t event_time, Keymap const& keymap)
