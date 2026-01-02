@@ -485,6 +485,16 @@ void WidgetEdit::rdp_input_scancode(
     KbdFlags /*flags*/, Scancode /*scancode*/,
     uint32_t /*event_time*/, Keymap const& keymap)
 {
+    auto compute_behavior = [&] {
+        if (keymap.is_alt_pressed()) {
+            return ActionBehavior::ToEdge;
+        }
+        if (keymap.is_ctrl_pressed()) {
+            return ActionBehavior::Word;
+        }
+        return ActionBehavior::Char;
+    };
+
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
     switch (keymap.last_kevent()) {
@@ -501,28 +511,28 @@ void WidgetEdit::rdp_input_scancode(
 
     case Keymap::KEvent::LeftArrow:
     case Keymap::KEvent::UpArrow:
-        action_move_cursor_left(keymap.is_ctrl_pressed(), Redraw::Yes);
+        action_move_cursor_left(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::RightArrow:
     case Keymap::KEvent::DownArrow:
-        action_move_cursor_right(keymap.is_ctrl_pressed(), Redraw::Yes);
+        action_move_cursor_right(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::Backspace:
-        action_backspace(keymap.is_ctrl_pressed(), Redraw::Yes);
+        action_remove_left(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::Delete:
-        action_delete(keymap.is_ctrl_pressed(), Redraw::Yes);
+        action_remove_right(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::End:
-        action_move_cursor_to_end_of_line(Redraw::Yes);
+        action_move_cursor_right(ActionBehavior::ToEdge, Redraw::Yes);
         break;
 
     case Keymap::KEvent::Home:
-        action_move_cursor_to_begin_of_line(Redraw::Yes);
+        action_move_cursor_left(ActionBehavior::ToEdge, Redraw::Yes);
         break;
 
     case Keymap::KEvent::Paste:
@@ -672,17 +682,25 @@ int WidgetEdit::get_end_pos() const
     return this->cx() - (D::w_padding + D::border_len + D::w_cursor);
 }
 
-bool WidgetEdit::action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw)
+bool WidgetEdit::action_move_cursor_left(ActionBehavior behavior, Redraw redraw)
 {
     if (buffer().is_movable_to_left()) {
-        int shift = buffer().move_to_left();
+        int shift;
 
-        if (ctrl_is_pressed) {
-            while (buffer().is_movable_to_left() && (
-                buffer().get_current_unicode() == ' '
-                || buffer().get_previous_unicode() != ' '
-            )) {
-                shift += buffer().move_to_left();
+        if (ActionBehavior::ToEdge == behavior) {
+            buffer().move_to_start();
+            shift = x_text + x_cursor - D::start_x_cursor;
+        }
+        else {
+            shift = buffer().move_to_left();
+
+            if (ActionBehavior::Word == behavior) {
+                while (buffer().is_movable_to_left()
+                    && (buffer().get_current_unicode() == ' '
+                     || buffer().get_previous_unicode() != ' '
+                )) {
+                    shift += buffer().move_to_left();
+                }
             }
         }
 
@@ -694,63 +712,48 @@ bool WidgetEdit::action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw)
     return false;
 }
 
-bool WidgetEdit::action_move_cursor_right(bool ctrl_is_pressed, Redraw redraw)
+bool WidgetEdit::action_move_cursor_right(ActionBehavior behavior, Redraw redraw)
 {
     if (buffer().is_movable_to_right()) {
-        int shift = buffer().move_to_right();
+        int shift;
 
-        if (ctrl_is_pressed) {
-            while (buffer().is_movable_to_right() && (
-                buffer().get_previous_unicode() == ' '
-                || buffer().get_current_unicode() != ' '
-            )) {
+        if (ActionBehavior::ToEdge == behavior) {
+            shift = 0;
+            while (buffer().is_movable_to_right()) {
                 shift += buffer().move_to_right();
             }
         }
+        else {
+            shift = buffer().move_to_right();
 
-        move_cursor_to_right_and_redraw(shift, redraw);
-
-        return true;
-    }
-
-    return false;
-}
-
-bool WidgetEdit::action_move_cursor_to_begin_of_line(Redraw redraw)
-{
-    if (buffer().is_movable_to_left()) {
-        buffer().move_to_start();
-        int shift = x_text + x_cursor - D::start_x_cursor;
-        move_cursor_to_left_and_redraw(shift, redraw);
-        return true;
-    }
-    return false;
-}
-
-bool WidgetEdit::action_move_cursor_to_end_of_line(Redraw redraw)
-{
-    if (buffer().is_movable_to_right()) {
-        int shift = 0;
-        while (buffer().is_movable_to_right()) {
-            shift += buffer().move_to_right();
+            if (ActionBehavior::Word == behavior) {
+                while (buffer().is_movable_to_right()
+                    && (buffer().get_previous_unicode() == ' '
+                     || buffer().get_current_unicode() != ' '
+                )) {
+                    shift += buffer().move_to_right();
+                }
+            }
         }
 
         move_cursor_to_right_and_redraw(shift, redraw);
 
         return true;
     }
+
     return false;
 }
 
-bool WidgetEdit::action_backspace(bool ctrl_is_pressed, Redraw redraw)
+bool WidgetEdit::action_remove_left(ActionBehavior behavior, Redraw redraw)
 {
     if (buffer().is_movable_to_left()) {
         auto const old_position = buffer().current();
 
         int shift = 0;
-        if (ctrl_is_pressed) {
+
+        if (ActionBehavior::Word == behavior) {
             while (buffer().is_movable_to_left()
-                && buffer().get_previous_unicode() == ' '
+                  && buffer().get_previous_unicode() == ' '
             ) {
                 shift += buffer().move_to_left();
             }
@@ -762,7 +765,14 @@ bool WidgetEdit::action_backspace(bool ctrl_is_pressed, Redraw redraw)
             }
         }
         else {
+            // ActionBehavior::Char
             shift += buffer().move_to_left();
+
+            if (ActionBehavior::ToEdge == behavior) {
+                while (buffer().is_movable_to_left()) {
+                    shift += buffer().move_to_left();
+                }
+            }
         }
 
         remove_left(old_position, shift, redraw);
@@ -773,13 +783,17 @@ bool WidgetEdit::action_backspace(bool ctrl_is_pressed, Redraw redraw)
     return false;
 }
 
-bool WidgetEdit::action_delete(bool ctrl_is_pressed, Redraw redraw)
+bool WidgetEdit::action_remove_right(ActionBehavior behavior, Redraw redraw)
 {
     if (buffer().is_movable_to_right()) {
         auto const old_position = buffer().current();
 
         int shift = 0;
-        if (ctrl_is_pressed) {
+
+        if (ActionBehavior::Char == behavior) {
+            shift += buffer().move_to_right();
+        }
+        else if (ActionBehavior::Word == behavior) {
             while (buffer().is_movable_to_right()
                 && buffer().get_current_unicode() != ' '
             ) {
@@ -792,45 +806,11 @@ bool WidgetEdit::action_delete(bool ctrl_is_pressed, Redraw redraw)
                 shift += buffer().move_to_right();
             }
         }
-        else {
-            shift += buffer().move_to_right();
-        }
-
-        remove_right(old_position, shift, redraw);
-
-        return true;
-    }
-
-    return false;
-}
-
-bool WidgetEdit::action_remove_left(Redraw redraw)
-{
-    if (buffer().is_movable_to_left()) {
-        auto const old_position = buffer().current();
-
-        int shift = 0;
-        while (buffer().is_movable_to_left()) {
-            shift += buffer().move_to_left();
-        }
-
-        remove_left(old_position, shift, redraw);
-
-        return true;
-    }
-
-    return false;
-}
-
-bool WidgetEdit::action_remove_right(Redraw redraw)
-{
-    if (buffer().is_movable_to_right()) {
-        buffer().remove_to_end();
-        auto const old_position = buffer().current();
-
-        int shift = 0;
-        while (buffer().is_movable_to_right()) {
-            shift += buffer().move_to_right();
+        else /*if (ActionBehavior::ToEdge == behavior)*/ {
+            buffer().remove_to_end();
+            while (buffer().is_movable_to_right()) {
+                shift += buffer().move_to_right();
+            }
         }
 
         remove_right(old_position, shift, redraw);

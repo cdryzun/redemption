@@ -298,13 +298,13 @@ RED_AUTO_TEST_CASE(WidgetEditSetText)
 
     auto redraw = WidgetEdit::Redraw::Yes;
 
-    edits[0].action_move_cursor_left(false, redraw);
+    edits[0].action_move_cursor_left(WidgetEdit::ActionBehavior::Char, redraw);
 
-    edits[1].action_move_cursor_right(false, redraw);
+    edits[1].action_move_cursor_right(WidgetEdit::ActionBehavior::Char, redraw);
 
-    edits[2].action_move_cursor_left(false, redraw);
-    edits[2].action_move_cursor_left(false, redraw);
-    edits[2].action_move_cursor_left(false, redraw);
+    edits[2].action_move_cursor_left(WidgetEdit::ActionBehavior::Char, redraw);
+    edits[2].action_move_cursor_left(WidgetEdit::ActionBehavior::Char, redraw);
+    edits[2].action_move_cursor_left(WidgetEdit::ActionBehavior::Char, redraw);
 
     RED_CHECK_IMG(ctx.drawable, IMG_TEST_PATH "set_text_update_pos.png");
 

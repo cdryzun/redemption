@@ -116,14 +116,17 @@ public:
 
     void set_font(Font const & font, Redraw redraw);
 
-    bool action_move_cursor_right(bool ctrl_is_pressed, Redraw redraw);
-    bool action_move_cursor_left(bool ctrl_is_pressed, Redraw redraw);
-    bool action_move_cursor_to_begin_of_line(Redraw redraw);
-    bool action_move_cursor_to_end_of_line(Redraw redraw);
-    bool action_backspace(bool ctrl_is_pressed, Redraw redraw);
-    bool action_delete(bool ctrl_is_pressed, Redraw redraw);
-    bool action_remove_right(Redraw redraw);
-    bool action_remove_left(Redraw redraw);
+    enum ActionBehavior
+    {
+        ToEdge,
+        Word,
+        Char,
+    };
+
+    bool action_move_cursor_right(ActionBehavior behavior, Redraw redraw);
+    bool action_move_cursor_left(ActionBehavior behavior, Redraw redraw);
+    bool action_remove_right(ActionBehavior behavior, Redraw redraw);
+    bool action_remove_left(ActionBehavior behavior, Redraw redraw);
 
     void submit()
     {

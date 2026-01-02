@@ -64,6 +64,15 @@ void WidgetPassword::rdp_input_scancode(
         return ;
     }
 
+    auto compute_behavior = [&] {
+        if (keymap.is_alt_pressed()
+         || keymap.is_ctrl_pressed()
+        ) {
+            return ActionBehavior::ToEdge;
+        }
+        return ActionBehavior::Char;
+    };
+
     REDEMPTION_DIAGNOSTIC_PUSH()
     REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wswitch-enum")
     switch (keymap.last_kevent()) {
@@ -72,40 +81,20 @@ void WidgetPassword::rdp_input_scancode(
 
     case Keymap::KEvent::LeftArrow:
     case Keymap::KEvent::UpArrow:
-        if (keymap.is_ctrl_pressed()) {
-            action_move_cursor_to_begin_of_line(Redraw::Yes);
-        }
-        else {
-            action_move_cursor_left(false, Redraw::Yes);
-        }
+        action_move_cursor_left(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::RightArrow:
     case Keymap::KEvent::DownArrow:
-        if (keymap.is_ctrl_pressed()) {
-            action_move_cursor_to_end_of_line(Redraw::Yes);
-        }
-        else {
-            action_move_cursor_right(false, Redraw::Yes);
-        }
+        action_move_cursor_right(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::Backspace:
-        if (keymap.is_ctrl_pressed()) {
-            action_remove_left(Redraw::Yes);
-        }
-        else {
-            action_backspace(keymap.is_ctrl_pressed(), Redraw::Yes);
-        }
+        action_remove_left(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::Delete:
-        if (keymap.is_ctrl_pressed()) {
-            action_remove_right(Redraw::Yes);
-        }
-        else {
-            action_delete(keymap.is_ctrl_pressed(), Redraw::Yes);
-        }
+        action_remove_right(compute_behavior(), Redraw::Yes);
         break;
 
     case Keymap::KEvent::Paste:

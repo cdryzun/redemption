@@ -160,7 +160,7 @@ RED_AUTO_TEST_CASE(TestPaste)
     edit_paste("", IMG_TEST_PATH "empty.png");
     front.copy("plop");
     edit_paste("plop", IMG_TEST_PATH "plop.png");
-    edit.action_move_cursor_left(false, WidgetEdit::Redraw::Yes);
+    edit.action_move_cursor_left(WidgetEdit::ActionBehavior::Char, WidgetEdit::Redraw::Yes);
     edit_paste("ploplopp", IMG_TEST_PATH "plopplop.png");
     front.copy("xxx");
     edit_paste("ploplopxxxp", IMG_TEST_PATH "ploplopxxxp.png");
