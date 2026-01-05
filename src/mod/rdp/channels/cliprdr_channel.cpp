@@ -2434,7 +2434,7 @@ struct ClipboardVirtualChannel::ClipCtx::D
                 = clip.locked_data.search_size_by_id(stream_id)
             ) {
                 if (is_ok) {
-                    not_null_ptr lock_data
+                    auto * lock_data
                         = clip.locked_data.search_lock_by_id(locked_contents_size->lock_id);
                     update_file_size_or_throw(
                         lock_data->files, locked_contents_size->file_contents_size.lindex,

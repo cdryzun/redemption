@@ -79,7 +79,7 @@ void ModWrapper::set_mod(mod_api& new_mod, windowing_api* winapi, bool enable_os
         this->target_info_is_shown = false;
         this->disable_osd(false);
     }
-    this->modi = &new_mod;
+    this->modi = new_mod;
     this->winapi = winapi;
     this->enable_osd = enable_osd;
 }

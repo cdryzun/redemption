@@ -1,28 +1,15 @@
 /*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-*   Product name: redemption, a FLOSS RDP proxy
-*   Copyright (C) Wallix 2010-2016
-*   Author(s): Jonathan Poelen
+SPDX-FileCopyrightText: 2025 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #pragma once
 
 #include "cxx/cxx.hpp"
 
+#include <type_traits>
 #include <cassert>
+#include <cstddef>
 
 
 template<class T>
@@ -31,31 +18,44 @@ struct not_null_ptr
     using pointer = T*;
     using element_type = T;
 
-
     not_null_ptr(decltype(nullptr)) = delete;
     not_null_ptr(int) = delete;
 
-    not_null_ptr(T * ptr) noexcept REDEMPTION_ATTRIBUTE_NONNULL_ARGS
-    {
-        *this = ptr;
-    }
+    template<class U>
+        requires (!std::is_same_v<T, U>) && std::is_base_of_v<T, U>
+    constexpr not_null_ptr(not_null_ptr<U> ptr) noexcept
+        : ptr_(ptr.get())
+    {}
 
-    not_null_ptr(not_null_ptr const &) noexcept = default;
-
-    not_null_ptr& operator = (decltype(nullptr)) noexcept = delete;
-    not_null_ptr& operator = (int) noexcept = delete;
-
-    not_null_ptr& operator = (T * ptr) noexcept REDEMPTION_ATTRIBUTE_NONNULL_ARGS
+    template<class U>
+        requires std::is_convertible_v<U*, T*>
+    REDEMPTION_ATTRIBUTE_NONNULL_ARGS
+    explicit constexpr not_null_ptr(U * ptr) noexcept
+        : ptr_(ptr)
     {
         assert(ptr);
-        this->ptr_ = ptr;
-        return *this;
     }
 
-    not_null_ptr& operator = (not_null_ptr const &) noexcept = default;
+    template<class U, std::size_t N>
+        requires std::is_convertible_v<U(&)[N], T*>
+    not_null_ptr(U (& array)[N]) noexcept
+        : ptr_(array)
+    {}
+
+    constexpr not_null_ptr(T & ref) noexcept
+        : ptr_(&ref)
+    {}
+
+    template<class U>
+        requires std::is_function_v<T>
+    constexpr not_null_ptr(U && fn) noexcept
+        : ptr_(fn)
+    {}
+
+    not_null_ptr(T && ref) = delete;
 
 
-    [[nodiscard]] T * get() const noexcept REDEMPTION_ATTRIBUTE_RETURNS_NONNULL { return this->ptr_; }
+    T * get() const noexcept REDEMPTION_ATTRIBUTE_RETURNS_NONNULL { return this->ptr_; }
 
     T & operator*() const noexcept { return *this->ptr_; }
 
@@ -65,3 +65,7 @@ struct not_null_ptr
 private:
     T * ptr_;
 };
+
+
+template<class T>
+not_null_ptr(T*) -> not_null_ptr<T>;

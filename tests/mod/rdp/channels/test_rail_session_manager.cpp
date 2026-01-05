@@ -50,7 +50,7 @@ RED_AUTO_TEST_CASE(TestRailSessionManager)
     const Font& font = global_font_deja_vu_14();
     RemoteProgramsSessionManager rpsm(
         events, front.gd(), mod, translator, font, theme, "Probe title",
-        &client_execute, std::chrono::milliseconds(0), RDPVerbose()
+        client_execute, std::chrono::milliseconds(0), RDPVerbose()
     );
 
     rpsm.set_drawable(&front.gd());

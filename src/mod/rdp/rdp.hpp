@@ -489,7 +489,7 @@ public:
             this->remote_programs_session_manager = std::make_unique<RemoteProgramsSessionManager>(
                 this->events, gd, mod_rdp, mod_rdp_params.validator_params.translator,
                 mod_rdp_params.font, mod_rdp_params.theme, session_probe_window_title.c_str(),
-                mod_rdp_params.remote_app_params.rail_client_execute,
+                not_null_ptr{mod_rdp_params.remote_app_params.rail_client_execute},
                 mod_rdp_params.remote_app_params.rail_disconnect_message_delay,
                 this->verbose
             );

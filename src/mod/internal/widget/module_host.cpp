@@ -313,7 +313,7 @@ WidgetModuleHost::WidgetModuleHost(
 
 void WidgetModuleHost::set_mod(Ref<mod_api> managed_mod) noexcept
 {
-    this->managed_mod = &managed_mod.get();
+    this->managed_mod = managed_mod.get();
     this->update_rects(this->managed_mod->get_dim());
 }
 

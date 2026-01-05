@@ -644,24 +644,24 @@ private:
 private:
     gdi::GraphicDispatcher gd_dispatcher;
     GraphicsPointer orders;
-    not_null_ptr<gdi::GraphicApi> gd = &gdi::null_gd();
+    not_null_ptr<gdi::GraphicApi> gd = gdi::null_gd();
 
     not_null_ptr<gdi::GraphicApi> get_internal_gd()
     {
         if (gd_dispatcher.graphics().size() > 1) {
-            return &gd_dispatcher;
+            return gd_dispatcher;
         }
         else {
-            return &this->orders.graphics_update_pdu();
+            return this->orders.graphics_update_pdu();
         }
     }
 
     void set_gd(gdi::GraphicApi * new_gd) {
-        this->gd = new_gd;
+        this->gd = not_null_ptr{new_gd};
     }
 
     void set_gd(gdi::GraphicApi & new_gd) {
-        this->gd = &new_gd;
+        this->gd = new_gd;
     }
 
 public:

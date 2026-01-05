@@ -137,9 +137,9 @@ void ModFactory::disconnect()
     }
 }
 
-static ModPack mod_pack_from_widget(mod_api* mod)
+static ModPack mod_pack_from_widget(mod_api* mod) noexcept
 {
-    return {mod, nullptr, nullptr, false};
+    return {not_null_ptr{mod}, nullptr, nullptr, false};
 }
 
 struct ModFactory::Impl

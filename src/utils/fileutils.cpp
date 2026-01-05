@@ -234,12 +234,19 @@ bool canonical_path(const char * fullpath, char * path, size_t path_len,
 }
 
 
+static bool internal_dirname_is_dot(char const * path) noexcept
+{
+    return (path[0] == '.' && path[1] == '\0')
+        || (path[0] == '.' && path[1] == '.' && path[2] == '\0')
+        ;
+}
+
 static int internal_make_directory(const char *directory, mode_t mode)
 {
     struct stat st;
     int status = 0;
 
-    if (directory[0] != 0 && !dirname_is_dot(directory)) {
+    if (directory[0] != 0 && !internal_dirname_is_dot(directory)) {
         if (stat(directory, &st) != 0) {
             /* Directory does not exist. */
             if ((mkdir(directory, mode) != 0) && (errno != EEXIST)) {
@@ -290,9 +297,7 @@ int recursive_create_directory(const char * directory, mode_t mode)
 
 bool dirname_is_dot(not_null_ptr<char const> path) noexcept
 {
-    return (path[0] == '.' && path[1] == '\0')
-        || (path[0] == '.' && path[1] == '.' && path[2] == '\0')
-        ;
+    return internal_dirname_is_dot(path);
 }
 
 int recursive_delete_directory(const char * directory_path_char_ptr)
