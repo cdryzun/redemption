@@ -2790,7 +2790,7 @@ _.section("capture", [&]
             Description::ConnPolicy{vnc,
                 "⚠ Logs may contain passwords.\n\n"
                 "Configure how keyboard inputs are logged:"
-                           },
+            },
         }
     });
 
