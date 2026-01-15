@@ -599,6 +599,12 @@ rule flags ( properties * )
                           <cxxflags>"-Wno-unsafe-buffer-usage"
                         ;
                       }
+                      if ! [ numbers.less $(JLN_NORMALIZED_CXX_COMP_VERSION) 2100000 ]
+                      {
+                        flags +=
+                          <cxxflags>"-Wno-nrvo"
+                        ;
+                      }
                     }
                   }
                 }
