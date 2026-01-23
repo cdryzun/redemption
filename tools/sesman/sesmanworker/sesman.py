@@ -95,7 +95,7 @@ def rvalue(value):
     return value
 
 
-DEBUG = True
+DEBUG = False
 
 
 def truncat_string(item, maxsize=20):
