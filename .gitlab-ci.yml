@@ -79,6 +79,7 @@ check-autogen_static-analyzer_test-python_test-lua:
     - ./tools/gitlab/gitlab-check-autogen.sh
     - ./tools/c++-analyzer/redemption-analyzer.sh
     - ./tools/cpp2ctypes/test.sh
+    - ./tools/python-analyzer/sesman.sh
     - ./tools/python-analyzer/coverage.sh py_coverage.xml
     - ./tools/python-analyzer/ruff.sh | tee ruff_report.txt || true
     - ./tools/c++-analyzer/clang-tidy |& tee clang_tidy_report.txt
