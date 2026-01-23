@@ -491,15 +491,14 @@ class Sesman():
             try:
                 d = self.proxy_conx.recv(65536)
                 if len(d):
-                    if DEBUG:
-                        Logger().debug(d)
                     return d
 
             except Exception:
-                # Logger().info(
-                #     "Failed to read data from rdpproxy authentifier socket"
-                #     f"<<<{traceback.format_exc(e)}>>>"
-                # )
+                if DEBUG:
+                    Logger().debug(
+                        "Failed to read data from rdpproxy authentifier socket"
+                        f"<<<{traceback.format_exc()}>>>"
+                    )
                 raise AuthentifierSocketClosed()
 
             if DEBUG:
