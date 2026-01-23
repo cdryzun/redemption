@@ -213,9 +213,11 @@ _.display_name_word_replacement_table = {
 
     {"appdriver", "Application Driver"},
     {"session_probe", "Session Probe"},
+
     {"bestsafe", "BestSafe"},
-    {"am", "AM"},
-    {"wabam", "AM"},
+
+    {"am", "Access Manager"},
+    {"wabam", "Access Manager"},
 
     {"osd", "OSD"},
 
@@ -1435,7 +1437,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     _.member(MemberInfo{
         .name = names{
             .all = "wabam_uses_translated_remoteapp",
-            .display = "Enable translated RemoteApp with AM",
+            .display = "Enable translated RemoteApp with Access Manager",
         },
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
@@ -1860,7 +1862,7 @@ _.section("session_probe", [&]
     _.member(MemberInfo{
         .name = names{
             .all = "smart_launcher_enable_wabam_affinity",
-            .display = "Enable Smart launcher with AM affinity",
+            .display = "Enable Smart launcher with Access Manager",
         },
         .value = value(true),
         .spec = connpolicy(rdp, loggable, spec::advanced),

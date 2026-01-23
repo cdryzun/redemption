@@ -1598,7 +1598,7 @@ namespace cfg
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:wabam_uses_translated_remoteapp <br/>
-    /// displayName: Enable translated RemoteApp with AM <br/>
+    /// displayName: Enable translated RemoteApp with Access Manager <br/>
     /// default: false <br/>
     struct mod_rdp::wabam_uses_translated_remoteapp {
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
@@ -2250,7 +2250,7 @@ namespace cfg
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: session_probe:smart_launcher_enable_wabam_affinity <br/>
-    /// displayName: Enable Smart launcher with AM affinity <br/>
+    /// displayName: Enable Smart launcher with Access Manager <br/>
     /// default: true <br/>
     struct session_probe::smart_launcher_enable_wabam_affinity {
         static constexpr unsigned acl_proxy_communication_flags = 0b10;

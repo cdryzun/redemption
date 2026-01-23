@@ -697,7 +697,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # Otherwise, Alternate Shell will be used.
 # Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently.
 # (type: boolean (0/no/false or 1/yes/true))
-#_display_name=Enable translated RemoteApp with AM
+#_display_name=Enable translated RemoteApp with Access Manager
 # (acl config: proxy ⇐ mod_rdp:wabam_uses_translated_remoteapp)
 #wabam_uses_translated_remoteapp = 0
 
@@ -998,7 +998,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # This parameter is effective only if [session_probe]use_smart_launcher is enabled and the RDP client is Access Manager.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
-#_display_name=Enable Smart launcher with AM affinity
+#_display_name=Enable Smart launcher with Access Manager
 # (acl config: proxy ⇐ session_probe:smart_launcher_enable_wabam_affinity)
 #smart_launcher_enable_wabam_affinity = 1
 

@@ -177,7 +177,7 @@ enable_rdpdr_data_analysis = boolean(default=True)
 # Activates conversion of RemoteApp target session to desktop session.
 # Otherwise, Alternate Shell will be used.
 # Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently.
-#_display_name=Enable translated RemoteApp with AM
+#_display_name=Enable translated RemoteApp with Access Manager
 wabam_uses_translated_remoteapp = boolean(default=False)
 
 # Enables support of the RemoteFX codec on target connection.
@@ -416,7 +416,7 @@ smart_launcher_short_delay = integer(min=0, default=50)
 # Allow sufficient time for the RDP client (Access Manager) to respond to the Clipboard virtual channel initialization message. Otherwise, the time granted to the RDP client (Access Manager or another) for Clipboard virtual channel initialization will be defined by the "Smart launcher clipboard initialization delay" option.
 # This parameter is effective only if "Use smart launcher" option is enabled and the RDP client is Access Manager.
 #_advanced
-#_display_name=Enable Smart launcher with AM affinity
+#_display_name=Enable Smart launcher with Access Manager
 smart_launcher_enable_wabam_affinity = boolean(default=True)
 
 # Delay between the detection of an error (example: a refusal by the target of the redirected drive) and the actual abandonment of the Session Probe launch.
