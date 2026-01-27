@@ -86,12 +86,13 @@ struct RdpPointerView
         auto and_mask_len = dimensions.height
           * RdpPointerView::compute_mask_line_size(dimensions.width, BitsPerPixel{1});
 
-        return RdpPointerView(
+        return RdpPointerView {
             dimensions,
             hotspot,
-            BitsPerPixel{24},
+            xor_bits_per_pixel,
             {xor_mask_ptr, xor_mask_len},
-            {and_mask_ptr, and_mask_len});
+            {and_mask_ptr, and_mask_len},
+        };
     }
 
     constexpr CursorSize dimensions() const noexcept
