@@ -65,8 +65,9 @@ private:
     };
 
     Rect tooltip_mouse_area;
+    bool allow_mouse_pointer_change_ = true;
+    PointerType current_pointer_type;
     Widget * current_over;
     Font const & font;
-    bool allow_mouse_pointer_change_ = true;
     WidgetTooltip tooltip;
 };

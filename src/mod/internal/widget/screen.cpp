@@ -91,6 +91,7 @@ WidgetScreen::WidgetScreen(
     Font const & font, Theme const& theme
 )
     : WidgetComposite(drawable, Focusable::Yes, NamedBGRColor::BLACK)
+    , current_pointer_type(PointerType::Custom)
     , current_over(nullptr)
     , font(font)
     , tooltip(drawable, WidgetTooltip::Colors::from_theme(theme))
@@ -184,9 +185,10 @@ void WidgetScreen::redo_mouse_pointer_change(int x, int y)
         }
     }
 
-    if (this->current_over != w){
+    if (this->current_over != w || (w && this->current_pointer_type != w->pointer_flag)) {
         if (this->allow_mouse_pointer_change_) {
-            switch (w ? w->pointer_flag : PointerType::Normal) {
+            this->current_pointer_type = w ? w->pointer_flag : PointerType::Normal;
+            switch (current_pointer_type) {
             case PointerType::Edit:
                 this->drawable.cached_pointer(PredefinedPointer::Edit);
             break;

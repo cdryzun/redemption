@@ -510,6 +510,12 @@ void WidgetPagination::focus()
 
 void WidgetPagination::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16_t y)
 {
+    // set cursor type
+    pointer_flag = ((device_flags & MOUSE_FLAG_MOVE) && x >= m_edit.x() && x <= m_edit.eright())
+        ? PointerType::Edit
+        : PointerType::Normal;
+
+    // mouse clic released
     if (!get_rect().contains_pt(checked_int(x), checked_int(y)))
     {
         if (m_pressed_item != Item::None)
@@ -534,6 +540,7 @@ void WidgetPagination::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16
     // edit, next, last
     if (x >= m_edit.x())
     {
+        // edit
         if (x <= m_edit.eright())
         {
             has_focus = true;
@@ -551,10 +558,12 @@ void WidgetPagination::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16
 
             return;
         }
+        // next
         else if (in_bbox(D::Next))
         {
             item = Item::Next;
         }
+        // last
         else if (in_bbox(D::Last))
         {
             item = Item::Last;
@@ -563,14 +572,14 @@ void WidgetPagination::rdp_input_mouse(uint16_t device_flags, uint16_t x, uint16
     // first or prev
     else
     {
+        // first
         if (in_bbox(D::First))
         {
             item = Item::First;
-
         }
+        // prev
         else if (in_bbox(D::Prev))
         {
-
             item = Item::Prev;
         }
     }
