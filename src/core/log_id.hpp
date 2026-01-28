@@ -135,8 +135,9 @@ using LogCategoryFlags = utils::flags_t<LogCategoryId>;
     f(SESSION_INVITE_GUEST_DISCONNECTION, SessionSharing, _)                 \
     f(SESSION_INVITE_CONTROL_OWNERSHIP_CHANGED, SessionSharing, _)           \
     f(SESSION_INVITE_GUEST_KILLED, SessionSharing, _)                        \
-    f(SESSION_INVITE_GUEST_VIEW_CHANGED, SessionSharing, _)
-
+    f(SESSION_INVITE_GUEST_VIEW_CHANGED, SessionSharing, _)                  \
+    f(SERVER_CERTIFICATE_NOT_TRUSTED, ServerCertificate, _)                  \
+    f(SERVER_CERTIFICATE_TRUSTED, ServerCertificate, _)
 
 enum class LogId : uint16_t
 {

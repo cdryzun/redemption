@@ -57,6 +57,18 @@ LocalErrMsg LocalErrMsg::from_error_id(error_type id) noexcept
             &trkeys::err_transport_tls_certificate_inaccessible_extra_message,
         };
 
+    case ERR_TRANSPORT_TLS_CERTIFICATE_NOT_TRUSTED:
+        return {
+            &trkeys::err_transport_tls_certificate_not_trusted,
+            &trkeys::err_transport_tls_certificate_not_trusted_extra_message,
+        };
+
+    case ERR_TRANSPORT_TLS_NO_CA_CERTIFICATE_AVAILABLE:
+        return {
+            &trkeys::err_transport_tls_no_ca_certificate_available,
+            &trkeys::err_transport_tls_no_ca_certificate_available_extra_message,
+        };
+
     case ERR_VNC_CONNECTION_ERROR:
         return {&trkeys::err_vnc_connection_error};
 

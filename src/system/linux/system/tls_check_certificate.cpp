@@ -407,23 +407,30 @@ private:
 
 [[nodiscard]] bool tls_check_ca_signed_certificate(
     X509* certificate, STACK_OF(X509)* certificate_chain,
+    BasicFunction<void(CertificateStatus status, std::string_view error_msg)> certificate_checker,
     const char* ca_list, const char* expected_hostname
 ) {
+    auto throw_fault = [&]() -> bool {
+        certificate_checker(CertificateStatus::CertNotTrusted, {});
+        throw Error(ERR_TRANSPORT_TLS_CERTIFICATE_NOT_TRUSTED);
+    };
+
+    error_type checking_exception = NO_ERROR;
+
     if (!ca_list) {
-        return false;
+        throw_fault();
     }
 
     unique_bio_ptr bio_ptr(::BIO_new_mem_buf(ca_list, -1));
     if (!bio_ptr) {
         LOG(LOG_ERR, "RdpNegociation::tls_check_ca_signed_certificate() failed to create BIO for CA list!");
-
-        return false;
+        throw_fault();
     }
 
     unique_x509_store_ptr store_ptr(X509_STORE_new());
     if (!store_ptr) {
         LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to create certificates store!");
-        return false;
+        throw_fault();
     }
 
     ::ERR_clear_error();
@@ -451,7 +458,7 @@ private:
 
             while (::ERR_get_error() != 0) {};
 
-            return false;
+            throw_fault();
         }
 
         ++ca_count;
@@ -469,25 +476,25 @@ private:
 
                 while (::ERR_get_error() != 0) {};
 
-                return false;
+                throw_fault();
             }
         }
     }
 
     if (ca_count == 0) {
         LOG(LOG_ERR, "tls_check_ca_signed_certificate() no CA certificate could be read from BIO");
-        return false;
+        throw_fault();
     }
 
     unique_x509_store_ctx_ptr ctx_ptr(::X509_STORE_CTX_new());
     if (!ctx_ptr) {
         LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to create certificate verification context!");
-        return false;
+        throw_fault();
     }
 
     if (::X509_STORE_CTX_init(ctx_ptr.get(), store_ptr.get(), nullptr, nullptr) != 1) {
         LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to init certificate verification context!");
-        return false;
+        throw_fault();
     }
 
     ::X509_STORE_CTX_set_cert(ctx_ptr.get(), certificate);
@@ -499,7 +506,7 @@ private:
     X509_VERIFY_PARAM* param = ::X509_STORE_CTX_get0_param(ctx_ptr.get());
     if (!param) {
         LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to get X509_VERIFY_PARAM from ctx");
-        return false;
+        throw_fault();
     }
 
     if (::X509_VERIFY_PARAM_set_purpose(param, X509_PURPOSE_SSL_SERVER) != 1) {
@@ -508,7 +515,7 @@ private:
             "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set_purpose() failed: %s",
             ::ERR_error_string(err, nullptr));
         while (::ERR_get_error() != 0) {};
-        return false;
+        throw_fault();
     }
 
     auto is_ip_literal = [](char const* s) -> bool {
@@ -537,7 +544,7 @@ private:
                 expected_hostname,
                 ::ERR_error_string(err, nullptr));
             while (::ERR_get_error() != 0) {};
-            return false;
+            throw_fault();
         }
     }
     else {
@@ -548,7 +555,7 @@ private:
                 expected_hostname,
                 ::ERR_error_string(err, nullptr));
             while (::ERR_get_error() != 0) {};
-            return false;
+            throw_fault();
         }
     }
 
@@ -575,7 +582,7 @@ private:
                 res.cert_fingerprint(bad_cert));
         }
 
-        return false;
+        throw_fault();
     }
 
     LOG(LOG_INFO, "tls_check_ca_signed_certificate() certificate verification succeeded");
@@ -606,6 +613,7 @@ private:
         }
     }
 
+    certificate_checker(CertificateStatus::CertTrusted, {});
     return true;
 }
 

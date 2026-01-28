@@ -46,6 +46,18 @@ void log_certificate_status(
 
             case CertificateStatus::CertError:
                 break;
+
+            case CertificateStatus::CertNotTrusted: return D{
+                notifications.not_trusted_message,
+                LogId::SERVER_CERTIFICATE_NOT_TRUSTED,
+                "X.509 server certificate not trusted"_zv,
+            };
+
+            case CertificateStatus::CertTrusted: return D{
+                notifications.trusted_message,
+                LogId::SERVER_CERTIFICATE_TRUSTED,
+                "X.509 server certificate trusted"_zv,
+            };
         }
 
         return D{

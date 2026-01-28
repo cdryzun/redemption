@@ -63,6 +63,7 @@ struct ModRDPParams
     const char * krb_armoring_password = nullptr;
     const char * krb_armoring_keytab_path = nullptr;
 
+    bool server_cert_check_using_ca = false;
     chars_view ca_certificates = ""_av;
 
     bool allow_nla_ntlm = true;
@@ -269,6 +270,7 @@ struct ModRDPParams
         RDP_PARAMS_LOG("\"%s\"", hidden_or_null,        krb_armoring_password);
         RDP_PARAMS_LOG("\"%s\"", s_or_null,             krb_armoring_keytab_path);
 
+        RDP_PARAMS_LOG("%s",     yes_or_no,             server_cert_check_using_ca);
         RDP_PARAMS_LOG("%s",     av_certificates_or_null,
                                                         ca_certificates);
 
@@ -379,6 +381,8 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.success_message);
         RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.failure_message);
         RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.error_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.not_trusted_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.trusted_message);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             hide_client_name);
 

@@ -180,6 +180,7 @@ private:
     std::array<uint8_t, LIC::LICENSE_HWID_SIZE> hwid;
     bool                                        has_hwid = false;
 
+    const bool server_cert_check_using_ca;
     std::string const ca_certificates;
     std::string target_host;
 
@@ -206,6 +207,7 @@ public:
         bool convert_remoteapp_to_desktop,
         const TlsConfig & tls_config,
         BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker,
+        bool server_cert_check_using_ca,
         chars_view ca_certificates,
         const char* target_host
     );

@@ -44,6 +44,7 @@
 
 [[nodiscard]] bool tls_check_ca_signed_certificate(
     X509* certificate, STACK_OF(X509)* certificate_chain,
+    BasicFunction<void(CertificateStatus status, std::string_view error_msg)> certificate_checker,
     const char* ca_list, const char* expected_hostname);
 
 void tls_dump_certificate(X509& x509);

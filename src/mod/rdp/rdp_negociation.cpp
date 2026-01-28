@@ -79,6 +79,7 @@ RdpNegociation::RdpNegociation(
     bool convert_remoteapp_to_desktop,
     const TlsConfig & tls_config,
     BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker,
+    bool server_cert_check_using_ca,
     chars_view ca_certificates,
     const char* target_host
     )
@@ -166,6 +167,7 @@ RdpNegociation::RdpNegociation(
     , use_license_store(mod_rdp_params.use_license_store)
     , build_number(info.build)
     , forward_build_number(mod_rdp_params.forward_client_build_number)
+    , server_cert_check_using_ca(server_cert_check_using_ca)
     , ca_certificates(ca_certificates.as<std::string>())
     , target_host(target_host)
 {
@@ -272,18 +274,24 @@ bool RdpNegociation::recv_data(TpduBuffer& buf)
 
             tls_dump_certificate(*certificate);
 
-            if (!this->ca_certificates.empty()) {
-                if (tls_check_ca_signed_certificate(
-                        certificate,
-                        certificate_chain,
-                        this->ca_certificates.c_str(),
-                        this->target_host.c_str()
-                    )) {
-                    return CertificateResult::Valid;
+            if (server_cert_check_using_ca) {
+                if (!this->ca_certificates.empty()) {
+                    if (tls_check_ca_signed_certificate(
+                            certificate,
+                            certificate_chain,
+                            cert_log,
+                            this->ca_certificates.c_str(),
+                            this->target_host.c_str()
+                        )) {
+                        return CertificateResult::Valid;
+                    }
+                    else {
+                        return CertificateResult::Invalid;
+                    }
                 }
-                else {
-                    return CertificateResult::Invalid;
-                }
+
+                cert_log(CertificateStatus::CertError, "No CA certificate available");
+                throw Error(ERR_TRANSPORT_TLS_NO_CA_CERTIFICATE_AVAILABLE);
             }
 
             if (this->cert_checker_params.external_certificate_checker) {

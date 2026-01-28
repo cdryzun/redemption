@@ -2174,6 +2174,7 @@ public:
 #else
             CertificateChecker{NullFunctionWithDefaultResult{}},
 #endif
+            mod_rdp_params.server_cert_check_using_ca,
             mod_rdp_params.ca_certificates,
             mod_rdp_params.target_host
         );
@@ -2258,6 +2259,8 @@ private:
                     case ERR_TRANSPORT_TLS_CERTIFICATE_MISSED:
                     case ERR_TRANSPORT_TLS_CERTIFICATE_CORRUPTED:
                     case ERR_TRANSPORT_TLS_CERTIFICATE_INACCESSIBLE:
+                    case ERR_TRANSPORT_TLS_CERTIFICATE_NOT_TRUSTED:
+                    case ERR_TRANSPORT_TLS_NO_CA_CERTIFICATE_AVAILABLE:
                     case ERR_NLA_AUTHENTICATION_FAILED:
                     case ERR_NEGO_NLA_REQUIRED_BY_RESTRICTED_ADMIN_MODE:
                     case ERR_NEGO_KRB_REQUIRED:
@@ -3600,6 +3603,8 @@ public:
                  || e.id == ERR_TRANSPORT_TLS_CERTIFICATE_MISSED
                  || e.id == ERR_TRANSPORT_TLS_CERTIFICATE_CORRUPTED
                  || e.id == ERR_TRANSPORT_TLS_CERTIFICATE_INACCESSIBLE
+                 || e.id == ERR_TRANSPORT_TLS_CERTIFICATE_NOT_TRUSTED
+                 || e.id == ERR_TRANSPORT_TLS_NO_CA_CERTIFICATE_AVAILABLE
                  || e.id == ERR_NLA_AUTHENTICATION_FAILED
                  || e.id == ERR_MCS_APPID_IS_MCS_DPUM
                 ) {

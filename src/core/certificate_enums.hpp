@@ -19,4 +19,7 @@ enum class CertificateStatus : uint8_t
     CertSuccess,
     CertFailure,
     CertError,
+
+    CertNotTrusted,
+    CertTrusted,
 };

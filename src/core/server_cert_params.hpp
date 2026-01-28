@@ -14,6 +14,9 @@ struct ServerCertNotifications
     ServerCertNotification success_message = ServerCertNotification::SIEM;
     ServerCertNotification failure_message = ServerCertNotification::SIEM;
     ServerCertNotification error_message = ServerCertNotification::SIEM;
+
+    ServerCertNotification not_trusted_message = ServerCertNotification::SIEM;
+    ServerCertNotification trusted_message = ServerCertNotification::SIEM;
 };
 
 struct ServerCertParams

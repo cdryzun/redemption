@@ -309,6 +309,7 @@ private:
     };
     TlsParams tls_params;
 
+    const bool server_cert_check_using_ca;
     std::string const ca_certificates;
     std::string const target_host;
 
@@ -340,6 +341,7 @@ public:
            , std::string_view force_authentication_method
            , ServerCertParams const& server_cert_params
            , std::string_view device_id
+           , bool server_cert_check_using_ca
            , chars_view ca_certificates
            , chars_view target_host
     );

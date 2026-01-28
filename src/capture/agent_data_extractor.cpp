@@ -337,6 +337,8 @@ bool AgentDataExtractor::extract_old_format_list(Av data)
             case LogId::SERVER_CERTIFICATE_MATCH_SUCCESS:
             case LogId::SERVER_CERTIFICATE_MATCH_FAILURE:
             case LogId::SERVER_CERTIFICATE_ERROR:
+            case LogId::SERVER_CERTIFICATE_NOT_TRUSTED:
+            case LogId::SERVER_CERTIFICATE_TRUSTED:
                 return line_with_1_var("description"_av);
             case LogId::OUTBOUND_CONNECTION_BLOCKED_2:
             case LogId::OUTBOUND_CONNECTION_DETECTED_2:
@@ -493,6 +495,8 @@ bool AgentDataExtractor::is_relevant_log_id(LogId id) noexcept
         case LogId::SERVER_CERTIFICATE_MATCH_SUCCESS:
         case LogId::SERVER_CERTIFICATE_MATCH_FAILURE:
         case LogId::SERVER_CERTIFICATE_ERROR:
+        case LogId::SERVER_CERTIFICATE_NOT_TRUSTED:
+        case LogId::SERVER_CERTIFICATE_TRUSTED:
         case LogId::OUTBOUND_CONNECTION_BLOCKED_2:
         case LogId::OUTBOUND_CONNECTION_DETECTED_2:
         case LogId::STARTUP_APPLICATION_FAIL_TO_RUN:

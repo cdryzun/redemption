@@ -19,6 +19,8 @@ inline ServerCertParams load_server_cert_params(Inifile const& ini)
             .success_message = ini.get<cfg::server_cert::server_cert_success_message>(),
             .failure_message = ini.get<cfg::server_cert::server_cert_failure_message>(),
             .error_message = ini.get<cfg::server_cert::error_message>(),
+            .not_trusted_message = ServerCertNotification::SIEM,
+            .trusted_message = ServerCertNotification::SIEM,
         },
     };
 }

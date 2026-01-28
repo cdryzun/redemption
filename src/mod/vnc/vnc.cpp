@@ -96,6 +96,7 @@ mod_vnc::mod_vnc( Transport & t
            , std::string_view force_authentication_method
            , ServerCertParams const& server_cert_params
            , std::string_view device_id
+           , bool server_cert_check_using_ca
            , chars_view ca_certificates
            , chars_view target_host
            )
@@ -135,6 +136,7 @@ mod_vnc::mod_vnc( Transport & t
     , tlsSwitch(false)
     , frame_buffer_update_ctx(this->zd, verbose)
     , clipboard_data_ctx(verbose)
+    , server_cert_check_using_ca(server_cert_check_using_ca)
     , ca_certificates(ca_certificates.as<std::string>())
     , target_host(target_host.as<std::string>())
 {
@@ -569,18 +571,24 @@ bool mod_vnc::doTlsSwitch()
             return CertificateResult::Invalid;
         }
 
-        if (!this->ca_certificates.empty()) {
-            if (tls_check_ca_signed_certificate(
-                    certificate,
-                    certificate_chain,
-                    this->ca_certificates.c_str(),
-                    this->target_host.c_str()
-                )) {
-                return CertificateResult::Valid;
+        if (this->server_cert_check_using_ca) {
+            if (!this->ca_certificates.empty()) {
+                if (tls_check_ca_signed_certificate(
+                        certificate,
+                        certificate_chain,
+                        cert_log,
+                        this->ca_certificates.c_str(),
+                        this->target_host.c_str()
+                    )) {
+                    return CertificateResult::Valid;
+                }
+                else {
+                    return CertificateResult::Invalid;
+                }
             }
-            else {
-                return CertificateResult::Invalid;
-            }
+
+            cert_log(CertificateStatus::CertError, "No CA certificate available");
+            throw Error(ERR_TRANSPORT_TLS_NO_CA_CERTIFICATE_AVAILABLE);
         }
 
         return tls_check_certificate(

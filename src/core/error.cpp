@@ -124,6 +124,10 @@ zstring_view Error::errmsg(bool with_id) const noexcept
         return "TLS certificate corrupted"_zv;
     case ERR_TRANSPORT_TLS_CERTIFICATE_INACCESSIBLE:
         return "TLS certificate is inaccessible"_zv;
+    case ERR_TRANSPORT_TLS_CERTIFICATE_NOT_TRUSTED:
+        return "TLS certificate is not trusted"_zv;
+    case ERR_TRANSPORT_TLS_NO_CA_CERTIFICATE_AVAILABLE:
+        return "No CA certificate is available to verify server's certificate"_zv;
     case ERR_VNC_CONNECTION_ERROR:
         return "VNC connection error."_zv;
 

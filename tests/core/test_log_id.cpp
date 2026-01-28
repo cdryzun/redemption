@@ -110,11 +110,13 @@ int main(int /*ac*/, char** av)
         CASE(LogId::SESSION_INVITE_CONTROL_OWNERSHIP_CHANGED, 74);
         CASE(LogId::SESSION_INVITE_GUEST_KILLED, 75);
         CASE(LogId::SESSION_INVITE_GUEST_VIEW_CHANGED, 76);
+        CASE(LogId::SERVER_CERTIFICATE_NOT_TRUSTED, 77);
+        CASE(LogId::SERVER_CERTIFICATE_TRUSTED, 78);
     }
     REDEMPTION_DIAGNOSTIC_POP()
 
 #undef CASE
 
-    static_assert(!is_valid_log_id(77));
+    static_assert(!is_valid_log_id(79));
     static_assert(is_valid_log_id(44));
 }

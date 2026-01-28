@@ -64,6 +64,8 @@
 [RDP Session] ... type="SERVER_CERTIFICATE_MATCH_FAILURE" description="X.509 server certificate match failure"
 [RDP Session] ... type="SERVER_CERTIFICATE_MATCH_SUCCESS" description="X.509 server certificate match"
 [RDP Session] ... type="SERVER_CERTIFICATE_NEW" description="New X.509 certificate created"
+[RDP Session] ... type="SERVER_CERTIFICATE_NOT_TRUSTED" description="X.509 server certificate not trusted"
+[RDP Session] ... type="SERVER_CERTIFICATE_TRUSTED" description="X.509 server certificate trusted"
 [RDP Session] ... type="SESSION_CREATION_FAILED"
 [RDP Session] ... type="SESSION_DISCONNECTION" duration={duration_str, std::size_t(len)}),}
 [RDP Session] ... type="SESSION_ENDING_IN_PROGRESS"
@@ -101,6 +103,8 @@
 [VNC Session] ... type="SERVER_CERTIFICATE_MATCH_FAILURE" description="X.509 server certificate match failure"
 [VNC Session] ... type="SERVER_CERTIFICATE_MATCH_SUCCESS" description="X.509 server certificate match"
 [VNC Session] ... type="SERVER_CERTIFICATE_NEW" description="New X.509 certificate created"
+[VNC Session] ... type="SERVER_CERTIFICATE_NOT_TRUSTED" description="X.509 server certificate not trusted"
+[VNC Session] ... type="SERVER_CERTIFICATE_TRUSTED" description="X.509 server certificate trusted"
 [VNC Session] ... type="SESSION_CREATION_FAILED"
 [VNC Session] ... type="SESSION_DISCONNECTION" duration={duration_str, std::size_t(len)}),}
 [VNC Session] ... type="SESSION_ESTABLISHED_SUCCESSFULLY"
