@@ -1597,6 +1597,16 @@ class Engine:
                 return True
         return False
 
+    def get_certificate_authorities(self,
+                                    ca_types: list[str] = None) -> list[str]:
+        try:
+            with manage_transaction(self.wabengine):
+                return self.wabengine.get_proxy_certificate_authorities(
+                    ca_types=ca_types or [],
+                )
+        except AttributeError:
+            return []
+
     def get_application(self, selected_target: Optional[RightType] = None) -> Any:
         target = selected_target or self.target_right
         if not target:

@@ -1746,6 +1746,10 @@ class Sesman():
 
         Logger().info("Fetching protocol")
         kv = {}
+        kv['ca_certificates'] = ''.join(
+            cert.get("ca_certificate", "")
+            for cert in self.engine.get_certificate_authorities(["X509"])
+        )
         if _status:
             target_login_info = self.engine.get_target_login_info(
                 selected_target
