@@ -26,6 +26,8 @@
 #include "core/app_path.hpp"
 #include "utils/log.hpp"
 
+#include "system/tls_tools.hpp"
+
 #include "transport/transport.hpp" // Transport::TlsResult, Transport::CertificateChecker
 
 #include "cxx/diagnostic.hpp"
@@ -38,7 +40,7 @@
 
 #include <openssl/err.h>
 #include <openssl/ssl.h>
-#include <openssl/x509.h>
+#include <openssl/safestack.h>
 
 
 REDEMPTION_DIAGNOSTIC_PUSH()
@@ -162,6 +164,13 @@ inline void log_cipher_list(SSL* ssl, char const* origin)
     }
 }
 
+// sk_X509_pop_free(chain, X509_free)
+inline STACK_OF(X509) *duplicate_chain_deep(STACK_OF(X509) *chain) {
+    if (!chain) { return nullptr; }
+
+    return sk_X509_deep_copy(chain, X509_dup, X509_free);
+}
+
 /**
  * @brief all the context needed to manipulate TLS context for a TLS object
  */
@@ -173,15 +182,12 @@ class TLSContext
     std::unique_ptr<uint8_t[]> public_key;
     size_t public_key_length = 0;
 
-    struct X509_deleter
+    struct CertificateExternalValidationContext
     {
-        void operator()(X509* px509) noexcept
-        {
-            X509_free(px509);
-        }
+        unique_x509_ptr cert;
+        unique_x509_chain_ptr cert_chain;
     };
-    using X509UniquePtr = std::unique_ptr<X509, X509_deleter>;
-    X509UniquePtr cert_external_validation_wait_ctx;
+    std::unique_ptr<CertificateExternalValidationContext> cert_external_validation_wait_ctx;
 
     bool verbose;
 
@@ -337,14 +343,19 @@ public:
         int port)
     {
         // local scope for exception and destruction
-        std::unique_ptr px509 = std::exchange(this->cert_external_validation_wait_ctx, nullptr);
-        switch (certificate_chercker(px509.get(), ip_address, port))
+//        std::unique_ptr px509 = std::exchange(this->cert_external_validation_wait_ctx, nullptr);
+        std::unique_ptr<CertificateExternalValidationContext> ctx =
+            std::exchange(this->cert_external_validation_wait_ctx, nullptr);
+
+        switch (certificate_chercker(ctx->cert.get(), ctx->cert_chain.get(), ip_address, port))
         {
             case CertificateResult::Wait:
-                this->cert_external_validation_wait_ctx = std::move(px509);
+//                this->cert_external_validation_wait_ctx = std::move(px509);
+                this->cert_external_validation_wait_ctx = std::move(ctx);
                 return Transport::TlsResult::WaitExternalEvent;
             case CertificateResult::Valid:
-                return this->final_check_certificate(*px509);
+//                return this->final_check_certificate(*px509);
+                return this->final_check_certificate(*ctx->cert.get());
             case CertificateResult::Invalid:
                 LOG(LOG_WARNING, "server_cert_callback() failed");
                 return Transport::TlsResult::Fail;
@@ -396,13 +407,20 @@ public:
         X509 * px509 = SSL_get_peer_certificate(this->allocated_ssl);
         LOG_IF(!px509, LOG_WARNING, "SSL_get_peer_certificate() failed");
 
-        // TODO use SSL_get0_peer_certificate and remove X509UniquePtr call
-        X509UniquePtr x509_uptr{px509};
+        STACK_OF(X509) * px509_chain = sk_X509_deep_copy(
+            SSL_get_peer_cert_chain(this->allocated_ssl), X509_dup, X509_free);
 
-        switch (certificate_chercker(px509, ip_address, port))
+        std::unique_ptr<CertificateExternalValidationContext> ctx =
+            std::make_unique<CertificateExternalValidationContext>();
+
+        ctx->cert.reset(px509);
+        ctx->cert_chain.reset(px509_chain);
+
+        switch (certificate_chercker(px509, px509_chain, ip_address, port))
         {
             case CertificateResult::Wait:
-                this->cert_external_validation_wait_ctx = std::move(x509_uptr);
+                //this->cert_external_validation_wait_ctx = std::move(x509_uptr);
+                this->cert_external_validation_wait_ctx = std::move(ctx);
                 return Transport::TlsResult::WaitExternalEvent;
             case CertificateResult::Valid:
                 return this->final_check_certificate(*px509);

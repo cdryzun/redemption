@@ -54,6 +54,7 @@
 #include "utils/sugar/zstring_view.hpp"
 #include "utils/sugar/bounded_bytes_view.hpp"
 
+#include <fstream>
 #include <cstring>
 
 RdpNegociation::RdpNegociation(
@@ -77,7 +78,9 @@ RdpNegociation::RdpNegociation(
     bool has_managed_drive,
     bool convert_remoteapp_to_desktop,
     const TlsConfig & tls_config,
-    BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker
+    BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker,
+    chars_view ca_certificates,
+    const char* target_host
     )
     : mod_channel_list(mod_channel_list)
     , channels_authorizations(channels_authorizations)
@@ -163,6 +166,8 @@ RdpNegociation::RdpNegociation(
     , use_license_store(mod_rdp_params.use_license_store)
     , build_number(info.build)
     , forward_build_number(mod_rdp_params.forward_client_build_number)
+    , ca_certificates(ca_certificates.as<std::string>())
+    , target_host(target_host)
 {
     this->negociation_result.front_width = info.screen_info.width - info.screen_info.width % 4;
     this->negociation_result.front_height = info.screen_info.height;
@@ -251,7 +256,7 @@ bool RdpNegociation::recv_data(TpduBuffer& buf)
 
     if (this->state == State::NEGO)
     {
-        auto certificate_checker = [this](X509* certificate, char const* addr, int port) {
+        auto certificate_checker = [this](X509* certificate, STACK_OF(X509)* certificate_chain, char const* addr, int port) -> CertificateResult {
             auto cert_log = [this](CertificateStatus status, std::string_view error_msg) {
                 log_certificate_status(
                     this->cert_checker_params.session_log, status, error_msg,
@@ -263,6 +268,22 @@ bool RdpNegociation::recv_data(TpduBuffer& buf)
             if (!certificate) {
                 cert_log(CertificateStatus::CertError, "no certificate");
                 return CertificateResult::Invalid;
+            }
+
+            tls_dump_certificate(*certificate);
+
+            if (!this->ca_certificates.empty()) {
+                if (tls_check_ca_signed_certificate(
+                        certificate,
+                        certificate_chain,
+                        this->ca_certificates.c_str(),
+                        this->target_host.c_str()
+                    )) {
+                    return CertificateResult::Valid;
+                }
+                else {
+                    return CertificateResult::Invalid;
+                }
             }
 
             if (this->cert_checker_params.external_certificate_checker) {

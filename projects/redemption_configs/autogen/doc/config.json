@@ -2436,6 +2436,20 @@
     },
     {
       "section": "server_cert",
+      "name": "server_cert_check_using_ca",
+      "type": "bool",
+      "value": false,
+      "description": "Verify server certificate by using internal X509 Certificate Authority configured in Configuration > Certificate authorities.\nWhen enabled, <code>\"Server cert check\" option</code> is ignored.",
+      "displayName": "Server cert check CA",
+      "rdp": true,
+      "rdp_sogisces_1_3_2030": true,
+      "rdp_ccn": true,
+      "vnc": true,
+      "aclToProxy": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "server_cert",
       "name": "server_access_allowed_message",
       "type": "enum",
       "value": 0,
@@ -4460,6 +4474,16 @@
       "value": false,
       "description": "",
       "ProxyToAcl": true,
+      "resetBackToSelector": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "context",
+      "name": "ca_certificates",
+      "type": "str",
+      "value": "",
+      "description": "",
+      "aclToProxy": true,
       "resetBackToSelector": true,
       "logStategy": "1"
     },

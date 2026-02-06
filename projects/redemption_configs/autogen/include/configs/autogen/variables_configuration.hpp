@@ -23,24 +23,24 @@ namespace configs
         inline constexpr int section6 = 68; /* protocol */
         inline constexpr int section7 = 69; /* session_probe */
         inline constexpr int section8 = 115; /* server_cert */
-        inline constexpr int section9 = 124; /* mod_vnc */
-        inline constexpr int section10 = 141; /* session_log */
-        // inline constexpr int section11 = 143; /* ocr */
-        inline constexpr int section12 = 143; /* capture */
-        inline constexpr int section13 = 150; /* audit */
-        inline constexpr int section14 = 159; /* file_verification */
-        inline constexpr int section15 = 167; /* file_storage */
-        // inline constexpr int section16 = 168; /* icap_server_down */
-        // inline constexpr int section17 = 168; /* icap_server_up */
-        inline constexpr int section18 = 168; /* crypto */
-        // inline constexpr int section19 = 170; /* websocket */
-        // inline constexpr int section20 = 170; /* vnc_over_ssh */
-        inline constexpr int section21 = 170; /* context */
-        // inline constexpr int section22 = 259; /* internal_mod */
-        inline constexpr int section23 = 259; /* mod_replay */
-        inline constexpr int section24 = 261; /* translation */
-        // inline constexpr int section25 = 262; /* theme */
-        // inline constexpr int section26 = 262; /* debug */
+        inline constexpr int section9 = 125; /* mod_vnc */
+        inline constexpr int section10 = 142; /* session_log */
+        // inline constexpr int section11 = 144; /* ocr */
+        inline constexpr int section12 = 144; /* capture */
+        inline constexpr int section13 = 151; /* audit */
+        inline constexpr int section14 = 160; /* file_verification */
+        inline constexpr int section15 = 168; /* file_storage */
+        // inline constexpr int section16 = 169; /* icap_server_down */
+        // inline constexpr int section17 = 169; /* icap_server_up */
+        inline constexpr int section18 = 169; /* crypto */
+        // inline constexpr int section19 = 171; /* websocket */
+        // inline constexpr int section20 = 171; /* vnc_over_ssh */
+        inline constexpr int section21 = 171; /* context */
+        // inline constexpr int section22 = 261; /* internal_mod */
+        inline constexpr int section23 = 261; /* mod_replay */
+        inline constexpr int section24 = 263; /* translation */
+        // inline constexpr int section25 = 264; /* theme */
+        // inline constexpr int section26 = 264; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -2720,6 +2720,22 @@ namespace cfg
         using mapped_type = ServerCertCheck;
         type value { ServerCertCheck::fails_if_no_match_and_succeed_if_no_know };
     };
+    /// Verify server certificate by using internal X509 Certificate Authority configured in Configuration > Certificate authorities. <br/>
+    /// When enabled, [server_cert]server_cert_check is ignored. <br/>
+    /// type: bool <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: server_cert:server_cert_check_using_ca <br/>
+    /// displayName: Server cert check CA <br/>
+    /// default: false <br/>
+    struct server_cert::server_cert_check_using_ca {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 2};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
     /// Warn if check allow connection to target server. <br/>
     /// type: ServerCertNotification <br/>
     /// connpolicy -> proxy <br/>
@@ -2729,7 +2745,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 2};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 3};
         using type = ServerCertNotification;
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::nobody };
@@ -2743,7 +2759,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 3};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 4};
         using type = ServerCertNotification;
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::SIEM };
@@ -2757,7 +2773,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 4};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 5};
         using type = ServerCertNotification;
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::nobody };
@@ -2771,7 +2787,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 5};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 6};
         using type = ServerCertNotification;
         using mapped_type = ServerCertNotification;
         type value { ServerCertNotification::SIEM };
@@ -2792,7 +2808,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 6};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 7};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -2804,7 +2820,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b01;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 7};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 8};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -2817,7 +2833,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 8};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section8 + 9};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -4929,6 +4945,18 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
+    /// type: std::string <br/>
+    /// acl ⇒ proxy <br/>
+    /// default: "" <br/>
+    struct context::ca_certificates {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section21 + 89};
+        using type = std::string;
+        using mapped_type = std::string;
+        type value {  };
+    };
 
     /// Allow separate target and login entries by enabling the edit target field on the login page. <br/>
     /// type: bool <br/>
@@ -5775,6 +5803,7 @@ struct server_cert
 , cfg::server_cert::external_response
 , cfg::server_cert::server_cert_store
 , cfg::server_cert::server_cert_check
+, cfg::server_cert::server_cert_check_using_ca
 , cfg::server_cert::server_access_allowed_message
 , cfg::server_cert::server_cert_create_message
 , cfg::server_cert::server_cert_success_message
@@ -5952,6 +5981,7 @@ struct context
 , cfg::context::smartcard_login
 , cfg::context::banner_message
 , cfg::context::redirection_password_or_cookie
+, cfg::context::ca_certificates
 , cfg::context::opt_bpp
 , cfg::context::opt_height
 , cfg::context::opt_width
@@ -6204,6 +6234,7 @@ using VariablesAclPack = Pack<
 , cfg::session_probe::monitor_own_resources_consumption
 , cfg::server_cert::server_cert_store
 , cfg::server_cert::server_cert_check
+, cfg::server_cert::server_cert_check_using_ca
 , cfg::server_cert::server_access_allowed_message
 , cfg::server_cert::server_cert_create_message
 , cfg::server_cert::server_cert_success_message
@@ -6346,6 +6377,7 @@ using VariablesAclPack = Pack<
 , cfg::context::banner_message
 , cfg::context::banner_type
 , cfg::context::authenticated_by_nla
+, cfg::context::ca_certificates
 , cfg::mod_replay::replay_path
 , cfg::mod_replay::replay_on_loop
 , cfg::translation::language
@@ -6355,14 +6387,14 @@ using VariablesAclPack = Pack<
 constexpr U64BitFlags<5> loggable_field{ {
   0b1011111111111111111111111111111111111111111111111110111111111111
 , 0b1111111111111111111111111111111111111111111111111111111111111111
-, 0b1010111111011111111111001111111111111101111111111111111111111111
-, 0b1111011111111111111111011111111111111111111111111111111111111111
-, 0b0000000000000000000000000000000000000000000000000000000000111111
+, 0b0101111110111111111110011111111111111011111111111111111111111111
+, 0b1110111111111111111110111111111111111111111111111111111111111111
+, 0b0000000000000000000000000000000000000000000000000000000011111111
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b0100000000000000000000000000000000000000000000000000000000000000
+, 0b1000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };

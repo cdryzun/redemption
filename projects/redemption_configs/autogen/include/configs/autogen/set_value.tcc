@@ -1635,6 +1635,14 @@ void Inifile::ConfigurationHolder::set_value(zstring_view key, zstring_view valu
                 value
             );
         }
+        else if (key == "server_cert_check_using_ca"_zv) {
+            ::config_parse_and_log(
+                this->section_name, key.c_str(),
+                static_cast<cfg::server_cert::server_cert_check_using_ca&>(this->variables).value,
+                ::configs::spec_type<bool>{},
+                value
+            );
+        }
         else if (key == "server_access_allowed_message"_zv) {
             ::config_parse_and_log(
                 this->section_name, key.c_str(),

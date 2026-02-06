@@ -29,6 +29,8 @@
 #include <string_view>
 
 #include <openssl/types.h>
+#include <openssl/pem.h>
+
 
 [[nodiscard]] bool tls_check_certificate(
     X509& x509,
@@ -39,3 +41,9 @@
     const char* protocol,
     const char* ip_address,
     int port);
+
+[[nodiscard]] bool tls_check_ca_signed_certificate(
+    X509* certificate, STACK_OF(X509)* certificate_chain,
+    const char* ca_list, const char* expected_hostname);
+
+void tls_dump_certificate(X509& x509);

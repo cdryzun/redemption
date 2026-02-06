@@ -5,6 +5,7 @@ back_to_selector_default_sent = {
     'auth_channel_answer': "",
     'banner_message': "",
     'banner_type': 0,
+    'ca_certificates': "",
     'device_id': "",
     'duration_max': 0,
     'effective_krb_armoring_password': "",

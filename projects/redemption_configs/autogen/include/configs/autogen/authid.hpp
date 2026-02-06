@@ -5,5 +5,5 @@
 namespace configs
 {
     enum class authid_t : unsigned;
-    constexpr authid_t max_authid {262};
+    constexpr authid_t max_authid {264};
 }

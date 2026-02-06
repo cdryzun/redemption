@@ -51,7 +51,7 @@ public:
 
     virtual ~Transport() = default;
 
-    using CertificateCheckerSignature = CertificateResult(X509*, const char* ip_address, int port);
+    using CertificateCheckerSignature = CertificateResult(X509*, STACK_OF(X509)*, const char* ip_address, int port);
     using CertificateChecker = BasicFunction<CertificateCheckerSignature>;
 
     enum class [[nodiscard]] TlsResult : uint8_t { Ok, Fail, Want, WaitExternalEvent, };

@@ -1245,6 +1245,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (acl config: proxy ⇐ server_cert:server_cert_check)
 #server_cert_check = 1
 
+# Verify server certificate by using internal X509 Certificate Authority configured in Configuration > Certificate authorities.
+# When enabled, [server_cert]server_cert_check is ignored.
+# (type: boolean (0/no/false or 1/yes/true))
+#_display_name=Server cert check CA
+# (acl config: proxy ⇐ server_cert:server_cert_check_using_ca)
+#server_cert_check_using_ca = 0
+
 # Warn if check allow connection to target server.
 #   0x0: nobody
 #   0x1: SIEM: message sent to SIEM

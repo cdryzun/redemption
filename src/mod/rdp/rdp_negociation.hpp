@@ -180,6 +180,9 @@ private:
     std::array<uint8_t, LIC::LICENSE_HWID_SIZE> hwid;
     bool                                        has_hwid = false;
 
+    std::string const ca_certificates;
+    std::string target_host;
+
 public:
     RdpNegociation(
         const ChannelsAuthorizations& channels_authorizations,
@@ -202,7 +205,9 @@ public:
         bool has_managed_drive,
         bool convert_remoteapp_to_desktop,
         const TlsConfig & tls_config,
-        BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker
+        BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker,
+        chars_view ca_certificates,
+        const char* target_host
     );
 
     void set_program(char const* program, char const* directory) noexcept;

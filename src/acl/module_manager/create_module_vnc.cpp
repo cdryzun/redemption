@@ -114,7 +114,11 @@ public:
           clipboard_server_encoding_type, bogus_clipboard_infinite_loop,
           layout, locks, server_is_apple, send_alt_ksym, cursor_pseudo_encoding_supported,
           rail_client_execute, vnc_verbose, session_log, tls_config,
-          force_authentication_method, server_cert_params, device_id)
+          force_authentication_method, server_cert_params, device_id,
+          ini.get<cfg::server_cert::server_cert_check_using_ca>(),
+          ini.get<cfg::server_cert::server_cert_check_using_ca>()
+          ? ini.get<cfg::context::ca_certificates>() : ""_av,
+          ini.get<cfg::context::target_host>())
     {}
 };
 

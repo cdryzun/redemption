@@ -96,6 +96,8 @@ mod_vnc::mod_vnc( Transport & t
            , std::string_view force_authentication_method
            , ServerCertParams const& server_cert_params
            , std::string_view device_id
+           , chars_view ca_certificates
+           , chars_view target_host
            )
     : front(front)
     , t(VncTransport(*this, t))
@@ -133,6 +135,8 @@ mod_vnc::mod_vnc( Transport & t
     , tlsSwitch(false)
     , frame_buffer_update_ctx(this->zd, verbose)
     , clipboard_data_ctx(verbose)
+    , ca_certificates(ca_certificates.as<std::string>())
+    , target_host(target_host.as<std::string>())
 {
     LOG_IF(bool(verbose), LOG_INFO, "mod_vnc::verbosity=0x%x", underlying_cast(verbose));
 
@@ -551,7 +555,7 @@ bool mod_vnc::doTlsSwitch()
         ? AnonymousTls::Yes
         : AnonymousTls::No;
 
-    auto certificate_checker = [this](X509* certificate, char const* addr, int port) {
+    auto certificate_checker = [this](X509* certificate, STACK_OF(X509)* certificate_chain, char const* addr, int port) {
         auto cert_log = [this](CertificateStatus status, std::string_view error_msg) {
             log_certificate_status(
                 this->session_log, status, error_msg,
@@ -563,6 +567,20 @@ bool mod_vnc::doTlsSwitch()
         if (!certificate) {
             cert_log(CertificateStatus::CertError, "no certificate");
             return CertificateResult::Invalid;
+        }
+
+        if (!this->ca_certificates.empty()) {
+            if (tls_check_ca_signed_certificate(
+                    certificate,
+                    certificate_chain,
+                    this->ca_certificates.c_str(),
+                    this->target_host.c_str()
+                )) {
+                return CertificateResult::Valid;
+            }
+            else {
+                return CertificateResult::Invalid;
+            }
         }
 
         return tls_check_certificate(

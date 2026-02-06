@@ -2170,10 +2170,12 @@ public:
                     }
 
                     return CertificateResult::Invalid;
-                }}
+                }},
 #else
-            CertificateChecker{NullFunctionWithDefaultResult{}}
+            CertificateChecker{NullFunctionWithDefaultResult{}},
 #endif
+            mod_rdp_params.ca_certificates,
+            mod_rdp_params.target_host
         );
 
         LOG(LOG_INFO, "**** Start Negociation");

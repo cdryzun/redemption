@@ -212,6 +212,7 @@ template<> struct acl_and_spec_type<cfg::session_probe::pause_if_session_is_disc
 template<> struct acl_and_spec_type<cfg::session_probe::monitor_own_resources_consumption> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_cert_store> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_cert_check> { using type = ServerCertCheck; };
+template<> struct acl_and_spec_type<cfg::server_cert::server_cert_check_using_ca> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_access_allowed_message> { using type = ServerCertNotification; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_cert_create_message> { using type = ServerCertNotification; };
 template<> struct acl_and_spec_type<cfg::server_cert::server_cert_success_message> { using type = ServerCertNotification; };
@@ -391,6 +392,7 @@ template<> struct acl_and_spec_type<cfg::context::smartcard_login> { using type 
 template<> struct acl_and_spec_type<cfg::context::banner_message> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::banner_type> { using type = BannerType; };
 template<> struct acl_and_spec_type<cfg::context::authenticated_by_nla> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::context::ca_certificates> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::internal_mod::enable_target_field> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::internal_mod::keyboard_layout_proposals> { using type = ::configs::spec_types::list<std::string>; };
 template<> struct acl_and_spec_type<cfg::internal_mod::enable_close_box> { using type = bool; };

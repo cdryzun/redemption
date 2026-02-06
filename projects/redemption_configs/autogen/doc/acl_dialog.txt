@@ -434,6 +434,9 @@ cfg::server_cert::server_cert_check ⇐ server_cert:server_cert_check   [ServerC
       2: Succeeds if a certificate exists (verification skipped); fails if no certificate exists.
       3: Always succeeds without performing certificate validation.
     Internal errors, such as failure to access a known certificate or decode it, always result in connection rejection.
+cfg::server_cert::server_cert_check_using_ca ⇐ server_cert:server_cert_check_using_ca   [bool]
+    Verify server certificate by using internal X509 Certificate Authority configured in Configuration > Certificate authorities.
+    When enabled, [server_cert]server_cert_check is ignored.
 cfg::server_cert::server_access_allowed_message ⇐ server_cert:server_access_allowed_message   [ServerCertNotification]
     Warn if check allow connection to target server.
       0x0: nobody
@@ -704,6 +707,7 @@ cfg::context::banner_type ⇐ banner_type   [BannerType]
       1: warn
       2: alert
 cfg::context::authenticated_by_nla ⇒ authenticated_by_nla   [bool]
+cfg::context::ca_certificates ⇐ ca_certificates   [std::string]
 
 
 cfg::mod_replay::replay_path ⇐ replay_path   [::configs::spec_types::directory_path]

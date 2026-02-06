@@ -2177,6 +2177,17 @@ _.section(names{"server_cert"}, [&]
     });
 
     _.member(MemberInfo{
+        .name = names{
+            .all = "server_cert_check_using_ca",
+            .display = "Server cert check CA",
+        },
+        .value = value<bool>(false),
+        .spec = connpolicy(rdp | vnc, loggable),
+        .desc = "Verify server certificate by using internal X509 Certificate Authority configured in Configuration > Certificate authorities.\n"
+        "When enabled, :REF:[server_cert]:server_cert_check is ignored.",
+    });
+
+    _.member(MemberInfo{
         .name = "server_access_allowed_message",
         .value = enum_as_int(ServerCertNotification::nobody),
         .spec = connpolicy(rdp | vnc, loggable, spec::advanced),
@@ -3825,6 +3836,12 @@ _.section("context", [&]
         .name = "authenticated_by_nla",
         .value = value(false),
         .spec = proxy_to_acl(reset_back_to_selector, loggable),
+    });
+
+    _.member(MemberInfo{
+        .name = "ca_certificates",
+        .value = value<std::string>(),
+        .spec = acl_to_proxy(reset_back_to_selector, loggable),
     });
 });
 

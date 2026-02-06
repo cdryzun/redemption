@@ -733,6 +733,11 @@ ModPack create_mod_rdp(
     mod_rdp_params.krb_armoring_user = ini.get<cfg::mod_rdp::effective_krb_armoring_user>().c_str();
     mod_rdp_params.krb_armoring_password = ini.get<cfg::mod_rdp::effective_krb_armoring_password>().c_str();
 
+    mod_rdp_params.server_cert_check_using_ca = ini.get<cfg::server_cert::server_cert_check_using_ca>();
+    if (ini.get<cfg::server_cert::server_cert_check_using_ca>()) {
+        mod_rdp_params.ca_certificates = ini.get<cfg::context::ca_certificates>();
+    }
+
     auto connect_to_rdp_target_host = [&ini, &session_log, &err_msg_ctx](
         bool enable_ipv6,
         std::chrono::milliseconds connection_establishment_timeout,

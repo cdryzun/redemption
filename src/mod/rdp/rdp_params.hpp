@@ -63,6 +63,8 @@ struct ModRDPParams
     const char * krb_armoring_password = nullptr;
     const char * krb_armoring_keytab_path = nullptr;
 
+    chars_view ca_certificates = ""_av;
+
     bool allow_nla_ntlm = true;
     bool allow_tls_only = true;
     bool allow_rdp_legacy = true;
@@ -253,6 +255,8 @@ struct ModRDPParams
         auto from_sec = [](std::chrono::seconds sec) { return static_cast<unsigned>(sec.count()); };
         auto from_millisec = [](std::chrono::milliseconds millisec) { return static_cast<unsigned>(millisec.count()); };
 
+        auto av_certificates_or_null = [](chars_view s) -> char const * { return !s.empty() ? "<certificates>" : "<null>"; };
+
 #define RDP_PARAMS_LOG(format, get, member) \
     LOG(LOG_INFO, "ModRDPParams " #member "=" format, get (this->member))
 #define RDP_PARAMS_LOG_AV(av) int(av.size()), av.data()
@@ -264,6 +268,9 @@ struct ModRDPParams
         RDP_PARAMS_LOG("\"%s\"", s_or_null,             krb_armoring_user);
         RDP_PARAMS_LOG("\"%s\"", hidden_or_null,        krb_armoring_password);
         RDP_PARAMS_LOG("\"%s\"", s_or_null,             krb_armoring_keytab_path);
+
+        RDP_PARAMS_LOG("%s",     av_certificates_or_null,
+                                                        ca_certificates);
 
         RDP_PARAMS_LOG("\"%.*s\"", RDP_PARAMS_LOG_AV,   application_params.primary_user_id);
         RDP_PARAMS_LOG("\"%.*s\"", RDP_PARAMS_LOG_AV,   application_params.target_application);

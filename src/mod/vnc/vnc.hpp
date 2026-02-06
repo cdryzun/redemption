@@ -309,6 +309,9 @@ private:
     };
     TlsParams tls_params;
 
+    std::string const ca_certificates;
+    std::string const target_host;
+
 public:
     mod_vnc( Transport & t
            , Random & rand
@@ -337,6 +340,8 @@ public:
            , std::string_view force_authentication_method
            , ServerCertParams const& server_cert_params
            , std::string_view device_id
+           , chars_view ca_certificates
+           , chars_view target_host
     );
 
     ~mod_vnc();

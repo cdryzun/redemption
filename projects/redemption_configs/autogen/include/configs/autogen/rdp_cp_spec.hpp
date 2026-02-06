@@ -600,6 +600,11 @@ server_cert_store = boolean(default=True)
 # Internal errors, such as failure to access a known certificate or decode it, always result in connection rejection.
 server_cert_check = option(0, 1, 2, 3, default=1)
 
+# Verify server certificate by using internal X509 Certificate Authority configured in Configuration > Certificate authorities.
+# When enabled, "Server cert check" option is ignored.
+#_display_name=Server cert check CA
+server_cert_check_using_ca = boolean(default=False)
+
 # Warn if check allow connection to target server.
 # &nbsp; &nbsp;   0x0: nobody
 # &nbsp; &nbsp;   0x1: SIEM: message sent to SIEM<br/>

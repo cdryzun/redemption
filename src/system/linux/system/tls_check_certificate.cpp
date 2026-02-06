@@ -22,6 +22,7 @@
 
 #include "core/error.hpp"
 #include "system/tls_check_certificate.hpp"
+#include "system/tls_tools.hpp"
 #include "utils/file.hpp"
 #include "utils/fileutils.hpp"
 #include "utils/log.hpp"
@@ -35,13 +36,15 @@
 #include <cstring>
 #include <cstdlib>
 
+#include <arpa/inet.h>
 #include <fcntl.h>
 
 #include "cxx/diagnostic.hpp"
 #include "cxx/cxx.hpp"
 
+#include <openssl/err.h>
 #include <openssl/ssl.h>
-#include <openssl/x509.h>
+#include <openssl/x509v3.h>
 
 
 REDEMPTION_DIAGNOSTIC_PUSH()
@@ -355,7 +358,7 @@ private:
         // Finally, there's the supertype X509_INFO, which can contain a CRL, a certificate
         // and a corresponding private key.
 
-        X509_STORE* cert_ctx = X509_STORE_new();
+        // X509_STORE* cert_ctx = X509_STORE_new();
 
         // OpenSSL_add_all_algorithms(3SSL)
         // --------------------------------
@@ -370,36 +373,249 @@ private:
         // OpenSSL_add_all_ciphers() adds all encryption algorithms to the table including password
         // based encryption algorithms.
 
-        OpenSSL_add_all_algorithms();
+        // OpenSSL_add_all_algorithms();
 
-        X509_LOOKUP* lookup = X509_STORE_add_lookup(cert_ctx, X509_LOOKUP_file());
-        lookup = X509_STORE_add_lookup(cert_ctx, X509_LOOKUP_hash_dir());
+        // X509_LOOKUP* lookup = X509_STORE_add_lookup(cert_ctx, X509_LOOKUP_file());
+        // lookup = X509_STORE_add_lookup(cert_ctx, X509_LOOKUP_hash_dir());
 
-        X509_LOOKUP_add_dir(lookup, nullptr, X509_FILETYPE_DEFAULT);
-        //X509_LOOKUP_add_dir(lookup, certificate_store_path, X509_FILETYPE_ASN1);
+        // X509_LOOKUP_add_dir(lookup, nullptr, X509_FILETYPE_DEFAULT);
+        // //X509_LOOKUP_add_dir(lookup, certificate_store_path, X509_FILETYPE_ASN1);
 
-        X509_STORE_CTX* csc = X509_STORE_CTX_new();
-        X509_STORE_set_flags(cert_ctx, 0);
-        X509_STORE_CTX_init(csc, cert_ctx, &x509, nullptr);
-        X509_verify_cert(csc);
-        X509_STORE_CTX_free(csc);
+        // X509_STORE_CTX* csc = X509_STORE_CTX_new();
+        // X509_STORE_set_flags(cert_ctx, 0);
+        // X509_STORE_CTX_init(csc, cert_ctx, &x509, nullptr);
+        // X509_verify_cert(csc);
+        // X509_STORE_CTX_free(csc);
 
-        X509_STORE_free(cert_ctx);
+        // X509_STORE_free(cert_ctx);
 
         // int index = X509_NAME_get_index_by_NID(subject_name, NID_commonName, -1);
         // X509_NAME_ENTRY *entry = X509_NAME_get_entry(subject_name, index);
         // ASN1_STRING * entry_data = X509_NAME_ENTRY_get_data(entry);
         // void * subject_alt_names = X509_get_ext_d2i(xcert, NID_subject_alt_name, 0, 0);
 
-        LOG(LOG_INFO, "TLS::X509::issuer=%s", resource.printable_issuer_name(&x509));
-        LOG(LOG_INFO, "TLS::X509::subject=%s", resource.printable_subject_name(&x509));
-        LOG(LOG_INFO, "TLS::X509::fingerprint=%s", resource.cert_fingerprint(&x509));
+        // LOG(LOG_INFO, "TLS::X509::issuer=%s", resource.printable_issuer_name(&x509));
+        // LOG(LOG_INFO, "TLS::X509::subject=%s", resource.printable_subject_name(&x509));
+        // LOG(LOG_INFO, "TLS::X509::fingerprint=%s", resource.cert_fingerprint(&x509));
     }
     else {
         throw Error(checking_exception);
     }
 
     return true;
+}
+
+[[nodiscard]] bool tls_check_ca_signed_certificate(
+    X509* certificate, STACK_OF(X509)* certificate_chain,
+    const char* ca_list, const char* expected_hostname
+) {
+    if (!ca_list) {
+        return false;
+    }
+
+    unique_bio_ptr bio_ptr(::BIO_new_mem_buf(ca_list, -1));
+    if (!bio_ptr) {
+        LOG(LOG_ERR, "RdpNegociation::tls_check_ca_signed_certificate() failed to create BIO for CA list!");
+
+        return false;
+    }
+
+    unique_x509_store_ptr store_ptr(X509_STORE_new());
+    if (!store_ptr) {
+        LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to create certificates store!");
+        return false;
+    }
+
+    ::ERR_clear_error();
+
+    size_t ca_count = 0;
+
+    for (size_t i = 0; ; ++i) {
+        unique_x509_ptr px509ca(::PEM_read_bio_X509(bio_ptr.get(), nullptr, nullptr, nullptr));
+        if (!px509ca) {
+            const unsigned long err = ::ERR_get_error();
+            if (err == 0) {
+                break;
+            }
+
+            const int lib    = ::ERR_GET_LIB(err);
+            const int reason = ::ERR_GET_REASON(err);
+
+            if (ERR_LIB_PEM == lib && PEM_R_NO_START_LINE == reason) {
+                while (::ERR_get_error() != 0) {};
+                break;
+            }
+
+            LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to read CA from BIO (%zu): %s",
+                i, ::ERR_error_string(err, nullptr));
+
+            while (::ERR_get_error() != 0) {};
+
+            return false;
+        }
+
+        ++ca_count;
+
+        if (::X509_STORE_add_cert(store_ptr.get(), px509ca.get()) != 1) {
+            const unsigned long err = ::ERR_get_error();
+
+            const int reason = ::ERR_GET_REASON(err);
+
+            if (X509_R_CERT_ALREADY_IN_HASH_TABLE == reason) {
+                while (::ERR_get_error() != 0) {};
+            } else {
+                LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to add CA cert to store (%zu): %s",
+                    i, ::ERR_error_string(err, nullptr));
+
+                while (::ERR_get_error() != 0) {};
+
+                return false;
+            }
+        }
+    }
+
+    if (ca_count == 0) {
+        LOG(LOG_ERR, "tls_check_ca_signed_certificate() no CA certificate could be read from BIO");
+        return false;
+    }
+
+    unique_x509_store_ctx_ptr ctx_ptr(::X509_STORE_CTX_new());
+    if (!ctx_ptr) {
+        LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to create certificate verification context!");
+        return false;
+    }
+
+    if (::X509_STORE_CTX_init(ctx_ptr.get(), store_ptr.get(), nullptr, nullptr) != 1) {
+        LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to init certificate verification context!");
+        return false;
+    }
+
+    ::X509_STORE_CTX_set_cert(ctx_ptr.get(), certificate);
+
+    if (certificate_chain && ::sk_X509_num(certificate_chain) > 0) {
+        ::X509_STORE_CTX_set0_untrusted(ctx_ptr.get(), certificate_chain);
+    }
+
+    X509_VERIFY_PARAM* param = ::X509_STORE_CTX_get0_param(ctx_ptr.get());
+    if (!param) {
+        LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to get X509_VERIFY_PARAM from ctx");
+        return false;
+    }
+
+    if (::X509_VERIFY_PARAM_set_purpose(param, X509_PURPOSE_SSL_SERVER) != 1) {
+        const unsigned long err = ::ERR_get_error();
+        LOG(LOG_ERR,
+            "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set_purpose() failed: %s",
+            ::ERR_error_string(err, nullptr));
+        while (::ERR_get_error() != 0) {};
+        return false;
+    }
+
+    auto is_ip_literal = [](char const* s) -> bool {
+            if (!s) return false;
+
+            unsigned char buf[sizeof(in6_addr)];
+
+            // IPv4
+            if (::inet_pton(AF_INET, s, buf) == 1) {
+                return true;
+            }
+
+            // IPv6
+            if (::inet_pton(AF_INET6, s, buf) == 1) {
+                return true;
+            }
+
+            return false;
+        };
+
+    if (is_ip_literal(expected_hostname)) {
+        if (::X509_VERIFY_PARAM_set1_ip_asc(param, expected_hostname) != 1) {
+            const unsigned long err = ::ERR_get_error();
+            LOG(LOG_ERR,
+                "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set1_ip_asc() failed for IP '%s': %s",
+                expected_hostname,
+                ::ERR_error_string(err, nullptr));
+            while (::ERR_get_error() != 0) {};
+            return false;
+        }
+    }
+    else {
+        if (::X509_VERIFY_PARAM_set1_host(param, expected_hostname, 0) != 1) {
+            const unsigned long err = ::ERR_get_error();
+            LOG(LOG_ERR,
+                "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set1_host() failed for host '%s': %s",
+                expected_hostname,
+                ::ERR_error_string(err, nullptr));
+            while (::ERR_get_error() != 0) {};
+            return false;
+        }
+    }
+
+
+    if (::X509_verify_cert(ctx_ptr.get()) != 1) {
+        int const err    = ::X509_STORE_CTX_get_error(ctx_ptr.get());
+        int const depth  = ::X509_STORE_CTX_get_error_depth(ctx_ptr.get());
+        const X509* bad_cert = ::X509_STORE_CTX_get_current_cert(ctx_ptr.get());
+
+        const char* err_str = ::X509_verify_cert_error_string(err);
+
+        LOG(LOG_ERR,
+            "tls_check_ca_signed_certificate() certificate verification failed: "
+            "error=%d (%s), depth=%d",
+            err, err_str ? err_str : "unknown error", depth);
+
+        if (bad_cert) {
+            TLSCheckCertificateResource res;
+            LOG(LOG_ERR, "TLS::X509 failed cert::issuer=%s",
+                res.printable_issuer_name(bad_cert));
+            LOG(LOG_ERR, "TLS::X509 failed cert::subject=%s",
+                res.printable_subject_name(bad_cert));
+            LOG(LOG_ERR, "TLS::X509 failed cert::fingerprint=%s",
+                res.cert_fingerprint(bad_cert));
+        }
+
+        return false;
+    }
+
+    LOG(LOG_INFO, "tls_check_ca_signed_certificate() certificate verification succeeded");
+
+    unique_x509_chain_ptr chain(::X509_STORE_CTX_get1_chain(ctx_ptr.get()));
+    if (chain) {
+        int count = ::sk_X509_num(chain.get());
+        if (count > 0) {
+            X509* top_cert = sk_X509_value(chain.get(), count - 1);
+
+            const int is_ca = ::X509_check_ca(top_cert);
+
+            const bool self_issued =
+                (::X509_NAME_cmp(::X509_get_subject_name(top_cert),
+                                ::X509_get_issuer_name(top_cert)) == 0);
+
+            LOG(LOG_INFO,
+                "TLS::X509 TOP cert::is_ca=%d, self_issued=%d",
+                is_ca, self_issued ? 1 : 0);
+
+            TLSCheckCertificateResource res;
+            LOG(LOG_INFO, "TLS::X509 TOP cert::issuer=%s",
+                res.printable_issuer_name(top_cert));
+            LOG(LOG_INFO, "TLS::X509 TOP cert::subject=%s",
+                res.printable_subject_name(top_cert));
+            LOG(LOG_INFO, "TLS::X509 TOP cert::fingerprint=%s",
+                res.cert_fingerprint(top_cert));
+        }
+    }
+
+    return true;
+}
+
+void tls_dump_certificate(X509& x509)
+{
+    TLSCheckCertificateResource resource;
+
+    LOG(LOG_INFO, "TLS::X509::issuer=%s", resource.printable_issuer_name(&x509));
+    LOG(LOG_INFO, "TLS::X509::subject=%s", resource.printable_subject_name(&x509));
+    LOG(LOG_INFO, "TLS::X509::fingerprint=%s", resource.cert_fingerprint(&x509));
 }
 
 REDEMPTION_DIAGNOSTIC_POP()

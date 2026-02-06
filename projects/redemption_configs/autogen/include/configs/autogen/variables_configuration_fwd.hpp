@@ -231,6 +231,7 @@ namespace cfg
     struct server_cert {
         struct server_cert_store;
         struct server_cert_check;
+        struct server_cert_check_using_ca;
         struct server_access_allowed_message;
         struct server_cert_create_message;
         struct server_cert_success_message;
@@ -443,6 +444,7 @@ namespace cfg
         struct banner_type;
         struct redirection_password_or_cookie;
         struct authenticated_by_nla;
+        struct ca_certificates;
     };
 
     struct internal_mod {
