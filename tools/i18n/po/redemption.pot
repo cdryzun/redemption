@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: redemption\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-29 11:39+01:00\n"
+"POT-Creation-Date: 2026-02-18 15:51:+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -703,7 +703,7 @@ msgstr ""
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:163
-msgid "No CA certificate is available to verify server's certificate."
+msgid "No trusted CA certificate is available."
 msgstr ""
 
 # id: err_transport_tls_certificate_changed_extra_message
@@ -743,7 +743,7 @@ msgstr ""
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:169
-msgid "The certificate presented by the target is not trusted by the Bastion. Contact your Bastion administrator to resolve this issue."
+msgid "The certificate presented by the target is not signed by a trusted Root CA Certificate. Contact your Bastion administrator to resolve this issue."
 msgstr ""
 
 # id: err_transport_tls_no_ca_certificate_available_extra_message
@@ -751,21 +751,21 @@ msgstr ""
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
 #: src/translation/trkeys_def.hpp:170
-msgid "The certificate presented by the target cannot be verified because no CA certificate is available. Contact your Bastion administrator to add a CA certificate or to not require validation by a CA certificate."
+msgid "The certificate presented by the target cannot be verified because no trusted Root CA Certificate is available. Contact your Bastion administrator to add a trusted CA or to not require validation by a trusted CA."
 msgstr ""
 
 # id: end_connection
-# ctx: local error (LocalErrMsg) (certificate error) + ModuleName::close (extra message)
+# ctx: mod_rdp error | local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:171
+#: src/translation/trkeys_def.hpp:172
 msgid "End of connection"
 msgstr ""
 
 # id: process_interrupted_security_policies
 # ctx: SessionProbe OSD info
 # image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
-#: src/translation/trkeys_def.hpp:174
+#: src/translation/trkeys_def.hpp:175
 #, c-format
 msgid "The process '%.*s' was interrupted in accordance with security policies."
 msgstr ""
@@ -773,26 +773,26 @@ msgstr ""
 # id: account_manipulation_blocked_security_policies
 # ctx: SessionProbe OSD info
 # image(s): tests/includes/fixtures/img_ref/mod/internal/acl/
-#: src/translation/trkeys_def.hpp:175
+#: src/translation/trkeys_def.hpp:176
 #, c-format
 msgid "The account manipulation initiated by process '%.*s' was rejected in accordance with security policies."
 msgstr ""
 
 # id: starting_remoteapp
 # ctx: rail session manager (widget message)
-#: src/translation/trkeys_def.hpp:178
+#: src/translation/trkeys_def.hpp:179
 msgid "Starting RemoteApp ..."
 msgstr ""
 
 # id: closing_remoteapp
 # ctx: rail session manager (widget message)
-#: src/translation/trkeys_def.hpp:179
+#: src/translation/trkeys_def.hpp:180
 msgid "All RemoteApp windows are closed."
 msgstr ""
 
 # id: disconnect_now
 # ctx: rail session manager (widget message)
-#: src/translation/trkeys_def.hpp:180
+#: src/translation/trkeys_def.hpp:181
 msgid "Disconnect Now"
 msgstr ""
 
@@ -800,7 +800,7 @@ msgstr ""
 # ctx: mod_rdp error
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:183
+#: src/translation/trkeys_def.hpp:184
 msgid "Unauthorized logon user change detected."
 msgstr ""
 
@@ -808,7 +808,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:185
+#: src/translation/trkeys_def.hpp:186
 msgid "VNC connection error."
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:186
+#: src/translation/trkeys_def.hpp:187
 msgid "Unsupported client display monitor layout."
 msgstr ""
 
@@ -824,7 +824,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:187
+#: src/translation/trkeys_def.hpp:188
 msgid "RDP negotiation phase failure."
 msgstr ""
 
@@ -832,7 +832,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:188
+#: src/translation/trkeys_def.hpp:189
 msgid "CREDSSP Kerberos Authentication Failed, NTLM not allowed."
 msgstr ""
 
@@ -840,7 +840,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:189
+#: src/translation/trkeys_def.hpp:190
 msgid "NLA failed. TLS only not allowed."
 msgstr ""
 
@@ -848,7 +848,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:190
+#: src/translation/trkeys_def.hpp:191
 msgid "NLA failed. NLA required by restricted admin mode."
 msgstr ""
 
@@ -856,7 +856,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:191
+#: src/translation/trkeys_def.hpp:192
 msgid "Can't activate SSL. RDP Legacy only not allowed"
 msgstr ""
 
@@ -864,7 +864,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:192
+#: src/translation/trkeys_def.hpp:193
 msgid "An error occurred during the licensing protocol."
 msgstr ""
 
@@ -872,7 +872,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:193
+#: src/translation/trkeys_def.hpp:194
 msgid "The RemoteApp program did not start on the remote computer."
 msgstr ""
 
@@ -880,7 +880,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:194
+#: src/translation/trkeys_def.hpp:195
 msgid "Cannot start the RemoteApp program."
 msgstr ""
 
@@ -888,7 +888,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:195
+#: src/translation/trkeys_def.hpp:196
 msgid "The RemoteApp program is not in the list of authorized programs."
 msgstr ""
 
@@ -896,7 +896,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:196
+#: src/translation/trkeys_def.hpp:197
 msgid "Logon timer expired."
 msgstr ""
 
@@ -904,7 +904,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:197
+#: src/translation/trkeys_def.hpp:198
 msgid "Could not launch Session Probe."
 msgstr ""
 
@@ -912,7 +912,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:198
+#: src/translation/trkeys_def.hpp:199
 msgid ""
 "(ASBL) Could not launch Session Probe. File System Virtual Channel is unavailable. "
 "Please allow the drive redirection in the Remote Desktop Services settings of the target."
@@ -922,7 +922,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:201
+#: src/translation/trkeys_def.hpp:202
 msgid ""
 "(ASBL) Could not launch Session Probe. Maybe something blocks it on the target. "
 "Is the target running under Microsoft Server products? "
@@ -934,7 +934,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:206
+#: src/translation/trkeys_def.hpp:207
 msgid "(ASBL) Session Probe launch has failed for unknown reason."
 msgstr ""
 
@@ -942,7 +942,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:207
+#: src/translation/trkeys_def.hpp:208
 msgid ""
 "(CBBL) Could not launch Session Probe. File System Virtual Channel is unavailable. "
 "Please allow the drive redirection in the Remote Desktop Services settings of the target."
@@ -952,7 +952,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:210
+#: src/translation/trkeys_def.hpp:211
 msgid ""
 "(CBBL) Could not launch Session Probe. Clipboard Virtual Channel is unavailable. "
 "Please allow the clipboard redirection in the Remote Desktop Services settings of the target."
@@ -962,7 +962,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:213
+#: src/translation/trkeys_def.hpp:214
 msgid ""
 "(CBBL) Could not launch Session Probe. Drive of Session Probe is not ready yet. "
 "Is the target running under Windows Server 2008 R2 or more recent version?"
@@ -972,7 +972,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:216
+#: src/translation/trkeys_def.hpp:217
 msgid ""
 "(CBBL) Session Probe is not launched. Maybe something blocks it on the target. "
 "Please also check the temporary directory to ensure there is enough free space."
@@ -982,7 +982,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:219
+#: src/translation/trkeys_def.hpp:220
 msgid ""
 "(CBBL) Session Probe launch cycle has been interrupted. "
 "The launch timeout duration may be too short."
@@ -992,7 +992,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:222
+#: src/translation/trkeys_def.hpp:223
 msgid ""
 "(CBBL) Session Probe launch has failed for unknown reason. "
 "Please refer to the syslog file for more detailed information regarding the error condition."
@@ -1002,7 +1002,7 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:225
+#: src/translation/trkeys_def.hpp:226
 msgid ""
 "(RP) Could not launch Session Probe. "
 "Please refer to the syslog file for more detailed information regarding the error condition."
@@ -1012,6 +1012,6 @@ msgstr ""
 # ctx: local error (LocalErrMsg)
 # image(s): tests/includes/fixtures/img_ref/mod/internal/close_mod
 # image(s): tests/includes/fixtures/img_ref/mod/internal/widget/wab_close
-#: src/translation/trkeys_def.hpp:228
+#: src/translation/trkeys_def.hpp:229
 msgid "Unknown backend failure."
 msgstr ""
