@@ -1746,10 +1746,6 @@ class Sesman():
 
         Logger().info("Fetching protocol")
         kv = {}
-        kv['ca_certificates'] = ''.join(
-            cert.get("ca_certificate", "")
-            for cert in self.engine.get_certificate_authorities(["X509"])
-        )
         if _status:
             target_login_info = self.engine.get_target_login_info(
                 selected_target
@@ -1910,6 +1906,13 @@ class Sesman():
                     kv.update(conn_spec[1])
 
                 kv.update(self._load_kerberos_armoring_options(conn_opts))
+
+                if (conn_opts.get("server_cert", {}).get("server_cert_check_using_ca")
+                    and not kv.get('ca_certificates')):
+                    kv['ca_certificates'] = ''.join(
+                        cert.get("ca_certificate", "")
+                        for cert in self.engine.get_certificate_authorities(["X509"])
+                    )
 
                 kv['disable_tsk_switch_shortcuts'] = 'no'
                 if application:
