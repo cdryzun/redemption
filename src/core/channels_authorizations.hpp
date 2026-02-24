@@ -127,7 +127,8 @@ private:
     std::array<bool, decltype(rdpcap_list())().size()> rdpcap_restriction_ {{}};
 };
 
-std::pair<std::string,std::string>
+std::pair<std::string, std::string>
 compute_authorized_channels(
-    std::string_view original_allow, std::string_view original_deny,
+    std::string_view original_allow,
+    std::string_view original_deny,
     std::string proxy_opt);

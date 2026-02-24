@@ -274,9 +274,10 @@ bool ChannelsAuthorizations::rdpsnd_audio_input_is_authorized() const noexcept
     return this->rdpcap_restriction_[0];
 }
 
-std::pair<std::string,std::string>
+std::pair<std::string, std::string>
 compute_authorized_channels(
-    std::string_view original_allow, std::string_view original_deny,
+    std::string_view original_allow,
+    std::string_view original_deny,
     std::string proxy_opt)
 {
     auto remove = [](std::string & str, std::string_view pattern) -> bool {
@@ -354,12 +355,6 @@ compute_authorized_channels(
 
     for (auto & x : opts_channels) {
         ret[(proxy_opt.find(x.opt) != std::string::npos) ? 0 : 1].get() += x.channel;
-    }
-
-    for (std::string & s : ret) {
-        if (!s.empty() && s.front() == ',') {
-            s.erase(0,1);
-        }
     }
 
     return {allow, deny};
