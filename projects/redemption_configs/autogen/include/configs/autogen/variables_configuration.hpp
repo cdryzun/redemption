@@ -240,7 +240,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value { 10 };
     };
-    /// No automatic disconnection occurs due to inactivity. Timer starts after primary authentication. <br/>
+    /// Set how long a user can stay inactive before being disconnected from WALLIX Bastion. The timer starts immediately after the primary authentication. <br/>
     /// Values between 1 and 30 default to a 30-second timeout. <br/>
     /// If set to 0, the inactivity timeout is unlimited. <br/>
     /// type: std::chrono::seconds <br/>
@@ -251,7 +251,7 @@ namespace cfg
         using mapped_type = std::chrono::seconds;
         type value { 900 };
     };
-    /// No automatic disconnection occurs due to inactivity. Timer starts when the target session begins. <br/>
+    /// Set how long a user can stay inactive before being disconnected from a target session. The timer starts immediately after the secondary authentication. <br/>
     /// Values between 1 and 30 default to a 30-second timeout. <br/>
     /// If set to 0, the timeout value from [globals]base_inactivity_timeout is used. <br/>
     /// type: std::chrono::seconds <br/>

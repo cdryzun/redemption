@@ -19,7 +19,7 @@ cfg::globals::target_application ⇐ target_application   [std::string]
 cfg::globals::target_application_account ⇐ target_application_account   [std::string]
 cfg::globals::target_application_password ⇐ target_application_password   [std::string]
 cfg::globals::inactivity_timeout ⇐ globals:inactivity_timeout   [std::chrono::seconds]
-    No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.
+    Set how long a user can stay inactive before being disconnected from a target session. The timer starts immediately after the secondary authentication.
     Values between 1 and 30 default to a 30-second timeout.
     If set to 0, the timeout value from [globals]base_inactivity_timeout is used.
 cfg::globals::trace_type ⇐ trace_type   [TraceType]

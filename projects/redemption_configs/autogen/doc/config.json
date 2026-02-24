@@ -216,7 +216,7 @@
       "name": "base_inactivity_timeout",
       "type": "seconds",
       "value": 900,
-      "description": "No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.\nValues between 1 and 30 default to a 30-second timeout.\nIf set to 0, the inactivity timeout is unlimited.",
+      "description": "Set how long a user can stay inactive before being disconnected from WALLIX Bastion. The timer starts immediately after the primary authentication.\nValues between 1 and 30 default to a 30-second timeout.\nIf set to 0, the inactivity timeout is unlimited.",
       "globalSpec": true
     },
     {
@@ -224,7 +224,7 @@
       "name": "inactivity_timeout",
       "type": "seconds",
       "value": 0,
-      "description": "No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.\nValues between 1 and 30 default to a 30-second timeout.\nIf set to 0, the timeout value from <code>\"Base inactivity timeout\" option (in \"globals\" section of \"RDP Proxy\" configuration option)</code> is used.",
+      "description": "Set how long a user can stay inactive before being disconnected from a target session. The timer starts immediately after the secondary authentication.\nValues between 1 and 30 default to a 30-second timeout.\nIf set to 0, the timeout value from <code>\"Base inactivity timeout\" option (in \"globals\" section of \"RDP Proxy\" configuration option)</code> is used.",
       "connpolicySection": "session",
       "rdp": true,
       "rdp_sogisces_1_3_2030": true,

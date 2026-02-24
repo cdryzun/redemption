@@ -393,7 +393,8 @@ _.section("globals", [&]
         .value = value<std::chrono::seconds>(900),
         .spec = global_spec(no_acl),
         .desc =
-            "No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.\n"
+            "Set how long a user can stay inactive before being disconnected from WALLIX Bastion."
+            " The timer starts immediately after the primary authentication.\n"
             "Values between 1 and 30 default to a 30-second timeout.\n"
             "If set to 0, the inactivity timeout is unlimited.",
     });
@@ -404,7 +405,8 @@ _.section("globals", [&]
         .value = value<std::chrono::seconds>(),
         .spec = connpolicy(rdp | vnc, loggable),
         .desc =
-            "No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.\n"
+            "Set how long a user can stay inactive before being disconnected from a target session."
+            " The timer starts immediately after the secondary authentication.\n"
             "Values between 1 and 30 default to a 30-second timeout.\n"
             "If set to 0, the timeout value from :REF:[globals]:base_inactivity_timeout is used."
     });

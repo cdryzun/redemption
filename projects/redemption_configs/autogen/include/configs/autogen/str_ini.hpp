@@ -21,13 +21,13 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (in seconds)
 #handshake_timeout = 10
 
-# No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.
+# Set how long a user can stay inactive before being disconnected from WALLIX Bastion. The timer starts immediately after the primary authentication.
 # Values between 1 and 30 default to a 30-second timeout.
 # If set to 0, the inactivity timeout is unlimited.
 # (in seconds)
 #base_inactivity_timeout = 900
 
-# No automatic disconnection occurs due to inactivity. Timer starts when the target session begins.
+# Set how long a user can stay inactive before being disconnected from a target session. The timer starts immediately after the secondary authentication.
 # Values between 1 and 30 default to a 30-second timeout.
 # If set to 0, the timeout value from [globals]base_inactivity_timeout is used.
 # (in seconds)

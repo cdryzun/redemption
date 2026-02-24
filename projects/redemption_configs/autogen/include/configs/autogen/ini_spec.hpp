@@ -18,7 +18,7 @@ port = integer(min=0, default=3389)
 # (in seconds)
 handshake_timeout = integer(min=0, default=10)
 
-# No automatic disconnection occurs due to inactivity. Timer starts after primary authentication.
+# Set how long a user can stay inactive before being disconnected from WALLIX Bastion. The timer starts immediately after the primary authentication.
 # Values between 1 and 30 default to a 30-second timeout.
 # If set to 0, the inactivity timeout is unlimited.<br/>
 # (in seconds)
