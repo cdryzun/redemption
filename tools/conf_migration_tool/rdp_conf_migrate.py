@@ -9,7 +9,8 @@
 from shutil import copyfile
 from enum import IntEnum
 from typing import (List, Tuple, Dict, Optional, Union, Iterable, Any,
-                    Sequence, NamedTuple, Generator, Callable, TypeVar)
+                    Sequence, NamedTuple, Generator, Callable, TypeVar,
+                    TextIO)
 
 import os
 import re
@@ -51,7 +52,7 @@ class RedemptionVersion:
         return hash(self.__part())
 
     @staticmethod
-    def from_file(filename: str) -> 'RedemptionVersion':
+    def from_file(filename: str | bytes | os.PathLike) -> 'RedemptionVersion':
         with open(filename, encoding='utf-8') as f:
             line = f.readline()  # read first line
             items = line.split()
@@ -162,6 +163,8 @@ class RemoveItem(NamedTuple):
     reason: str = ''
     old_display_name: str = ''
     ini_only: bool = False
+    # do not remove item when external migration is enabled
+    remove_by_external_tool: bool = False
 
 
 ValueCreator = Callable[[Iterable[ConfigurationFragment]], str | None]
@@ -211,15 +214,16 @@ def migration_filter(migration_defs: Sequence[MigrationType],
 
 def migration_def_to_actions(fragments: Iterable[ConfigurationFragment],
                              migration_def: MigrationDescType,
-                             ) -> Tuple[
-                                 List[Tuple[str, str]],  # renamed_sections
-                                 # section, old_key, new_key, new_value
-                                 List[Tuple[str, str, str, str]],  # renamed_keys
-                                 # old_section, old_key, new_section, new_key, new_value
-                                 List[Tuple[str, str, str, str, str]],  # moved_keys
-                                 List[str],  # removed_sections
-                                 List[Tuple[str, str]],  # removed_keys
-                                ]:
+                             remove_by_external_tool: bool,
+) -> Tuple[
+    List[Tuple[str, str]],  # renamed_sections
+    # section, old_key, new_key, new_value
+    List[Tuple[str, str, str, str]],  # renamed_keys
+    # old_section, old_key, new_section, new_key, new_value
+    List[Tuple[str, str, str, str, str]],  # moved_keys
+    List[str],  # removed_sections
+    List[Tuple[str, str]],  # removed_keys
+]:
     section = ''
     original_section = ''
     migration_key_desc = None
@@ -236,7 +240,8 @@ def migration_def_to_actions(fragments: Iterable[ConfigurationFragment],
                 if order is None:
                     pass
                 elif isinstance(order, RemoveItem):
-                    removed_keys.append((section, fragment.value1))
+                    if not (remove_by_external_tool and order.remove_by_external_tool):
+                        removed_keys.append((section, fragment.value1))
                 elif isinstance(order, UpdateItem):
                     t = order.update(section, fragment.value1, fragment.value2, fragments)
                     if t[0] == section:
@@ -253,7 +258,8 @@ def migration_def_to_actions(fragments: Iterable[ConfigurationFragment],
             if order is None:
                 pass
             elif isinstance(order, RemoveItem):
-                removed_sections.append(section)
+                if not (remove_by_external_tool and order.remove_by_external_tool):
+                    removed_sections.append(section)
             elif isinstance(order, MoveSection):
                 renamed_sections.append((section, order.name))
             elif isinstance(order, dict):
@@ -292,9 +298,11 @@ def _is_empty_line(i: int, fragments: List[ConfigurationFragment]) -> bool:
 
 
 def migrate(fragments: List[ConfigurationFragment],
-            migration_def: MigrationDescType) -> Tuple[bool, List[ConfigurationFragment]]:
+            migration_def: MigrationDescType,
+            remove_by_external_tool: bool,
+) -> Tuple[bool, List[ConfigurationFragment]]:
     renamed_sections, renamed_keys, moved_keys, removed_sections, removed_keys \
-        = migration_def_to_actions(fragments, migration_def)
+        = migration_def_to_actions(fragments, migration_def, remove_by_external_tool)
 
     if not (renamed_sections or renamed_keys or moved_keys or removed_sections or removed_keys):
         return (False, fragments)
@@ -431,6 +439,7 @@ def migrate_file(
         ini_filename: str,
         temporary_ini_filename: str,
         saved_ini_filename: str,
+        remove_by_external_tool: bool,
 ) -> bool:
     content, fragments = parse_configuration_from_file(ini_filename)
     if version == NoVersion:
@@ -439,7 +448,7 @@ def migrate_file(
     is_changed = False
 
     for _, desc in migration_filter(migration_defs, version):
-        is_updated, fragments = migrate(fragments, remove_ini_only_type(desc))
+        is_updated, fragments = migrate(fragments, remove_ini_only_type(desc), remove_by_external_tool)
         is_changed = is_changed or is_updated
 
     if is_changed:
@@ -558,38 +567,57 @@ def dump_json(defs: Sequence[MigrationType]) -> List[Any]:
     return json_array
 
 
-def main(migration_defs: Sequence[MigrationType], argv: List[str]) -> int:
-    if len(argv) == 2 and argv[1] == '--dump=json':
+def main(
+    migration_defs: Sequence[MigrationType],
+    argv: List[str],
+    prog: str | None = None,
+    stdout: TextIO = sys.stdout,
+    stderr: TextIO = sys.stderr,
+) -> int:
+    import argparse  # noqa: PLC0415
+    import pathlib  # noqa: PLC0415
+
+    parser = argparse.ArgumentParser(prog, description='ReDemPtion configuration tool migration')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-s', '--source-version', metavar='VERSION',
+                       help='Output format of redemption --version.')
+    group.add_argument('-f', '--file-version', metavar='FILE', type=pathlib.Path,
+                       help='Output format of redemption --version from file.')
+    parser.add_argument('--remove-by-external-tool', action='store_true',
+                        help='Do not remove some values (e.g. these migrate to the DB).')
+    parser.add_argument('--dump', choices=['json'],
+                        help='Dump migration configuration.')
+    parser.add_argument('inifile', nargs='?', help='rdpproxy.ini file path.')
+
+    args = parser.parse_args()
+
+    if args.dump == 'json':
         import json  # noqa: PLC0415
-        print(json.dumps(dump_json(migration_defs)))
+        print(json.dumps(dump_json(migration_defs)), file=stdout)
         return 0
 
-    if len(argv) <= 1:
-        print(f'{argv[0]} {{-s|-f}} old_version ini_filename\n'
-              '  -s   <version> is a output format of redemption --version\n'
-              '  -f   <version> is a version of redemption from file\n\n'
-              f'{argv[0]} --dump=json\n',
-              file=sys.stderr)
+    if not args.inifile:
+        parser.print_help(stderr)
         return 1
 
-    ini_pos = 3
-    if argv[1] == '-f':
-        old_version = RedemptionVersion.from_file(argv[2])
-    elif argv[1] == '-s':
-        old_version = RedemptionVersion(argv[2])
+    if args.file_version:
+        old_version = RedemptionVersion.from_file(args.file_version)
+    elif args.source_version:
+        old_version = RedemptionVersion(args.source_version)
     else:
-        ini_pos = 1
         old_version = NoVersion
-    ini_filename = argv[ini_pos]
 
-    print(f"PreviousRedemptionVersion={old_version}")
+    ini_filename = args.inifile
+
+    print(f"PreviousRedemptionVersion={old_version}", file=stdout)
 
     if migrate_file(migration_defs,
                     old_version,
                     ini_filename=ini_filename,
                     temporary_ini_filename=f'{ini_filename}.work',
-                    saved_ini_filename=f'{ini_filename}.{old_version}'):
-        print("Configuration file updated")
+                    saved_ini_filename=f'{ini_filename}.{old_version}',
+                    remove_by_external_tool=args.remove_by_external_tool):
+        print("Configuration file updated", file=stdout)
     return 0
 
 
@@ -911,4 +939,4 @@ migration_defs: Sequence[MigrationType] = (
 )
 
 if __name__ == '__main__':
-    sys.exit(main(migration_defs, sys.argv))
+    sys.exit(main(migration_defs, sys.argv[1:]))
