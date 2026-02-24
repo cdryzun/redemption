@@ -26,7 +26,7 @@ from rdp_conf_migrate import (
 
 
 def process_migrate(migrate_def: MigrationDescType, ini: str) -> Tuple[bool, str]:
-    r = migrate(parse_configuration(ini), migrate_def, remove_by_external_tool=False)
+    r = migrate(parse_configuration(ini), migrate_def, ignored_when_external_tool=False)
     return (r[0], ''.join(fragment.text for fragment in r[1]))
 
 
@@ -201,7 +201,7 @@ class TestMigration(unittest.TestCase):
             'sec1': {
                 'moved_key': UpdateItem(key='moved_key_to_a'),
                 'updated_value': UpdateItem(value_transformation=remap({'old_b_value': 'new_b'})),
-                'removed_key': RemoveItem(remove_by_external_tool=True),
+                'removed_key': RemoveItem(ignored_when_external_tool=True),
             },
             'moved_section': (MoveSection('new_moved_section'), {
                 'moved_key_to_removed_section': UpdateItem(section='removed_section'),
@@ -217,7 +217,7 @@ class TestMigration(unittest.TestCase):
         fragments = parse_configuration(ini)
 
         self.assertEqual(migration_def_to_actions(fragments, migrate_def,
-                                                  remove_by_external_tool=False), (
+                                                  ignored_when_external_tool=False), (
             # renamed_sections
             [('moved_section', 'new_moved_section')],
             # renamed_keys
@@ -243,7 +243,7 @@ class TestMigration(unittest.TestCase):
         ))
 
         self.assertEqual(migration_def_to_actions(fragments, migrate_def,
-                                                  remove_by_external_tool=True), (
+                                                  ignored_when_external_tool=True), (
             # renamed_sections
             [('moved_section', 'new_moved_section')],
             # renamed_keys
@@ -268,13 +268,13 @@ class TestMigration(unittest.TestCase):
             []
         ))
 
-        self.assertEqual(migrate(fragments, {}, remove_by_external_tool=False),
+        self.assertEqual(migrate(fragments, {}, ignored_when_external_tool=False),
                          (False, fragments))
 
-        self.assertEqual(migrate(fragments, {'video': {}}, remove_by_external_tool=False),
+        self.assertEqual(migrate(fragments, {'video': {}}, ignored_when_external_tool=False),
                          (False, fragments))
 
-        self.assertEqual(migrate(fragments, migrate_def, remove_by_external_tool=False), (True, [
+        self.assertEqual(migrate(fragments, migrate_def, ignored_when_external_tool=False), (True, [
             ConfigurationFragment('[new_moved_section]', kind=ConfigKind.Section, value1='new_moved_section'),
             ConfigurationFragment('\n', kind=ConfigKind.NewLine),
             ConfigurationFragment('\n', kind=ConfigKind.NewLine),
@@ -334,7 +334,7 @@ class TestMigration(unittest.TestCase):
         fragments = parse_configuration(ini)
 
         self.assertEqual(migration_def_to_actions(fragments, migrate_def,
-                                                  remove_by_external_tool=False), (
+                                                  ignored_when_external_tool=False), (
             # renamed_sections
             [],
             # renamed_keys
@@ -350,9 +350,9 @@ class TestMigration(unittest.TestCase):
             []
         ))
 
-        self.assertEqual(migrate(fragments, {}, remove_by_external_tool=False), (False, fragments))
+        self.assertEqual(migrate(fragments, {}, ignored_when_external_tool=False), (False, fragments))
 
-        self.assertEqual(migrate(fragments, migrate_def, remove_by_external_tool=False), (True, [
+        self.assertEqual(migrate(fragments, migrate_def, ignored_when_external_tool=False), (True, [
             ConfigurationFragment(text='[sec1]', kind=ConfigKind.Section, value1='sec1', value2=''),
             ConfigurationFragment(text='\n', kind=ConfigKind.NewLine, value1='', value2=''),
             ConfigurationFragment(text='[sec2]', kind=ConfigKind.Section, value1='sec2', value2=''),
@@ -416,7 +416,7 @@ tata = titi
             ini_filename,
             temporary_ini_filename,
             saved_ini_filename,
-            remove_by_external_tool=False))
+            ignored_when_external_tool=False))
 
         with open(ini_filename, encoding='utf-8') as f:
             self.assertEqual(f.read(),
