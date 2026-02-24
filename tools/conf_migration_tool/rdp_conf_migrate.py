@@ -835,7 +835,7 @@ migration_defs: Sequence[MigrationType] = (
             'experimental_enable_serializer_data_block_size_limit': ToIniOnly(),
             'enable_bitmap_update': ToIniOnly(reason='Is now always supported.'),
             'listen_address': ToIniOnly(),
-            'mod_recv_timeout': ToIniOnly(reason='Unused'),  # soon :D
+            'mod_recv_timeout': ToIniOnly(reason='Unused.'),  # soon :D
             'unicode_keyboard_event_support': ToIniOnly(reason='Is now always supported.'),
         },
         'client': {
@@ -853,7 +853,7 @@ migration_defs: Sequence[MigrationType] = (
                 reason='Merging of "Performance Flags Force Present" and "Performance Flags Not Force Present".'),
             'cache_waiting_list': ToIniOnly(),
             'enable_nla': ToIniOnly(reason='Is now always supported.'),
-            'recv_timeout': ToIniOnly(reason='Unused'),  # soon :D
+            'recv_timeout': ToIniOnly(reason='Unused.'),  # soon :D
         },
         'session_log': {
             'enable_session_log': UpdateItem(
@@ -905,7 +905,7 @@ migration_defs: Sequence[MigrationType] = (
             'error_message': _update_server_cert_notif_12_0_1,
         },
         'video': {
-            # -> [capture]
+            # move to [capture]
             'capture_flags': UpdateItem(section='capture'),
             'disable_clipboard_log': UpdateItem(section='capture'),
             'disable_file_system_log': UpdateItem(section='capture'),
@@ -913,7 +913,7 @@ migration_defs: Sequence[MigrationType] = (
             'wrm_color_depth_selection_strategy': UpdateItem(section='capture'),
             'wrm_compression_algorithm': UpdateItem(section='capture'),
             'file_permissions': UpdateItem(section='capture'),
-            # -> [audit]
+            # move to [audit]
             'enable_keyboard_log': UpdateItem(section='audit'),
             'framerate': UpdateItem(section='audit', key='video_frame_rate'),
             'notimestamp': UpdateItem(section='audit', key='video_notimestamp'),
@@ -930,8 +930,8 @@ migration_defs: Sequence[MigrationType] = (
     }),
     # Remove sections after moving keys from these sections
     (RedemptionVersion("12.0.1"), {
-        'video': RemoveItem(reason="No more keys"),
-        'crypto': RemoveItem(reason="Never used"),
+        'video': RemoveItem(reason="No more keys."),
+        'crypto': RemoveItem(reason="Never used."),
     }),
     (RedemptionVersion("12.1.31"), {
         'theme': {
