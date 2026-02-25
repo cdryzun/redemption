@@ -96,7 +96,6 @@ build-analyze-release-valgrind:
     - .big_memory
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    JOB_REQUIRED_MEMORY: '8Gi'
   script:
     - TMPDIR_TEST="$TESTDIR" ./tools/gitlab/gitlab-analyze.sh gcc_release_valgrind |& tee report1.txt
   artifacts:
