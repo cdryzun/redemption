@@ -1867,6 +1867,7 @@ SHARING_CONN_POLICY = {
         'keyboard_input_masking_level': 0,
     },
     'rdp': {
+        'enable_nla': False,
         'allow_tls_only_fallback': True,
         'allow_rdp_legacy_fallback': True,
     },
