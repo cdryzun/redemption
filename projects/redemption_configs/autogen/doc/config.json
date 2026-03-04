@@ -3383,7 +3383,7 @@
       "name": "enable_x_infection",
       "type": "bool",
       "value": false,
-      "description": "Reject file on X-Infection-Found header in ICAP server response.\n⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).",
+      "description": "Reject file on X-Infection-Found header in ICAP server response.\n⚠ Any X-Infection-Found header in ICAP response will be treated as rejected, even if repaired content is present (Resolution=1).",
       "globalSpec": true,
       "advanced": true,
       "external": true
@@ -3459,7 +3459,7 @@
       "name": "enable_x_infection",
       "type": "bool",
       "value": false,
-      "description": "Reject file on X-Infection-Found header in ICAP server response.\n⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).",
+      "description": "Reject file on X-Infection-Found header in ICAP server response.\n⚠ Any X-Infection-Found header in ICAP response will be treated as rejected, even if repaired content is present (Resolution=1).",
       "globalSpec": true,
       "advanced": true,
       "external": true

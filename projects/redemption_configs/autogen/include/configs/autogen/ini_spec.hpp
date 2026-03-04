@@ -536,7 +536,7 @@ tls = boolean(default=False)
 enable_x_context = boolean(default=True)
 
 # Reject file on X-Infection-Found header in ICAP server response.
-# ⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).
+# ⚠ Any X-Infection-Found header in ICAP response will be treated as rejected, even if repaired content is present (Resolution=1).
 #_advanced
 enable_x_infection = boolean(default=False)
 
@@ -569,7 +569,7 @@ tls = boolean(default=False)
 enable_x_context = boolean(default=True)
 
 # Reject file on X-Infection-Found header in ICAP server response.
-# ⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).
+# ⚠ Any X-Infection-Found header in ICAP response will be treated as rejected, even if repaired content is present (Resolution=1).
 #_advanced
 enable_x_infection = boolean(default=False)
 

@@ -2650,7 +2650,7 @@ for (char const* section_name : {"icap_server_down", "icap_server_up"}) {
             .value = value(false),
             .spec = spec::external(spec::advanced),
             .desc = "Reject file on X-Infection-Found header in ICAP server response.\n"
-            "⚠ Any X-Infection-Found header in ICAP response will be threated as rejected, even if repaired content is present (Resolution=1).",
+            "⚠ Any X-Infection-Found header in ICAP response will be treated as rejected, even if repaired content is present (Resolution=1).",
         });
 
         _.member(MemberInfo{
