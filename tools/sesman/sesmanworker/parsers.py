@@ -120,13 +120,16 @@ def parse_auth(username: str) -> Tuple[str, Optional[Tuple[str, str, str, str]]]
     Because of compatibility issues with some ssh command line tools
     '+' can be used instead of ':'
 
+    ':' is forbidden in all fields so we detect this separator first
+    '+' is currently allowed in some fields (device part and authorization part)
+
     fields can be missing (typically service and group if there is
     no ambiguity)
 
     """
-    user_dev_service_group, sep, primary = username.rpartition('+')
+    user_dev_service_group, sep, primary = username.rpartition(':')
     if not sep:
-        user_dev_service_group, sep, primary = username.rpartition(':')
+        user_dev_service_group, sep, primary = username.rpartition('+')
     if sep:
         user_dev_service, sep, group = user_dev_service_group.rpartition(sep)
         if not sep:

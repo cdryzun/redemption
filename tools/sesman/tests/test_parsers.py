@@ -71,6 +71,22 @@ class Test_parsers(unittest.TestCase):
                          ('primaryuser', ('secondaryuser', 'target', '', '')))
         self.assertEqual(parse_auth('secondaryuser@target'),
                          ('secondaryuser@target', None))
+        self.assertEqual(parse_auth('secondaryuser@tar+get+service+auth+primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', 'service', 'auth')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get:service:auth:primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', 'service', 'auth')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get:service:au+th:primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', 'service', 'au+th')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get:service:primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', 'service', '')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get:service::primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', 'service', '')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get::au+th:primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', '', 'au+th')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get:::primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', '', '')))
+        self.assertEqual(parse_auth('secondaryuser@tar+get::primaryuser'),
+                         ('primaryuser', ('secondaryuser', 'tar+get', '', '')))
 
     def test_parse_app(self):
         self.assertEqual(parse_app('aaa@bbb@ccc'), ('aaa', 'bbb', 'ccc'))
