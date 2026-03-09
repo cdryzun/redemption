@@ -1961,15 +1961,16 @@ class Sesman():
                     kv['target_device'] = self.target_context.showname()
                 else:
                     kv['target_host'] = physical_info.device_host
-                    if physical_info.sharing_host:
-                        _phost = physical_info.sharing_host
-                        if _phost.startswith("sock://"):
-                            # session sharing
-                            kv["tunneling_target_host"] = \
-                                _phost[len("sock://"):]
-                        else:
-                            # session shadow
-                            kv['target_host'] = _phost
+
+                if physical_info.sharing_host:
+                    _phost = physical_info.sharing_host
+                    if _phost.startswith("sock://"):
+                        # session sharing
+                        kv["tunneling_target_host"] = \
+                            _phost[len("sock://"):]
+                    else:
+                        # session shadow
+                        kv['target_host'] = _phost
 
                 kv['target_login'] = physical_info.account_login
                 if (not kv.get('target_login')
