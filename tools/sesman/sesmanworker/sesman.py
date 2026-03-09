@@ -2141,7 +2141,7 @@ class Sesman():
                             self.engine.keepalive(timeout=KEEPALIVE_TIMEOUT)
                             current_time = time()
                             if self.check_session_parameters:
-                                self.update_session_parameters(current_time)
+                                self.read_session_parameters(current_time)
                                 self.check_session_parameters = False
                             self.rtmanager.check(current_time)
                             if self.proxy_conx in r:
@@ -2633,7 +2633,7 @@ class Sesman():
         except Exception:
             pass
 
-    def update_session_parameters(self, current_time: float) -> None:
+    def read_session_parameters(self, current_time: float) -> None:
         params = self.engine.read_session_parameters()
         res = params.get("rt_display")
         Logger().debug(f"rt_display={res}")
