@@ -27,6 +27,7 @@ Author(s): Proxies Team
 #include "utils/netutils.hpp"
 #include "core/listen.hpp"
 #include "utils/base64.hpp"
+#include "utils/sugar/zstring_view.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -54,6 +55,11 @@ struct GuestCtx
         return sck_path_;
     }
 
+    zstring_view sck_name() const noexcept
+    {
+        return sck_name_;
+    }
+
     chars_view sck_password() const noexcept
     {
         return sck_password_.as_chars();
@@ -66,7 +72,8 @@ struct GuestCtx
     };
 
     ResultError start(
-        chars_view sck_path_base, chars_view session_id,
+        zstring_view sck_path_base, zstring_view listen_interface,
+        chars_view session_id,
         EventContainer& event_container, Front& front, Callback& callback,
         SessionLogApi& session_log, MonotonicTimePoint::duration invitation_delay,
         Random& rnd, Inifile& original_ini, bool enable_shared_control)
@@ -76,21 +83,32 @@ struct GuestCtx
         ++sck_counter_;
 
         // create socket path directory
-        str_assign(sck_path_, sck_path_base);
-        if (!file_exist(sck_path_) && recursive_create_directory(sck_path_.c_str(), 0700) < 0){
-            int errnum = errno;
-            char const * errmsg = strerror(errnum);
-            LOG(LOG_ERR, "Failed to create %s: %s", sck_path_, errmsg);
-            return ResultError{checked_int(errnum), errmsg};
+        if (listen_interface == ""_zv) {
+            str_assign(sck_path_, sck_path_base);
+            if (!file_exist(sck_path_) && recursive_create_directory(sck_path_.c_str(), 0700) < 0){
+                int errnum = errno;
+                char const * errmsg = strerror(errnum);
+                LOG(LOG_ERR, "Failed to create %s: %s", sck_path_, errmsg);
+                return ResultError{checked_int(errnum), errmsg};
+            }
+
+            // generate random socket path
+            str_append(sck_path_,
+                       "/front2_", session_id, '_',
+                       int_to_decimal_chars(sck_counter_), ".sck");
+
+            // create a unix socket for guest front
+            listen_sck = create_unix_server(sck_path_, EnableTransparentMode::No);
+            str_assign(sck_name_, "sock://", sck_path_);
         }
-
-        // generate random socket path
-        str_append(sck_path_,
-                   "/front2_", session_id, '_',
-                   int_to_decimal_chars(sck_counter_), ".sck");
-
-        // create a unix socket for guest front
-        listen_sck = create_unix_server(sck_path_, EnableTransparentMode::No);
+        else {
+            listen_sck = create_server(inet_addr(listen_interface),
+                                       0,  // get random port
+                                       EnableTransparentMode::No);
+            str_assign(sck_name_, listen_interface, ':',
+                       std::to_string(get_local_port_address(listen_sck.fd())));
+            LOG(LOG_INFO, "Guest::start() server created on %s", sck_name_);
+        }
         if (!listen_sck.is_open()) {
             LOG(LOG_ERR, "Guest::start() create server error");
             int errnum = errno;
@@ -363,5 +381,6 @@ private:
 
     unsigned sck_counter_ = 0;
     std::string sck_path_;
+    std::string sck_name_;
     PasswordText sck_password_;
 };

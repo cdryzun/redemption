@@ -2536,15 +2536,19 @@ class Sesman():
 
     def handle_session_sharing(self) -> None:
         if self.shared.get("session_sharing_invitation_error_code"):
-            sharing_addr = self.shared.get("session_sharing_invitation_addr")
-            if not sharing_addr.startswith("sock://"):
-                sharing_addr = "sock://" + sharing_addr
+            sharing_addr_repr = self.shared.get("session_sharing_invitation_addr")
+            if sharing_addr_repr.startswith("sock://"):
+                sharing_addr = sharing_addr_repr
+                sharing_port = 0  # force 0 to use Unix Socket
+            else:
+                sharing_addr, _, sharing_port_str = sharing_addr_repr.rpartition(":")
+                sharing_port = int(sharing_port_str)
             session_sharing_token = {
                 "native_session_sharing": True,
                 "sharing_pass":
                     self.shared.get("session_sharing_invitation_id"),
                 "shadow_ip": sharing_addr,
-                "shadow_port": 0,  # force 0 to use Unix Socket,
+                "shadow_port": sharing_port,
                 "host_target_ip":
                     self.shared.get("session_sharing_target_ip"),
                 "host_target_login":
@@ -2669,10 +2673,12 @@ class Sesman():
                 sharing_mode = sharing_mode.lower()
                 enable_control = ("control" in sharing_mode
                                   or "write" in sharing_mode)
+                sharing_interface = self.engine.get_sharing_interface()
                 self.send_data({
                     'session_sharing_enable_control': enable_control,
                     'session_sharing_userdata': sharing_request_id,
                     'session_sharing_ttl': sharing_ttl,
+                    'session_sharing_interface': sharing_interface,
                 })
 
     def check_application(self, effective_target: SharedDict, flags: str, exe_or_file: str) -> SharedDict:

@@ -1572,6 +1572,23 @@ class Engine:
         with manage_transaction(self.wabengine):
             return self.wabengine.read_session_parameters(self.session_id)
 
+    def get_sharing_interface(self) -> str:
+        """
+        return interface ip for clustering environment
+        return empty string otherwise so that we use unix socket
+        """
+        try:
+            from wsc.client import Client
+            wsc_client = Client()
+            wg_config = wsc_client.load_config("wireguard")
+            if wg_config["enabled"]:
+                return wg_config["interface"]["address"]
+            else:
+                return ""
+        except Exception as e:
+            Logger().debug(f"Fail to retrieve sharing interface '{e}'")
+            return ""
+
     def check_target(self, target: RightType, request_ticket: Optional[Dict[str, Any]] = None
                      ) -> Tuple[str, Dict[str, Any]]:
         if self.checktarget_cache == (APPROVAL_ACCEPTED, target['target_uid']):

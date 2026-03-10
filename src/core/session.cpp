@@ -1199,6 +1199,7 @@ private:
 
                             result = guest_ctx.start(
                                 app_path(AppPath::SessionTmpDir),
+                                this->ini.get<cfg::context::session_sharing_interface>(),
                                 this->ini.get<cfg::context::session_id>(),
                                 events,
                                 front,
@@ -1217,7 +1218,7 @@ private:
                             this->ini.set_acl<cfg::context::session_sharing_invitation_error_message>(result.errmsg);
                         }
                         else {
-                            this->ini.set_acl<cfg::context::session_sharing_invitation_addr>(guest_ctx.sck_path());
+                            this->ini.set_acl<cfg::context::session_sharing_invitation_addr>(guest_ctx.sck_name());
                             this->ini.set_acl<cfg::context::session_sharing_invitation_id>(
                                 guest_ctx.sck_password().as<std::string_view>());
                             this->ini.set_acl<cfg::context::session_sharing_target_login>(

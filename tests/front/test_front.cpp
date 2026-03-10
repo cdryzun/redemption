@@ -895,7 +895,7 @@ RED_AUTO_TEST_CASE_WD(TestGuestCtx, wd)
     RED_REQUIRE_MESSAGE(chdir(wd.dirname()) == 0, strerror(errno));
 
     auto result = guest_ctx.start(
-        "."_av, "{SID}"_av,
+        "."_zv, ""_zv, "{SID}"_av,
         events, front_ctx.front, front_ctx.mod,
         mod.session_log,
         100ms,
