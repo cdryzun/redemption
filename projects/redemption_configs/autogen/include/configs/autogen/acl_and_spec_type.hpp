@@ -382,6 +382,7 @@ template<> struct acl_and_spec_type<cfg::context::rd_shadow_invitation_port> { u
 template<> struct acl_and_spec_type<cfg::context::session_sharing_userdata> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::session_sharing_enable_control> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::context::session_sharing_ttl> { using type = std::chrono::seconds; };
+template<> struct acl_and_spec_type<cfg::context::session_sharing_interface> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::session_sharing_invitation_error_code> { using type = uint32_t; };
 template<> struct acl_and_spec_type<cfg::context::session_sharing_invitation_error_message> { using type = std::string; };
 template<> struct acl_and_spec_type<cfg::context::session_sharing_invitation_id> { using type = std::string; };

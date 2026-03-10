@@ -4370,6 +4370,15 @@
     },
     {
       "section": "context",
+      "name": "session_sharing_interface",
+      "type": "str",
+      "value": "",
+      "description": "",
+      "aclToProxy": true,
+      "logStategy": "1"
+    },
+    {
+      "section": "context",
       "name": "session_sharing_invitation_error_code",
       "type": "u32",
       "value": 0,

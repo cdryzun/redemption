@@ -3766,6 +3766,12 @@ _.section("context", [&]
     });
 
     _.member(MemberInfo{
+        .name = "session_sharing_interface",
+        .value = value<std::string>(),
+        .spec = acl_to_proxy(no_reset_back_to_selector, loggable),
+    });
+
+    _.member(MemberInfo{
         .name = "session_sharing_invitation_error_code",
         .value = value<types::u32>(0),
         .spec = proxy_to_acl(no_reset_back_to_selector, loggable),
