@@ -46,42 +46,49 @@ struct BasicFunction<R(Args...)>
         return [](void* /*d*/, Args... /*args*/) { return R(); };
     }
 
-    BasicFunction(NullFunction, raw_function_pointer fn) noexcept
-        : fn_ptr(fn)
+    BasicFunction(void * data, raw_function_pointer fn) noexcept
+        : m_fn_ptr(fn)
+    {
+        static_assert(alignof(void*) == alignof(raw_function_pointer));
+        std::memcpy(m_data, data, sizeof(data));
+    }
+
+    BasicFunction(raw_function_pointer fn, decltype(nullptr)) noexcept
+        : m_fn_ptr(fn)
     {}
 
     BasicFunction(NullFunction) noexcept
-        : BasicFunction(NullFunction(), make_raw_function_pointer())
+        : m_fn_ptr(make_raw_function_pointer())
     {}
 
     BasicFunction(NullFunctionWithDefaultResult) noexcept
-        : BasicFunction(NullFunction(), make_raw_function_pointer_with_default_result())
+        : m_fn_ptr(make_raw_function_pointer_with_default_result())
     {}
 
     template<class Fn, class = std::enable_if_t<!std::is_same_v<Fn, BasicFunction>>>
     BasicFunction(Fn fn) noexcept
     {
-        static_assert(sizeof(Fn) <= sizeof(data));
+        static_assert(sizeof(Fn) <= sizeof(m_data));
         static_assert(alignof(Fn) <= alignof(raw_function_pointer));
         static_assert(std::is_trivially_copyable_v<Fn>);
         static_assert(std::is_trivially_destructible_v<Fn>);
 
         static_assert(!std::is_pointer_v<Fn>, "function pointer is not optimized, prefer lambda");
 
-        std::memcpy(data, &fn, sizeof(Fn));
-        fn_ptr = +[](void* d, Args... args) {
+        std::memcpy(m_data, &fn, sizeof(Fn));
+        m_fn_ptr = +[](void* d, Args... args) {
             return (*static_cast<Fn*>(d))(static_cast<Args&&>(args)...);
         };
     }
 
     R operator()(Args... args)
     {
-        return fn_ptr(data, static_cast<Args&&>(args)...);
+        return m_fn_ptr(m_data, static_cast<Args&&>(args)...);
     }
 
     bool is_null_function() const noexcept
     {
-        return fn_ptr == BasicFunction(NullFunctionWithDefaultResult()).fn_ptr;
+        return m_fn_ptr == BasicFunction(NullFunctionWithDefaultResult()).m_fn_ptr;
     }
 
     explicit operator bool () const noexcept
@@ -90,6 +97,6 @@ struct BasicFunction<R(Args...)>
     }
 
 private:
-    raw_function_pointer fn_ptr;
-    alignas(raw_function_pointer) char data[sizeof(void*)];
+    raw_function_pointer m_fn_ptr;
+    alignas(raw_function_pointer) char m_data[sizeof(void*)];
 };
