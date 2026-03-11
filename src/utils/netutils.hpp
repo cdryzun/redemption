@@ -121,6 +121,9 @@ FILE* popen_conntrack(const char* source_ip, int source_port, int target_port);
 bool get_local_ip_address(IpAddress& client_address, int fd) noexcept;
 
 [[nodiscard]]
+int get_local_port_address(int fd);
+
+[[nodiscard]]
 bool find_probe_client(std::string_view probe_client_addresses,
                        zstring_view source_ip,
                        bool is_ipv6);

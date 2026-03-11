@@ -965,6 +965,27 @@ bool get_local_ip_address(IpAddress& client_address, int fd) noexcept
     return true;
 }
 
+int get_local_port_address(int fd)
+{
+    union
+    {
+        sockaddr s;
+        sockaddr_in s4;
+        sockaddr_in6 s6;
+        sockaddr_storage ss;
+    } u;
+    socklen_t socklen = sizeof(u);
+
+    std::memset(&u, 0, socklen);
+    if (::getsockname(fd, &u.s, &socklen) == -1)
+    {
+        LOG(LOG_ERR, "getsockname failed with errno = %d (%s)",
+            errno, strerror(errno));
+        return 0;
+    }
+    return ntohs(u.s4.sin_port);
+
+}
 bool find_probe_client(std::string_view probe_client_addresses,
                        zstring_view source_ip,
                        bool is_ipv6)
