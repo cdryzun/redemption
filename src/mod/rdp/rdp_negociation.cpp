@@ -54,7 +54,6 @@
 #include "utils/sugar/zstring_view.hpp"
 #include "utils/sugar/bounded_bytes_view.hpp"
 
-#include <fstream>
 #include <cstring>
 
 RdpNegociation::RdpNegociation(
