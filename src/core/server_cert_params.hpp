@@ -18,10 +18,3 @@ struct ServerCertNotifications
     ServerCertNotification not_trusted_message = ServerCertNotification::SIEM;
     ServerCertNotification trusted_message = ServerCertNotification::SIEM;
 };
-
-struct ServerCertParams
-{
-    bool store = true;
-    ServerCertCheck check = ServerCertCheck::fails_if_no_match_or_missing;
-    ServerCertNotifications notifications;
-};

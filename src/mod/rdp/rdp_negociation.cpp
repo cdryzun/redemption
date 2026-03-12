@@ -76,11 +76,8 @@ RdpNegociation::RdpNegociation(
     LicenseApi& license_store,
     bool has_managed_drive,
     bool convert_remoteapp_to_desktop,
-    const TlsConfig & tls_config,
-    BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker,
-    bool server_cert_check_using_ca,
-    chars_view ca_certificates,
-    const char* target_host
+    const ModTlsParams & tls_params,
+    BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker
     )
     : mod_channel_list(mod_channel_list)
     , channels_authorizations(channels_authorizations)
@@ -107,11 +104,14 @@ RdpNegociation::RdpNegociation(
     , client_time_zone(info.client_time_zone)
     , gen(gen)
     , verbose(mod_rdp_params.verbose /*| (RDPVerbose::security|RDPVerbose::basic_trace)*/)
-    , cert_checker_params{
+    , cert_checker_params {
         .session_log = session_log,
-        .certif_path = str_concat(app_path(AppPath::Certif), '/', mod_rdp_params.device_id),
-        .server_cert = mod_rdp_params.server_cert_params,
-        .external_certificate_checker = external_certificate_checker
+        .certif_path = str_concat(app_path(AppPath::Certif), '/', mod_rdp_params.tls_params.device_id),
+        .server_cert = mod_rdp_params.tls_params.server_cert,
+        .external_certificate_checker = external_certificate_checker,
+        .server_cert_check_using_ca = mod_rdp_params.tls_params.ca.enable_ca_certificates,
+        .ca_certificates = mod_rdp_params.tls_params.ca.certificates.as<std::string>(),
+        .target_host = mod_rdp_params.tls_params.target_host.as<std::string>(),
     }
     , nego(
         mod_rdp_params.target_user, mod_rdp_params.target_host,
@@ -119,7 +119,7 @@ RdpNegociation::RdpNegociation(
         mod_rdp_params.allow_nla_ntlm,
         mod_rdp_params.allow_tls_only, mod_rdp_params.allow_rdp_legacy,
         mod_rdp_params.enable_restricted_admin_mode,
-        gen, time_base, tls_config,
+        gen, time_base, tls_params.tls_config,
         RdpNego::Verbose(mod_rdp_params.verbose)
     )
     , desktop_physical_width(info.desktop_physical_width)
@@ -166,9 +166,6 @@ RdpNegociation::RdpNegociation(
     , use_license_store(mod_rdp_params.use_license_store)
     , build_number(info.build)
     , forward_build_number(mod_rdp_params.forward_client_build_number)
-    , server_cert_check_using_ca(server_cert_check_using_ca)
-    , ca_certificates(ca_certificates.as<std::string>())
-    , target_host(target_host)
 {
     this->negociation_result.front_width = info.screen_info.width - info.screen_info.width % 4;
     this->negociation_result.front_height = info.screen_info.height;
@@ -273,14 +270,14 @@ bool RdpNegociation::recv_data(TpduBuffer& buf)
 
             tls_dump_certificate(*certificate);
 
-            if (server_cert_check_using_ca) {
-                if (!this->ca_certificates.empty()) {
+            if (this->cert_checker_params.server_cert_check_using_ca) {
+                if (!this->cert_checker_params.ca_certificates.empty()) {
                     if (tls_check_ca_signed_certificate(
                             certificate,
                             certificate_chain,
                             cert_log,
-                            this->ca_certificates.c_str(),
-                            this->target_host.c_str()
+                            this->cert_checker_params.ca_certificates.c_str(),
+                            this->cert_checker_params.target_host.c_str()
                         )) {
                         return CertificateResult::Valid;
                     }

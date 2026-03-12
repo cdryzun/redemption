@@ -44,6 +44,7 @@
 #include "utils/stream.hpp"
 
 #include "mod/mod_api.hpp"
+#include "mod/tls_params.hpp"
 
 #include "mod/vnc/encoder/copyrect.hpp"
 #include "mod/vnc/encoder/cursor.hpp"
@@ -301,17 +302,17 @@ private:
 
     const bool cursor_pseudo_encoding_supported;
 
-    struct TlsParams
+    struct DoTlsParams
     {
         std::string certif_path;
-        ServerCertParams server_cert;
+        ModTlsParams::ServerCertParams server_cert;
         TlsConfig tls_config;
-    };
-    TlsParams tls_params;
 
-    const bool server_cert_check_using_ca;
-    std::string const ca_certificates;
-    std::string const target_host;
+        const bool server_cert_check_using_ca;
+        const std::string ca_certificates;
+        const std::string target_host;
+    };
+    DoTlsParams do_tls_params;
 
 public:
     mod_vnc( Transport & t
@@ -337,13 +338,8 @@ public:
            , ClientExecute* rail_client_execute
            , VNCVerbose verbose
            , SessionLogApi& session_log
-           , TlsConfig const& tls_config
+           , ModTlsParams const& tls_params
            , std::string_view force_authentication_method
-           , ServerCertParams const& server_cert_params
-           , std::string_view device_id
-           , bool server_cert_check_using_ca
-           , chars_view ca_certificates
-           , chars_view target_host
     );
 
     ~mod_vnc();

@@ -37,6 +37,7 @@
 #include "client/common/new_mod_rdp.hpp"
 #include "mod/rdp/rdp_params.hpp"
 #include "mod/rdp/mod_rdp_factory.hpp"
+#include "mod/tls_params.hpp"
 #include "utils/theme.hpp"
 #include "utils/redirection_info.hpp"
 #include "utils/error_message_ctx.hpp"
@@ -111,7 +112,7 @@ RED_AUTO_TEST_CASE(TestDecodePacket)
                                , MsgTranslationCatalog::default_catalog()
                                , RDPVerbose(0)
                                );
-    mod_rdp_params.device_id                       = "device_id";
+    mod_rdp_params.tls_params.device_id            = "device_id"_av;
     mod_rdp_params.allow_tls_only                  = true;
     mod_rdp_params.enable_nla                      = false;
     //mod_rdp_params.enable_krb                      = false;
@@ -144,12 +145,12 @@ RED_AUTO_TEST_CASE(TestDecodePacket)
     const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
     ModRdpFactory mod_rdp_factory;
 
-    TlsConfig tls_config{};
+    ModTlsParams tls_params{};
 
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen, channels_authorizations, mod_rdp_params,
-        tls_config, license_store, ini, nullptr, mod_rdp_factory);
+        tls_params, license_store, ini, nullptr, mod_rdp_factory);
 
     RED_CHECK_EQUAL(info.screen_info.width, 1024);
     RED_CHECK_EQUAL(info.screen_info.height, 768);

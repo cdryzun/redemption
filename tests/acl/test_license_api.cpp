@@ -153,7 +153,7 @@ namespace
                 MsgTranslationCatalog::default_catalog(),
                 RDPVerbose(0));
 
-            mod_rdp_params.device_id                       = "device_id";
+            mod_rdp_params.tls_params.device_id            = "device_id"_av;
             //mod_rdp_params.enable_tls                      = true;
             mod_rdp_params.enable_nla                      = false;
             //mod_rdp_params.enable_krb                      = false;
@@ -190,7 +190,7 @@ namespace
         gdi::NullOsd osd;
         const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
         ModRdpFactory mod_rdp_factory;
-        TlsConfig tls_config{};
+        ModTlsParams tls_params{};
         // To always get the same client random, in tests
         LCGRandom gen;
 
@@ -199,7 +199,7 @@ namespace
             auto mod = ::new_mod_rdp(
                 trans, front.gd(), osd, event_manager.get_events(),
                 session_log, err_msg_ctx, front, info, redir_info, gen,
-                channels_authorizations, get_mod_rdp_params(), tls_config,
+                channels_authorizations, get_mod_rdp_params(), tls_params,
                 license_store, ini, nullptr, mod_rdp_factory);
             LOG(LOG_INFO, "--- new mod");
             return mod;

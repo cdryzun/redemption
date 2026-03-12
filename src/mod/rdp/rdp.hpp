@@ -1970,7 +1970,7 @@ public:
       , Random & gen
       , const ChannelsAuthorizations & channels_authorizations
       , const ModRDPParams & mod_rdp_params
-      , const TlsConfig & tls_config
+      , const ModTlsParams & tls_params
       , LicenseApi & license_store
       , ModRdpVariables vars
       , [[maybe_unused]] FileValidatorService * file_validator_service
@@ -2138,7 +2138,7 @@ public:
             false,
             false,
 #endif
-            tls_config,
+            tls_params,
 #ifndef __EMSCRIPTEN__
             !this->enable_server_cert_external_validation
                 ? CertificateChecker{NullFunctionWithDefaultResult{}}
@@ -2170,13 +2170,10 @@ public:
                     }
 
                     return CertificateResult::Invalid;
-                }},
+                }}
 #else
-            CertificateChecker{NullFunctionWithDefaultResult{}},
+            CertificateChecker{NullFunctionWithDefaultResult{}}
 #endif
-            mod_rdp_params.server_cert_check_using_ca,
-            mod_rdp_params.ca_certificates,
-            mod_rdp_params.target_host
         );
 
         LOG(LOG_INFO, "**** Start Negociation");

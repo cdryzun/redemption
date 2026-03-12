@@ -25,8 +25,8 @@
 #include "core/RDP/capabilities/order.hpp"
 #include "core/RDP/windows_execute_shell_params.hpp"
 #include "core/channel_names.hpp"
-#include "core/server_cert_params.hpp"
 #include "keyboard/kbdtypes.hpp"
+#include "mod/tls_params.hpp"
 #include "mod/rdp/channels/validator_params.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
 #include "utils/sugar/zstring_view.hpp"
@@ -62,9 +62,6 @@ struct ModRDPParams
     const char * krb_armoring_user = nullptr;
     const char * krb_armoring_password = nullptr;
     const char * krb_armoring_keytab_path = nullptr;
-
-    bool server_cert_check_using_ca = false;
-    chars_view ca_certificates = ""_av;
 
     bool allow_nla_ntlm = true;
     bool allow_tls_only = true;
@@ -111,13 +108,11 @@ struct ModRDPParams
     std::chrono::seconds open_session_timeout {};
     bool                 disconnect_on_logon_user_change = false;
 
-    ServerCertParams server_cert_params;
+    ModTlsParams tls_params;
 
     bool enable_server_cert_external_validation = false;
 
     bool hide_client_name = false;
-
-    const char * device_id = "";
 
     PrimaryDrawingOrdersSupport disabled_orders {};
 
@@ -270,9 +265,9 @@ struct ModRDPParams
         RDP_PARAMS_LOG("\"%s\"", hidden_or_null,        krb_armoring_password);
         RDP_PARAMS_LOG("\"%s\"", s_or_null,             krb_armoring_keytab_path);
 
-        RDP_PARAMS_LOG("%s",     yes_or_no,             server_cert_check_using_ca);
+        RDP_PARAMS_LOG("%s",     yes_or_no,             tls_params.ca.enable_ca_certificates);
         RDP_PARAMS_LOG("%s",     av_certificates_or_null,
-                                                        ca_certificates);
+                                                        tls_params.ca.certificates);
 
         RDP_PARAMS_LOG("\"%.*s\"", RDP_PARAMS_LOG_AV,   application_params.primary_user_id);
         RDP_PARAMS_LOG("\"%.*s\"", RDP_PARAMS_LOG_AV,   application_params.target_application);
@@ -374,15 +369,15 @@ struct ModRDPParams
         RDP_PARAMS_LOG("%s",     yes_or_no,             disconnect_on_logon_user_change);
         RDP_PARAMS_LOG("%u",     from_sec,              open_session_timeout);
 
-        RDP_PARAMS_LOG("%s",     yes_or_no,             server_cert_params.store);
-        RDP_PARAMS_LOG("%u",     static_cast<unsigned>, server_cert_params.check);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.access_allowed_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.create_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.success_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.failure_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.error_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.not_trusted_message);
-        RDP_PARAMS_LOG("%d",     static_cast<int>,      server_cert_params.notifications.trusted_message);
+        RDP_PARAMS_LOG("%s",     yes_or_no,             tls_params.server_cert.store);
+        RDP_PARAMS_LOG("%u",     static_cast<unsigned>, tls_params.server_cert.check);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.access_allowed_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.create_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.success_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.failure_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.error_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.not_trusted_message);
+        RDP_PARAMS_LOG("%d",     static_cast<int>,      tls_params.server_cert.notifications.trusted_message);
 
         RDP_PARAMS_LOG("%s",     yes_or_no,             hide_client_name);
 

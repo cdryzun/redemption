@@ -26,7 +26,7 @@
 #include "core/client_info.hpp"
 #include "mod/vnc/vnc.hpp"
 #include "mod/internal/rail_module_host_mod.hpp"
-#include "mod/load_server_cert_params.hpp"
+#include "mod/tls_params_loader.hpp"
 #include "transport/socket_transport.hpp"
 #include "acl/module_manager/create_module_vnc.hpp"
 #include "acl/module_manager/create_module_rail.hpp"
@@ -85,10 +85,8 @@ public:
         SocketTransport::Verbose verbose,
         EventContainer& events,
         SessionLogApi& session_log,
-        const TlsConfig& tls_config,
+        const ModTlsParams& tls_params,
         std::string_view force_authentication_method,
-        ServerCertParams const& server_cert_params,
-        std::string_view device_id,
         const char* username,
         const char* password,
         FrontAPI& front,
@@ -113,12 +111,8 @@ public:
           clipboard_up, clipboard_down, encodings,
           clipboard_server_encoding_type, bogus_clipboard_infinite_loop,
           layout, locks, server_is_apple, send_alt_ksym, cursor_pseudo_encoding_supported,
-          rail_client_execute, vnc_verbose, session_log, tls_config,
-          force_authentication_method, server_cert_params, device_id,
-          ini.get<cfg::server_cert::server_cert_check_using_ca>(),
-          ini.get<cfg::server_cert::server_cert_check_using_ca>()
-          ? ini.get<cfg::context::ca_certificates>() : ""_av,
-          ini.get<cfg::context::target_host>())
+          rail_client_execute, vnc_verbose, session_log, tls_params,
+          force_authentication_method)
     {}
 };
 
@@ -164,17 +158,6 @@ ModPack create_mod_vnc(
         : nullptr
     };
 
-    TlsConfig tls_config = {
-        .min_level = ini.get<cfg::mod_vnc::tls_min_level>(),
-        .max_level = ini.get<cfg::mod_vnc::tls_max_level>(),
-        .cipher_list = ini.get<cfg::mod_vnc::cipher_string>(),
-        .tls_1_3_ciphersuites = ini.get<cfg::mod_vnc::tls_1_3_ciphersuites>(),
-        .key_exchange_groups = ini.get<cfg::mod_vnc::tls_key_exchange_groups>(),
-        .signature_algorithms = ini.get<cfg::mod_vnc::tls_signature_algorithms>(),
-        .enable_legacy_server_connect = ini.get<cfg::mod_vnc::tls_enable_legacy_server>(),
-        .show_common_cipher_list = ini.get<cfg::mod_vnc::show_common_cipher_list>(),
-    };
-
     auto new_mod = std::make_unique<ModVNCWithSocket>(
         rand,
         host_mod ? host_mod->proxy_gd() : drawable,
@@ -184,10 +167,8 @@ ModPack create_mod_vnc(
         safe_cast<SocketTransport::Verbose>(ini.get<cfg::debug::sck_mod>()),
         events,
         session_log,
-        tls_config,
+        ModTlsParamsLoader::vnc(ini),
         ini.get<cfg::mod_vnc::force_authentication_method>(),
-        load_server_cert_params(ini),
-        ini.get<cfg::globals::device_id>(),
         ini.get<cfg::globals::target_user>().c_str(),
         ini.get<cfg::context::target_password>().c_str(),
         front,

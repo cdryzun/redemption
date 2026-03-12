@@ -92,13 +92,8 @@ mod_vnc::mod_vnc( Transport & t
            , ClientExecute* rail_client_execute
            , VNCVerbose verbose
            , SessionLogApi& session_log
-           , TlsConfig const& tls_config
+           , ModTlsParams const& tls_params
            , std::string_view force_authentication_method
-           , ServerCertParams const& server_cert_params
-           , std::string_view device_id
-           , bool server_cert_check_using_ca
-           , chars_view ca_certificates
-           , chars_view target_host
            )
     : front(front)
     , t(VncTransport(*this, t))
@@ -126,19 +121,18 @@ mod_vnc::mod_vnc( Transport & t
 #endif
     , choosenAuth(VNC_AUTH_INVALID)
     , cursor_pseudo_encoding_supported(cursor_pseudo_encoding_supported)
-
-    , tls_params{
-        .certif_path = str_concat(app_path(AppPath::Certif), '/', device_id),
-        .server_cert = server_cert_params,
-        .tls_config = tls_config
+    , do_tls_params {
+        .certif_path = str_concat(app_path(AppPath::Certif), '/', tls_params.device_id),
+        .server_cert = tls_params.server_cert,
+        .tls_config = tls_params.tls_config,
+        .server_cert_check_using_ca = tls_params.ca.enable_ca_certificates,
+        .ca_certificates = tls_params.ca.certificates.as<std::string>(),
+        .target_host = tls_params.target_host.as<std::string>(),
     }
     , server_data_buf(*this)
     , tlsSwitch(false)
     , frame_buffer_update_ctx(this->zd, verbose)
     , clipboard_data_ctx(verbose)
-    , server_cert_check_using_ca(server_cert_check_using_ca)
-    , ca_certificates(ca_certificates.as<std::string>())
-    , target_host(target_host.as<std::string>())
 {
     LOG_IF(bool(verbose), LOG_INFO, "mod_vnc::verbosity=0x%x", underlying_cast(verbose));
 
@@ -562,7 +556,7 @@ bool mod_vnc::doTlsSwitch()
             log_certificate_status(
                 this->session_log, status, error_msg,
                 bool(this->verbose & VNCVerbose::connection),
-                this->tls_params.server_cert.notifications
+                this->do_tls_params.server_cert.notifications
             );
         };
 
@@ -571,14 +565,14 @@ bool mod_vnc::doTlsSwitch()
             return CertificateResult::Invalid;
         }
 
-        if (this->server_cert_check_using_ca) {
-            if (!this->ca_certificates.empty()) {
+        if (this->do_tls_params.server_cert_check_using_ca) {
+            if (!this->do_tls_params.ca_certificates.empty()) {
                 if (tls_check_ca_signed_certificate(
                         certificate,
                         certificate_chain,
                         cert_log,
-                        this->ca_certificates.c_str(),
-                        this->target_host.c_str()
+                        this->do_tls_params.ca_certificates.c_str(),
+                        this->do_tls_params.target_host.c_str()
                     )) {
                     return CertificateResult::Valid;
                 }
@@ -593,10 +587,10 @@ bool mod_vnc::doTlsSwitch()
 
         return tls_check_certificate(
             *certificate,
-            this->tls_params.server_cert.store,
-            this->tls_params.server_cert.check,
+            this->do_tls_params.server_cert.store,
+            this->do_tls_params.server_cert.check,
             cert_log,
-            this->tls_params.certif_path.c_str(),
+            this->do_tls_params.certif_path.c_str(),
             "vnc",
             addr,
             port
@@ -605,7 +599,7 @@ bool mod_vnc::doTlsSwitch()
             : CertificateResult::Invalid;
     };
 
-    switch (this->t.get_transport().enable_client_tls(certificate_checker, this->tls_params.tls_config, anonymous_tls)) {
+    switch (this->t.get_transport().enable_client_tls(certificate_checker, this->do_tls_params.tls_config, anonymous_tls)) {
         case Transport::TlsResult::WaitExternalEvent:
         case Transport::TlsResult::Want:
             return false;

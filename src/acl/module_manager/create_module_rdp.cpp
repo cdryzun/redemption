@@ -32,7 +32,7 @@
 #include "utils/ascii.hpp"
 #include "utils/parse_primary_drawing_orders.hpp"
 #include "mod/file_validator_service.hpp"
-#include "mod/load_server_cert_params.hpp"
+#include "mod/tls_params_loader.hpp"
 #include "mod/rdp/params/rdp_session_probe_params.hpp"
 #include "mod/rdp/params/rdp_application_params.hpp"
 #include "mod/rdp/rdp.hpp"
@@ -286,7 +286,7 @@ public:
       , CryptoContext & cctx
       , const ChannelsAuthorizations & channels_authorizations
       , const ModRDPParams & mod_rdp_params
-      , const TlsConfig & tls_config
+      , const ModTlsParams & tls_params
       , LicenseApi & license_store
       , ModRdpVariables vars
       , [[maybe_unused]] FileValidatorService * file_validator_service
@@ -296,7 +296,7 @@ public:
     : RdpData(events, ini, name, std::move(sck), verbose, use_failure_simulation_socket_transport)
     , mod_rdp(transport_wrapper_fn(this->get_transport()), gd
         , osd, events, session_log , err_msg_ctx, front, info, redir_info, gen
-        , channels_authorizations, mod_rdp_params, tls_config
+        , channels_authorizations, mod_rdp_params, tls_params
         , license_store
         , vars, file_validator_service, this->get_rdp_factory())
     , gen(gen)
@@ -485,19 +485,9 @@ ModPack create_mod_rdp(
     );
 
     mod_rdp_params.perform_automatic_reconnection = safe_int{perform_automatic_reconnection};
-    mod_rdp_params.device_id = ini.get<cfg::globals::device_id>().c_str();
 
     //mod_rdp_params.enable_tls                          = true;
-    TlsConfig tls_config {
-        .min_level = ini.get<cfg::mod_rdp::tls_min_level>(),
-        .max_level = ini.get<cfg::mod_rdp::tls_max_level>(),
-        .cipher_list = ini.get<cfg::mod_rdp::cipher_string>(),
-        .tls_1_3_ciphersuites = ini.get<cfg::mod_rdp::tls_1_3_ciphersuites>(),
-        .key_exchange_groups = ini.get<cfg::mod_rdp::tls_key_exchange_groups>(),
-        .signature_algorithms = ini.get<cfg::mod_rdp::tls_signature_algorithms>(),
-        .enable_legacy_server_connect = ini.get<cfg::mod_rdp::tls_enable_legacy_server>(),
-        .show_common_cipher_list = ini.get<cfg::mod_rdp::show_common_cipher_list>(),
-    };
+    auto tls_params = ModTlsParamsLoader::rdp(ini);
 
     mod_rdp_params.enable_nla = mod_rdp_params.target_password[0]
                              && ini.get<cfg::mod_rdp::enable_nla>();
@@ -518,7 +508,6 @@ ModPack create_mod_rdp(
     mod_rdp_params.rdp_compression = ini.get<cfg::mod_rdp::rdp_compression>();
     mod_rdp_params.disconnect_on_logon_user_change = ini.get<cfg::mod_rdp::disconnect_on_logon_user_change>();
     mod_rdp_params.open_session_timeout = ini.get<cfg::mod_rdp::open_session_timeout>();
-    mod_rdp_params.server_cert_params = load_server_cert_params(ini);
     mod_rdp_params.enable_server_cert_external_validation = ini.get<cfg::server_cert::enable_external_validation>();
     mod_rdp_params.hide_client_name = ini.get<cfg::mod_rdp::hide_client_name>();
     mod_rdp_params.enable_persistent_disk_bitmap_cache = ini.get<cfg::mod_rdp::persistent_disk_bitmap_cache>();
@@ -733,11 +722,6 @@ ModPack create_mod_rdp(
     mod_rdp_params.krb_armoring_user = ini.get<cfg::mod_rdp::effective_krb_armoring_user>().c_str();
     mod_rdp_params.krb_armoring_password = ini.get<cfg::mod_rdp::effective_krb_armoring_password>().c_str();
 
-    mod_rdp_params.server_cert_check_using_ca = ini.get<cfg::server_cert::server_cert_check_using_ca>();
-    if (ini.get<cfg::server_cert::server_cert_check_using_ca>()) {
-        mod_rdp_params.ca_certificates = ini.get<cfg::context::ca_certificates>();
-    }
-
     auto connect_to_rdp_target_host = [&ini, &session_log, &err_msg_ctx](
         bool enable_ipv6,
         std::chrono::milliseconds connection_establishment_timeout,
@@ -833,7 +817,7 @@ ModPack create_mod_rdp(
         cctx,
         channels_authorizations,
         mod_rdp_params,
-        tls_config,
+        tls_params,
         file_system_license_store,
         ini,
         enable_validator ? &file_validator->service : nullptr,

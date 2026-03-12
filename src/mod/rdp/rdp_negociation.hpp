@@ -36,6 +36,7 @@
 #include "core/channels_authorizations.hpp"
 #include "core/server_cert_params.hpp"
 #include "gdi/screen_info.hpp"
+#include "mod/tls_params.hpp"
 #include "mod/rdp/rdp_verbose.hpp"
 #include "mod/rdp/rdp_negociation_data.hpp"
 #include "utils/crypto/ssl_lib.hpp"
@@ -110,8 +111,12 @@ private:
     {
         SessionLogApi& session_log;
         std::string certif_path;
-        ServerCertParams server_cert;
+        ModTlsParams::ServerCertParams server_cert;
         BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker;
+
+        const bool server_cert_check_using_ca;
+        const std::string ca_certificates;
+        const std::string target_host;
     };
     CertificateCheckerParams cert_checker_params;
 
@@ -180,10 +185,6 @@ private:
     std::array<uint8_t, LIC::LICENSE_HWID_SIZE> hwid;
     bool                                        has_hwid = false;
 
-    const bool server_cert_check_using_ca;
-    std::string const ca_certificates;
-    std::string target_host;
-
 public:
     RdpNegociation(
         const ChannelsAuthorizations& channels_authorizations,
@@ -205,11 +206,8 @@ public:
         LicenseApi& license_store,
         bool has_managed_drive,
         bool convert_remoteapp_to_desktop,
-        const TlsConfig & tls_config,
-        BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker,
-        bool server_cert_check_using_ca,
-        chars_view ca_certificates,
-        const char* target_host
+        const ModTlsParams & tls_params,
+        BasicFunction<CertificateResult(X509& certificate)> external_certificate_checker
     );
 
     void set_program(char const* program, char const* directory) noexcept;
