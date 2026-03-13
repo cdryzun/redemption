@@ -72,5 +72,8 @@ std::unique_ptr<mod_api> new_mod_vnc(
     TlsConfig const& tls_config,
     std::string_view force_authentication_method,
     ServerCertParams const& server_cert_params,
-    std::string_view device_id
+    std::string_view device_id,
+    bool server_cert_check_using_ca,
+    chars_view ca_certificates,
+    chars_view target_host
 );

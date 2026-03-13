@@ -55,6 +55,7 @@ std::unique_ptr<mod_api> new_mod_vnc(
         mod_vnc::ClipboardEncodingType::UTF8, VncBogusClipboardInfiniteLoop::delayed,
         layout, locks, server_is_macos, send_alt_ksym,
         cursor_pseudo_encoding_supported, rail_client_execute, verbose, session_log,
-        tls_config, force_authentication_method, server_cert_params, device_id
+        tls_config, force_authentication_method, server_cert_params, device_id,
+        false, ""_zv, ""_zv
     );
 }
