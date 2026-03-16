@@ -1970,7 +1970,6 @@ public:
       , Random & gen
       , const ChannelsAuthorizations & channels_authorizations
       , const ModRDPParams & mod_rdp_params
-      , const ModTlsParams & tls_params
       , LicenseApi & license_store
       , ModRdpVariables vars
       , [[maybe_unused]] FileValidatorService * file_validator_service
@@ -2138,7 +2137,7 @@ public:
             false,
             false,
 #endif
-            tls_params,
+            mod_rdp_params.tls_params,
 #ifndef __EMSCRIPTEN__
             !this->enable_server_cert_external_validation
                 ? CertificateChecker{NullFunctionWithDefaultResult{}}

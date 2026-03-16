@@ -190,7 +190,6 @@ namespace
         gdi::NullOsd osd;
         const ChannelsAuthorizations channels_authorizations{"rdpsnd_audio_output"_zv, ""_zv};
         ModRdpFactory mod_rdp_factory;
-        ModTlsParams tls_params{};
         // To always get the same client random, in tests
         LCGRandom gen;
 
@@ -199,7 +198,7 @@ namespace
             auto mod = ::new_mod_rdp(
                 trans, front.gd(), osd, event_manager.get_events(),
                 session_log, err_msg_ctx, front, info, redir_info, gen,
-                channels_authorizations, get_mod_rdp_params(), tls_params,
+                channels_authorizations, get_mod_rdp_params(),
                 license_store, ini, nullptr, mod_rdp_factory);
             LOG(LOG_INFO, "--- new mod");
             return mod;

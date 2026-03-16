@@ -286,7 +286,6 @@ public:
       , CryptoContext & cctx
       , const ChannelsAuthorizations & channels_authorizations
       , const ModRDPParams & mod_rdp_params
-      , const ModTlsParams & tls_params
       , LicenseApi & license_store
       , ModRdpVariables vars
       , [[maybe_unused]] FileValidatorService * file_validator_service
@@ -296,8 +295,7 @@ public:
     : RdpData(events, ini, name, std::move(sck), verbose, use_failure_simulation_socket_transport)
     , mod_rdp(transport_wrapper_fn(this->get_transport()), gd
         , osd, events, session_log , err_msg_ctx, front, info, redir_info, gen
-        , channels_authorizations, mod_rdp_params, tls_params
-        , license_store
+        , channels_authorizations, mod_rdp_params, license_store
         , vars, file_validator_service, this->get_rdp_factory())
     , gen(gen)
     , ini(ini)
@@ -487,7 +485,7 @@ ModPack create_mod_rdp(
     mod_rdp_params.perform_automatic_reconnection = safe_int{perform_automatic_reconnection};
 
     //mod_rdp_params.enable_tls                          = true;
-    auto tls_params = ModTlsParamsLoader::rdp(ini);
+    mod_rdp_params.tls_params = ModTlsParamsLoader::rdp(ini);
 
     mod_rdp_params.enable_nla = mod_rdp_params.target_password[0]
                              && ini.get<cfg::mod_rdp::enable_nla>();
@@ -817,7 +815,6 @@ ModPack create_mod_rdp(
         cctx,
         channels_authorizations,
         mod_rdp_params,
-        tls_params,
         file_system_license_store,
         ini,
         enable_validator ? &file_validator->service : nullptr,

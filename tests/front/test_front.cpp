@@ -47,7 +47,6 @@
 
 #include "mod/null/null.hpp"
 #include "client/common/new_mod_rdp.hpp"
-#include "mod/tls_params.hpp"
 #include "mod/rdp/rdp_params.hpp"
 #include "mod/rdp/mod_rdp_factory.hpp"
 #include "core/channels_authorizations.hpp"
@@ -225,15 +224,13 @@ RED_AUTO_TEST_CASE(TestFront)
 
     FileValidatorService * file_validator_service = nullptr;
 
-    ModTlsParams tls_params{};
     RedirectionInfo redir_info;
     ErrorMessageCtx err_msg_ctx;
 
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen2, channels_authorizations, mod_rdp_params,
-        tls_params, license_store, ini, file_validator_service,
-        mod_rdp_factory);
+        license_store, ini, file_validator_service, mod_rdp_factory);
 
     // incoming connexion data
     RED_CHECK_EQUAL(front.screen_info().width, 1024);

@@ -29,7 +29,6 @@
 #include "core/client_info.hpp"
 #include "core/channels_authorizations.hpp"
 #include "client/common/new_mod_rdp.hpp"
-#include "mod/tls_params.hpp"
 #include "mod/rdp/rdp_params.hpp"
 #include "mod/rdp/mod_rdp_factory.hpp"
 #include "utils/theme.hpp"
@@ -154,8 +153,6 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
     //mod_rdp_params.extra_orders                    = "";
     mod_rdp_params.large_pointer_support             = false;
 
-    ModTlsParams tls_params{};
-
     // To always get the same client random, in tests
     LCGRandom gen;
     NullLicenseStore license_store;
@@ -173,8 +170,7 @@ RED_AUTO_TEST_CASE(TestModRDPWin2008Server)
     auto mod = new_mod_rdp(
         t, front.gd(), osd, events, session_log, err_msg_ctx,
         front, info, redir_info, gen, channels_authorizations,
-        mod_rdp_params, tls_params, license_store,
-        ini, nullptr, mod_rdp_factory);
+        mod_rdp_params, license_store, ini, nullptr, mod_rdp_factory);
 
     RED_CHECK_EQUAL(info.screen_info.width, 800);
     RED_CHECK_EQUAL(info.screen_info.height, 600);
