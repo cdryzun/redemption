@@ -19,6 +19,7 @@
 */
 
 #include "mod/vnc/vnc.hpp"
+#include "client/common/new_mod_vnc.hpp" // not used, but included for prototype test
 #include "test_only/test_framework/redemption_unit_tests.hpp"
 
 // TEST missing

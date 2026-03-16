@@ -450,7 +450,7 @@ void mod_vnc::rdp_input_clip_data(bytes_view data)
         };
 
         if (this->clipboard_requested_format_id == RDPECLIP::CF_UNICODETEXT) {
-            if (this->clipboard_server_encoding_type == ClipboardEncodingType::UTF8) {
+            if (this->clipboard_server_encoding_type == ClipboardEncodingType::utf8) {
                 LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
                     "mod_vnc::rdp_input_clip_data: CF_UNICODETEXT -> UTF-8");
 
@@ -476,7 +476,7 @@ void mod_vnc::rdp_input_clip_data(bytes_view data)
             }
         }
         else {
-            if (this->clipboard_server_encoding_type == ClipboardEncodingType::UTF8) {
+            if (this->clipboard_server_encoding_type == ClipboardEncodingType::utf8) {
                 LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
                     "mod_vnc::rdp_input_clip_data: CF_TEXT -> UTF-8");
 

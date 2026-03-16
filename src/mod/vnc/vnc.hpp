@@ -63,7 +63,6 @@ class ClientExecute;
 // got extracts of VNC documentation from
 // https://github.com/rfbproto/rfbproto
 
-
 class mod_vnc : public mod_api
 {
 
@@ -240,13 +239,6 @@ private:
         SECURITY_REASON_FAILED = 1,
         SECURITY_REASON_TOO_MANY_ATTEMPTS = 2,
         SECURITY_REASON_CONTINUE = 0xffffffff // returned by UltraVNC
-    };
-
-public:
-    /** @brief VNC clipboard encoding */
-    enum class ClipboardEncodingType : uint8_t {
-        UTF8   = 0,
-        Latin1 = 1
     };
 
 private:

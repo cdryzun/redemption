@@ -3944,6 +3944,7 @@ test-run tests/mod/vnc/test_vnc :
   z
   app_path_test.o
   src/RAIL/client_execute.o
+  src/client/common/new_mod_vnc.o
   src/core/RDP/rdp_pointer.o
   src/core/error.o
   src/core/font.o

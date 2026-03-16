@@ -22,8 +22,7 @@ Author(s): Jonathan Poelen
 
 #include "mod/mod_api.hpp"
 #include "mod/vnc/vnc_verbose.hpp"
-#include "core/events.hpp"
-#include "utils/timebase.hpp"
+#include "configs/autogen/enums.hpp"
 
 #include <memory>
 #include <string_view>
@@ -31,12 +30,11 @@ Author(s): Jonathan Poelen
 class ClientExecute;
 class FrontAPI;
 class Transport;
-class AuthApi;
+class ModTlsParams;
 class SessionLogApi;
 class KeyLayout;
 class Random;
-class ServerCertParams;
-class TlsConfig;
+class EventContainer;
 
 namespace gdi
 {
@@ -49,31 +47,28 @@ namespace kbdtypes
 }
 
 std::unique_ptr<mod_api> new_mod_vnc(
-    Transport& t,
-    gdi::GraphicApi & gd,
-    EventContainer & events,
-    SessionLogApi& session_log,
-    const char* username,
-    const char* password,
-    FrontAPI& front,
-    uint16_t front_width,
-    uint16_t front_height,
-    Random& random,
-    bool clipboard_up,
-    bool clipboard_down,
-    const char * encodings,
-    KeyLayout const& layout,
-    kbdtypes::KeyLocks locks,
-    bool server_is_macos,
-    bool send_alt_ksym,
-    bool cursor_pseudo_encoding_supported,
-    ClientExecute* rail_client_execute,
-    VNCVerbose verbose,
-    TlsConfig const& tls_config,
-    std::string_view force_authentication_method,
-    ServerCertParams const& server_cert_params,
-    std::string_view device_id,
-    bool server_cert_check_using_ca,
-    chars_view ca_certificates,
-    chars_view target_host
+    Transport & t
+  , Random & random
+  , gdi::GraphicApi & gd
+  , EventContainer & events
+  , const char * username
+  , const char * password
+  , FrontAPI & front
+  , uint16_t front_width
+  , uint16_t front_height
+  , bool clipboard_up
+  , bool clipboard_down
+  , const char * encodings
+  , ClipboardEncodingType clipboard_server_encoding_type
+  , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
+  , KeyLayout const& layout
+  , kbdtypes::KeyLocks locks
+  , bool server_is_macos
+  , bool send_alt_ksym
+  , bool cursor_pseudo_encoding_supported
+  , ClientExecute* rail_client_execute
+  , VNCVerbose verbose
+  , SessionLogApi& session_log
+  , ModTlsParams const& tls_params
+  , std::string_view force_authentication_method
 );

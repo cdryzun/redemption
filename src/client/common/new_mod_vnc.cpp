@@ -23,39 +23,38 @@ Author(s): Jonathan Poelen
 
 
 std::unique_ptr<mod_api> new_mod_vnc(
-    Transport& t,
-    gdi::GraphicApi & gd,
-    EventContainer & events,
-    SessionLogApi& session_log,
-    const char* username,
-    const char* password,
-    FrontAPI& front,
-    uint16_t front_width,
-    uint16_t front_height,
-    Random& random,
-    bool clipboard_up,
-    bool clipboard_down,
-    const char * encodings,
-    KeyLayout const& layout,
-    kbdtypes::KeyLocks locks,
-    bool server_is_macos,
-    bool send_alt_ksym,
-    bool cursor_pseudo_encoding_supported,
-    ClientExecute* rail_client_execute,
-    VNCVerbose verbose,
-    TlsConfig const& tls_config,
-    std::string_view force_authentication_method,
-    ServerCertParams const& server_cert_params,
-    std::string_view device_id
+    Transport & t
+  , Random & random
+  , gdi::GraphicApi & gd
+  , EventContainer & events
+  , const char * username
+  , const char * password
+  , FrontAPI & front
+  , uint16_t front_width
+  , uint16_t front_height
+  , bool clipboard_up
+  , bool clipboard_down
+  , const char * encodings
+  , ClipboardEncodingType clipboard_server_encoding_type
+  , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
+  , KeyLayout const& layout
+  , kbdtypes::KeyLocks locks
+  , bool server_is_macos
+  , bool send_alt_ksym
+  , bool cursor_pseudo_encoding_supported
+  , ClientExecute* rail_client_execute
+  , VNCVerbose verbose
+  , SessionLogApi& session_log
+  , ModTlsParams const& tls_params
+  , std::string_view force_authentication_method
 )
 {
     return std::make_unique<mod_vnc>(
         t, random, gd, events, username, password, front,
         front_width, front_height, clipboard_up, clipboard_down, encodings,
-        mod_vnc::ClipboardEncodingType::UTF8, VncBogusClipboardInfiniteLoop::delayed,
+        clipboard_server_encoding_type, bogus_clipboard_infinite_loop,
         layout, locks, server_is_macos, send_alt_ksym,
         cursor_pseudo_encoding_supported, rail_client_execute, verbose, session_log,
-        tls_config, force_authentication_method, server_cert_params, device_id,
-        false, ""_zv, ""_zv
+        tls_params, force_authentication_method
     );
 }

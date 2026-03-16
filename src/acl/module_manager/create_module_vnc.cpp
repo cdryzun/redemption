@@ -95,7 +95,7 @@ public:
         bool clipboard_up,
         bool clipboard_down,
         const char * encodings,
-        mod_vnc::ClipboardEncodingType clipboard_server_encoding_type,
+        ClipboardEncodingType clipboard_server_encoding_type,
         VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop,
         KeyLayout const& layout,
         kbdtypes::KeyLocks locks,
@@ -177,10 +177,7 @@ ModPack create_mod_vnc(
         ini.get<cfg::mod_vnc::clipboard_up>(),
         ini.get<cfg::mod_vnc::clipboard_down>(),
         ini.get<cfg::mod_vnc::encodings>().c_str(),
-        ini.get<cfg::mod_vnc::server_clipboard_encoding_type>()
-            != ClipboardEncodingType::latin1
-            ? mod_vnc::ClipboardEncodingType::UTF8
-            : mod_vnc::ClipboardEncodingType::Latin1,
+        ini.get<cfg::mod_vnc::server_clipboard_encoding_type>(),
         ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>(),
         layout,
         locks,
