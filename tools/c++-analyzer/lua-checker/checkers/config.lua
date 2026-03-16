@@ -40,6 +40,24 @@ local match_and_setk = utils.match_and_setk
 -- {used:bool, acl_to_proxy:bool, proxy_to_acl:bool, get:bool, set:bool, ask:bool}
 local values = {}
 local types
+local ignore_keys = {
+    ['mod_rdp::cipher_string']=true,
+    ['mod_rdp::show_common_cipher_list']=true,
+    ['mod_rdp::tls_1_3_ciphersuites']=true,
+    ['mod_rdp::tls_enable_legacy_server']=true,
+    ['mod_rdp::tls_key_exchange_groups']=true,
+    ['mod_rdp::tls_max_level']=true,
+    ['mod_rdp::tls_min_level']=true,
+    ['mod_rdp::tls_signature_algorithms']=true,
+    ['mod_vnc::cipher_string']=true,
+    ['mod_vnc::show_common_cipher_list']=true,
+    ['mod_vnc::tls_1_3_ciphersuites']=true,
+    ['mod_vnc::tls_enable_legacy_server']=true,
+    ['mod_vnc::tls_key_exchange_groups']=true,
+    ['mod_vnc::tls_max_level']=true,
+    ['mod_vnc::tls_min_level']=true,
+    ['mod_vnc::tls_signature_algorithms']=true,
+}
 
 function init(args)
     types = match_and_setk(patternType, utils.readall(config_type_path), false)
@@ -98,7 +116,9 @@ function terminate()
     local errors = {}
     for name,t in pairs(values) do
         if not t.used then
-            errors[#errors+1] = name .. " not used"
+            if not ignore_keys[name] then
+                errors[#errors+1] = name .. " not used"
+            end
         else
             if not t.get and t.is_acl_to_proxy then
                 if not ask_only[name] or not t.ask then
