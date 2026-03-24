@@ -102,9 +102,9 @@ struct GuestCtx
             str_assign(sck_name_, "sock://", sck_path_);
         }
         else {
-            listen_sck = create_server(inet_addr(listen_interface),
-                                       0,  // get random port
-                                       EnableTransparentMode::No);
+            listen_sck = create_server_with_addr(listen_interface,
+                                                 0,  // get random port
+                                                 EnableTransparentMode::No);
             str_assign(sck_name_, listen_interface, ':',
                        std::to_string(get_local_port_address(listen_sck.fd())));
             LOG(LOG_INFO, "Guest::start() server created on %s", sck_name_);

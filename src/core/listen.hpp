@@ -155,6 +155,50 @@ create_server(uint32_t s_addr,
                                   enable_transparent_mode);
 }
 
+// Create a TCP server socket for either an IPv4 or IPv6 address.
+// s_addr is a numeric address string supported by inet_pton
+inline unique_fd
+create_server_with_addr(const char* s_addr,
+                        int port,
+                        EnableTransparentMode enable_transparent_mode) noexcept
+{
+    union
+    {
+        sockaddr s;
+        sockaddr_storage ss;
+        sockaddr_in s4;
+        sockaddr_in6 s6;
+    } u;
+    memset(&u, 0, sizeof(u));
+
+    if (inet_pton(AF_INET, s_addr, &u.s4.sin_addr) == 1) {
+        unique_fd sck{socket(PF_INET, SOCK_STREAM, 0)};
+        u.s4.sin_family = AF_INET;
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wold-style-cast") // only to release
+        u.s4.sin_port = htons(port);
+        REDEMPTION_DIAGNOSTIC_POP()
+        LOG(LOG_INFO, "create_server_with_addr: binding socket %d on %s:%d",
+            sck.fd(), s_addr, port);
+        return create_server_bind_sck(std::move(sck), u.ss, sizeof(u.s4), enable_transparent_mode);
+    }
+
+    if (inet_pton(AF_INET6, s_addr, &u.s6.sin6_addr) == 1) {
+        unique_fd sck{socket(PF_INET6, SOCK_STREAM, 0)};
+        u.s6.sin6_family = AF_INET6;
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        REDEMPTION_DIAGNOSTIC_GCC_IGNORE("-Wold-style-cast") // only to release
+        u.s6.sin6_port = htons(port);
+        REDEMPTION_DIAGNOSTIC_POP()
+        LOG(LOG_INFO, "create_server_with_addr: binding socket %d on [%s]:%d",
+            sck.fd(), s_addr, port);
+        return create_server_bind_sck(std::move(sck), u.ss, sizeof(u.s6), enable_transparent_mode);
+    }
+
+    LOG(LOG_ERR, "create_server_with_addr: invalid address '%s'", s_addr);
+    return invalid_fd();
+}
+
 inline unique_fd
 create_ip_dual_stack_server(int port,
                             EnableTransparentMode enable_transparent_mode)
