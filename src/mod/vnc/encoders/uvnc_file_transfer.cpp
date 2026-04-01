@@ -409,8 +409,9 @@ namespace
 
             void serialize(OutStream & out) noexcept
             {
-                auto utc = std::chrono::clock_cast<std::chrono::utc_clock>(tp);
-                auto epoch = utc.time_since_epoch();
+                // ignore leap seconds
+                // auto utc = std::chrono::clock_cast<std::chrono::utc_clock>(tp);
+                auto epoch = to_sys_time_ignoring_leap_seconds(tp).time_since_epoch();
                 auto sec_epoch = std::chrono::duration_cast<std::chrono::seconds>(epoch);
 
                 time_t t = sec_epoch.count();

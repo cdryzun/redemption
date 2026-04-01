@@ -262,13 +262,13 @@ VNC::CliprdrFileList::write_cb_file_range_request(OutStream & out_stream) noexce
     m_stream_id ^= 1u;
 
     bool ok = write_cb_packet_with_header(out_stream, VNC::FileContentsRequest {
-        .streamId { m_stream_id },
-        .lindex { m_lindex },
+        .streamId = VNC::CbStreamId{ m_stream_id },
+        .lindex = VNC::CbLindex{ m_lindex },
         .dwFlags = VNC::CbFileContentsType::Range,
         .nPositionLow = checked_int{ m_file_offset & 0xffff'ffffu },
         .nPositionHigh = checked_int{ m_file_offset >> 32 },
         .cbRequested = requested_nb_bytes,
-        .clipDataId { },
+        .clipDataId = VNC::ClipDataId{},
     });
 
     if (ok)

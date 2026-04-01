@@ -199,7 +199,7 @@ public:
                 .items = 1,
                 .bytes {},
                 .total_bytes_adjust {},
-                .path_error {},
+                .path_error = UVncFile::PathView{},
             };
         }
 
@@ -221,7 +221,7 @@ public:
                 .items {},
                 .bytes {},
                 .total_bytes_adjust {},
-                .path_error {},
+                .path_error = UVncFile::PathView{},
             };
         }
     };

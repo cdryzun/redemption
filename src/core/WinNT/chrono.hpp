@@ -8,6 +8,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 #include <chrono>
 #include "core/WinNT/time.hpp"
 
+#include <ctime>  // clock_gettime
+
 
 // number of 100-nanosecond intervals that have elapsed
 // since 12:00 A.M. January 1, 1601 Coordinated Universal Time.
@@ -34,6 +36,7 @@ inline WinNtUTime to_win_nt_utime(WinNtTime<WinNtDuration> tp) noexcept
     return WinNtUTime(tp.time_since_epoch().count());
 }
 
+// TODO rename to FastWinNtClock (a WinNtClock without leap seconds asjustement)
 struct WinNtClock
 {
     using rep = int64_t;
@@ -45,10 +48,19 @@ struct WinNtClock
 
     static time_point now() noexcept
     {
-        return from_utc(std::chrono::utc_clock::now());
+        // return from_utc(std::chrono::utc_clock::now());
+
+        timespec tp {};
+        // without leap seconds
+        clock_gettime(CLOCK_REALTIME, &tp);
+        auto now = std::chrono::seconds(tp.tv_sec)
+                 + std::chrono::nanoseconds(tp.tv_nsec);
+        using CDur = LimitCommonDuration<decltype(now)>;
+        auto file_time = duration_cast<CDur>(now);
+        return time_point{ WinNtTime<CDur>{ms_file_time_epoch_adjustment} + file_time };
     }
 
-private:
+// private:
     // possible overflow, limit ratio to period
     template<class Duration, class CDur = std::common_type_t<Duration, std::chrono::seconds>>
     using LimitCommonDuration = std::conditional_t<
@@ -72,6 +84,7 @@ private:
     }};
     //@}
 
+#if 0
 public:
     template<class Duration>
     static std::chrono::utc_time<std::common_type_t<Duration, std::chrono::seconds>>
@@ -112,4 +125,24 @@ public:
 
         return WinNtTime<CDur>{ms_file_time_epoch_adjustment} + file_time;
     }
+#endif
 };
+
+inline
+WinNtClock::time_point
+to_win_nt_ignoring_leap_seconds(std::chrono::system_clock::time_point tp) noexcept
+{
+    using CDur = WinNtDuration;
+    auto file_time = std::chrono::duration_cast<CDur>(tp.time_since_epoch());
+    return WinNtTime<CDur>{ WinNtClock::ms_file_time_epoch_adjustment } + file_time;
+}
+
+inline
+std::chrono::system_clock::time_point
+to_sys_time_ignoring_leap_seconds(WinNtClock::time_point tp) noexcept
+{
+    using CDur = std::common_type_t<WinNtDuration, std::chrono::seconds>;
+    const auto ticks = tp.time_since_epoch()
+                     - std::chrono::duration_cast<CDur>(WinNtClock::ms_file_time_epoch_adjustment);
+    return std::chrono::system_clock::time_point { ticks };
+}

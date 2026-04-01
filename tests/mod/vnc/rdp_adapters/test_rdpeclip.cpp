@@ -58,8 +58,10 @@ RED_AUTO_TEST_CASE(TestLogUnicodeToAscii)
     char buf[20];
     auto alpha
       = "A\0B\0C\0D\0E\0F\0G\0H\0I\0J\0K\0L\0M\0N\0O\0P\0Q\0R\0S\0T\0U\0V\0W\0X\0Y\0Z\0"_av;
-    RED_CHECK(protop_fmt::init_utf16_to_utf8(buf, 20, alpha) == "ABCDEFGHIJKLMNOPQRS");
-    RED_CHECK(protop_fmt::init_utf16_to_utf8(buf, 20, "a\0""\x23\xFF""b\0c\0"_av) == "a?bc");
+    RED_CHECK(std::string_view{protop_fmt::init_utf16_to_utf8(buf, 20, alpha)}
+        == std::string_view{"ABCDEFGHIJKLMNOPQRS"});
+    RED_CHECK(std::string_view{protop_fmt::init_utf16_to_utf8(buf, 20, "a\0""\x23\xFF""b\0c\0"_av)}
+        == std::string_view{"a?bc"});
 }
 
 RED_AUTO_TEST_CASE(TestLogFormatName)

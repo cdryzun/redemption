@@ -194,7 +194,7 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelMalformedFormatListPDU)
 {
     NullSessionLog session_log;
 
-    ClipboardVirtualChannelParams clipboard_virtual_channel_params;
+    ClipboardVirtualChannelParams clipboard_virtual_channel_params {};
     clipboard_virtual_channel_params.cliprdr_params.download_authorized = true;
     clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = true;
     clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;
@@ -233,7 +233,7 @@ RED_AUTO_TEST_CASE(TestCliprdrChannelFailedFormatDataResponsePDU)
     EventContainer events;
     NullSessionLog session_log;
 
-    ClipboardVirtualChannelParams clipboard_virtual_channel_params;
+    ClipboardVirtualChannelParams clipboard_virtual_channel_params {};
     clipboard_virtual_channel_params.cliprdr_params.download_authorized = true;
     clipboard_virtual_channel_params.cliprdr_params.upload_authorized   = true;
     clipboard_virtual_channel_params.cliprdr_params.file_authorized = true;

@@ -342,25 +342,25 @@ RED_AUTO_TEST_CASE(TestFileTransferGui)
         CHECK_IMG_AND_PARTIAL("vnc_file_list_start_a_dir_unfocus_sort_name.png");
 
         ft_gui.server_vnc_file_list_add({
-            .file_name { "a file name"_sized_av },
+            .file_name { WinNtPathView { "a file name"_sized_av } },
             .file_size = 1032373,
             .last_access_time = WinNtUTime{13379901460'0000000},
             .is_dir = false,
         });
         ft_gui.server_vnc_file_list_add({
-            .file_name { "a dir name"_sized_av },
+            .file_name { WinNtPathView { "a dir name"_sized_av } },
             .file_size = 0,
             .last_access_time = WinNtUTime{13389803460'0000000},
             .is_dir = true,
         });
         ft_gui.server_vnc_file_list_add({
-            .file_name { "a second dir name"_sized_av },
+            .file_name { WinNtPathView { "a second dir name"_sized_av } },
             .file_size = 0,
             .last_access_time = WinNtUTime{13389902460'0000000},
             .is_dir = true,
         });
         ft_gui.server_vnc_file_list_add({
-            .file_name { "a second file name"_sized_av },
+            .file_name { WinNtPathView { "a second file name"_sized_av } },
             .file_size = 653,
             .last_access_time = WinNtUTime{13199902683'0000000},
             .is_dir = false,
@@ -950,7 +950,7 @@ RED_AUTO_TEST_CASE(TestFileTransferGui)
     {
         ft_gui.server_vnc_file_list_start(Path{"C:\\dir"_sized_av});
         ft_gui.server_vnc_file_list_add({
-            .file_name { "file1"_sized_av },
+            .file_name { WinNtPathView { "file1"_sized_av } },
             .file_size = 653,
             .last_access_time = WinNtUTime{13199902683'0000000},
             .is_dir = false,

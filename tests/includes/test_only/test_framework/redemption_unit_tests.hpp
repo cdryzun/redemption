@@ -462,16 +462,12 @@ namespace redemption_unit_test_
 
 } // namespace redemption_unit_test_
 
-#if ! REDEMPTION_UNIT_TEST_FAST_CHECK
-
 namespace std /*NOLINT*/
 {
     // hack hack hack :D
     std::ostream& operator<<(std::ostream& out, ::redemption_unit_test_::Enum const& e);
     std::ostream& operator<<(std::ostream& out, ::redemption_unit_test_::BytesView const& v);
 }
-
-#endif
 
 #endif
 

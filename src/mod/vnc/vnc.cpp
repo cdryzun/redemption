@@ -192,7 +192,7 @@ struct mod_vnc::FT
                 if (flags_any(channel_flags, VNC::ChannelFlags::First))
                 {
                     auto now = self.events_guard.event_container().get_time_base().real_time;
-                    auto clock = clock_cast<WinNtClock>(now);
+                    auto clock = to_win_nt_ignoring_leap_seconds(now);
                     self.cliprdr_file_list.start_new_list(to_win_nt_utime(clock), total_item);
                     // TODO error when ^ returns false
                     self.ft_gui.client_cb_file_list_start(total_item);
@@ -579,7 +579,7 @@ struct mod_vnc::FT
                  */
 
                 VNC::UVncFile file {
-                    .file_name { file_info.file_name },
+                    .file_name = WinNtPathView{ file_info.file_name },
                     .file_size = file_info.file_size(),
                     .last_access_time = file_info.last_access_time,
                     .is_dir = is_dir,

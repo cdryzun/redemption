@@ -91,15 +91,15 @@ RED_AUTO_TEST_CASE(TestVncFileList)
     auto push_final_path_too_large = VncFileList::PushFileResult::FinalPathTooLarge;
 
     UVncFile file {
-        .file_name { "file1"_sized_av },
+        .file_name { WinNtPathView { "file1"_sized_av } },
         .file_size = 12,
-        .last_access_time { 13389902460'0'000'000 },
+        .last_access_time = WinNtUTime { 13389902460'0'000'000 },
         .is_dir = false,
     };
 
     TransferResult no_transfer {{
-        .rdp_data = {},
-        .vnc_data = {},
+        .rdp_data = ""_av,
+        .vnc_data = ""_av,
         .response_types {},
     }};
 
@@ -125,9 +125,9 @@ RED_AUTO_TEST_CASE(TestVncFileList)
 
         // invalid case: empty file name
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { ""_sized_av },
+            .file_name { WinNtPathView { ""_sized_av } },
             .file_size = 12,
-            .last_access_time { 13389902460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389902460'0'000'000 },
             .is_dir = false,
         }));
     }
@@ -137,15 +137,15 @@ RED_AUTO_TEST_CASE(TestVncFileList)
         RED_CHECK(TransferResult{vnc_file_list.start_new_list(FilePathView{long_path.drop_front<3>()})}
             == no_transfer);
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "fi"_sized_av },
+            .file_name { WinNtPathView { "fi"_sized_av } },
             .file_size = 12,
-            .last_access_time { 13389902460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389902460'0'000'000 },
             .is_dir = false,
         }));
         RED_CHECK(push_final_path_too_large == vnc_file_list.push_file_in_current_dir({
-            .file_name { "fil"_sized_av },
+            .file_name { WinNtPathView { "fil"_sized_av } },
             .file_size = 12,
-            .last_access_time { 13389902460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389902460'0'000'000 },
             .is_dir = false,
         }));
     }
@@ -153,9 +153,9 @@ RED_AUTO_TEST_CASE(TestVncFileList)
     RED_TEST_CONTEXT("push big file size")
     {
         RED_CHECK(push_file_size_too_large == vnc_file_list.push_file_in_current_dir({
-            .file_name { "fi"_sized_av },
+            .file_name { WinNtPathView { "fi"_sized_av } },
             .file_size = 20,
-            .last_access_time { 13389902460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389902460'0'000'000 },
             .is_dir = false,
         }));
     }
@@ -169,44 +169,44 @@ RED_AUTO_TEST_CASE(TestVncFileList)
     RED_TEST_CONTEXT("push files (top level)")
     {
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "file1"_sized_av },
+            .file_name { WinNtPathView { "file1"_sized_av } },
             .file_size = 12,
-            .last_access_time { 13389902460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389902460'0'000'000 },
             .is_dir = false,
         }));
 
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "dir1"_sized_av },
+            .file_name { WinNtPathView { "dir1"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903460'0'000'000 },
             .is_dir = true,
         }));
 
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "dir2"_sized_av },
+            .file_name { WinNtPathView { "dir2"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903060'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903060'0'000'000 },
             .is_dir = true,
         }));
 
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "file2"_sized_av },
+            .file_name { WinNtPathView { "file2"_sized_av } },
             .file_size = 19,
-            .last_access_time { 13389902360'0'000'000 },
+            .last_access_time = WinNtUTime { 13389902360'0'000'000 },
             .is_dir = false,
         }));
 
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "file3"_sized_av },
+            .file_name { WinNtPathView { "file3"_sized_av } },
             .file_size = 1,
-            .last_access_time { 13389908460'0'000'000 },
+            .last_access_time = WinNtUTime { 13389908460'0'000'000 },
             .is_dir = false,
         }));
 
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "dir3"_sized_av },
+            .file_name { WinNtPathView { "dir3"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903960'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903960'0'000'000 },
             .is_dir = true,
         }));
     }
@@ -233,15 +233,15 @@ RED_AUTO_TEST_CASE(TestVncFileList)
     RED_TEST_CONTEXT("push files (dir1)")
     {
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "subdir_d1"_sized_av },
+            .file_name { WinNtPathView { "subdir_d1"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903960'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903960'0'000'000 },
             .is_dir = true,
         }));
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "subfile"_sized_av },
+            .file_name { WinNtPathView { "subfile"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903960'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903960'0'000'000 },
             .is_dir = false,
         }));
     }
@@ -264,9 +264,9 @@ RED_AUTO_TEST_CASE(TestVncFileList)
     RED_TEST_CONTEXT("push files (dir2)")
     {
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "subdir_d2"_sized_av },
+            .file_name { WinNtPathView { "subdir_d2"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903960'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903960'0'000'000 },
             .is_dir = true,
         }));
     }
@@ -301,17 +301,17 @@ RED_AUTO_TEST_CASE(TestVncFileList)
     RED_TEST_CONTEXT("push files (C:\\Path\\dir1\\subdir\\subdir2)")
     {
         RED_CHECK(push_ok == vnc_file_list.push_file_in_current_dir({
-            .file_name { "subdir_d1_d1"_sized_av },
+            .file_name { WinNtPathView { "subdir_d1_d1"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903960'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903960'0'000'000 },
             .is_dir = true,
         }));
 
         // full
         RED_CHECK(push_full == vnc_file_list.push_file_in_current_dir({
-            .file_name { "subdir_d1_d2"_sized_av },
+            .file_name { WinNtPathView { "subdir_d1_d2"_sized_av } },
             .file_size = 0,
-            .last_access_time { 13389903960'0'000'000 },
+            .last_access_time = WinNtUTime { 13389903960'0'000'000 },
             .is_dir = true,
         }));
     }

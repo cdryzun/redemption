@@ -580,7 +580,7 @@ RED_AUTO_TEST_CASE(Test_cp1252_to_utf_8_16_32)
         },
     })
     {
-        RED_TEST_INFO_SCOPE("input = " << d.input);
+        RED_TEST_INFO_SCOPE("input = " << d.input.as<std::string_view>());
         RED_TEST_CONTEXT("cp1252 to utf16")
         {
             RED_CHECK(
@@ -614,7 +614,7 @@ RED_AUTO_TEST_CASE(Test_cp1252_to_utf_8_16_32)
     {
         auto input2 = input.drop_front(i);
         auto expected2 = expected_utf16.drop_front(i * 2);
-        RED_TEST_INFO_SCOPE("input = " << input2);
+        RED_TEST_INFO_SCOPE("input = " << input2.as<std::string_view>());
         RED_CHECK(
             (result = cp1252_to_utf16le.partial(input2, dst_view)).out
             ==
@@ -624,7 +624,7 @@ RED_AUTO_TEST_CASE(Test_cp1252_to_utf_8_16_32)
     }
 
     {
-        RED_TEST_INFO_SCOPE("input = " << input);
+        RED_TEST_INFO_SCOPE("input = " << input.as<std::string_view>());
         RED_CHECK(
             (result = cp1252_to_utf16le.partial(input, dst_view.first(9))).out
             ==
@@ -692,11 +692,13 @@ RED_AUTO_TEST_CASE(Test_utf16le_to_cp1252)
             continue;
         }
 
+        #if !REDEMPTION_UNIT_TEST_FAST_CHECK
         char str[2] {};
         if (i >= 20 && i < 0x80)
         {
             str[0] = static_cast<char>(i);
         }
+        #endif
 
         auto c = static_cast<uint8_t>(i);
         RED_TEST_CONTEXT("cp1252 = " << c << " '" << str << "'")
@@ -876,12 +878,13 @@ RED_AUTO_TEST_CASE(Test_utf16le_to_cp1252)
     }
 
     auto str = bounded_bytes_view{"\xAC\x20 \0a\0 \0t\0e\0s\0t\0 \0\xbd\0!\0"_sized_av};
-    RED_TEST_CONTEXT("utf16 = " << chars_view{str.as_chars()})
+    RED_TEST_CONTEXT("utf16 = " << str.as_chars().as<std::string_view>())
     {
         auto buffer = utf16le_to_cp1252.buffer_from(str);
         RED_CHECK(buffer.result().success);
         RED_CHECK(buffer.result().out == "\x80 a test \xbd!"_av);
         writable_bounded_array_view<uint8_t, 11, 11> _ = buffer.result().out;
+        (void)_;
     }
 }
 
@@ -946,7 +949,7 @@ RED_AUTO_TEST_CASE(Test_cp1252_to_utf16le_lf_to_crlf)
         },
     })
     {
-        RED_TEST_CONTEXT("input = " << d.in << " (cp1252 to utf16le+CrLf) | buf_len = " << d.buf_len)
+        RED_TEST_CONTEXT("input = " << d.in.as_chars().as<std::string_view>() << " (cp1252 to utf16le+CrLf) | buf_len = " << d.buf_len)
         {
             uint8_t output[output_buffer_len] {};
             auto result = cp1252_to_utf16le_lf_to_crlf.partial(

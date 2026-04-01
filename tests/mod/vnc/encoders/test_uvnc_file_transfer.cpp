@@ -272,12 +272,12 @@ RED_AUTO_TEST_CASE(TestVnCFileTransfer)
         ft = ft_final;
     };
 
-    #define TEST_WRITE(write_expr, expected) do {                         \
-        RED_TEST_CONTEXT(#write_expr LINE_MARKER)                         \
-        {                                                                 \
+    #define TEST_WRITE(write_expr, expected) do {                 \
+        RED_TEST_CONTEXT(#write_expr LINE_MARKER)                 \
+        {                                                         \
             auto fn = [&](OutStream & out){ return write_expr; }; \
-            test_write(fn, expected);                                     \
-        }                                                                 \
+            test_write(fn, expected);                             \
+        }                                                         \
     } while (0)
     //@}
 
@@ -425,8 +425,8 @@ RED_AUTO_TEST_CASE(TestVnCFileTransfer)
     */
     TEST_WRITE(
         FT::write_command_rename_file(out, {
-            .old_name { "my_dir"_sized_av },
-            .new_name { "new_dir"_sized_av },
+            .old_name { WinNtPathView { "my_dir"_sized_av } },
+            .new_name { WinNtPathView { "new_dir"_sized_av } },
         }),
         "\x07""\x0a""\x05\x00""\x00\x00\x00\x00""\x00\x00\x00\x0e""my_dir*new_dir"_av
     );
@@ -628,7 +628,7 @@ RED_AUTO_TEST_CASE(TestVnCFileTransfer)
     TEST_WRITE(
         FT::write_file_transfer_offer(
             out, FT::Path{"my_file"_sized_av}, 0x0000'1020'0000'3040,
-            clock_cast<WinNtClock>(sys_days{2025y / April / 23d} + 17h + 21min)
+            to_win_nt_ignoring_leap_seconds(sys_days{2025y / April / 23d} + 17h + 21min)
         ),
         "\x07""\x08""\x01\x00""\x00\x00\x30\x40""\x00\x00\x00\x18""my_file"
         ",04/23/2025 17:21""\0\0\x10\x20"_av

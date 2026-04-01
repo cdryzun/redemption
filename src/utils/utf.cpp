@@ -16,6 +16,56 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 using std::size_t;
 
+
+namespace
+{
+
+constexpr int endian_native = __BYTE_ORDER__;
+constexpr int endian_big = __ORDER_BIG_ENDIAN__;
+constexpr int endian_little = __ORDER_LITTLE_ENDIAN__;
+
+#if defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L
+using std::countr_zero;
+#else
+template<typename T>
+constexpr int countr_zero(T x) noexcept
+{
+    constexpr auto nd = std::numeric_limits<T>::digits;
+
+#if __has_builtin(__builtin_ctzg)
+    return __builtin_ctzg(x, nd);
+#else
+    if (x == 0)
+        return nd;
+
+    constexpr auto nd_ull = std::numeric_limits<unsigned long long>::digits;
+    constexpr auto nd_ul = std::numeric_limits<unsigned long>::digits;
+    constexpr auto nd_u = std::numeric_limits<unsigned>::digits;
+
+    if constexpr (nd <= nd_u)
+        return __builtin_ctz(x);
+    else if constexpr (nd <= nd_ul)
+        return __builtin_ctzl(x);
+    else if constexpr (nd <= nd_ull)
+        return __builtin_ctzll(x);
+    else // (nd > nd_ull)
+    {
+        static_assert(nd <= (2 * nd_ull),
+            "Maximum supported integer size is 128-bit");
+
+        constexpr auto max_ull = std::numeric_limits<unsigned long long>::max;
+        unsigned long long low = x & max_ull;
+        if (low != 0)
+            return __builtin_ctzll(low);
+        unsigned long long high = x >> nd_ull;
+        return __builtin_ctzll(high) + nd_ull;
+    }
+#endif
+}
+#endif
+
+}
+
 // UTF8Len assumes input is valid utf8, zero terminated, that has been checked before
 size_t UTF8Len(byte_ptr source) noexcept
 {
@@ -907,25 +957,25 @@ constexpr uint8_t const lut_utf16le_to_cp1252_from_x80_to_x9F[4][255] {
 
 constexpr uint32_t u64_to_first_u32_endian(uint64_t v) noexcept
 {
-    if constexpr (std::endian::native == std::endian::big)
+    if constexpr (endian_native == endian_big)
         return (v >> 32);
-    else if constexpr (std::endian::native == std::endian::little)
+    else if constexpr (endian_native == endian_little)
         return v & 0xffff'ffff;
 }
 
 constexpr uint32_t u64_to_last_u32_endian(uint64_t v) noexcept
 {
-    if constexpr (std::endian::native == std::endian::big)
+    if constexpr (endian_native == endian_big)
         return v & 0xffff'ffff;
-    else if constexpr (std::endian::native == std::endian::little)
+    else if constexpr (endian_native == endian_little)
         return (v >> 32);
 }
 
 constexpr uint16_t u32_to_first_u16_endian(uint32_t v) noexcept
 {
-    if constexpr (std::endian::native == std::endian::big)
+    if constexpr (endian_native == endian_big)
         return (v >> 16);
-    else if constexpr (std::endian::native == std::endian::little)
+    else if constexpr (endian_native == endian_little)
         return v & 0xffff;
 }
 
@@ -977,7 +1027,7 @@ constexpr uint16_t is_not_ascii_mask_1byte_encoding_16
     = is_not_ascii_mask_1byte_encoding_64 & 0xffff;
 
 constexpr uint64_t is_not_ascii_mask_2bytes_le_encoding_64
-    = (std::endian::native == std::endian::little)
+    = (endian_native == endian_little)
     ? 0xff80ff80ff80ff80
     : 0x80ff80ff80ff80ff;
 constexpr uint32_t is_not_ascii_mask_2bytes_le_encoding_32
@@ -1326,7 +1376,7 @@ bool consume_ascii_until_lf(uint8_t const * & in, uint8_t * & out, Input input) 
         return false;
     }
 
-    auto pos = static_cast<unsigned>(std::countr_zero(new_line_mask)) / 8u;
+    auto pos = static_cast<unsigned>(countr_zero(new_line_mask)) / 8u;
     REDEMPTION_ASSUME(pos < sizeof(input));
 
     #define CASE(case_n, input_len) case case_n:                  \
@@ -1667,9 +1717,9 @@ InOutEncodingResult cp1252_to_utf16le_lf_to_crlf_impl(
             return true;
         }
 
-        static_assert(std::endian::native == std::endian::little);
+        static_assert(endian_native == endian_little);
 
-        auto pos = static_cast<unsigned>(std::countr_zero(escapable_mask)) / 8u;
+        auto pos = static_cast<unsigned>(countr_zero(escapable_mask)) / 8u;
         REDEMPTION_ASSUME(pos < sizeof(c));
 
         switch (pos)

@@ -65,8 +65,8 @@ RED_AUTO_TEST_CASE(TestCliprdrFileList)
         // not init
         RED_CHECK(FLR{cb_file_list.add_file(fd)} == full_err);
 
-        RED_CHECK(!cb_file_list.start_new_list(WinNtUTime{13389802460}, 8));
-        RED_CHECK(cb_file_list.start_new_list(WinNtUTime{13389802460}, 6));
+        RED_CHECK(!cb_file_list.start_new_list(WinNtUTime{13389802460'0'000'000}, 8));
+        RED_CHECK(cb_file_list.start_new_list(WinNtUTime{13389902460'0'000'000}, 6));
 
         // file
         RED_CHECK(FLR{cb_file_list.add_file(fd)} == no_err);
@@ -225,7 +225,7 @@ RED_AUTO_TEST_CASE(TestCliprdrFileList)
 
             RED_CHECK(out_stream.get_produced_bytes() ==
                 "\x07\x08\x01\x00\x00\x00\x00\x0b\x00\x00\x00\x1e"
-                "C:\\Desktop\\AB,01/01/9793 00:22\x00\x00\x00\x48"_av);
+                "C:\\Desktop\\AB,04/23/2025 17:21\x00\x00\x00\x48"_av);
 
             RED_TEST_CONTEXT("skip file")
             {
@@ -254,7 +254,7 @@ RED_AUTO_TEST_CASE(TestCliprdrFileList)
                 "\x07\x0a\x01\x00\x00\x00\x00\x00\x00\x00\x00\x0f"
                 "C:\\Desktop\\dir2"
                 "\x07\x08\x01\x00\x00\x00\x00\x07\x00\x00\x00\x20"
-                "C:\\Desktop\\file,01/01/9793 00:22\x00\x00\x00\x00"_av);
+                "C:\\Desktop\\file,04/23/2025 17:21\x00\x00\x00\x00"_av);
 
             RED_TEST_CONTEXT("receive 2 dir response and skip 1 file")
             {

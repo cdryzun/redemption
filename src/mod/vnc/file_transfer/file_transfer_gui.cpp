@@ -279,7 +279,9 @@ namespace
 
     dateformats::DateBuffer<FileDateFormat> make_human_date(WinNtUTime nt_time)
     {
-        auto tp = std::chrono::clock_cast<std::chrono::system_clock>(to_win_nt_time(nt_time));
+        // ignore leap seconds
+        // auto tp = std::chrono::clock_cast<std::chrono::system_clock>(to_win_nt_time(nt_time));
+        auto tp = to_sys_time_ignoring_leap_seconds(to_win_nt_time(nt_time));
         auto seconds = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch());
         time_t t = seconds.count();
         tm tm {};
@@ -6514,17 +6516,17 @@ void VNC::FileTransferGui::open(uint16_t width, uint16_t height, uint16_t mouse_
 
     auto const& close_btn = gui.icons.close_x;
 
-    int close_x_pad = mmax({
-        static_cast<int>(close_btn->width / 2),
-        static_cast<int>(close_btn->incby - close_btn->width),
-        static_cast<int>(close_btn->offsetx)
+    int close_x_pad = mmax<int>({
+        close_btn->width / 2,
+        close_btn->incby - close_btn->width,
+        close_btn->offsetx
     }) * 3;
     int close_btn_w = close_btn->width + close_x_pad * 2;
     int close_btn_h = text_h + D::TITLE_Y_PADDING * 2;
 
-    int close_y_pad = mmax({
-        static_cast<int>((close_btn_h - close_btn->height) / 2),
-        static_cast<int>(close_btn->offsety)
+    int close_y_pad = mmax<int>({
+        (close_btn_h - close_btn->height) / 2,
+        close_btn->offsety
     });
 
     layout.close_btn = {
