@@ -138,6 +138,7 @@ template<> struct acl_and_spec_type<cfg::mod_rdp::log_only_relevant_clipboard_ac
 template<> struct acl_and_spec_type<cfg::mod_rdp::log_clipboard_text> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::split_domain> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::wabam_uses_translated_remoteapp> { using type = bool; };
+template<> struct acl_and_spec_type<cfg::mod_rdp::all_clients_use_translated_remoteapp> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::session_shadowing_support> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::enable_remotefx> { using type = bool; };
 template<> struct acl_and_spec_type<cfg::mod_rdp::enable_restricted_admin_mode> { using type = bool; };

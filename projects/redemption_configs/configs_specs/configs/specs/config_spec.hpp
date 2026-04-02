@@ -1439,14 +1439,23 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
     _.member(MemberInfo{
         .name = names{
             .all = "wabam_uses_translated_remoteapp",
-            .display = "Enable translated RemoteApp with Access Manager",
+            .display = "Translate RemoteApp with Access Manager",
         },
         .value = value(false),
         .spec = connpolicy(rdp, loggable),
         .desc =
-            "Activates conversion of RemoteApp target session to desktop session.\n"
-            "Otherwise, Alternate Shell will be used.\n"
-            "Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently."
+            "Recommended if the standard application behaves differently in WALLIX Access Manager compared to local execution."
+    });
+
+    _.member(MemberInfo{
+        .name = names{
+            .all = "all_clients_use_translated_remoteapp",
+            .display = "Translate RemoteApp with all RDP clients",
+        },
+        .value = value(false),
+        .spec = connpolicy(rdp, loggable),
+        .desc =
+            "Recommended when the standard application target or Session Probe fails to launch on Windows Server 2019."
     });
 
     _.member(MemberInfo{

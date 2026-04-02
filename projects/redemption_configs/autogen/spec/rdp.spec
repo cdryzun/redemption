@@ -170,11 +170,13 @@ use_native_remoteapp_capability = boolean(default=True)
 #_display_name=Enable RDPDR data analysis
 enable_rdpdr_data_analysis = boolean(default=True)
 
-# Activates conversion of RemoteApp target session to desktop session.
-# Otherwise, Alternate Shell will be used.
-# Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently.
-#_display_name=Enable translated RemoteApp with Access Manager
+# Recommended if the standard application behaves differently in WALLIX Access Manager compared to local execution.
+#_display_name=Translate RemoteApp with Access Manager
 wabam_uses_translated_remoteapp = boolean(default=False)
+
+# Recommended when the standard application target or Session Probe fails to launch on Windows Server 2019.
+#_display_name=Translate RemoteApp with all RDP clients
+all_clients_use_translated_remoteapp = boolean(default=False)
 
 # Enables support of the RemoteFX codec on target connection.
 #_display_name=Enable RemoteFX

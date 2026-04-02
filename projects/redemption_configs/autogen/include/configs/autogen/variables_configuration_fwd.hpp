@@ -148,6 +148,7 @@ namespace cfg
         struct log_clipboard_text;
         struct split_domain;
         struct wabam_uses_translated_remoteapp;
+        struct all_clients_use_translated_remoteapp;
         struct session_shadowing_support;
         struct enable_remotefx;
         struct enable_restricted_admin_mode;

@@ -145,9 +145,9 @@ cfg::mod_rdp::use_native_remoteapp_capability ⇐ mod_rdp:use_native_remoteapp_c
 cfg::mod_rdp::enable_rdpdr_data_analysis ⇐ mod_rdp:enable_rdpdr_data_analysis   [bool]
     Adds RDPDR channel metadata to session logs. Disabling this option makes shared disks more responsive, but metadata will no longer be collected.If at least one authorization of RDPDR is missing (Printer, ComPort, SmartCard, Drive), then this option is considered enabled.
 cfg::mod_rdp::wabam_uses_translated_remoteapp ⇐ mod_rdp:wabam_uses_translated_remoteapp   [bool]
-    Activates conversion of RemoteApp target session to desktop session.
-    Otherwise, Alternate Shell will be used.
-    Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently.
+    Recommended if the standard application behaves differently in WALLIX Access Manager compared to local execution.
+cfg::mod_rdp::all_clients_use_translated_remoteapp ⇐ mod_rdp:all_clients_use_translated_remoteapp   [bool]
+    Recommended when the standard application target or Session Probe fails to launch on Windows Server 2019.
 cfg::mod_rdp::enable_remotefx ⇐ mod_rdp:enable_remotefx   [bool]
     Enables support of the RemoteFX codec on target connection.
 cfg::mod_rdp::enable_restricted_admin_mode ⇐ mod_rdp:enable_restricted_admin_mode   [bool]

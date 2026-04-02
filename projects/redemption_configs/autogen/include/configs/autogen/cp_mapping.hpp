@@ -38,6 +38,7 @@ cp_spec = {
         ('mod_rdp:use_native_remoteapp_capability', 'use_native_remoteapp_capability', True),
         ('mod_rdp:enable_rdpdr_data_analysis', 'enable_rdpdr_data_analysis', True),
         ('mod_rdp:wabam_uses_translated_remoteapp', 'wabam_uses_translated_remoteapp', False),
+        ('mod_rdp:all_clients_use_translated_remoteapp', 'all_clients_use_translated_remoteapp', False),
         ('mod_rdp:enable_remotefx', 'enable_remotefx', False),
         ('mod_rdp:enable_restricted_admin_mode', 'enable_restricted_admin_mode', False),
         ('mod_rdp:force_smartcard_authentication', 'force_smartcard_authentication', False),

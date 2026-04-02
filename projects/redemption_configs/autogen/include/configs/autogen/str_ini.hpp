@@ -693,13 +693,17 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 #split_domain = 0
 
-# Activates conversion of RemoteApp target session to desktop session.
-# Otherwise, Alternate Shell will be used.
-# Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently.
+# Recommended if the standard application behaves differently in WALLIX Access Manager compared to local execution.
 # (type: boolean (0/no/false or 1/yes/true))
-#_display_name=Enable translated RemoteApp with Access Manager
+#_display_name=Translate RemoteApp with Access Manager
 # (acl config: proxy ⇐ mod_rdp:wabam_uses_translated_remoteapp)
 #wabam_uses_translated_remoteapp = 0
+
+# Recommended when the standard application target or Session Probe fails to launch on Windows Server 2019.
+# (type: boolean (0/no/false or 1/yes/true))
+#_display_name=Translate RemoteApp with all RDP clients
+# (acl config: proxy ⇐ mod_rdp:all_clients_use_translated_remoteapp)
+#all_clients_use_translated_remoteapp = 0
 
 # Enables Session Shadowing Support.
 # Session probe must be enabled on target connection policy.

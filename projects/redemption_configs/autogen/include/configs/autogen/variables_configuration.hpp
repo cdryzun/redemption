@@ -20,27 +20,27 @@ namespace configs
         inline constexpr int section3 = 18; /* all_target_mod */
         // inline constexpr int section4 = 19; /* remote_program */
         inline constexpr int section5 = 19; /* mod_rdp */
-        inline constexpr int section6 = 68; /* protocol */
-        inline constexpr int section7 = 69; /* session_probe */
-        inline constexpr int section8 = 115; /* server_cert */
-        inline constexpr int section9 = 125; /* mod_vnc */
-        inline constexpr int section10 = 142; /* session_log */
-        // inline constexpr int section11 = 144; /* ocr */
-        inline constexpr int section12 = 144; /* capture */
-        inline constexpr int section13 = 151; /* audit */
-        inline constexpr int section14 = 160; /* file_verification */
-        inline constexpr int section15 = 168; /* file_storage */
-        // inline constexpr int section16 = 169; /* icap_server_down */
-        // inline constexpr int section17 = 169; /* icap_server_up */
-        inline constexpr int section18 = 169; /* crypto */
-        // inline constexpr int section19 = 171; /* websocket */
-        // inline constexpr int section20 = 171; /* vnc_over_ssh */
-        inline constexpr int section21 = 171; /* context */
-        // inline constexpr int section22 = 262; /* internal_mod */
-        inline constexpr int section23 = 262; /* mod_replay */
-        inline constexpr int section24 = 264; /* translation */
-        // inline constexpr int section25 = 265; /* theme */
-        // inline constexpr int section26 = 265; /* debug */
+        inline constexpr int section6 = 69; /* protocol */
+        inline constexpr int section7 = 70; /* session_probe */
+        inline constexpr int section8 = 116; /* server_cert */
+        inline constexpr int section9 = 126; /* mod_vnc */
+        inline constexpr int section10 = 143; /* session_log */
+        // inline constexpr int section11 = 145; /* ocr */
+        inline constexpr int section12 = 145; /* capture */
+        inline constexpr int section13 = 152; /* audit */
+        inline constexpr int section14 = 161; /* file_verification */
+        inline constexpr int section15 = 169; /* file_storage */
+        // inline constexpr int section16 = 170; /* icap_server_down */
+        // inline constexpr int section17 = 170; /* icap_server_up */
+        inline constexpr int section18 = 170; /* crypto */
+        // inline constexpr int section19 = 172; /* websocket */
+        // inline constexpr int section20 = 172; /* vnc_over_ssh */
+        inline constexpr int section21 = 172; /* context */
+        // inline constexpr int section22 = 263; /* internal_mod */
+        inline constexpr int section23 = 263; /* mod_replay */
+        inline constexpr int section24 = 265; /* translation */
+        // inline constexpr int section25 = 266; /* theme */
+        // inline constexpr int section26 = 266; /* debug */
     } // namespace cfg_indexes
 } // namespace configs
 
@@ -1592,19 +1592,32 @@ namespace cfg
         using mapped_type = bool;
         type value { false };
     };
-    /// Activates conversion of RemoteApp target session to desktop session. <br/>
-    /// Otherwise, Alternate Shell will be used. <br/>
-    /// Some Windows Shell features may be unavailable in one or both cases, and applications using them may behave differently. <br/>
+    /// Recommended if the standard application behaves differently in WALLIX Access Manager compared to local execution. <br/>
     /// type: bool <br/>
     /// connpolicy -> proxy <br/>
     /// aclName: mod_rdp:wabam_uses_translated_remoteapp <br/>
-    /// displayName: Enable translated RemoteApp with Access Manager <br/>
+    /// displayName: Translate RemoteApp with Access Manager <br/>
     /// default: false <br/>
     struct mod_rdp::wabam_uses_translated_remoteapp {
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
         static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 31};
+        using type = bool;
+        using mapped_type = bool;
+        type value { false };
+    };
+    /// Recommended when the standard application target or Session Probe fails to launch on Windows Server 2019. <br/>
+    /// type: bool <br/>
+    /// connpolicy -> proxy <br/>
+    /// aclName: mod_rdp:all_clients_use_translated_remoteapp <br/>
+    /// displayName: Translate RemoteApp with all RDP clients <br/>
+    /// default: false <br/>
+    struct mod_rdp::all_clients_use_translated_remoteapp {
+        static constexpr unsigned acl_proxy_communication_flags = 0b10;
+        // for old cppcheck
+        // cppcheck-suppress obsoleteFunctionsindex
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 32};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1631,7 +1644,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 32};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 33};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1647,7 +1660,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 33};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 34};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1664,7 +1677,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 34};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 35};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1679,7 +1692,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 35};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 36};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1694,7 +1707,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 36};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 37};
         using type = RdpModeConsole;
         using mapped_type = std::string;
         type value { RdpModeConsole::allow };
@@ -1709,7 +1722,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 37};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 38};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1725,7 +1738,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 38};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 39};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1739,7 +1752,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 39};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 40};
         using type = std::chrono::milliseconds;
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 0, 15000>;
         type value { 0 };
@@ -1753,7 +1766,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 40};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 41};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1767,7 +1780,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 41};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 42};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1780,7 +1793,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 42};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 43};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1793,7 +1806,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 43};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 44};
         using type = std::string;
         using mapped_type = std::string;
         type value {  };
@@ -1807,7 +1820,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 44};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 45};
         using type = std::chrono::milliseconds;
         using mapped_type = ::configs::spec_types::range<std::chrono::milliseconds, 3000, 120000>;
         type value { 3000 };
@@ -1825,7 +1838,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 45};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 46};
         using type = bool;
         using mapped_type = bool;
         type value { true };
@@ -1839,7 +1852,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 46};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 47};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1853,7 +1866,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 47};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 48};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -1868,7 +1881,7 @@ namespace cfg
         static constexpr unsigned acl_proxy_communication_flags = 0b10;
         // for old cppcheck
         // cppcheck-suppress obsoleteFunctionsindex
-        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 48};
+        static constexpr ::configs::authid_t index { ::configs::cfg_indexes::section5 + 49};
         using type = bool;
         using mapped_type = bool;
         type value { false };
@@ -5732,6 +5745,7 @@ struct mod_rdp
 , cfg::mod_rdp::log_clipboard_text
 , cfg::mod_rdp::split_domain
 , cfg::mod_rdp::wabam_uses_translated_remoteapp
+, cfg::mod_rdp::all_clients_use_translated_remoteapp
 , cfg::mod_rdp::session_shadowing_support
 , cfg::mod_rdp::enable_remotefx
 , cfg::mod_rdp::enable_restricted_admin_mode
@@ -6181,6 +6195,7 @@ using VariablesAclPack = Pack<
 , cfg::mod_rdp::use_native_remoteapp_capability
 , cfg::mod_rdp::enable_rdpdr_data_analysis
 , cfg::mod_rdp::wabam_uses_translated_remoteapp
+, cfg::mod_rdp::all_clients_use_translated_remoteapp
 , cfg::mod_rdp::enable_remotefx
 , cfg::mod_rdp::enable_restricted_admin_mode
 , cfg::mod_rdp::force_smartcard_authentication
@@ -6399,17 +6414,17 @@ using VariablesAclPack = Pack<
 
 
 constexpr U64BitFlags<5> loggable_field{ {
-  0b1011111111111111111111111111111111111111111111111110111111111111
+  0b0111111111111111111111111111111111111111111111111110111111111111
 , 0b1111111111111111111111111111111111111111111111111111111111111111
-, 0b0101111110111111111110011111111111111011111111111111111111111111
-, 0b1101111111111111111110111111111111111111111111111111111111111111
-, 0b0000000000000000000000000000000000000000000000000000000111111111
+, 0b1011111101111111111100111111111111110111111111111111111111111111
+, 0b1011111111111111111101111111111111111111111111111111111111111110
+, 0b0000000000000000000000000000000000000000000000000000001111111111
 },
 {
   0b0000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
-, 0b1000000000000000000000000000000000000000000000000000000000000000
 , 0b0000000000000000000000000000000000000000000000000000000000000000
+, 0b0000000000000000000000000000000000000000000000000000000000000001
 , 0b0000000000000000000000000000000000000000000000000000000000000000
 } };
 } // namespace configs
