@@ -328,6 +328,9 @@ class Sesman():
         self.allow_back_selector = SESMANCONF['sesman'].get(
             'allow_back_to_selector', True
         )
+        self.keep_interactive_fqdn = SESMANCONF['sesman'].get(
+            'keep_interactive_fqdn', True
+        )
         self.back_selector = False
         self.hide_approval_back_selector = False
         self.target_app_rights = {}
@@ -813,7 +816,8 @@ class Sesman():
                             target_subnet)
 
                         if hostok:
-                            extkv['target_host'] = resolved_ip
+                            extkv['target_host'] = self.shared.get('target_host') \
+                                if self.keep_interactive_fqdn else resolved_ip
                             extkv['target_device'] = \
                                 self.shared.get('target_host')
                         else:

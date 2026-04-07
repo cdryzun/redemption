@@ -10,6 +10,11 @@ selector_filters_case_sensitive=boolean(default=False)
 # Allow going back to selector
 allow_back_to_selector = boolean(default=True)
 
+# On interactive subnet, Kerberos authentication requires to keep the fqdn after resolution.
+# This is an internal option that allows to go back to previous behavior.
+#_advanced
+keep_interactive_fqdn = boolean(default=True)
+
 # Ignore username when authenticated by Kerberos
 # when authenticated by Kerberos, only use User Principal Name.
 # This could be useful when the RDP client provide the pre-2000 logon format
