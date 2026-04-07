@@ -331,6 +331,9 @@ class Sesman():
         self.keep_interactive_fqdn = SESMANCONF['sesman'].get(
             'keep_interactive_fqdn', True
         )
+        self.keep_context_fqdn = SESMANCONF['sesman'].get(
+            'keep_context_fqdn', True
+        )
         self.back_selector = False
         self.hide_approval_back_selector = False
         self.target_app_rights = {}
@@ -1961,7 +1964,10 @@ class Sesman():
                 self.cn = target_login_info.target_name
 
                 if self.target_context.host:
-                    kv['target_host'] = self.target_context.host
+                    _context_host = self.target_context.host
+                    if self.keep_context_fqdn and self.target_context.dnsname:
+                        _context_host = self.target_context.dnsname
+                    kv['target_host'] = _context_host
                     kv['target_device'] = self.target_context.showname()
                 else:
                     kv['target_host'] = physical_info.device_host
