@@ -353,7 +353,7 @@ R"gen_config_ini(## Config file for RDP proxy.
 # When disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
 # (type: boolean (0/no/false or 1/yes/true))
 #_advanced
-#auto_adjust_performance_flags = 1
+#auto_adjust_performance_flags = 0
 
 # Specifies the highest RDP compression support available on the target server connection.
 #   0: The RDP bulk compression is disabled

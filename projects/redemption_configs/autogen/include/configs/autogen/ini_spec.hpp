@@ -250,7 +250,7 @@ force_performance_flags = string(default="-mouse_cursor_shadows,-theme,-menu_ani
 # This allows OCR (when session probe is disabled) to better detect window titles.
 # When disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.
 #_advanced
-auto_adjust_performance_flags = boolean(default=True)
+auto_adjust_performance_flags = boolean(default=False)
 
 # Specifies the highest RDP compression support available on the target server connection.
 # &nbsp; &nbsp;   0: The RDP bulk compression is disabled

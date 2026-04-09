@@ -857,12 +857,12 @@ namespace cfg
     /// This allows OCR (when session probe is disabled) to better detect window titles. <br/>
     /// When disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected. <br/>
     /// type: bool <br/>
-    /// default: true <br/>
+    /// default: false <br/>
     struct mod_rdp::auto_adjust_performance_flags {
         static constexpr unsigned acl_proxy_communication_flags = 0b00;
         using type = bool;
         using mapped_type = bool;
-        type value { true };
+        type value { false };
     };
     /// Specifies the highest RDP compression support available on the target server connection. <br/>
     /// type: RdpCompression <br/>

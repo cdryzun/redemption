@@ -734,7 +734,7 @@
       "section": "mod_rdp",
       "name": "auto_adjust_performance_flags",
       "type": "bool",
-      "value": true,
+      "value": false,
       "description": "When enabled, the font smoothing desktop feature is automatically disabled in recorded session.\nThis allows OCR (when session probe is disabled) to better detect window titles.\nWhen disabled, it allows font smoothing in recorded sessions. However, OCR will not work when session recording is disabled. In this case, window titles are not detected.",
       "globalSpec": true,
       "advanced": true

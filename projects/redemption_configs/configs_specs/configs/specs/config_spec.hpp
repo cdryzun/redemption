@@ -912,7 +912,7 @@ _.section(names{.all="mod_rdp", .connpolicy="rdp"}, [&]
 
     _.member(MemberInfo{
         .name = "auto_adjust_performance_flags",
-        .value = value(true),
+        .value = value(false),
         .spec = global_spec(no_acl, spec::advanced),
         .desc =
             "When enabled, the font smoothing desktop feature is automatically disabled in recorded session.\n"
