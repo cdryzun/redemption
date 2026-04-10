@@ -154,6 +154,12 @@ private:
     }
 };
 
+void consume_all_openssl_errors()
+{
+    while (::ERR_get_error() != 0)
+    {}
+}
+
 } // anonymous namespace
 
 [[nodiscard]] bool tls_check_certificate(
@@ -405,6 +411,10 @@ private:
     return true;
 }
 
+REDEMPTION_DIAGNOSTIC_PUSH()
+// sk_* macros returns a used type but marked unused...
+REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wused-but-marked-unused")
+
 [[nodiscard]] bool tls_check_ca_signed_certificate(
     X509* certificate, STACK_OF(X509)* certificate_chain,
     BasicFunction<void(CertificateStatus status, std::string_view error_msg)> certificate_checker,
@@ -414,8 +424,6 @@ private:
         certificate_checker(CertificateStatus::CertNotTrusted, {});
         throw Error(ERR_TRANSPORT_TLS_CERTIFICATE_NOT_TRUSTED);
     };
-
-    error_type checking_exception = NO_ERROR;
 
     if (!ca_list) {
         throw_fault();
@@ -448,15 +456,14 @@ private:
             const int lib    = ::ERR_GET_LIB(err);
             const int reason = ::ERR_GET_REASON(err);
 
+            consume_all_openssl_errors();
+
             if (ERR_LIB_PEM == lib && PEM_R_NO_START_LINE == reason) {
-                while (::ERR_get_error() != 0) {};
                 break;
             }
 
             LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to read CA from BIO (%zu): %s",
                 i, ::ERR_error_string(err, nullptr));
-
-            while (::ERR_get_error() != 0) {};
 
             throw_fault();
         }
@@ -468,13 +475,11 @@ private:
 
             const int reason = ::ERR_GET_REASON(err);
 
-            if (X509_R_CERT_ALREADY_IN_HASH_TABLE == reason) {
-                while (::ERR_get_error() != 0) {};
-            } else {
+            consume_all_openssl_errors();
+
+            if (X509_R_CERT_ALREADY_IN_HASH_TABLE != reason) {
                 LOG(LOG_ERR, "tls_check_ca_signed_certificate() failed to add CA cert to store (%zu): %s",
                     i, ::ERR_error_string(err, nullptr));
-
-                while (::ERR_get_error() != 0) {};
 
                 throw_fault();
             }
@@ -514,7 +519,7 @@ private:
         LOG(LOG_ERR,
             "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set_purpose() failed: %s",
             ::ERR_error_string(err, nullptr));
-        while (::ERR_get_error() != 0) {};
+        consume_all_openssl_errors();
         throw_fault();
     }
 
@@ -543,7 +548,7 @@ private:
                 "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set1_ip_asc() failed for IP '%s': %s",
                 expected_hostname,
                 ::ERR_error_string(err, nullptr));
-            while (::ERR_get_error() != 0) {};
+            consume_all_openssl_errors();
             throw_fault();
         }
     }
@@ -554,7 +559,7 @@ private:
                 "tls_check_ca_signed_certificate() X509_VERIFY_PARAM_set1_host() failed for host '%s': %s",
                 expected_hostname,
                 ::ERR_error_string(err, nullptr));
-            while (::ERR_get_error() != 0) {};
+            consume_all_openssl_errors();
             throw_fault();
         }
     }
@@ -616,6 +621,8 @@ private:
     certificate_checker(CertificateStatus::CertTrusted, {});
     return true;
 }
+
+REDEMPTION_DIAGNOSTIC_POP()
 
 void tls_dump_certificate(X509& x509)
 {

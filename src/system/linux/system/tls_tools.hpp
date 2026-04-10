@@ -1,4 +1,11 @@
+/*
+SPDX-FileCopyrightText: 2026 Wallix Proxies Team
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
+
 #pragma once
+
+#include "cxx/diagnostic.hpp"
 
 #include <memory>
 
@@ -19,8 +26,12 @@ struct X509Free {
 using unique_x509_ptr = std::unique_ptr<X509, X509Free>;
 
 struct X509StackFree {
-    void operator()(STACK_OF(X509)* chain) noexcept {
+    void operator()(STACK_OF(X509)* chain) noexcept
+    {
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wused-but-marked-unused")
         ::sk_X509_pop_free(chain, X509_free);
+        REDEMPTION_DIAGNOSTIC_POP()
     }
 };
 using unique_x509_chain_ptr=std::unique_ptr<STACK_OF(X509), X509StackFree>;

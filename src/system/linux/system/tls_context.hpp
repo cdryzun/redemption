@@ -164,13 +164,6 @@ inline void log_cipher_list(SSL* ssl, char const* origin)
     }
 }
 
-// sk_X509_pop_free(chain, X509_free)
-inline STACK_OF(X509) *duplicate_chain_deep(STACK_OF(X509) *chain) {
-    if (!chain) { return nullptr; }
-
-    return sk_X509_deep_copy(chain, X509_dup, X509_free);
-}
-
 /**
  * @brief all the context needed to manipulate TLS context for a TLS object
  */
@@ -407,11 +400,15 @@ public:
         X509 * px509 = SSL_get_peer_certificate(this->allocated_ssl);
         LOG_IF(!px509, LOG_WARNING, "SSL_get_peer_certificate() failed");
 
+        REDEMPTION_DIAGNOSTIC_PUSH()
+        REDEMPTION_DIAGNOSTIC_CLANG_IGNORE("-Wused-but-marked-unused")
+
         STACK_OF(X509) * px509_chain = sk_X509_deep_copy(
             SSL_get_peer_cert_chain(this->allocated_ssl), X509_dup, X509_free);
 
-        std::unique_ptr<CertificateExternalValidationContext> ctx =
-            std::make_unique<CertificateExternalValidationContext>();
+        REDEMPTION_DIAGNOSTIC_POP()
+
+        auto ctx = std::make_unique<CertificateExternalValidationContext>();
 
         ctx->cert.reset(px509);
         ctx->cert_chain.reset(px509_chain);
