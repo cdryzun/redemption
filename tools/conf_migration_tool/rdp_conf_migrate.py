@@ -148,7 +148,7 @@ class UpdateItem(NamedTuple):
     ini_only: bool = False
     to_ini_only: bool = False
     # do not move item when external migration is enabled
-    ignored_when_external_tool: bool = False
+    ignored_when_bastion: bool = False
 
     def update(self, section: str, key: str, value: str,
                fragments: Iterable[ConfigurationFragment]) -> Tuple[str, str, str]:
@@ -165,8 +165,8 @@ class RemoveItem(NamedTuple):
     reason: str = ''
     old_display_name: str = ''
     ini_only: bool = False
-    # do not remove item when external migration is enabled
-    ignored_when_external_tool: bool = False
+    # do not remove item when bastion migration is enabled
+    ignored_when_bastion: bool = False
 
 
 ValueCreator = Callable[[Iterable[ConfigurationFragment]], str | None]
@@ -216,7 +216,7 @@ def migration_filter(migration_defs: Sequence[MigrationType],
 
 def migration_def_to_actions(fragments: Iterable[ConfigurationFragment],
                              migration_def: MigrationDescType,
-                             ignored_when_external_tool: bool,
+                             is_bastion: bool,
 ) -> Tuple[
     List[Tuple[str, str]],  # renamed_sections
     # section, old_key, new_key, new_value
@@ -241,7 +241,7 @@ def migration_def_to_actions(fragments: Iterable[ConfigurationFragment],
                 order = migration_key_desc.get(fragment.value1)
                 if order is None:
                     pass
-                elif ignored_when_external_tool and order.ignored_when_external_tool:
+                elif is_bastion and order.ignored_when_bastion:
                     pass
                 elif isinstance(order, RemoveItem):
                     removed_keys.append((section, fragment.value1))
@@ -261,7 +261,7 @@ def migration_def_to_actions(fragments: Iterable[ConfigurationFragment],
             if order is None:
                 pass
             elif isinstance(order, RemoveItem):
-                if not (ignored_when_external_tool and order.ignored_when_external_tool):
+                if not (is_bastion and order.ignored_when_bastion):
                     removed_sections.append(section)
             elif isinstance(order, MoveSection):
                 renamed_sections.append((section, order.name))
@@ -302,10 +302,10 @@ def _is_empty_line(i: int, fragments: List[ConfigurationFragment]) -> bool:
 
 def migrate(fragments: List[ConfigurationFragment],
             migration_def: MigrationDescType,
-            ignored_when_external_tool: bool,
+            is_bastion: bool,
 ) -> Tuple[bool, List[ConfigurationFragment]]:
     renamed_sections, renamed_keys, moved_keys, removed_sections, removed_keys \
-        = migration_def_to_actions(fragments, migration_def, ignored_when_external_tool)
+        = migration_def_to_actions(fragments, migration_def, is_bastion)
 
     if not (renamed_sections or renamed_keys or moved_keys or removed_sections or removed_keys):
         return (False, fragments)
@@ -442,7 +442,7 @@ def migrate_file(
         ini_filename: str,
         temporary_ini_filename: str,
         saved_ini_filename: str,
-        ignored_when_external_tool: bool,
+        is_bastion: bool,
 ) -> bool:
     content, fragments = parse_configuration_from_file(ini_filename)
     if version == NoVersion:
@@ -451,7 +451,7 @@ def migrate_file(
     is_changed = False
 
     for _, desc in migration_filter(migration_defs, version):
-        is_updated, fragments = migrate(fragments, remove_ini_only_type(desc), ignored_when_external_tool)
+        is_updated, fragments = migrate(fragments, remove_ini_only_type(desc), is_bastion)
         is_changed = is_changed or is_updated
 
     if is_changed:
@@ -584,10 +584,8 @@ def main(
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-s', '--source-version', metavar='VERSION',
                        help='Output format of redemption --version.')
-    group.add_argument('-f', '--file-version', metavar='FILE', type=pathlib.Path,
-                       help='Output format of redemption --version from file.')
-    parser.add_argument('--migrate-by-external-tool', action='store_true',
-                        help='Do not remove some values (e.g. these migrate to the DB).')
+    group.add_argument('-f', '--bastion-migration', metavar='FILE', type=pathlib.Path,
+                       help='Enable Bastion migration, provided the output of "rdpproxy --version" in file.')
     parser.add_argument('--dump', choices=['json'],
                         help='Dump migration configuration.')
     parser.add_argument('inifile', nargs='?', help='rdpproxy.ini file path.')
@@ -603,8 +601,8 @@ def main(
         parser.print_help(stderr)
         return 1
 
-    if args.file_version:
-        old_version = RedemptionVersion.from_file(args.file_version)
+    if args.bastion_migration:
+        old_version = RedemptionVersion.from_file(args.bastion_migration)
     elif args.source_version:
         old_version = RedemptionVersion(args.source_version)
     else:
@@ -613,13 +611,12 @@ def main(
     ini_filename = args.inifile
 
     print(f"PreviousRedemptionVersion={old_version}", file=stdout)
-
     if migrate_file(migration_defs,
                     old_version,
                     ini_filename=ini_filename,
                     temporary_ini_filename=f'{ini_filename}.work',
                     saved_ini_filename=f'{ini_filename}.{old_version}',
-                    ignored_when_external_tool=args.migrate_by_external_tool):
+                    is_bastion=bool(args.bastion_migration)):
         print("Configuration file updated", file=stdout)
     return 0
 
