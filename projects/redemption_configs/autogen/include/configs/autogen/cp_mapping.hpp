@@ -167,6 +167,10 @@ cp_spec = {
         ('mod_vnc:show_common_cipher_list', 'show_common_cipher_list', False),
         ('mod_vnc:force_authentication_method', 'force_authentication_method', ""),
     },
+    'clipboard': {
+        ('vnc_clipboard:clipboard_encoding', 'clipboard_encoding', "latin1"),
+        ('vnc_clipboard:bogus_infinite_loop_strategy', 'bogus_infinite_loop_strategy', 0),
+    },
     'capture': {
         ('capture:disable_keyboard_log', 'disable_keyboard_log', 3),
     },

@@ -35,8 +35,8 @@ std::unique_ptr<mod_api> new_mod_vnc(
   , bool clipboard_up
   , bool clipboard_down
   , const char * encodings
-  , ClipboardEncodingType clipboard_server_encoding_type
-  , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
+  , VncClipboardEncoding clipboard_server_encoding_type
+  , VncBogusClipboardInfiniteLoopStrategy bogus_clipboard_infinite_loop
   , KeyLayout const& layout
   , kbdtypes::KeyLocks locks
   , bool server_is_macos

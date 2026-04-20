@@ -82,8 +82,8 @@ mod_vnc::mod_vnc( Transport & t
            , bool clipboard_up
            , bool clipboard_down
            , const char * encodings
-           , ClipboardEncodingType clipboard_server_encoding_type
-           , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
+           , VncClipboardEncoding clipboard_server_encoding_type
+           , VncBogusClipboardInfiniteLoopStrategy bogus_clipboard_infinite_loop
            , KeyLayout const& layout
            , kbdtypes::KeyLocks locks
            , bool server_is_macos
@@ -450,7 +450,7 @@ void mod_vnc::rdp_input_clip_data(bytes_view data)
         };
 
         if (this->clipboard_requested_format_id == RDPECLIP::CF_UNICODETEXT) {
-            if (this->clipboard_server_encoding_type == ClipboardEncodingType::utf8) {
+            if (this->clipboard_server_encoding_type == VncClipboardEncoding::utf8) {
                 LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
                     "mod_vnc::rdp_input_clip_data: CF_UNICODETEXT -> UTF-8");
 
@@ -476,7 +476,7 @@ void mod_vnc::rdp_input_clip_data(bytes_view data)
             }
         }
         else {
-            if (this->clipboard_server_encoding_type == ClipboardEncodingType::utf8) {
+            if (this->clipboard_server_encoding_type == VncClipboardEncoding::utf8) {
                 LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
                     "mod_vnc::rdp_input_clip_data: CF_TEXT -> UTF-8");
 
@@ -1885,7 +1885,7 @@ void mod_vnc::clipboard_send_to_vnc_server(InStream & chunk, size_t length, uint
                                                );
                 }
                 else {
-                    if (this->bogus_clipboard_infinite_loop == VncBogusClipboardInfiniteLoop::delayed) {
+                    if (this->bogus_clipboard_infinite_loop == VncBogusClipboardInfiniteLoopStrategy::delayed) {
                         LOG_IF(bool(this->verbose & VNCVerbose::clipboard), LOG_INFO,
                             "mod_vnc server clipboard PDU: msgType=CB_FORMAT_DATA_REQUEST(%u) (delayed)",
                             RDPECLIP::CB_FORMAT_DATA_REQUEST);
@@ -1896,7 +1896,7 @@ void mod_vnc::clipboard_send_to_vnc_server(InStream & chunk, size_t length, uint
                             MINIMUM_TIMEVAL - timeval_diff,
                             [this](Event&){this->check_timeout();});
                     }
-                    else if ((this->bogus_clipboard_infinite_loop != VncBogusClipboardInfiniteLoop::duplicated)
+                    else if ((this->bogus_clipboard_infinite_loop != VncBogusClipboardInfiniteLoopStrategy::duplicated)
                         &&  ((this->clipboard_general_capability_flags & RDPECLIP::CB_MINIMUM_WINDOWS_CLIENT_GENERAL_CAPABILITY_FLAGS_)
                           == RDPECLIP::CB_MINIMUM_WINDOWS_CLIENT_GENERAL_CAPABILITY_FLAGS_)
                     ) {
@@ -1957,7 +1957,7 @@ void mod_vnc::clipboard_send_to_vnc_server(InStream & chunk, size_t length, uint
                 RDPECLIP::get_FormatId_name(format_data_request_pdu.requestedFormatId),
                 format_data_request_pdu.requestedFormatId);
 
-            if (this->bogus_clipboard_infinite_loop != VncBogusClipboardInfiniteLoop::delayed
+            if (this->bogus_clipboard_infinite_loop != VncBogusClipboardInfiniteLoopStrategy::delayed
             && this->clipboard_owned_by_client) {
                 StreamBufMaker<65536> buf_maker;
                 OutStream out_stream = buf_maker.reserve_out_stream(

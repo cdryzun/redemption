@@ -250,9 +250,9 @@ private:
     bool     clipboard_requesting_for_data_is_delayed = false;
     uint32_t clipboard_requested_format_id            = 0;
     MonotonicTimePoint clipboard_last_client_data_timestamp {};
-    ClipboardEncodingType clipboard_server_encoding_type;
+    VncClipboardEncoding clipboard_server_encoding_type;
     bool clipboard_owned_by_client = true;
-    VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop = VncBogusClipboardInfiniteLoop::delayed;
+    VncBogusClipboardInfiniteLoopStrategy bogus_clipboard_infinite_loop;
     uint32_t clipboard_general_capability_flags = 0;
     MonotonicTimePoint::duration session_time_start;
     ClientExecute* rail_client_execute = nullptr;
@@ -320,8 +320,8 @@ public:
            , bool clipboard_up
            , bool clipboard_down
            , const char * encodings
-           , ClipboardEncodingType clipboard_server_encoding_type
-           , VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop
+           , VncClipboardEncoding clipboard_server_encoding_type
+           , VncBogusClipboardInfiniteLoopStrategy bogus_clipboard_infinite_loop
            , KeyLayout const& layout
            , kbdtypes::KeyLocks locks
            , bool server_is_macos
@@ -1677,4 +1677,3 @@ public:
 
     void acl_update(AclFieldMask const&/* acl_fields*/) override {}
 };
-

@@ -1301,18 +1301,6 @@ R"gen_config_ini(## Config file for RDP proxy.
 
 [mod_vnc]
 
-# Check this option to enable the clipboard upload (from client to target server).
-# This only supports text data clipboard (not files).
-# (type: boolean (0/no/false or 1/yes/true))
-# (acl config: proxy ⇐ clipboard_up)
-#clipboard_up = 0
-
-# Check this option to enable the clipboard download (from target server to client).
-# This only supports text data clipboard (not files).
-# (type: boolean (0/no/false or 1/yes/true))
-# (acl config: proxy ⇐ clipboard_down)
-#clipboard_down = 0
-
 # Sets additional graphics encoding types that will be negotiated with the VNC target server:
 #   2: RRE
 #   5: HEXTILE
@@ -1324,21 +1312,6 @@ R"gen_config_ini(## Config file for RDP proxy.
 # (type: boolean (0/no/false or 1/yes/true))
 # (acl config: proxy ⇐ mod_vnc:support_cursor_pseudo_encoding)
 #support_cursor_pseudo_encoding = 1
-
-# VNC target server clipboard text data encoding type.
-# values: utf-8, latin1
-#_advanced
-# (acl config: proxy ⇐ vnc_server_clipboard_encoding_type)
-#server_clipboard_encoding_type = latin1
-
-# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
-# This option indicates the strategy to adopt in such situations.
-#   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
-#   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
-#   2: continued: No special processing is done, the proxy always responds immediately.
-#_advanced
-# (acl config: proxy ⇐ vnc_bogus_clipboard_infinite_loop)
-#bogus_clipboard_infinite_loop = 0
 
 # (type: boolean (0/no/false or 1/yes/true))
 #_display_name=Server is MacOS
@@ -1431,6 +1404,33 @@ R"gen_config_ini(## Config file for RDP proxy.
 #_advanced
 # (acl config: proxy ⇐ mod_vnc:force_authentication_method)
 #force_authentication_method = 
+
+[vnc_clipboard]
+
+# Enable the clipboard upload (from client to target server).
+# This only supports text data clipboard, not files.
+# (type: boolean (0/no/false or 1/yes/true))
+#enable_clipboard_upload = 0
+
+# Enable the clipboard download (from target server to client).
+# This only supports text data clipboard, not files.
+# (type: boolean (0/no/false or 1/yes/true))
+#enable_clipboard_download = 0
+
+# VNC target server clipboard text data encoding type.
+# values: utf-8, latin1
+#_advanced
+# (acl config: proxy ⇐ vnc_clipboard:clipboard_encoding)
+#clipboard_encoding = latin1
+
+# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+# This option indicates the strategy to adopt in such situations.
+#   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
+#   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
+#   2: continued: No special processing is done, the proxy always responds immediately.
+#_advanced
+# (acl config: proxy ⇐ vnc_clipboard:bogus_infinite_loop_strategy)
+#bogus_infinite_loop_strategy = 0
 
 [session_log]
 

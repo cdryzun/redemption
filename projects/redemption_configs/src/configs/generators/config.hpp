@@ -1372,6 +1372,14 @@ ValueAsStrings compute_value_as_strings(type_<types::mebibytes<T>>, V const& val
     return res;
 }
 
+template<class T, class V>
+ValueAsStrings compute_value_as_strings(type_<types::bytes<T>>, V const& value)
+{
+    auto res = compute_value_as_strings(type_<T>(), value);
+    res.json_type = "bytes"sv;
+    return res;
+}
+
 template<class Int, long min, long max, class V>
 ValueAsStrings compute_value_as_strings(type_<types::range<Int, min, max>>, V const& value)
 {
@@ -1874,6 +1882,7 @@ inline void add_attr_spec(std::string& out, std::string_view image_path, SpecAtt
     if (bool(attr & SpecAttributes::password)) out += "#_password\n"sv;
     if (bool(attr & SpecAttributes::image))    str_append(out, "#_image="sv, image_path, '\n');
     if (bool(attr & SpecAttributes::adminkit)) out += "#_adminkit\n"sv;
+    if (bool(attr & SpecAttributes::hidden)) out += "#_hidden\n"sv;
     if (bool(attr & SpecAttributes::logged))   out += "#_logged\n"sv;
 }
 
@@ -2730,6 +2739,7 @@ public:
             append_if_true("image", bool(mem_info.spec.attributes & SpecAttributes::image));
             append_if_true("external", bool(mem_info.spec.attributes & SpecAttributes::external));
             append_if_true("adminkit", bool(mem_info.spec.attributes & SpecAttributes::adminkit));
+            append_if_true("hidden", bool(mem_info.spec.attributes & SpecAttributes::hidden));
             append_if_true("resetBackToSelector", bool(mem_info.spec.reset_back_to_selector));
             append_if_not_empty("logStategy", mem_info.spec.loggable == Loggable::No
                 ? ""sv : mem_info.spec.loggable == Loggable::Yes ? "1"sv : "2"sv);

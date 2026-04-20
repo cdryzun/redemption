@@ -11,6 +11,7 @@
   {"name": "session_probe"},
   {"name": "server_cert"},
   {"name": "mod_vnc", "connpolicyName": "vnc"},
+  {"name": "vnc_clipboard", "connpolicyName": "clipboard"},
   {"name": "session_log"},
   {"name": "ocr"},
   {"name": "capture"},
@@ -2559,26 +2560,6 @@
     },
     {
       "section": "mod_vnc",
-      "name": "clipboard_up",
-      "type": "bool",
-      "value": false,
-      "description": "Check this option to enable the clipboard upload (from client to target server).\nThis only supports text data clipboard (not files).",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "logStategy": "1"
-    },
-    {
-      "section": "mod_vnc",
-      "name": "clipboard_down",
-      "type": "bool",
-      "value": false,
-      "description": "Check this option to enable the clipboard download (from target server to client).\nThis only supports text data clipboard (not files).",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "logStategy": "1"
-    },
-    {
-      "section": "mod_vnc",
       "name": "encodings",
       "type": "list",
       "value": "",
@@ -2596,32 +2577,6 @@
       "vnc": true,
       "aclToProxy": true,
       "logStategy": "1"
-    },
-    {
-      "section": "mod_vnc",
-      "name": "server_clipboard_encoding_type",
-      "type": "enumStr",
-      "value": "latin1",
-      "description": "VNC target server clipboard text data encoding type.",
-      "aclName": "vnc_server_clipboard_encoding_type",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "advanced": true,
-      "logStategy": "1",
-      "subtype": "ClipboardEncodingType"
-    },
-    {
-      "section": "mod_vnc",
-      "name": "bogus_clipboard_infinite_loop",
-      "type": "enum",
-      "value": 0,
-      "description": "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\nThis option indicates the strategy to adopt in such situations.",
-      "aclName": "vnc_bogus_clipboard_infinite_loop",
-      "globalSpec": true,
-      "aclToProxy": true,
-      "advanced": true,
-      "logStategy": "1",
-      "subtype": "VncBogusClipboardInfiniteLoop"
     },
     {
       "section": "mod_vnc",
@@ -2756,6 +2711,66 @@
       "aclToProxy": true,
       "advanced": true,
       "logStategy": "1"
+    },
+    {
+      "section": "mod_vnc",
+      "name": "clipboard_up",
+      "type": "bool",
+      "value": false,
+      "description": "",
+      "globalSpec": true,
+      "external": true,
+      "hidden": true
+    },
+    {
+      "section": "mod_vnc",
+      "name": "clipboard_down",
+      "type": "bool",
+      "value": false,
+      "description": "",
+      "globalSpec": true,
+      "external": true,
+      "hidden": true
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "enable_clipboard_upload",
+      "type": "bool",
+      "value": false,
+      "description": "Enable the clipboard upload (from client to target server).\nThis only supports text data clipboard, not files.",
+      "iniOnly": true
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "enable_clipboard_download",
+      "type": "bool",
+      "value": false,
+      "description": "Enable the clipboard download (from target server to client).\nThis only supports text data clipboard, not files.",
+      "iniOnly": true
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "clipboard_encoding",
+      "type": "enumStr",
+      "value": "latin1",
+      "description": "VNC target server clipboard text data encoding type.",
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1",
+      "subtype": "VncClipboardEncoding"
+    },
+    {
+      "section": "vnc_clipboard",
+      "name": "bogus_infinite_loop_strategy",
+      "type": "enum",
+      "value": 0,
+      "description": "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\nThis option indicates the strategy to adopt in such situations.",
+      "vnc": true,
+      "aclToProxy": true,
+      "advanced": true,
+      "logStategy": "1",
+      "subtype": "VncBogusClipboardInfiniteLoopStrategy"
     },
     {
       "section": "session_log",

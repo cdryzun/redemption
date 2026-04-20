@@ -76,6 +76,7 @@ _.set_sections({
     "session_probe",
     "server_cert",
     "mod_vnc",
+    "vnc_clipboard",
 
     "session_log",
     "ocr",
@@ -2253,22 +2254,6 @@ _.section(names{"server_cert"}, [&]
 
 _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
 {
-    _.member(MemberInfo{
-        .name = "clipboard_up",
-        .value = value(false),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable)),
-        .desc = "Check this option to enable the clipboard upload (from client to target server).\n"
-        "This only supports text data clipboard (not files).",
-    });
-
-    _.member(MemberInfo{
-        .name = "clipboard_down",
-        .value = value(false),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable)),
-        .desc = "Check this option to enable the clipboard download (from target server to client).\n"
-        "This only supports text data clipboard (not files).",
-    });
-
     // TODO should be connpolicy and named disabled_encodings (disabled_orders ?)
     _.member(MemberInfo{
         .name = "encodings",
@@ -2289,28 +2274,6 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
         .name = "support_cursor_pseudo_encoding",
         .value = value(true),
         .spec = connpolicy(vnc, loggable),
-    });
-
-    _.member(MemberInfo{
-        .name = names{
-            .all = "server_clipboard_encoding_type",
-            .acl = "vnc_server_clipboard_encoding_type"
-        },
-        .value = enum_as_string(ClipboardEncodingType::latin1),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
-        .desc = "VNC target server clipboard text data encoding type.",
-    });
-
-    _.member(MemberInfo{
-        .name = names{
-            .all = "bogus_clipboard_infinite_loop",
-            .acl = "vnc_bogus_clipboard_infinite_loop"
-        },
-        .value = enum_as_int(VncBogusClipboardInfiniteLoop::delayed),
-        .spec = global_spec(acl_to_proxy(no_reset_back_to_selector, loggable), spec::advanced),
-        .desc =
-            "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\n"
-            "This option indicates the strategy to adopt in such situations."
     });
 
     _.member(MemberInfo{
@@ -2438,6 +2401,55 @@ _.section(names{.all="mod_vnc", .connpolicy="vnc"}, [&]
             "  - x509none\n"
             "  - x509vnc\n"
             "  - x509plain",
+    });
+
+    _.member(MemberInfo{
+        .name = "clipboard_up",
+        .value = value(false),
+        .spec = spec::external({SpecAttributes::hidden}),
+    });
+
+    _.member(MemberInfo{
+        .name = "clipboard_down",
+        .value = value(false),
+        .spec = spec::external({SpecAttributes::hidden}),
+    });
+});
+
+_.section(names{.all="vnc_clipboard", .connpolicy="clipboard"}, [&]
+{
+    _.member(MemberInfo{
+        .name = "enable_clipboard_upload",
+        .value = value(false),
+        .spec = ini_only(no_acl), // configured via proxy_opt
+        .desc =
+            "Enable the clipboard upload (from client to target server).\n"
+            "This only supports text data clipboard, not files.",
+    });
+
+    _.member(MemberInfo{
+        .name = "enable_clipboard_download",
+        .value = value(false),
+        .spec = ini_only(no_acl), // configured via proxy_opt
+        .desc =
+            "Enable the clipboard download (from target server to client).\n"
+            "This only supports text data clipboard, not files.",
+    });
+
+    _.member(MemberInfo{
+        .name = "clipboard_encoding",
+        .value = enum_as_string(VncClipboardEncoding::latin1),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc = "VNC target server clipboard text data encoding type.",
+    });
+
+    _.member(MemberInfo{
+        .name = "bogus_infinite_loop_strategy",
+        .value = enum_as_int(VncBogusClipboardInfiniteLoopStrategy::delayed),
+        .spec = connpolicy(vnc, loggable, spec::advanced),
+        .desc =
+            "The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.\n"
+            "This option indicates the strategy to adopt in such situations."
     });
 });
 

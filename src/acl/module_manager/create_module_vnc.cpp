@@ -32,6 +32,7 @@
 #include "acl/module_manager/create_module_rail.hpp"
 #include "acl/connect_to_target_host.hpp"
 #include "utils/sugar/unique_fd.hpp"
+#include "utils/sugar/split.hpp"
 #include "utils/netutils.hpp"
 #include "RAIL/client_execute.hpp"
 
@@ -95,8 +96,8 @@ public:
         bool clipboard_up,
         bool clipboard_down,
         const char * encodings,
-        ClipboardEncodingType clipboard_server_encoding_type,
-        VncBogusClipboardInfiniteLoop bogus_clipboard_infinite_loop,
+        VncClipboardEncoding clipboard_server_encoding_type,
+        VncBogusClipboardInfiniteLoopStrategy bogus_clipboard_infinite_loop,
         KeyLayout const& layout,
         kbdtypes::KeyLocks locks,
         bool server_is_apple,
@@ -158,6 +159,14 @@ ModPack create_mod_vnc(
         : nullptr
     };
 
+    auto enable_clipboard_upload = false;
+    auto enable_clipboard_download = false;
+    for (auto opt : split_with(ini.get<cfg::context::proxy_opt>(), ',')) {
+        auto opt_name = opt.as<std::string_view>();
+        if (opt_name == "VNC_CLIPBOARD_UP") enable_clipboard_upload = true;
+        if (opt_name == "VNC_CLIPBOARD_DOWN") enable_clipboard_download = true;
+    }
+
     auto new_mod = std::make_unique<ModVNCWithSocket>(
         rand,
         host_mod ? host_mod->proxy_gd() : drawable,
@@ -174,11 +183,11 @@ ModPack create_mod_vnc(
         front,
         client_info.screen_info.width,
         client_info.screen_info.height,
-        ini.get<cfg::mod_vnc::clipboard_up>(),
-        ini.get<cfg::mod_vnc::clipboard_down>(),
+        enable_clipboard_upload,
+        enable_clipboard_download,
         ini.get<cfg::mod_vnc::encodings>().c_str(),
-        ini.get<cfg::mod_vnc::server_clipboard_encoding_type>(),
-        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>(),
+        ini.get<cfg::vnc_clipboard::clipboard_encoding>(),
+        ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>(),
         layout,
         locks,
         ini.get<cfg::mod_vnc::server_is_macos>(),

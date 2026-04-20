@@ -185,10 +185,10 @@ RED_AUTO_TEST_CASE(TestConfigDefaultEmpty)
     RED_CHECK_EQUAL(5000,  ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",    ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(false, ini.get<cfg::mod_vnc::clipboard_up>());
-    RED_CHECK_EQUAL(false, ini.get<cfg::mod_vnc::clipboard_down>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1, ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed, ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(false, ini.get<cfg::vnc_clipboard::enable_clipboard_upload>());
+    RED_CHECK_EQUAL(false, ini.get<cfg::vnc_clipboard::enable_clipboard_download>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1, ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed, ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,     ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -302,10 +302,11 @@ RED_AUTO_TEST_CASE_WF(TestConfig1, wf)
         "keepalive_timeout=0\n"
         "\n"
         "[mod_vnc]\n"
-        "clipboard_up=yes\n"
         "encodings=16,2,0,1,-239\n"
-        "server_clipboard_encoding_type=latin1\n"
-        "bogus_clipboard_infinite_loop=0\n"
+        "[vnc_clipboard]\n"
+        "enable_clipboard_upload=yes\n"
+        "clipboard_encoding=latin1\n"
+        "bogus_infinite_loop_strategy=0\n"
         "\n"
         "[capture]\n"
         "hash_path=/mnt/wab/hash\n"
@@ -417,11 +418,11 @@ RED_AUTO_TEST_CASE_WF(TestConfig1, wf)
     RED_CHECK_EQUAL(SessionProbeOnLaunchFailure::disconnect_user, ini.get<cfg::session_probe::on_launch_failure>());
     RED_CHECK_EQUAL(0,     ini.get<cfg::session_probe::keepalive_timeout>().count());
 
-    RED_CHECK_EQUAL(true,  ini.get<cfg::mod_vnc::clipboard_up>());
-    RED_CHECK_EQUAL(false, ini.get<cfg::mod_vnc::clipboard_down>());
+    RED_CHECK_EQUAL(true,  ini.get<cfg::vnc_clipboard::enable_clipboard_upload>());
+    RED_CHECK_EQUAL(false, ini.get<cfg::vnc_clipboard::enable_clipboard_download>());
     RED_CHECK_EQUAL("16,2,0,1,-239", ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1, ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed, ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1, ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed, ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,     ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -476,9 +477,9 @@ RED_AUTO_TEST_CASE_WF(TestConfig1bis, wf)
         "disable_clipboard_log=1\n"
         "disable_file_system_log=2\n"
         "\n"
-        "[mod_vnc]\n"
-        "server_clipboard_encoding_type=utf-8\n"
-        "bogus_clipboard_infinite_loop=1\n"
+        "[vnc_clipboard]\n"
+        "clipboard_encoding=utf-8\n"
+        "bogus_infinite_loop_strategy=1\n"
         "\n"
     ;
 
@@ -588,9 +589,9 @@ RED_AUTO_TEST_CASE_WF(TestConfig1bis, wf)
     RED_CHECK_EQUAL(6000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::utf8,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::duplicated,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::utf8,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::duplicated,
+                                                        ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(1,                                ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -729,9 +730,9 @@ RED_AUTO_TEST_CASE_WF(TestConfig2, wf)
     RED_CHECK_EQUAL(5000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed,
+                                                        ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,                                ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -770,8 +771,8 @@ RED_AUTO_TEST_CASE_WF(TestConfig3, wf)
         "keepalive_timeout=3000\n"
         "[mod_replay]\n"
         "on_end_of_data=0\n"
-        "[mod_vnc]\n"
-        "bogus_clipboard_infinite_loop=2\n"
+        "[vnc_clipboard]\n"
+        "bogus_infinite_loop_strategy=2\n"
         "[capture]\n"
         "wrm_color_depth_selection_strategy=1\n"
         "wrm_compression_algorithm=1\n"
@@ -881,9 +882,9 @@ RED_AUTO_TEST_CASE_WF(TestConfig3, wf)
     RED_CHECK_EQUAL(3000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::continued,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::continued,
+                    ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,                                ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -1009,9 +1010,9 @@ RED_AUTO_TEST_CASE_WF(TestMultiple, wf)
     RED_CHECK_EQUAL(5000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed,
+                                                        ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,                                ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -1036,8 +1037,8 @@ RED_AUTO_TEST_CASE_WF(TestMultiple, wf)
         "launch_timeout=4000\n"
         "on_launch_failure=0\n"
         "keepalive_timeout=7000\n"
-        "[mod_vnc]\n"
-        "bogus_clipboard_infinite_loop=0\n"
+        "[vnc_clipboard]\n"
+        "bogus_infinite_loop_strategy=0\n"
         "[debug]\n"
         "password=3\n"
         "compression=0x3\n"
@@ -1137,9 +1138,9 @@ RED_AUTO_TEST_CASE_WF(TestMultiple, wf)
     RED_CHECK_EQUAL(7000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed,
+                    ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,                                ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -1251,9 +1252,9 @@ RED_AUTO_TEST_CASE_WF(TestNewConf, wf)
     RED_CHECK_EQUAL(5000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed,
+                                                        ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,                                ini.get<cfg::mod_replay::on_end_of_data>());
 
@@ -1368,9 +1369,9 @@ RED_AUTO_TEST_CASE_WF(TestNewConf, wf)
     RED_CHECK_EQUAL(5000,                             ini.get<cfg::session_probe::keepalive_timeout>().count());
 
     RED_CHECK_EQUAL("",                               ini.get<cfg::mod_vnc::encodings>());
-    RED_CHECK_EQUAL(ClipboardEncodingType::latin1,          ini.get<cfg::mod_vnc::server_clipboard_encoding_type>());
-    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoop::delayed,
-                                                        ini.get<cfg::mod_vnc::bogus_clipboard_infinite_loop>());
+    RED_CHECK_EQUAL(VncClipboardEncoding::latin1,          ini.get<cfg::vnc_clipboard::clipboard_encoding>());
+    RED_CHECK_EQUAL(VncBogusClipboardInfiniteLoopStrategy::delayed,
+                                                        ini.get<cfg::vnc_clipboard::bogus_infinite_loop_strategy>());
 
     RED_CHECK_EQUAL(0,                                ini.get<cfg::mod_replay::on_end_of_data>());
 

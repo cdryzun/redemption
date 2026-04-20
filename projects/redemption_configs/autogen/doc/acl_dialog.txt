@@ -466,21 +466,7 @@ cfg::server_cert::external_cert ⇒ external_cert   [std::string]
 cfg::server_cert::external_response ⇐ external_response   [std::string]
     empty string for wait, 'Ok' or error message.
 
-cfg::mod_vnc::clipboard_up ⇐ clipboard_up   [bool]
-    Check this option to enable the clipboard upload (from client to target server).
-    This only supports text data clipboard (not files).
-cfg::mod_vnc::clipboard_down ⇐ clipboard_down   [bool]
-    Check this option to enable the clipboard download (from target server to client).
-    This only supports text data clipboard (not files).
 cfg::mod_vnc::support_cursor_pseudo_encoding ⇐ mod_vnc:support_cursor_pseudo_encoding   [bool]
-cfg::mod_vnc::server_clipboard_encoding_type ⇐ vnc_server_clipboard_encoding_type   [ClipboardEncodingType ⇐ std::string]
-    VNC target server clipboard text data encoding type.
-cfg::mod_vnc::bogus_clipboard_infinite_loop ⇐ vnc_bogus_clipboard_infinite_loop   [VncBogusClipboardInfiniteLoop]
-    The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
-    This option indicates the strategy to adopt in such situations.
-      0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
-      1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
-      2: continued: No special processing is done, the proxy always responds immediately.
 cfg::mod_vnc::server_is_macos ⇐ mod_vnc:server_is_macos   [bool]
 cfg::mod_vnc::server_unix_alt ⇐ mod_vnc:server_unix_alt   [bool]
     When disabled, Ctrl + Alt becomes AltGr (Windows behavior).
@@ -528,6 +514,15 @@ cfg::mod_vnc::force_authentication_method ⇐ mod_vnc:force_authentication_metho
       - x509none
       - x509vnc
       - x509plain
+
+cfg::vnc_clipboard::clipboard_encoding ⇐ vnc_clipboard:clipboard_encoding   [VncClipboardEncoding ⇐ std::string]
+    VNC target server clipboard text data encoding type.
+cfg::vnc_clipboard::bogus_infinite_loop_strategy ⇐ vnc_clipboard:bogus_infinite_loop_strategy   [VncBogusClipboardInfiniteLoopStrategy]
+    The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+    This option indicates the strategy to adopt in such situations.
+      0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
+      1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
+      2: continued: No special processing is done, the proxy always responds immediately.
 
 cfg::session_log::enable_session_log_file ⇐ session_log:enable_session_log_file   [bool]
     Saves session logs to a .log file.

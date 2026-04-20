@@ -61,7 +61,7 @@ inline void config_type_definition(type_enumerations & e)
       .value("fr")
     ;
 
-    e.enumeration_list("ClipboardEncodingType", withNameWhenDescription)
+    e.enumeration_list("VncClipboardEncoding", withNameWhenDescription)
       .value("utf8").alias("utf-8")
       .value("latin1")
     ;
@@ -150,7 +150,7 @@ inline void config_type_definition(type_enumerations & e)
       .value("retry_without_session_probe", "Attempt to reconnect without Session Probe. This restores legacy behavior. The session will start using 'Launch fallback timeout' instead of 'Launch timeout'.")
     ;
 
-    e.enumeration_list("VncBogusClipboardInfiniteLoop", withNameWhenDescription)
+    e.enumeration_list("VncBogusClipboardInfiniteLoopStrategy", withNameWhenDescription)
       .value("delayed", "Clipboard processing is deferred and, if necessary, the token is left with the client.")
       .value("duplicated", "When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.")
       .value("continued", "No special processing is done, the proxy always responds immediately.")

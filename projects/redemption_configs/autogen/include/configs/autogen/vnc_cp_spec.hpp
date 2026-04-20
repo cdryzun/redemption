@@ -164,6 +164,20 @@ show_common_cipher_list = boolean(default=False)
 #_advanced
 force_authentication_method = string(default="")
 
+[clipboard]
+
+# VNC target server clipboard text data encoding type.
+#_advanced
+clipboard_encoding = option('utf-8', 'latin1', default="latin1")
+
+# The RDP clipboard is based on a token that indicates who owns data between target server and client. However, some RDP clients, such as FreeRDP, always appropriate this token. This conflicts with VNC, which also appropriates this token, causing clipboard data to be sent in loops.
+# This option indicates the strategy to adopt in such situations.
+# &nbsp; &nbsp;   0: delayed: Clipboard processing is deferred and, if necessary, the token is left with the client.
+# &nbsp; &nbsp;   1: duplicated: When 2 identical requests are received, the second is ignored. This can block clipboard data reception until a clipboard event is triggered on the target server when the client clipboard is blocked, and vice versa.
+# &nbsp; &nbsp;   2: continued: No special processing is done, the proxy always responds immediately.
+#_advanced
+bogus_infinite_loop_strategy = option(0, 1, 2, default=0)
+
 [capture]
 
 # ⚠ Logs may contain passwords.<br/>
